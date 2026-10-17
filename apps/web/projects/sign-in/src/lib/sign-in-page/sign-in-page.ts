@@ -23,7 +23,9 @@ export class SignInPage {
   private readonly keypad = viewChild(PinKeypad);
 
   constructor() {
-    this.api.profiles().then((profiles) => this.readers.set(profiles.filter((p) => p.role === 'reader')));
+    this.api
+      .profiles()
+      .then((profiles) => this.readers.set(profiles.filter((p) => p.role === 'reader')));
   }
 
   protected async submit(pin: string) {

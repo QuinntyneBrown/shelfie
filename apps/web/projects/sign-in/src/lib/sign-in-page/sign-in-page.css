@@ -1,2 +1,6 @@
-.centred { text-align: center; }
-.centred-item { margin-inline: auto; }
+.centred {
+  text-align: center;
+}
+.centred-item {
+  margin-inline: auto;
+}

@@ -20,7 +20,9 @@ export class ShelfPage {
 
   protected readonly isEmpty = computed(() => {
     const shelf = this.shelf();
-    return shelf !== null && !shelf.reading.length && !shelf.upNext.length && !shelf.finished.length;
+    return (
+      shelf !== null && !shelf.reading.length && !shelf.upNext.length && !shelf.finished.length
+    );
   });
 
   constructor() {

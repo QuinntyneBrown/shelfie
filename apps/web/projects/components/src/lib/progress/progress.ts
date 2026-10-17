@@ -10,5 +10,7 @@ export class Progress {
   readonly value = input.required<number>();
   readonly max = input.required<number>();
   readonly label = input.required<string>();
-  protected readonly percent = computed(() => (this.max() > 0 ? (this.value() / this.max()) * 100 : 0));
+  protected readonly percent = computed(() =>
+    this.max() > 0 ? (this.value() / this.max()) * 100 : 0,
+  );
 }

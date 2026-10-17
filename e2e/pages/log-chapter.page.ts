@@ -91,6 +91,14 @@ export class LogChapterPage {
     return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`);
   }
 
+  finishedHeading() {
+    return this.page.getByRole('heading', { name: 'You finished the whole book!' });
+  }
+
+  async notYet() {
+    await this.page.getByRole('link', { name: 'Not yet' }).click();
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

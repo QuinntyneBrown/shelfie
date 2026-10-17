@@ -1,5 +1,12 @@
 <div class="progress-row">
-  <div class="progress" role="progressbar" [attr.aria-valuenow]="value()" aria-valuemin="0" [attr.aria-valuemax]="max()" [attr.aria-label]="label()">
+  <div
+    class="progress"
+    role="progressbar"
+    [attr.aria-valuenow]="value()"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="max()"
+    [attr.aria-label]="label()"
+  >
     <div class="progress__bar" [style.--value]="percent() + '%'"></div>
   </div>
   <span class="progress-row__label">{{ value() }} of {{ max() }}</span>

@@ -17,7 +17,10 @@ export class ToastService {
   readonly toasts = signal<ToastMessage[]>([]);
 
   show(toast: Omit<ToastMessage, 'id' | 'durationMs'> & { durationMs?: number }) {
-    this.toasts.update((all) => [...all, { durationMs: DEFAULT_DURATION_MS, ...toast, id: this.nextId++ }]);
+    this.toasts.update((all) => [
+      ...all,
+      { durationMs: DEFAULT_DURATION_MS, ...toast, id: this.nextId++ },
+    ]);
   }
 
   dismiss(id: number) {

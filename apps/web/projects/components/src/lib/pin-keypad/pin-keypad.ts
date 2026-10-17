@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 
 @Component({
   selector: 'sh-pin-keypad',
@@ -17,7 +25,9 @@ export class PinKeypad {
 
   protected readonly digits = signal('');
   private readonly now = signal(Date.now());
-  protected readonly remainingMs = computed(() => Math.max(0, (this.lockedUntil() ?? 0) - this.now()));
+  protected readonly remainingMs = computed(() =>
+    Math.max(0, (this.lockedUntil() ?? 0) - this.now()),
+  );
   protected readonly locked = computed(() => this.remainingMs() > 0);
   protected readonly timeLeft = computed(() => {
     const seconds = Math.ceil(this.remainingMs() / 1000);

@@ -2,7 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
 
 export interface ChapterForm {
-  book: { id: string; title: string; author: string | null; chapterCount: number; coverColor: string; sticker: string };
+  book: {
+    id: string;
+    title: string;
+    author: string | null;
+    chapterCount: number;
+    coverColor: string;
+    sticker: string;
+  };
   chapterNumber: number;
   /** Today in the household's time zone, as YYYY-MM-DD. */
   today: string;

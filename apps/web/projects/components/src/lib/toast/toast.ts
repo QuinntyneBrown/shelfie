@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, afterNextRender, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  afterNextRender,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 
 @Component({
   selector: 'sh-toast',

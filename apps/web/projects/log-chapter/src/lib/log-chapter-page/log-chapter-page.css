@@ -1,5 +1,17 @@
-.legend { font: var(--text-h4); margin-bottom: var(--space-1); }
-.hint { margin-bottom: var(--space-2); }
-.done-actions { justify-content: center; }
-.summary-list { margin: 0; padding-left: 1.2em; }
-.day-input { width: auto; }
+.legend {
+  font: var(--text-h4);
+  margin-bottom: var(--space-1);
+}
+.hint {
+  margin-bottom: var(--space-2);
+}
+.done-actions {
+  justify-content: center;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.day-input {
+  width: auto;
+}

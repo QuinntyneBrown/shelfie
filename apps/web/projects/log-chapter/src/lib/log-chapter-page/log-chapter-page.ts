@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
 import { DraftStore, ToastService } from 'core';
@@ -71,7 +80,11 @@ export class LogChapterPage {
     effect((onCleanup) => {
       const form = this.form();
       if (!form || this.result()) return;
-      const draft = { readOn: this.readOn(form), answers: this.answers(), savedAt: new Date().toISOString() };
+      const draft = {
+        readOn: this.readOn(form),
+        answers: this.answers(),
+        savedAt: new Date().toISOString(),
+      };
       const untouched = draft.readOn === form.today && draft.answers.every((a) => !a);
       if (untouched) return;
       const id = setTimeout(() => this.drafts.save(this.draftKey(), draft), DRAFT_DELAY_MS);
@@ -98,7 +111,13 @@ export class LogChapterPage {
           await this.api.undo(result.chapterLogId);
           this.drafts.save(draftKey, { readOn, answers, savedAt: new Date().toISOString() });
           this.result.set(null);
-          await this.router.navigate(['/books', form.book.id, 'chapters', form.chapterNumber, 'log']);
+          await this.router.navigate([
+            '/books',
+            form.book.id,
+            'chapters',
+            form.chapterNumber,
+            'log',
+          ]);
         },
       },
     });

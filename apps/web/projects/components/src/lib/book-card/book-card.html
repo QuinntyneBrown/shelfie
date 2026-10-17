@@ -6,7 +6,11 @@
       <span class="book-card__author">{{ author() }}</span>
     }
     @if (logged() > 0) {
-      <sh-progress [value]="logged()" [max]="chapters()" [label]="logged() + ' of ' + chapters() + ' chapters read'" />
+      <sh-progress
+        [value]="logged()"
+        [max]="chapters()"
+        [label]="logged() + ' of ' + chapters() + ' chapters read'"
+      />
     }
     <div class="book-card__actions"><ng-content /></div>
   </div>

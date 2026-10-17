@@ -269,3 +269,37 @@ test('Given the Undo window has passed, when an undo is sent, then the API refus
 
   expect([response.status(), (await response.json()).type]).toEqual([409, 'undo-expired']);
 });
+
+test('Given she is on a book’s last chapter, when she logs it, then the finished-book celebration shows and the book moves to her finished shelf', async ({ page }) => {
+  // Traces to: L2-019
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await shelf.logChapter('On the go', 'The BFG', 3);
+  const log = new LogChapterPage(page);
+
+  await log.answer(1, 'The giant blew dreams into bedrooms.');
+  await log.done();
+
+  await expect(log.finishedHeading()).toBeVisible();
+  await expect(page.getByText('All 3 chapters of The BFG. Dad will pick your reward')).toBeVisible();
+
+  await log.backToShelf();
+  await expect(shelf.finishedBook('The BFG')).toContainText('Dad is picking your reward');
+});
+
+test('Given she has just finished a book, when she presses Undo, then the book goes back to her reading shelf', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await shelf.logChapter('On the go', 'The BFG', 3);
+  const log = new LogChapterPage(page);
+  await log.answer(1, 'The giant blew dreams into bedrooms.');
+  await log.done();
+  await expect(log.finishedHeading()).toBeVisible();
+
+  await log.undo();
+  await expect(log.heading()).toHaveText('Chapter 3');
+  await log.notYet();
+
+  await expect(shelf.book('On the go', 'The BFG').getByRole('progressbar', { name: '2 of 3 chapters read' })).toBeVisible();
+  await expect(shelf.finishedBook('The BFG')).toBeHidden();
+});

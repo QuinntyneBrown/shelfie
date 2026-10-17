@@ -36,6 +36,8 @@ if (!process.argv.includes('--no-books')) {
   logChapters('b-lion', 11, 15);
   book.run('b-robot', 'h1', 'The Wild Robot', 'Peter Brown', 80, 'mint', '🤖', 'grown_up', `${day(2)}T09:00:00.000Z`, null);
   logChapters('b-robot', 3, 14);
+  book.run('b-bfg', 'h1', 'The BFG', 'Roald Dahl', 3, 'lilac', '🌈', 'grown_up', `${day(5)}T09:00:00.000Z`, null);
+  logChapters('b-bfg', 2, 12);
   book.run('b-winn', 'h1', 'Because of Winn-Dixie', 'Kate DiCamillo', 12, 'sun', '🐕', 'grown_up', `${day(8)}T09:00:00.000Z`, null);
   book.run('b-matilda', 'h1', 'Matilda', 'Roald Dahl', 3, 'rose', '📚', 'grown_up', `${day(3)}T09:00:00.000Z`, `${day(13)}T16:00:00.000Z`);
   logChapters('b-matilda', 3, 13);

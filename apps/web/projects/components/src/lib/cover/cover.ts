@@ -9,6 +9,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 export class Cover {
   readonly color = input.required<string>();
   readonly sticker = input.required<string>();
-  readonly size = input<'sm' | 'md' | 'lg'>('md');
-  protected readonly classes = computed(() => `cover--${this.color()}${this.size() === 'md' ? '' : ' cover--' + this.size()}`);
+  readonly size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
+  protected readonly classes = computed(
+    () => `cover--${this.color()}${this.size() === 'md' ? '' : ' cover--' + this.size()}`,
+  );
 }

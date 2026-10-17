@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, input, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  model,
+} from '@angular/core';
 
 /** The counter appears once this many characters or fewer are left. */
 const COUNTER_FROM = 200;
