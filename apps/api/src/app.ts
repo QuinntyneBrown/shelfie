@@ -1,6 +1,7 @@
 import express from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { authRouter } from './auth.router.ts';
+import { shelfRouter } from './shelf.router.ts';
 
 export function createApp(db: DatabaseSync) {
   const app = express();
@@ -10,5 +11,6 @@ export function createApp(db: DatabaseSync) {
     res.json({ ok: true });
   });
   app.use('/api/auth', authRouter(db));
+  app.use('/api/shelf', shelfRouter(db));
   return app;
 }

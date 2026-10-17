@@ -1,1 +1,41 @@
-<main id="main"><h1>Hi {{ session.current()?.name }}</h1></main>
+<main id="main" class="container">
+  <div class="page-header">
+    <h1>Hi {{ session.current()?.name }}</h1>
+  </div>
+  @if (shelf(); as shelf) {
+    @if (shelf.reading.length) {
+      <section class="section" aria-labelledby="on-the-go">
+        <h2 id="on-the-go" class="group-title">On the go</h2>
+        <div class="grid grid--auto">
+          @for (book of shelf.reading; track book.id) {
+            <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
+              <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', book.nextChapter, 'log']">Log Chapter {{ book.nextChapter }}</a>
+            </sh-book-card>
+          }
+        </div>
+      </section>
+    }
+    @if (shelf.upNext.length) {
+      <section class="section" aria-labelledby="up-next">
+        <h2 id="up-next" class="group-title">Up next</h2>
+        <div class="grid grid--auto">
+          @for (book of shelf.upNext; track book.id) {
+            <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
+              <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', 1, 'log']">Start with Chapter 1</a>
+            </sh-book-card>
+          }
+        </div>
+      </section>
+    }
+    @if (shelf.finished.length) {
+      <section class="section" aria-labelledby="finished">
+        <h2 id="finished" class="group-title">Finished <span class="badge">{{ shelf.finished.length }}</span></h2>
+        <ul class="list finished-list">
+          @for (book of shelf.finished; track book.id) {
+            <li><sh-reward-card [title]="book.title" [coverColor]="book.coverColor" [sticker]="book.sticker" /></li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</main>

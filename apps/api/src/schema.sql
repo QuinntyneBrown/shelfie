@@ -18,3 +18,29 @@ CREATE TABLE IF NOT EXISTS session (
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS book (
+  id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES household(id),
+  title TEXT NOT NULL,
+  author TEXT,
+  chapter_count INTEGER NOT NULL CHECK (chapter_count >= 1),
+  cover_color TEXT NOT NULL,
+  sticker TEXT NOT NULL,
+  added_by_role TEXT NOT NULL DEFAULT 'grown_up',
+  created_at TEXT NOT NULL,
+  finished_at TEXT
+);
+CREATE TABLE IF NOT EXISTS chapter_log (
+  id TEXT PRIMARY KEY,
+  book_id TEXT NOT NULL REFERENCES book(id),
+  chapter_number INTEGER NOT NULL,
+  read_on TEXT NOT NULL,
+  logged_at TEXT NOT NULL,
+  undo_until TEXT NOT NULL,
+  UNIQUE (book_id, chapter_number)
+);
+CREATE TABLE IF NOT EXISTS reward (
+  book_id TEXT PRIMARY KEY REFERENCES book(id),
+  text TEXT NOT NULL,
+  given_at TEXT NOT NULL
+);
