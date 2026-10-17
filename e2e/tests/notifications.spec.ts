@@ -26,3 +26,21 @@ test('Given saving fails, when Nia presses I’m done!, then a danger toast with
   await expect(log.heading()).toHaveText('Chapter 12 done!');
   await expect(log.failureToasts()).toBeHidden();
 });
+
+test('Given four toasts are showing, then three show with a +1 more line that opens the rest', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+  await log.answer(1, 'Edmund said sorry');
+  await log.failSaving();
+
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    await log.doneByKeyboard();
+    await expect(log.failureToasts()).toHaveCount(Math.min(attempt, 3));
+  }
+
+  await expect(log.moreToasts()).toHaveText('+1 more');
+  await log.showMoreToasts();
+  await expect(log.failureToasts()).toHaveCount(4);
+  await expect(log.moreToasts()).toBeHidden();
+});

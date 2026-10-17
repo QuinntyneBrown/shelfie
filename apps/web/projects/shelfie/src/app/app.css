@@ -1,3 +1,7 @@
 main:focus {
   outline: none;
 }
+.more-toasts {
+  align-self: flex-end;
+  pointer-events: auto;
+}

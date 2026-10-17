@@ -1,10 +1,12 @@
-import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'components';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
 import { SessionService, ToastService } from 'core';
+
+const MAX_VISIBLE_TOASTS = 3;
 
 @Component({
   imports: [RouterOutlet, Toast, TopBar],
@@ -26,6 +28,15 @@ export class App {
     return s.role === 'reader' ? `${s.name} · Reader` : `${s.name} · ${s.email} · grown-up`;
   });
   protected readonly toasts = inject(ToastService);
+  protected readonly showAllToasts = signal(false);
+  /** The newest toasts; older ones collapse into a "+N more" line so the stack never covers the page. */
+  protected readonly visibleToasts = computed(() => {
+    const all = this.toasts.toasts();
+    return this.showAllToasts() ? all : all.slice(-MAX_VISIBLE_TOASTS);
+  });
+  protected readonly hiddenToasts = computed(
+    () => this.toasts.toasts().length - this.visibleToasts().length,
+  );
   protected readonly home = computed(() =>
     this.session()?.role === 'grown_up' ? '/review' : '/shelf',
   );

@@ -114,8 +114,21 @@ export class LogChapterPage {
     return this.page.getByRole('status').getByText('Couldn’t save your answers');
   }
 
+  async showMoreToasts() {
+    await this.page.getByRole('button', { name: /more/ }).click();
+  }
+
+  moreToasts() {
+    return this.page.getByRole('button', { name: /^\+\d+ more$/ });
+  }
+
   async retry() {
     await this.page.getByRole('button', { name: 'Retry' }).click();
+  }
+
+  /** Presses I’m done! from the keyboard, which works even when something is drawn over the button. */
+  async doneByKeyboard() {
+    await this.page.getByRole('button', { name: 'I’m done!' }).press('Enter');
   }
 
   async done() {

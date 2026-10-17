@@ -13,7 +13,12 @@
   <router-outlet />
 </main>
 <div class="toast-region" role="status" aria-live="polite">
-  @for (toast of toasts.toasts(); track toast.id) {
+  @if (hiddenToasts() > 0) {
+    <button class="btn btn--sm more-toasts" type="button" (click)="showAllToasts.set(true)">
+      +{{ hiddenToasts() }} more
+    </button>
+  }
+  @for (toast of visibleToasts(); track toast.id) {
     <sh-toast
       [severity]="toast.severity"
       [title]="toast.title"
