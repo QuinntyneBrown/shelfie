@@ -11,6 +11,9 @@ const addDays = (isoDay: string, days: number) => {
   return date.toISOString().slice(0, 10);
 };
 
+/** From this many waiting chapters the summary gently notices the pile. */
+const LONG_QUEUE = 10;
+
 @Component({
   selector: 'sh-review-page',
   imports: [Cover, DatePipe, EmptyState, RouterLink],
@@ -25,7 +28,8 @@ export class ReviewPage {
     if (!overview) return '';
     const chapters = overview.queue.length;
     const rewards = overview.finishedUnrewarded.length;
-    return `${chapters} ${chapters === 1 ? 'chapter' : 'chapters'} to read · ${rewards} ${rewards === 1 ? 'reward' : 'rewards'} to give`;
+    const line = `${chapters} ${chapters === 1 ? 'chapter' : 'chapters'} to read · ${rewards} ${rewards === 1 ? 'reward' : 'rewards'} to give`;
+    return chapters >= LONG_QUEUE ? `${line} · back from a week away?` : line;
   });
 
   constructor() {

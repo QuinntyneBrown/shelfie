@@ -96,3 +96,13 @@ export function reviewEverything() {
     db.close();
   }
 }
+
+/** Marks every chapter Nia has logged as still waiting for Dad. */
+export function unreviewEverything() {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.exec('UPDATE chapter_log SET reviewed_at = NULL, sticker = NULL, note = NULL, feedback_seen_at = NULL');
+  } finally {
+    db.close();
+  }
+}

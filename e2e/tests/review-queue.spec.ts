@@ -3,7 +3,7 @@ import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ReviewPage } from '../pages/review.page';
 import { ShellPage } from '../pages/shell.page';
-import { reviewEverything, setReadingDays } from '../support/database';
+import { reviewEverything, setReadingDays, unreviewEverything } from '../support/database';
 
 test('Given chapters waiting for review, when Dad opens Review, then they are listed newest first with book, chapter and when she read it', async ({ page }) => {
   await signInAsDad(page);
@@ -52,4 +52,20 @@ test('Given Nia read on the last five days, when Dad opens Review, then This wee
 
   await expect(review.stat('Chapters')).toContainText('5');
   await expect(review.stat('Streak')).toContainText('5');
+});
+
+test('Given a long queue on a phone, when Dad opens Review, then it fits the screen, every chapter can be reached and the summary notices', async ({ page }) => {
+  unreviewEverything();
+  await page.setViewportSize({ width: 360, height: 700 });
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  const shell = new ShellPage(page);
+
+  await expect(review.queue()).toHaveCount(22);
+  await expect(review.summary()).toContainText('22 chapters to read');
+  await expect(review.summary()).toContainText('back from a week away?');
+  expect(await shell.scrollsSideways()).toBe(false);
+  const last = review.queue().last().getByRole('link', { name: 'Review' });
+  await last.scrollIntoViewIfNeeded();
+  await expect(last).toBeInViewport();
 });
