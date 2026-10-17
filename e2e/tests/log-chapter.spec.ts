@@ -208,3 +208,64 @@ test('Given she has a saved draft, when she logs the chapter, then the draft is 
   await expect(log.heading()).toHaveText('Chapter 12 done!');
   expect(await log.hasSavedDraft('b-lion', 12)).toBe(false);
 });
+
+test('Given she has just logged a chapter, when she presses Undo on the toast, then the chapter is unlogged and her answers are back on the form', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await shelf.logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+  await log.answer(1, 'Edmund said sorry');
+  await log.done();
+
+  await expect(log.undoToast()).toContainText('Chapter 12 saved');
+  await log.undo();
+
+  await expect(log.heading()).toHaveText('Chapter 12');
+  await expect(log.answerBox(1)).toHaveValue('Edmund said sorry');
+  expect(readOnOf('b-lion', 12)).toBeUndefined();
+});
+
+test('Given she has moved on to her shelf, when she presses Undo on the toast, then she is taken back to the chapter with her answers', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await shelf.logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+  await log.answer(1, 'Edmund said sorry');
+  await log.done();
+  await log.backToShelf();
+
+  await log.undo();
+
+  await expect(log.heading()).toHaveText('Chapter 12');
+  await expect(log.answerBox(1)).toHaveValue('Edmund said sorry');
+});
+
+test('Given the Undo toast is showing, then it lasts 10 seconds and waits while she hovers over it', async ({ page }) => {
+  const log = new LogChapterPage(page);
+  await log.useFakeTimers();
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  await log.answer(1, 'Edmund said sorry');
+  await log.done();
+  await expect(log.undoToast()).toBeVisible();
+
+  await log.letTimePass(9000);
+  await expect(log.undoToast()).toBeVisible();
+
+  await log.hoverToast();
+  await log.letTimePass(20000);
+  await expect(log.undoToast()).toBeVisible();
+
+  await log.moveAwayFromToast();
+  await log.letTimePass(10000);
+  await expect(log.undoToast()).toBeHidden();
+});
+
+test('Given the Undo window has passed, when an undo is sent, then the API refuses it and the answers stay final', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  const response = await log.undoViaApi('b-lion-c11');
+
+  expect([response.status(), (await response.json()).type]).toEqual([409, 'undo-expired']);
+});

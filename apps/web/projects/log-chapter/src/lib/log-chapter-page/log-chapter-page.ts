@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
-import { DraftStore } from 'core';
+import { DraftStore, ToastService } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -9,6 +9,9 @@ const addDays = (isoDay: string, days: number) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
+
+/** How long the Undo toast stays up; the API gives the same window. */
+const UNDO_TOAST_MS = 10000;
 
 /** How long she pauses before a draft is saved. */
 const DRAFT_DELAY_MS = 3000;
@@ -23,6 +26,8 @@ const DRAFT_DELAY_MS = 3000;
 export class LogChapterPage {
   private readonly api = inject(ChaptersApi);
   private readonly drafts = inject(DraftStore);
+  private readonly toasts = inject(ToastService);
+  private readonly router = inject(Router);
 
   readonly id = input.required<string>();
   readonly n = input.required<string>();
@@ -79,6 +84,26 @@ export class LogChapterPage {
     this.dayInFuture.set(false);
   }
 
+  private offerUndo(form: ChapterForm, result: LogResult, readOn: string) {
+    const left = result.chapterCount - result.chaptersLogged;
+    const draftKey = this.draftKey();
+    const answers = this.answers();
+    this.toasts.show({
+      title: `Chapter ${form.chapterNumber} saved`,
+      text: `${left} to go. ${form.grownUpName} will read your answers soon.`,
+      durationMs: UNDO_TOAST_MS,
+      action: {
+        label: 'Undo',
+        run: async () => {
+          await this.api.undo(result.chapterLogId);
+          this.drafts.save(draftKey, { readOn, answers, savedAt: new Date().toISOString() });
+          this.result.set(null);
+          await this.router.navigate(['/books', form.book.id, 'chapters', form.chapterNumber, 'log']);
+        },
+      },
+    });
+  }
+
   private restoreDraft(form: ChapterForm) {
     const draft = this.drafts.load(this.draftKey());
     if (!draft) return;
@@ -125,6 +150,7 @@ export class LogChapterPage {
       });
       this.drafts.clear(this.draftKey());
       this.result.set(result);
+      this.offerUndo(form, result, readOn);
     } finally {
       this.submitting.set(false);
     }

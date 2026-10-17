@@ -113,3 +113,12 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
     bookFinished: count === book.chapter_count,
   };
 }
+
+export function undoLog(db: DatabaseSync, householdId: string, chapterLogId: string) {
+  const log = db
+    .prepare('SELECT c.id, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId) as { id: string; undo_until: string } | undefined;
+  if (!log) throw new Problem(404, 'not-found');
+  if (log.undo_until < new Date().toISOString()) throw new Problem(409, 'undo-expired');
+  db.prepare('DELETE FROM chapter_log WHERE id = ?').run(log.id);
+}

@@ -31,6 +31,10 @@ export class ChaptersApi {
     return this.api.get<ChapterForm>(`/books/${bookId}/chapters/${n}/form`);
   }
 
+  undo(chapterLogId: string) {
+    return this.api.delete(`/chapter-logs/${chapterLogId}`);
+  }
+
   log(bookId: string, n: number, request: LogRequest) {
     return this.api.post<LogResult>(`/books/${bookId}/chapters/${n}`, request);
   }

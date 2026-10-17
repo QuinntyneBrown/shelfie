@@ -1,1 +1,13 @@
 <router-outlet />
+<div class="toast-region" role="status" aria-live="polite">
+  @for (toast of toasts.toasts(); track toast.id) {
+    <sh-toast
+      [title]="toast.title"
+      [text]="toast.text ?? null"
+      [actionLabel]="toast.action?.label ?? null"
+      [durationMs]="toast.durationMs"
+      (action)="act(toast.id, toast.action!.run)"
+      (dismissed)="toasts.dismiss(toast.id)"
+    />
+  }
+</div>

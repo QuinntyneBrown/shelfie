@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 export class ApiError extends Error {
   constructor(
@@ -24,7 +24,11 @@ export class ApiClient {
     return this.send(this.http.post<T>(`/api${path}`, body));
   }
 
-  private async send<T>(request: ReturnType<HttpClient['get']> | ReturnType<HttpClient['post']>): Promise<T> {
+  delete(path: string): Promise<void> {
+    return this.send(this.http.delete<void>(`/api${path}`));
+  }
+
+  private async send<T>(request: Observable<unknown>): Promise<T> {
     try {
       return (await firstValueFrom(request)) as T;
     } catch (e) {

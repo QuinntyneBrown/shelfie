@@ -70,6 +70,27 @@ export class LogChapterPage {
     return this.page.evaluate((key) => localStorage.getItem(key) !== null, `draft:chapter:${bookId}:${chapter}`);
   }
 
+  undoToast() {
+    return this.page.getByRole('status').filter({ hasText: 'saved' });
+  }
+
+  async undo() {
+    await this.undoToast().getByRole('button', { name: 'Undo' }).click();
+  }
+
+  async hoverToast() {
+    await this.undoToast().getByRole('button', { name: 'Undo' }).hover();
+  }
+
+  async moveAwayFromToast() {
+    await this.page.mouse.move(0, 0);
+  }
+
+  /** Asks the API to undo a log, as a client that skips the toast would. */
+  undoViaApi(chapterLogId: string) {
+    return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`);
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

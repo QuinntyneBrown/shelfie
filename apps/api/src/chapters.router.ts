@@ -1,7 +1,7 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { Problem, getForm, logChapter } from './chapters.service.ts';
+import { Problem, getForm, logChapter, undoLog } from './chapters.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 const params = z.object({ id: z.string(), n: z.coerce.number().int().min(1) });
@@ -15,24 +15,37 @@ const logChapterSchema = z.object({
     }),
 });
 
+function replying(res: Response, run: () => unknown, status = 200) {
+  try {
+    const body = run();
+    if (body === undefined) res.status(204).end();
+    else res.status(status).json(body);
+  } catch (e) {
+    if (!(e instanceof Problem)) throw e;
+    res.status(e.status).json({ type: e.type, ...e.extra });
+  }
+}
+
+export function chapterLogsRouter(db: DatabaseSync) {
+  const router = Router();
+  router.use(requireSession(db));
+  router.delete('/:id', (req, res) => {
+    const householdId = (res.locals['session'] as RequestSession).householdId;
+    replying(res, () => undoLog(db, householdId, String(req.params['id'])));
+  });
+  return router;
+}
+
 export function chaptersRouter(db: DatabaseSync) {
   const router = Router();
   router.use(requireSession(db));
 
-  const reply = (res: Response, run: () => unknown, status = 200) => {
-    try {
-      res.status(status).json(run());
-    } catch (e) {
-      if (!(e instanceof Problem)) throw e;
-      res.status(e.status).json({ type: e.type, ...e.extra });
-    }
-  };
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
 
   router.get('/:id/chapters/:n/form', (req, res) => {
     const p = params.safeParse(req.params);
     if (!p.success) return res.status(404).json({ type: 'not-found' });
-    reply(res, () => getForm(db, householdOf(res), p.data.id, p.data.n));
+    replying(res, () => getForm(db, householdOf(res), p.data.id, p.data.n));
   });
 
   router.post('/:id/chapters/:n', (req, res) => {
@@ -42,7 +55,7 @@ export function chaptersRouter(db: DatabaseSync) {
     if (!body.success) {
       return res.status(400).json({ type: 'validation', errors: body.error.issues.map((i) => ({ path: ['answers', ...i.path].join('.'), message: i.message })) });
     }
-    reply(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
+    replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
   });
 
   return router;
