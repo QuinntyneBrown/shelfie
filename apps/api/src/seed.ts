@@ -19,6 +19,17 @@ const profile = db.prepare(
 profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', null, null, hashSecret(SEED.pin));
 profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', SEED.grownUpEmail, hashSecret(SEED.grownUpPassword), null);
 
+// A second family, so tests can check that one household never sees another's data.
+db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES ('h2', 'UTC')").run();
+profile.run('p-other-reader', 'h2', 'reader', 'Zed', 'sky', null, null, hashSecret('4321'));
+profile.run('p-other-dad', 'h2', 'grown_up', 'Zed’s dad', 'rose', 'other@example.com', hashSecret('another-pass-99'), null);
+db.prepare(
+  "INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at, finished_at) VALUES ('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'grown_up', '2026-10-01T09:00:00.000Z', NULL)",
+).run();
+db.prepare(
+  "INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z')",
+).run();
+
 if (!process.argv.includes('--no-books')) {
   const book = db.prepare(
     'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at, finished_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
