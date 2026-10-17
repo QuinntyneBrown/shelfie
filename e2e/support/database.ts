@@ -106,3 +106,16 @@ export function unreviewEverything() {
     db.close();
   }
 }
+
+/** When a chapter reached the server, as stored; undefined when it has not. */
+export function loggedAtOf(bookId: string, chapter: number): string | undefined {
+  const db = new DatabaseSync('e2e.db', { readOnly: true });
+  try {
+    const row = db.prepare('SELECT logged_at FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(bookId, chapter) as
+      | { logged_at: string }
+      | undefined;
+    return row?.logged_at;
+  } finally {
+    db.close();
+  }
+}
