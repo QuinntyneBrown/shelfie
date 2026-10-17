@@ -66,3 +66,36 @@ test('Given a long title and author, when Nia keeps typing, then each stops at 1
   expect((await add.titleField().inputValue()).length).toBe(120);
   expect((await add.authorField().inputValue()).length).toBe(120);
 });
+
+test('Given the server cannot be reached, when Nia submits, then she is told the book was not saved, keeps what she typed and can try again', async ({ page }) => {
+  await signInAsNia(page);
+  const add = new AddBookPage(page);
+  await add.open();
+  await add.fill({ title: 'The Hobbit', chapters: 19 });
+  await add.breakSaving();
+  await add.submit();
+
+  await expect(add.failure()).toBeVisible();
+  await expect(add.titleField()).toHaveValue('The Hobbit');
+  await add.repairSaving();
+  await add.tryAgain();
+
+  await expect(page).toHaveURL(/\/shelf$/);
+  await expect(new ShelfPage(page).book('Up next', 'The Hobbit')).toBeVisible();
+});
+
+test('Given Dad adds a book, when Nia opens her shelf, then it is under Up next', async ({ page, browser, baseURL }) => {
+  await signInAsDad(page);
+  const add = new AddBookPage(page);
+  await add.open();
+  await add.fill({ title: 'The Hobbit', author: 'J. R. R. Tolkien', chapters: 19 });
+  await add.submit();
+  await expect(page).toHaveURL(/\/shelf$/);
+
+  const herDevice = await browser.newContext({ baseURL });
+  const nia = await herDevice.newPage();
+  await signInAsNia(nia);
+
+  await expect(new ShelfPage(nia).book('Up next', 'The Hobbit')).toBeVisible();
+  await herDevice.close();
+});

@@ -4,6 +4,15 @@
   </div>
   <div class="layout">
     <form class="stack form" (submit)="$event.preventDefault(); submit()" novalidate>
+      @if (failed()) {
+        <sh-banner
+          severity="danger"
+          title="The book wasn’t saved"
+          message="Shelfie couldn’t be reached. What you typed is still here."
+        >
+          <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
+        </sh-banner>
+      }
       @if (problems().length) {
         <sh-banner
           severity="danger"

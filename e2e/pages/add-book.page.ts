@@ -55,6 +55,22 @@ export class AddBookPage {
     await this.authorField().pressSequentially(text);
   }
 
+  async breakSaving() {
+    await this.page.route('**/api/books', (route) => (route.request().method() === 'POST' ? route.abort() : route.continue()));
+  }
+
+  async repairSaving() {
+    await this.page.unroute('**/api/books');
+  }
+
+  failure() {
+    return this.page.getByRole('alert').filter({ hasText: 'The book wasn’t saved' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
   preview() {
     return this.page.getByRole('complementary', { name: 'Cover preview' });
   }

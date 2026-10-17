@@ -9,7 +9,7 @@ import {
   StickerPicker,
   TextField,
 } from 'components';
-import { ToastService } from 'core';
+import { ApiError, ToastService } from 'core';
 import { ShelfApi } from '../shelf-api';
 
 @Component({
@@ -31,6 +31,7 @@ export class AddBookPage {
   protected readonly color = signal('sage');
   protected readonly sticker = signal('📚');
   protected readonly saving = signal(false);
+  protected readonly failed = signal(false);
   protected readonly titleError = signal<string | null>(null);
   protected readonly chaptersError = signal<string | null>(null);
   protected readonly problems = computed(() => [
@@ -57,6 +58,7 @@ export class AddBookPage {
     );
     if (this.problems().length) return;
     this.saving.set(true);
+    this.failed.set(false);
     try {
       const title = this.title().trim();
       await this.api.addBook({
@@ -68,6 +70,9 @@ export class AddBookPage {
       });
       this.toasts.show({ title: `${title} is on your shelf under Up next.` });
       await this.router.navigateByUrl('/shelf');
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.failed.set(true);
     } finally {
       this.saving.set(false);
     }
