@@ -70,6 +70,16 @@ for (const { name, width, min, max } of viewports) {
   });
 }
 
+test('Given a desktop screen with four columns, when Nia opens her shelf, then every card keeps its action inside it', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.book('Up next', 'Because of Winn-Dixie')).toBeVisible();
+  expect(await shelf.cardOverflows('Up next', 'Because of Winn-Dixie')).toBe(false);
+  expect(await shelf.cardOverflows('On the go', 'The Lion, the Witch and the Wardrobe')).toBe(false);
+});
+
 test('Given a book with 80 chapters, when Nia opens her shelf on a phone, then its progress fits inside the card', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await signInAsNia(page);

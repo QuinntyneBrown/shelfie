@@ -28,3 +28,9 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Four columns make narrow cards; a long action label wraps instead of spilling out. */
+.book-grid .btn {
+  max-width: 100%;
+  white-space: normal;
+}
