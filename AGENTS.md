@@ -22,16 +22,6 @@ Shelfie is a full-stack, responsive web app that helps my daughter with her read
 - **Backend:** Node.js
 - **Target browser:** Bleeding-edge Chrome only. Use the latest browser features freely, including WebGPU. Don't add polyfills or legacy-browser fallbacks.
 
-## 45-Day Build Budget (CRITICAL, NON-NEGOTIABLE)
-
-This is a hard, absolute limit. The entire app, production ready, shall NOT take more than **45 days** in total to build.
-
-*   **Measure it with the estimating guideline:** Effort is estimated in developer-days using the `estimating-designs` skill (`.agents/skills/estimating-designs/SKILL.md`). The "Overall effort" in `docs/estimates/README.md` must never exceed 45 days.
-*   **Check before adding scope:** Before adding or expanding any feature or design, estimate it with that guideline and confirm the new overall total stays at or under 45 days.
-*   **Over budget means cut, not stretch:** If a change would push the total past 45 days, STOP. Do not proceed. Cut or simplify scope until it fits, or present the trade-offs to the user and wait for explicit confirmation.
-*   **The budget guides the mocks:** Mocks define what gets built, so they are scoped by this budget first. Only mock the screens, dialogs, notifications and states that fit within 45 days in total. Estimate the mock set against the budget before writing it, and drop or simplify screens and states rather than mocking something that cannot be built in time. Never mock a feature that has been cut.
-*   **No exceptions:** Do not argue that an addition is "small", "worth it", or "almost done". The budget is not negotiable by the agent.
-
 ## Components library is mandatory (CRITICAL)
 
 - The `shelfie` application and its feature libraries MUST be built from the `components` library.
