@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Operate the service
 
 Person(grownUp, "Grown-up", "Operates the service")
-System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer (<TO SUPPLY>)")
+System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer; deferred with hosting")
 System_Ext(ci, "GitHub Actions", "lint, unit, api, build, e2e, lighthouse jobs")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Lazy route per feature library; initial bundle at most 300 kB gzipped; server-error page shows the request id")

@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Components — Operate the service
 
 Container(web, "Shelfie web", "Angular", "ApiClient maps errors to ApiError{status, problem}; server-error page shows problem.requestId")
-System_Ext(scheduler, "Nightly scheduler", "<TO SUPPLY>")
+System_Ext(scheduler, "Nightly scheduler", "deferred with hosting")
 Container_Boundary(api, "Shelfie API") {
   Component(context, "requestContext", "Middleware (logger.ts)", "Generates requestId SHF-XXXX; sets req.context and X-Request-Id")
   Component(logger, "logger", "pino (logger.ts)", "One line per request: requestId, method, route, status, durationMs")

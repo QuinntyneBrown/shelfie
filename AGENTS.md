@@ -89,3 +89,4 @@ shelfie/
 *   **Components project:** every UI component lives in the `components` library. Feature libraries and the application compose it and do not define reusable components of their own.
 *   **Dependencies point one way:** `shelfie` (application) → feature libraries → `components` and `core`. `components` depends on no other project.
 *   **The application is thin:** it holds the shell, routes and bootstrapping only. Features live in libraries.
+*   **No single-file components (MANDATORY):** every component, in every project, splits its class, markup and styling into separate files in its own folder: `<name>.ts`, `<name>.html` and `<name>.css`. Use `templateUrl` and `styleUrl`; never inline `template` or `styles`. Where a component has more than one concern (for example a view-model, or state kept apart from presentation), give each its own file too. Do not collapse a component into one file to save time.

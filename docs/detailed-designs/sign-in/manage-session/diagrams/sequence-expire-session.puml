@@ -40,7 +40,7 @@ alt no cookie or no row
   mw --> client : 401 problem type "no-session" (Cache-Control: no-store)
   client -> sessionSvc : clear()
   sessionSvc --> person : Protected routes redirect to /sign-in
-else expires_at in the past (absolute maximum age TO SUPPLY)
+else expires_at in the past (30 days without activity, L2-003)
   mw -> db : DELETE session WHERE id = ?
   db --> mw : ok
   mw --> client : 401 problem type "session-expired" + expired Set-Cookie

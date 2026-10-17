@@ -25,7 +25,7 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   participant "stdout log (pino)" as log
 end box
 
-scheduler -> job : node dist/backup.js (time of night TO SUPPLY)
+scheduler -> job : node dist/backup.js (schedule deferred with hosting)
 job -> dbmod : open(livePath, {readonly: true})
 dbmod --> job : connection
 job -> job : target = backupDir/shelfie-YYYY-MM-DD.sqlite
@@ -35,7 +35,7 @@ alt copy succeeds
   job -> dir : open target read-only
   job -> dir : PRAGMA integrity_check
   dir --> job : ok
-  job -> dir : delete copies older than retention (TO SUPPLY; 30 days assumed)
+  job -> dir : delete copies older than retention (30 days)
   dir --> job : pruned count
   job -> log : {event: "backup", path, bytes, verified: true, pruned}
   job --> scheduler : exit 0
@@ -46,7 +46,7 @@ else copy or integrity check fails
   job --> scheduler : exit 1 (previous backups untouched)
 end
 note over job
-  Restore (docs/runbook.md, TO SUPPLY): stop the API,
+  Restore (docs/runbook.md): stop the API,
   move the live file and its -wal/-shm aside, copy the dated
   backup to the live path, start the API, check GET /api/health
 end note

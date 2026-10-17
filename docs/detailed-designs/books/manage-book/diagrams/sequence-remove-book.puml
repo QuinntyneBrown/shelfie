@@ -60,7 +60,7 @@ else Remove book and answers
     router --> client : 204
     client --> dialog : void
     dialog -> page : closed
-    page -> toast : success(copy TO SUPPLY) (L2-010)
+    page -> toast : success("Matilda removed from the shelf") (L2-010)
     page --> grownUp : Navigate to /books; book gone from list and shelf (L2-010)
   end
 end
