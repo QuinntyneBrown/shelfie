@@ -1,7 +1,19 @@
 import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
+import { z } from 'zod';
+import { Problem } from './problem.ts';
 import { requireRole } from './authz.ts';
-import { overview } from './review.service.ts';
+import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
+
+const feedbackSchema = z.object({
+  sticker: z.enum(FEEDBACK_STICKERS),
+  note: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((note) => note || null),
+});
 import { requireSession, type RequestSession } from './session.ts';
 
 export function reviewRouter(db: DatabaseSync) {
@@ -10,6 +22,18 @@ export function reviewRouter(db: DatabaseSync) {
   router.get('/review', requireSession(db), requireRole('grown_up'), (_req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     res.json(overview(db, householdId));
+  });
+
+  router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('grown_up'), (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    const body = feedbackSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json({ type: 'validation' });
+    try {
+      res.json(sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
   return router;

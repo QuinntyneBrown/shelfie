@@ -3,6 +3,8 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 export interface StickerOption {
   name: string;
   emoji: string;
+  /** What the picker emits; the emoji itself when not given. */
+  value?: string;
 }
 
 /** The covers' sticker choices and cover colours, shared by the pickers and the add-book form. */
@@ -41,8 +43,10 @@ let nextGroup = 0;
 })
 export class StickerPicker {
   readonly label = input.required<string>();
-  /** The chosen sticker's emoji. */
+  readonly options = input<StickerOption[]>(STICKERS);
+  readonly error = input<string | null>(null);
+  /** The chosen sticker's value. */
   readonly value = model.required<string>();
-  protected readonly stickers = STICKERS;
+  protected readonly valueOf = (option: StickerOption) => option.value ?? option.emoji;
   protected readonly group = `sh-sticker-picker-${nextGroup++}`;
 }

@@ -1,0 +1,41 @@
+.page {
+  gap: var(--space-6);
+}
+.section-title {
+  font: var(--text-h4);
+}
+.layout {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+.answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.question {
+  display: block;
+  font: var(--text-label);
+}
+.answer {
+  white-space: pre-line;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.centred {
+  justify-content: center;
+}
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: 2fr 1fr;
+  }
+  .feedback {
+    position: sticky;
+    top: calc(var(--layout-topbar-height) + var(--space-4));
+  }
+}

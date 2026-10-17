@@ -118,18 +118,28 @@ export interface ChapterView {
   readOn: string;
   today: string;
   grownUpName: string;
+  readerName: string;
   answers: { position: number; questionText: string; text: string }[];
+  review: { sticker: string; note: string | null; reviewedAt: string; feedbackSeenAt: string | null } | null;
   nextChapterLogId: string | null;
 }
 
 export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: string): ChapterView {
   const log = db
     .prepare(
-      `SELECT c.id, c.chapter_number, c.read_on, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
+      `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
          FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?`,
     )
     .get(chapterLogId, householdId) as
-    | { id: string; chapter_number: number; read_on: string; book_id: string; title: string; cover_color: string; sticker: string; chapter_count: number }
+    | {
+        id: string;
+        chapter_number: number;
+        read_on: string;
+        reviewed_at: string | null;
+        review_sticker: string | null;
+        note: string | null;
+        feedback_seen_at: string | null;
+        book_id: string; title: string; cover_color: string; sticker: string; chapter_count: number }
     | undefined;
   if (!log) throw new Problem(404, 'not-found');
   const answers = db
@@ -139,6 +149,7 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
     | { id: string }
     | undefined;
   const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   return {
     id: log.id,
     book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
@@ -146,7 +157,11 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
     readOn: log.read_on,
     today: householdToday(db, householdId),
     grownUpName: grownUp.name,
+    readerName: reader.name,
     answers,
+    review: log.reviewed_at
+      ? { sticker: log.review_sticker!, note: log.note, reviewedAt: log.reviewed_at, feedbackSeenAt: log.feedback_seen_at }
+      : null,
     nextChapterLogId: next?.id ?? null,
   };
 }

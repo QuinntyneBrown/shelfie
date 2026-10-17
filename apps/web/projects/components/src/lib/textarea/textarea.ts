@@ -13,6 +13,7 @@ export class Textarea {
   readonly help = input<string | null>(null);
   readonly error = input<string | null>(null);
   readonly rows = input(3);
+  readonly maxlength = input<number | null>(null);
   readonly value = model('');
 
   protected readonly id = `sh-textarea-${nextId++}`;

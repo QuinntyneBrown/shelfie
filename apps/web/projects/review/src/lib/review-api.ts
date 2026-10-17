@@ -30,6 +30,27 @@ export interface ActivityItem {
   byRole: 'reader' | 'grown_up';
 }
 
+export interface ChapterLog {
+  id: string;
+  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  chapterNumber: number;
+  readOn: string;
+  today: string;
+  readerName: string;
+  answers: { position: number; questionText: string; text: string }[];
+  review: {
+    sticker: string;
+    note: string | null;
+    reviewedAt: string;
+    feedbackSeenAt: string | null;
+  } | null;
+}
+
+export interface FeedbackResult {
+  next: QueueItem | null;
+  queueCount: number;
+}
+
 export interface ReviewOverview {
   activity: ActivityItem[];
   readerName: string;
@@ -42,6 +63,14 @@ export interface ReviewOverview {
 @Injectable({ providedIn: 'root' })
 export class ReviewApi {
   private readonly api = inject(ApiClient);
+
+  chapterLog(id: string) {
+    return this.api.get<ChapterLog>(`/chapter-logs/${id}`);
+  }
+
+  sendFeedback(id: string, body: { sticker: string; note: string }) {
+    return this.api.post<FeedbackResult>(`/chapter-logs/${id}/feedback`, body);
+  }
 
   load() {
     return this.api.get<ReviewOverview>('/review');

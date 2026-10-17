@@ -1,0 +1,124 @@
+<div class="container stack page">
+  @if (chapter(); as chapter) {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/review">Review</a></li>
+        <li aria-current="page">Chapter {{ chapter.chapterNumber }} · {{ chapter.book.title }}</li>
+      </ol>
+    </nav>
+    @if (sent(); as result) {
+      <section class="celebrate card" aria-labelledby="sent-title">
+        <span class="sticker sticker--xl" aria-hidden="true">{{ sentSticker()?.emoji }}</span>
+        <h2 id="sent-title">Sent to {{ chapter.readerName }}</h2>
+        <p class="text-muted">
+          She’ll see your {{ sentSticker()?.name }}{{ note() ? ' and note' : '' }} the next time she
+          opens Shelfie.
+        </p>
+        @if (result.next; as next) {
+          <p>
+            {{
+              result.queueCount === 1
+                ? 'One more chapter is'
+                : result.queueCount + ' more chapters are'
+            }}
+            waiting.
+          </p>
+          <div class="cluster centred">
+            <a class="btn btn--primary" [routerLink]="['/review/chapters', next.chapterLogId]"
+              >Review Chapter {{ next.chapterNumber }}</a
+            >
+            <a class="btn" routerLink="/review">Back to Review</a>
+          </div>
+        } @else {
+          <a class="btn btn--primary" routerLink="/review">Back to Review</a>
+        }
+      </section>
+    } @else {
+      <div class="book-card">
+        <sh-cover [color]="chapter.book.coverColor" [sticker]="chapter.book.sticker" />
+        <div class="book-card__body">
+          <h1>Chapter {{ chapter.chapterNumber }}</h1>
+          <span class="book-card__author">
+            {{ chapter.book.title }} · {{ chapter.readerName }} read it
+            {{
+              chapter.readOn === chapter.today
+                ? 'today'
+                : 'on ' + (chapter.readOn | date: 'EEE d MMM' : 'UTC')
+            }}
+            · {{ chapter.chapterNumber }} of {{ chapter.book.chapterCount }}
+          </span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <section class="card stack" aria-labelledby="answers-title">
+          <h2 id="answers-title" class="section-title">{{ chapter.readerName }}’s answers</h2>
+          <ol class="answers">
+            @for (answer of chapter.answers; track answer.position) {
+              <li>
+                <span class="question"
+                  ><span class="qa__num">{{ answer.position }}.</span>
+                  {{ answer.questionText }}</span
+                >
+                @if (answer.text) {
+                  <p class="answer">{{ answer.text }}</p>
+                }
+              </li>
+            }
+          </ol>
+        </section>
+
+        @if (chapter.review; as review) {
+          <section class="card stack feedback" aria-labelledby="given-title">
+            <h2 id="given-title" class="section-title">
+              <span aria-hidden="true">{{ givenSticker()?.emoji }}</span> You gave a
+              {{ givenSticker()?.name }}
+            </h2>
+            @if (review.note) {
+              <p>{{ review.note }}</p>
+            }
+            <p class="text-muted">
+              {{ review.reviewedAt | date: 'EEE d MMM, h:mm a' }}
+              @if (review.feedbackSeenAt) {
+                · {{ chapter.readerName }} saw it {{ review.feedbackSeenAt | date: 'EEE d MMM' }}
+              }
+            </p>
+          </section>
+        } @else {
+          <form
+            class="card stack feedback"
+            aria-labelledby="feedback-title"
+            (submit)="$event.preventDefault(); send()"
+            novalidate
+          >
+            <h2 id="feedback-title" class="section-title">Your feedback</h2>
+            @if (stickerMissing()) {
+              <sh-banner severity="danger" title="One more thing">
+                <ul class="summary-list">
+                  <li>Pick a sticker</li>
+                </ul>
+              </sh-banner>
+            }
+            <sh-sticker-picker
+              label="Pick a sticker"
+              [options]="stickers"
+              [error]="
+                stickerMissing()
+                  ? 'Pick one so ' + chapter.readerName + ' knows you read it.'
+                  : null
+              "
+              [(value)]="sticker"
+            />
+            <sh-textarea
+              [label]="'Say something to ' + chapter.readerName + ' (optional)'"
+              help="She reads this on her own, so keep it short and warm."
+              [maxlength]="300"
+              [(value)]="note"
+            />
+            <sh-button [busy]="sending()">Send to {{ chapter.readerName }}</sh-button>
+          </form>
+        }
+      </div>
+    }
+  }
+</div>

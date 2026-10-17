@@ -35,6 +35,11 @@ export const routes: Routes = [
   },
   { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
+    path: 'review/chapters/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('review').then((m) => m.ReviewChapterPage),
+  },
+  {
     path: 'review',
     canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('review').then((m) => m.ReviewPage),

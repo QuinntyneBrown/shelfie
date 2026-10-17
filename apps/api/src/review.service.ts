@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { Problem } from './problem.ts';
 import { streakFor } from './streak.ts';
 
 export interface QueueItem {
@@ -96,4 +97,20 @@ export function overview(db: DatabaseSync, householdId: string, now = new Date()
     queue: pendingChapterLogs(db, householdId),
     finishedUnrewarded: finished.map(({ finished_at, ...book }) => ({ ...book, finishedOn: dayOf(new Date(finished_at)) })),
   };
+}
+
+export const FEEDBACK_STICKERS = ['star', 'wise-owl', 'rocket', 'dragon', 'cookie', 'bright-idea'] as const;
+
+/** Records Dad's sticker and note; a chapter is reviewed once, even if two sends race. */
+export function sendFeedback(db: DatabaseSync, householdId: string, chapterLogId: string, sticker: string, note: string | null) {
+  const log = db
+    .prepare('SELECT c.id, c.reviewed_at FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId) as { id: string; reviewed_at: string | null } | undefined;
+  if (!log) throw new Problem(404, 'not-found');
+  const changed = db
+    .prepare('UPDATE chapter_log SET reviewed_at = ?, sticker = ?, note = ? WHERE id = ? AND reviewed_at IS NULL')
+    .run(new Date().toISOString(), sticker, note, chapterLogId).changes;
+  if (changed === 0) throw new Problem(409, 'already-reviewed');
+  const queue = pendingChapterLogs(db, householdId);
+  return { next: queue[0] ?? null, queueCount: queue.length };
 }
