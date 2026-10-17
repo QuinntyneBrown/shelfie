@@ -7,7 +7,7 @@
     "e2e"
   ],
   "engines": {
-    "node": "22"
+    "node": "24"
   },
   "scripts": {
     "dev": "concurrently -n api,web -c blue,red \"npm start -w apps/api\" \"npm start -w apps/web\"",

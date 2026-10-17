@@ -18,7 +18,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | `.github/workflows/ci.yml`: lint, unit, api, build, e2e and lighthouse jobs; `lighthouserc.json` with LCP and script-weight assertions | 4 |
 | API tests: health 200 and 503, request line fields, 500 body carries request id and no stack, restart test for a committed chapter | 2 |
 | `infra/main.bicep`: VM, network, static IP, storage account with `releases` and `backups` containers, managed identity role | 4 |
-| `infra/cloud-init.yaml`: Node 22, Caddy, `shelfie` user, `/etc/shelfie/env`, swap, unattended upgrades | 3 |
+| `infra/cloud-init.yaml`: Node 24, Caddy, `shelfie` user, `/etc/shelfie/env`, swap, unattended upgrades | 3 |
 | `infra/host/`: `deploy.sh` with health check and rollback, `fetch-release.sh`, `backup.sh` with blob upload, Caddyfile, systemd unit, cron | 4 |
 | `.github/workflows/deploy.yml`: reuse CI, release tarball, OIDC sign-in, blob upload, run-command, health check | 3 |
 | `infra/bootstrap.sh`: resource group, Bicep deploy, GitHub identity with federated credential, roles, GitHub environment | 1.5 |
