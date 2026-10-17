@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
+import { DraftStore } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -8,6 +9,9 @@ const addDays = (isoDay: string, days: number) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
+
+/** How long she pauses before a draft is saved. */
+const DRAFT_DELAY_MS = 3000;
 
 @Component({
   selector: 'sh-log-chapter-page',
@@ -18,6 +22,7 @@ const addDays = (isoDay: string, days: number) => {
 })
 export class LogChapterPage {
   private readonly api = inject(ChaptersApi);
+  private readonly drafts = inject(DraftStore);
 
   readonly id = input.required<string>();
   readonly n = input.required<string>();
@@ -36,6 +41,7 @@ export class LogChapterPage {
   protected readonly otherDay = signal('');
   protected readonly dayInFuture = signal(false);
   private readonly fields = viewChildren(QuestionField);
+  private readonly draftKey = computed(() => `draft:chapter:${this.id()}:${this.n()}`);
   protected readonly chaptersToGo = computed(() => {
     const result = this.result();
     return result ? result.chapterCount - result.chaptersLogged : 0;
@@ -51,15 +57,37 @@ export class LogChapterPage {
       this.otherDay.set('');
       this.dayInFuture.set(false);
       this.api.form(id, n).then((form) => {
-        this.form.set(form);
         this.answers.set(form.questions.map(() => ''));
+        this.restoreDraft(form);
+        this.form.set(form);
       });
+    });
+
+    effect((onCleanup) => {
+      const form = this.form();
+      if (!form || this.result()) return;
+      const draft = { readOn: this.readOn(form), answers: this.answers(), savedAt: new Date().toISOString() };
+      const untouched = draft.readOn === form.today && draft.answers.every((a) => !a);
+      if (untouched) return;
+      const id = setTimeout(() => this.drafts.save(this.draftKey(), draft), DRAFT_DELAY_MS);
+      onCleanup(() => clearTimeout(id));
     });
   }
 
   protected pickDay(day: string) {
     this.day.set(day);
     this.dayInFuture.set(false);
+  }
+
+  private restoreDraft(form: ChapterForm) {
+    const draft = this.drafts.load(this.draftKey());
+    if (!draft) return;
+    this.answers.set(form.questions.map((_, i) => draft.answers[i] ?? ''));
+    if (draft.readOn === addDays(form.today, -1)) this.day.set('yesterday');
+    else if (draft.readOn !== form.today) {
+      this.day.set('other');
+      this.otherDay.set(draft.readOn);
+    }
   }
 
   private readOn(form: ChapterForm) {
@@ -91,12 +119,12 @@ export class LogChapterPage {
     }
     this.submitting.set(true);
     try {
-      this.result.set(
-        await this.api.log(form.book.id, form.chapterNumber, {
-          readOn,
-          answers: form.questions.map((q, i) => ({ position: q.position, text: this.answers()[i] })),
-        }),
-      );
+      const result = await this.api.log(form.book.id, form.chapterNumber, {
+        readOn,
+        answers: form.questions.map((q, i) => ({ position: q.position, text: this.answers()[i] })),
+      });
+      this.drafts.clear(this.draftKey());
+      this.result.set(result);
     } finally {
       this.submitting.set(false);
     }

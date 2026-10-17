@@ -175,3 +175,36 @@ test('Given a chapter is already logged, when its form is asked for, then the AP
   expect(response.status()).toBe(409);
   expect(await response.json()).toMatchObject({ type: 'chapter-already-logged', chapterLogId: 'b-lion-c11' });
 });
+
+test('Given she has started writing, when she comes back to the same chapter on this device, then her answers and day are restored', async ({ page }) => {
+  const log = new LogChapterPage(page);
+  await log.useFakeTimers();
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+
+  await log.chooseDay('Yesterday');
+  await log.answer(1, 'Edmund said sorry');
+  await log.answer(3, 'Aslan will help');
+  await log.letTimePass(3000);
+  await log.reload();
+
+  await expect(log.answerBox(1)).toHaveValue('Edmund said sorry');
+  await expect(log.answerBox(2)).toHaveValue('');
+  await expect(log.answerBox(3)).toHaveValue('Aslan will help');
+  await expect(log.dayChosen('Yesterday')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('Given she has a saved draft, when she logs the chapter, then the draft is removed', async ({ page }) => {
+  const log = new LogChapterPage(page);
+  await log.useFakeTimers();
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+
+  await log.answer(1, 'Edmund said sorry');
+  await log.letTimePass(3000);
+  expect(await log.hasSavedDraft('b-lion', 12)).toBe(true);
+  await log.done();
+
+  await expect(log.heading()).toHaveText('Chapter 12 done!');
+  expect(await log.hasSavedDraft('b-lion', 12)).toBe(false);
+});

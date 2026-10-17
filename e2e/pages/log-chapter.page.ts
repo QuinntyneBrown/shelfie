@@ -48,6 +48,28 @@ export class LogChapterPage {
     return this.page.request.get(`/api/books/${bookId}/chapters/${chapter}/form`);
   }
 
+  async useFakeTimers() {
+    await this.page.clock.install();
+  }
+
+  async letTimePass(milliseconds: number) {
+    // The first tick lets the page react to what she typed; the second is the pause itself.
+    await this.page.clock.fastForward(50);
+    await this.page.clock.fastForward(milliseconds);
+  }
+
+  async reload() {
+    await this.page.reload();
+  }
+
+  dayChosen(day: 'Today' | 'Yesterday' | 'Another day') {
+    return this.page.getByRole('button', { name: day });
+  }
+
+  async hasSavedDraft(bookId: string, chapter: number) {
+    return this.page.evaluate((key) => localStorage.getItem(key) !== null, `draft:chapter:${bookId}:${chapter}`);
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }
