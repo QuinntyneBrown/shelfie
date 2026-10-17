@@ -1,5 +1,6 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
+import { sendMail } from './mail.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 import { SESSION_DAYS } from './session.ts';
 
@@ -96,4 +97,18 @@ export function signInWithPin(db: DatabaseSync, householdId: string, profileId: 
   }
   db.prepare('UPDATE profile SET pin_failed_count = 0 WHERE id = ?').run(profile.id);
   return { session: createSession(db, profile) };
+}
+
+const RESET_HOURS = 1;
+const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
+
+/** Mails a reset link when the address belongs to a grown-up; says nothing either way. */
+export async function requestPasswordReset(db: DatabaseSync, email: string) {
+  const profile = db.prepare("SELECT id FROM profile WHERE email = ? AND role = 'grown_up'").get(email) as { id: string } | undefined;
+  if (!profile) return;
+  const token = randomBytes(32).toString('base64url');
+  const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
+  db.prepare('INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES (?, ?, ?)').run(sha256(token), profile.id, expires);
+  const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  await sendMail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
 }

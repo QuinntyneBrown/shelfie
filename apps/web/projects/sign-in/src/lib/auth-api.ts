@@ -18,6 +18,10 @@ export class AuthApi {
     return this.api.get<ProfileSummary[]>('/auth/profiles');
   }
 
+  forgotPassword(email: string) {
+    return this.api.post<void>('/auth/forgot-password', { email });
+  }
+
   signInWithPassword(email: string, password: string) {
     return this.api.post<Session>('/auth/password', { email, password });
   }

@@ -91,6 +91,10 @@ export class SignInPage {
     return this.page.getByText(/Signing in as/);
   }
 
+  async chooseForgotPassword() {
+    await this.page.getByRole('link', { name: 'Forgot your password?' }).click();
+  }
+
   async typePasswordAndSignIn(password: string) {
     await this.passwordField().fill(password);
     await this.signInButton().click();

@@ -59,3 +59,9 @@ CREATE TABLE IF NOT EXISTS device (
   household_id TEXT NOT NULL REFERENCES household(id),
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS password_reset (
+  token_hash TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profile(id),
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);

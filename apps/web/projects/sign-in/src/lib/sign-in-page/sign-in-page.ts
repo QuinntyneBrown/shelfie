@@ -8,14 +8,14 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Button, PinKeypad, ProfileCard, TextField } from 'components';
 import { ApiError, SessionService, ThemeService } from 'core';
 import { AuthApi, ProfileSummary } from '../auth-api';
 
 @Component({
   selector: 'sh-sign-in-page',
-  imports: [Button, PinKeypad, ProfileCard, TextField],
+  imports: [Button, PinKeypad, ProfileCard, RouterLink, TextField],
   templateUrl: './sign-in-page.html',
   styleUrl: './sign-in-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

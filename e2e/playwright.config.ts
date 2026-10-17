@@ -8,7 +8,13 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: 'rm -f e2e.db* && SHELFIE_DB=e2e.db node ../apps/api/src/seed.ts && SHELFIE_DB=e2e.db node ../apps/api/src/main.ts',
+      command: 'node support/mail-sink.mjs',
+      url: 'http://localhost:8025/messages',
+      reuseExistingServer: false,
+    },
+    {
+      command:
+        'rm -f e2e.db* && SHELFIE_DB=e2e.db node ../apps/api/src/seed.ts && SMTP_URL=smtp://localhost:1025 MAIL_FROM=shelfie@example.com APP_URL=http://localhost:4200 SHELFIE_DB=e2e.db node ../apps/api/src/main.ts',
       url: 'http://localhost:3000/api/health',
       reuseExistingServer: false,
     },

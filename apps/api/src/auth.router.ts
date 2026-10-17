@@ -3,9 +3,11 @@ import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { DEVICE_COOKIE, deviceHousehold, readCookie, rememberDevice } from './device.ts';
 import { requireSession, type RequestSession } from './session.ts';
-import { listProfiles, signInWithPassword, signInWithPin } from './auth.service.ts';
+import { listProfiles, requestPasswordReset, signInWithPassword, signInWithPin } from './auth.service.ts';
 
 const pinSignInSchema = z.object({ profileId: z.string(), pin: z.string().regex(/^[0-9]{4}$/) });
+
+const forgotPasswordSchema = z.object({ email: z.email() });
 
 const passwordSignInSchema = z.object({ email: z.email(), password: z.string().min(1) });
 
@@ -44,6 +46,13 @@ export function authRouter(db: DatabaseSync) {
     const { id, ...summary } = result.session;
     res.cookie('shelfie_session', id, SESSION_COOKIE);
     res.json(summary);
+  });
+
+  router.post('/forgot-password', async (req, res) => {
+    const body = forgotPasswordSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json({ type: 'validation' });
+    await requestPasswordReset(db, body.data.email);
+    res.status(202).end();
   });
 
   router.post('/password', (req, res) => {
