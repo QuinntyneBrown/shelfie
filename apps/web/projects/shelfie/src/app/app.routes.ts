@@ -16,6 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'books/:id/chapters/:n/log',
+    canActivate: [authGuard],
     loadComponent: () => import('log-chapter').then((m) => m.LogChapterPage),
   },
 ];
