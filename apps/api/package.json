@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src/main.ts",
     "seed": "node src/seed.ts",
-    "test": "node --test \"src/**/*.test.ts\""
+    "test": "node --test \"src/**/*.test.ts\"",
+    "backup": "node src/backup.ts"
   },
   "dependencies": {
     "express": "^5.3.0",
