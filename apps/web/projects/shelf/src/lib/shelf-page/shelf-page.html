@@ -2,14 +2,31 @@
   <div class="page-header">
     <h1>Hi {{ session.current()?.name }}</h1>
   </div>
-  @if (isEmpty()) {
+  @if (failed()) {
+    <sh-empty-state tone="error" title="Your shelf didn’t load" text="Shelfie couldn’t reach the server. Your books and answers are safe; try again in a moment.">
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-empty-state>
+  } @else if (!shelf()) {
+    <section class="section" aria-busy="true" aria-label="Loading your shelf">
+      <sh-skeleton variant="title" />
+      <div class="grid grid--auto loading-grid">
+        @for (placeholder of [1, 2]; track placeholder) {
+          <div class="card book-card">
+            <sh-skeleton variant="cover" />
+            <div class="book-card__body"><sh-skeleton variant="title" /><sh-skeleton /><sh-skeleton /></div>
+          </div>
+        }
+      </div>
+    </section>
+  } @else if (isEmpty()) {
     <sh-empty-state title="Your shelf is empty" text="Ask a grown-up to add the book you’re reading right now, then you can log your first chapter." />
-  } @else if (shelf(); as shelf) {
-    @if (shelf.reading.length) {
+  } @else {
+    @let data = shelf()!;
+    @if (data.reading.length) {
       <section class="section" aria-labelledby="on-the-go">
         <h2 id="on-the-go" class="group-title">On the go</h2>
         <div class="grid grid--auto">
-          @for (book of shelf.reading; track book.id) {
+          @for (book of data.reading; track book.id) {
             <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
               <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', book.nextChapter, 'log']">Log Chapter {{ book.nextChapter }}</a>
             </sh-book-card>
@@ -17,11 +34,11 @@
         </div>
       </section>
     }
-    @if (shelf.upNext.length) {
+    @if (data.upNext.length) {
       <section class="section" aria-labelledby="up-next">
         <h2 id="up-next" class="group-title">Up next</h2>
         <div class="grid grid--auto">
-          @for (book of shelf.upNext; track book.id) {
+          @for (book of data.upNext; track book.id) {
             <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
               <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', 1, 'log']">Start with Chapter 1</a>
             </sh-book-card>
@@ -29,12 +46,12 @@
         </div>
       </section>
     }
-    @if (shelf.finished.length) {
+    @if (data.finished.length) {
       <section class="section" aria-labelledby="finished">
-        <h2 id="finished" class="group-title">Finished <span class="badge">{{ shelf.finished.length }}</span></h2>
+        <h2 id="finished" class="group-title">Finished <span class="badge">{{ data.finished.length }}</span></h2>
         <ul class="list finished-list">
-          @for (book of shelf.finished; track book.id) {
-            <li><sh-reward-card [title]="book.title" [coverColor]="book.coverColor" [sticker]="book.sticker" [note]="book.reward ? book.reward.text + ' · ' + (book.reward.givenOn | date: 'EEE d MMM' : 'UTC') : 'Finished ' + (book.finishedOn | date: 'EEE d MMM' : 'UTC') + ' · ' + shelf.grownUpName + ' is picking your reward'" /></li>
+          @for (book of data.finished; track book.id) {
+            <li><sh-reward-card [title]="book.title" [coverColor]="book.coverColor" [sticker]="book.sticker" [note]="book.reward ? book.reward.text + ' · ' + (book.reward.givenOn | date: 'EEE d MMM' : 'UTC') : 'Finished ' + (book.finishedOn | date: 'EEE d MMM' : 'UTC') + ' · ' + data.grownUpName + ' is picking your reward'" /></li>
           }
         </ul>
       </section>

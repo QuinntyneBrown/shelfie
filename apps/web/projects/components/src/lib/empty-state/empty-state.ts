@@ -9,4 +9,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class EmptyState {
   readonly title = input.required<string>();
   readonly text = input.required<string>();
+  readonly tone = input<'info' | 'error'>('info');
 }

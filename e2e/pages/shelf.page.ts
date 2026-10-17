@@ -27,6 +27,37 @@ export class ShelfPage {
     return this.page.getByText(/Ask a grown-up to add/);
   }
 
+  loading() {
+    return this.page.getByRole('region', { name: 'Loading your shelf' });
+  }
+
+  loadError() {
+    return this.page.getByRole('heading', { name: 'Your shelf didn’t load' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  /** Holds the shelf response until the returned function is called. */
+  async holdShelfResponse() {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route('**/api/shelf', async (route) => {
+      await gate;
+      await route.continue();
+    });
+    return release;
+  }
+
+  async breakShelfRequests() {
+    await this.page.route('**/api/shelf', (route) => route.abort());
+  }
+
+  async repairShelfRequests() {
+    await this.page.unroute('**/api/shelf');
+  }
+
   cover(group: 'On the go' | 'Up next', title: string) {
     return this.book(group, title).locator('.cover');
   }

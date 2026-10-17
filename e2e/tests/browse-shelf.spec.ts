@@ -28,6 +28,29 @@ test('Given finished books, when Nia opens her shelf, then each shows its reward
   await expect(shelf.finishedBook('Matilda')).toContainText('Finished Tue 13 Oct · Dad is picking your reward');
 });
 
+test('Given a slow server, when Nia opens her shelf, then placeholders show until the books arrive', async ({ page }) => {
+  const shelf = new ShelfPage(page);
+  const release = await shelf.holdShelfResponse();
+  await signInAsNia(page);
+
+  await expect(shelf.loading()).toBeVisible();
+  release();
+  await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+  await expect(shelf.loading()).toBeHidden();
+});
+
+test('Given the server cannot be reached, when Nia opens her shelf, then she can try again and the books load', async ({ page }) => {
+  const shelf = new ShelfPage(page);
+  await shelf.breakShelfRequests();
+  await signInAsNia(page);
+
+  await expect(shelf.loadError()).toBeVisible();
+  await shelf.repairShelfRequests();
+  await shelf.tryAgain();
+  await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+  await expect(shelf.loadError()).toBeHidden();
+});
+
 test.describe('with no books', () => {
   test.use({ shelf: 'empty' });
 
