@@ -1,6 +1,7 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
+import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
 import { Problem } from './problem.ts';
 import { addQuestion, removeQuestion, updateQuestion } from './questions.service.ts';
@@ -25,13 +26,13 @@ export function questionsRouter(db: DatabaseSync) {
 
   router.post('/books/:id/questions', requireSession(db), requireRole('grown_up'), (req, res) => {
     const body = questionSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
     replying(res, () => addQuestion(db, householdOf(res), String(req.params['id']), body.data.text), 201);
   });
 
   router.patch('/questions/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
     const body = questionSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
     replying(res, () => updateQuestion(db, householdOf(res), String(req.params['id']), body.data.text));
   });
 

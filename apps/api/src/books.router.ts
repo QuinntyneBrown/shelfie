@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
+import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
 import { createBook, deleteBook, getBook, listBooks, updateBook } from './books.service.ts';
 import { Problem } from './problem.ts';
@@ -40,7 +41,7 @@ export function booksRouter(db: DatabaseSync) {
   router.post('/', requireSession(db), requireRole('reader'), (req, res) => {
     const { householdId, role } = res.locals['session'] as RequestSession;
     const body = createBookSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
     res.status(201).json(createBook(db, householdId, role, body.data));
   });
 
@@ -62,7 +63,7 @@ export function booksRouter(db: DatabaseSync) {
   router.patch('/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = updateBookSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       res.json(updateBook(db, householdId, String(req.params['id']), body.data));
     } catch (e) {

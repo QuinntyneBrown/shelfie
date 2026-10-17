@@ -1,6 +1,7 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
+import { validationProblem } from './validation.ts';
 import { getChapter, getForm, logChapter, markFeedbackSeen, undoLog } from './chapters.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
@@ -64,7 +65,7 @@ export function chaptersRouter(db: DatabaseSync) {
     if (!p.success) return res.status(404).json({ type: 'not-found' });
     const body = logChapterSchema.safeParse(req.body);
     if (!body.success) {
-      return res.status(400).json({ type: 'validation', errors: body.error.issues.map((i) => ({ path: ['answers', ...i.path].join('.'), message: i.message })) });
+      return res.status(400).json(validationProblem(body.error));
     }
     replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
   });

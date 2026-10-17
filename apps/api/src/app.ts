@@ -12,7 +12,7 @@ import { shelfRouter } from './shelf.router.ts';
 
 export function createApp(db: DatabaseSync) {
   const app = express();
-  app.use(express.json());
+  app.use(express.json({ limit: '16kb' }));
   app.use('/api', (_req, res, next) => {
     res.set({
       'Cache-Control': 'no-store',

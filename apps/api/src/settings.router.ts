@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
+import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
@@ -29,7 +30,7 @@ export function settingsRouter(db: DatabaseSync) {
   router.patch('/', (req, res) => {
     const { householdId, profileId } = res.locals['session'] as RequestSession;
     const body = settingsPatchSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       res.json(updateSettings(db, householdId, profileId, body.data));
     } catch (e) {
