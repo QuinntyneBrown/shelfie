@@ -2,7 +2,7 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| celebrate-finished-book | 1 days | 0% |
-| log-chapter | 3 days | 0% |
-| track-streak | 1 days | 0% |
-| view-chapter-answers | 1 days | 0% |
+| celebrate-finished-book | 1 days | 100% |
+| log-chapter | 3 days | 100% |
+| track-streak | 1 days | 100% |
+| view-chapter-answers | 1 days | 100% |
