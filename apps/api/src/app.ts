@@ -24,8 +24,12 @@ export function createApp(db: DatabaseSync) {
     next();
   });
   app.get('/api/health', (_req, res) => {
-    db.prepare('SELECT 1').get();
-    res.json({ ok: true });
+    try {
+      db.prepare('SELECT 1').get();
+      res.json({ status: 'ok' });
+    } catch {
+      res.status(503).json({ status: 'unavailable' });
+    }
   });
   app.use('/api', csrfGuard);
   app.use('/api/auth', authRouter(db));
