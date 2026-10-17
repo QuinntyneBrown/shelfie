@@ -1,0 +1,21 @@
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+    <div class="card stack centred">
+      @if (chosen(); as profile) {
+        <span class="avatar avatar--lg centred-item" [class]="'avatar--' + profile.color" aria-hidden="true">{{ profile.name.charAt(0) }}</span>
+        <h1>Hi {{ profile.name }}!</h1>
+        <p class="text-muted centred-item">Tap your 4-digit PIN.</p>
+        <sh-pin-keypad [name]="profile.name" (complete)="submit($event)" (switchReader)="chosen.set(null)" />
+      } @else {
+        <h1>Who’s reading today?</h1>
+        <p class="text-muted centred-item">Pick your name to open your shelf.</p>
+        <div class="profiles">
+          @for (profile of readers(); track profile.id) {
+            <sh-profile-card [name]="profile.name" [role]="profile.role" [color]="profile.color" (chosen)="chosen.set(profile)" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+</main>

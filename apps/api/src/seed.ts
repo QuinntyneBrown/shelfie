@@ -13,6 +13,6 @@ db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')")
 const profile = db.prepare(
   'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, pin_hash) VALUES (?, ?, ?, ?, ?, ?)',
 );
-profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'pink', hashPin(SEED.pin));
-profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'blue', null);
+profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', hashPin(SEED.pin));
+profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', null);
 console.log('seeded');

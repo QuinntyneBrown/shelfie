@@ -50,6 +50,8 @@
               }
             ],
             "styles": [
+              "projects/components/src/styles/tokens.css",
+              "projects/components/src/styles/components.css",
               "projects/shelfie/src/styles.css"
             ]
           },
