@@ -1,0 +1,22 @@
+# Installed to /etc/caddy/Caddyfile by deploy.sh. Caddy obtains and renews the Let's Encrypt
+# certificate for shelfie.kids once the A record points at the VM.
+shelfie.kids {
+	encode zstd gzip
+	root * /opt/shelfie/current/web
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	handle {
+		@hashed path *.js *.css
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+		header /index.html Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+www.shelfie.kids {
+	redir https://shelfie.kids{uri} permanent
+}

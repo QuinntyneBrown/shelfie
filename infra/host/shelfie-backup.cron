@@ -1,0 +1,2 @@
+# Nightly database backup at 08:15 UTC (03:15 or 04:15 in Toronto). Installed to /etc/cron.d by deploy.sh.
+15 8 * * * shelfie /usr/local/bin/shelfie-backup 2>&1 | logger -t shelfie-backup

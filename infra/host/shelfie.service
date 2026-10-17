@@ -1,0 +1,22 @@
+[Unit]
+Description=Shelfie API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=shelfie
+Group=shelfie
+WorkingDirectory=/opt/shelfie/current
+EnvironmentFile=/etc/shelfie/env
+Environment=NODE_OPTIONS=--disable-warning=ExperimentalWarning
+ExecStart=/usr/bin/node apps/api/src/main.ts
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/shelfie
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,53 @@
+#cloud-config
+# First-boot configuration of the Shelfie VM. Everything that changes per release lives in infra/host
+# and is installed by deploy.sh, so this file only prepares the operating system.
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - jq
+  - unattended-upgrades
+
+users:
+  - default
+  - name: shelfie
+    system: true
+    shell: /usr/sbin/nologin
+    homedir: /var/lib/shelfie
+    no_create_home: true
+
+swap:
+  filename: /swapfile
+  size: 1G
+  maxsize: 1G
+
+write_files:
+  - path: /etc/shelfie/env
+    permissions: '0640'
+    content: |
+      NODE_ENV=production
+      PORT=3000
+      SHELFIE_DB=/var/lib/shelfie/shelfie.db
+      SHELFIE_BACKUP_DIR=/var/lib/shelfie/backups
+      APP_URL=https://__HOSTNAME__
+      STORAGE_ACCOUNT=__STORAGE_ACCOUNT__
+  - path: /etc/apt/apt.conf.d/52shelfie-unattended-upgrades
+    content: |
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Automatic-Reboot "true";
+      Unattended-Upgrade::Automatic-Reboot-Time "09:00";
+
+runcmd:
+  - mkdir -p /opt/shelfie/releases /var/lib/shelfie/backups
+  - chown -R shelfie:shelfie /var/lib/shelfie
+  - chgrp shelfie /etc/shelfie/env
+  # Node.js 22 (matches .node-version; the release tarball is built for this major version)
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
+  # Caddy: TLS termination, static files for the Angular build, reverse proxy for /api
+  - curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  - curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt -o /etc/apt/sources.list.d/caddy-stable.list
+  - apt-get update
+  - apt-get install -y caddy
