@@ -71,5 +71,20 @@
         </div>
       </section>
     }
+
+    <section class="card stack" aria-labelledby="activity-title">
+      <h2 id="activity-title" class="section-title">Recent activity</h2>
+      <ul class="activity">
+        @for (line of activity(); track line.key) {
+          <li>
+            <sh-activity-item
+              [emoji]="line.emoji"
+              [text]="line.text"
+              [when]="(line.at | date: 'EEE d MMM') ?? ''"
+            />
+          </li>
+        }
+      </ul>
+    </section>
   }
 </div>

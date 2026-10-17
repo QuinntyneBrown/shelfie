@@ -20,7 +20,18 @@ export interface FinishedBook {
   finishedOn: string;
 }
 
+export interface ActivityItem {
+  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished';
+  at: string;
+  bookId: string;
+  bookTitle: string;
+  chapterNumber: number | null;
+  sticker: string | null;
+  byRole: 'reader' | 'grown_up';
+}
+
 export interface ReviewOverview {
+  activity: ActivityItem[];
   readerName: string;
   today: string;
   queue: QueueItem[];

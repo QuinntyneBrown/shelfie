@@ -1,9 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Cover, EmptyState } from 'components';
+import { ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
 import { ShellStatusService } from 'core';
-import { QueueItem, ReviewApi, ReviewOverview } from '../review-api';
+import { ActivityItem, QueueItem, ReviewApi, ReviewOverview } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -16,7 +16,7 @@ const LONG_QUEUE = 10;
 
 @Component({
   selector: 'sh-review-page',
-  imports: [Cover, DatePipe, EmptyState, RouterLink],
+  imports: [ActivityLine, Cover, DatePipe, EmptyState, RouterLink],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +41,38 @@ export class ReviewPage {
         status.queueCount.set(overview.queue.length);
       });
   }
+
+  /** Recent activity in plain words; a book's title is left out when it repeats the line above. */
+  protected readonly activity = computed(() => {
+    const overview = this.overview();
+    if (!overview) return [];
+    return overview.activity.map((item, i) => {
+      const sameBook = i > 0 && overview.activity[i - 1].bookId === item.bookId;
+      const ofBook = sameBook ? '' : ` of ${item.bookTitle}`;
+      const sticker = FEEDBACK_STICKERS.find((s) => s.value === item.sticker);
+      const reader = overview.readerName;
+      const lines: Record<ActivityItem['kind'], { emoji: string; text: string }> = {
+        'chapter-logged': {
+          emoji: '📖',
+          text: `${reader} logged Chapter ${item.chapterNumber}${ofBook}`,
+        },
+        'book-added': {
+          emoji: '📚',
+          text: `${item.byRole === 'grown_up' ? 'You' : reader} added ${item.bookTitle}`,
+        },
+        'sticker-given': {
+          emoji: sticker?.emoji ?? '⭐',
+          text: `You gave Chapter ${item.chapterNumber}${ofBook} a ${sticker?.name ?? 'sticker'}`,
+        },
+        'book-finished': { emoji: '🏆', text: `${reader} finished ${item.bookTitle}` },
+      };
+      return {
+        ...lines[item.kind],
+        at: item.at,
+        key: `${item.kind}-${item.bookId}-${item.chapterNumber}`,
+      };
+    });
+  });
 
   /** "today", "yesterday", or null for an older day the template formats. */
   protected relativeDay(overview: ReviewOverview, item: QueueItem) {

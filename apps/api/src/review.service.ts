@@ -20,7 +20,38 @@ export interface FinishedBook {
   finishedOn: string;
 }
 
+export interface ActivityItem {
+  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished';
+  at: string;
+  bookId: string;
+  bookTitle: string;
+  chapterNumber: number | null;
+  sticker: string | null;
+  byRole: 'reader' | 'grown_up';
+}
+
+const ACTIVITY_LIMIT = 20;
+
+function recentActivity(db: DatabaseSync, householdId: string): ActivityItem[] {
+  return db
+    .prepare(
+      `SELECT * FROM (
+         SELECT 'chapter-logged' AS kind, c.logged_at AS at, b.id AS bookId, b.title AS bookTitle, c.chapter_number AS chapterNumber, NULL AS sticker, 'reader' AS byRole
+           FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ?
+         UNION ALL
+         SELECT 'sticker-given', c.reviewed_at, b.id, b.title, c.chapter_number, c.sticker, 'grown_up'
+           FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ? AND c.reviewed_at IS NOT NULL
+         UNION ALL
+         SELECT 'book-added', b.created_at, b.id, b.title, NULL, NULL, b.added_by_role FROM book b WHERE b.household_id = ?
+         UNION ALL
+         SELECT 'book-finished', b.finished_at, b.id, b.title, NULL, NULL, 'reader' FROM book b WHERE b.household_id = ? AND b.finished_at IS NOT NULL
+       ) ORDER BY at DESC, kind LIMIT ?`,
+    )
+    .all(householdId, householdId, householdId, householdId, ACTIVITY_LIMIT) as unknown as ActivityItem[];
+}
+
 export interface ReviewOverview {
+  activity: ActivityItem[];
   readerName: string;
   today: string;
   queue: QueueItem[];
@@ -58,6 +89,7 @@ export function overview(db: DatabaseSync, householdId: string, now = new Date()
     .prepare('SELECT COUNT(*) AS chapters FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ? AND c.read_on >= ?')
     .get(householdId, weekStart.toISOString().slice(0, 10)) as { chapters: number };
   return {
+    activity: recentActivity(db, householdId),
     readerName: reader.name,
     thisWeek: { chapters, streak: streakFor(db, householdId, now) },
     today: dayOf(now),

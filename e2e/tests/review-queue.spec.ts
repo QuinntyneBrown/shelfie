@@ -69,3 +69,16 @@ test('Given a long queue on a phone, when Dad opens Review, then it fits the scr
   await last.scrollIntoViewIfNeeded();
   await expect(last).toBeInViewport();
 });
+
+test('Given things happened lately, when Dad opens Review, then Recent activity lists them newest first in plain words', async ({ page }) => {
+  await signInAsDad(page);
+  await page.request.post('/api/books', {
+    data: { title: 'The Hobbit', author: '', chapterCount: 19, coverColor: 'peach', sticker: '🐉' },
+  });
+  await page.reload();
+  const review = new ReviewPage(page);
+
+  await expect(review.activity().nth(0)).toContainText('You added The Hobbit');
+  await expect(review.activity().nth(1)).toContainText('Nia logged Chapter 11 of The Lion, the Witch and the Wardrobe');
+  await expect(review.activity()).toHaveCount(20);
+});

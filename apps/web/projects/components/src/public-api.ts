@@ -23,3 +23,4 @@ export * from './lib/dialog/dialog';
 export * from './lib/textarea/textarea';
 export * from './lib/streak-badge/streak-badge';
 export * from './lib/celebration/celebration';
+export * from './lib/activity-item/activity-item';

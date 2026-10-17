@@ -20,6 +20,15 @@ export const STICKERS: StickerOption[] = [
   { name: 'Elephant', emoji: '🐘' },
   { name: 'Chocolate', emoji: '🍫' },
 ];
+/** The stickers the grown-up gives as feedback on a chapter. */
+export const FEEDBACK_STICKERS: (StickerOption & { value: string })[] = [
+  { value: 'star', name: 'Star', emoji: '🌟' },
+  { value: 'wise-owl', name: 'Wise owl', emoji: '🦉' },
+  { value: 'rocket', name: 'Rocket', emoji: '🚀' },
+  { value: 'dragon', name: 'Dragon', emoji: '🐉' },
+  { value: 'cookie', name: 'Cookie', emoji: '🍪' },
+  { value: 'bright-idea', name: 'Bright idea', emoji: '💡' },
+];
 export const COVER_COLORS = ['sage', 'rose', 'sky', 'sun', 'lilac', 'mint', 'peach'];
 
 let nextGroup = 0;
