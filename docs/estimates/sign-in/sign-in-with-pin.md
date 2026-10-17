@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient` and `SessionService`, and the `platform/` middleware (`validate`, `problemDetailsHandler`, session cookie handling) are assumed present from the `platform` subsystem; the `shelfie_device` cookie is assumed set by the sign-in-with-password feature. The endpoint rate limit marked `<TO SUPPLY>` in the design is assumed to be none beyond the per-profile lock. [Detailed design](../../detailed-designs/sign-in/sign-in-with-pin/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient` and `SessionService`, and the `platform/` middleware (`validate`, `problemDetailsHandler`, session cookie handling) are assumed present from the `platform` subsystem; the `shelfie_device` cookie is assumed set by the sign-in-with-password feature. The endpoint has no rate limit beyond the per-profile lock. [Detailed design](../../detailed-designs/sign-in/sign-in-with-pin/README.md).
 
 ## Full design
 

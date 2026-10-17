@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient`, the `platform/` middleware, `sh-cover`, `sh-progress`, `sh-reward-card`, `sh-skeleton` and `sh-error-state` (view-shelf) are assumed present. The log form and the sent-answers page the rows link to are owned by reading-log. The collapse threshold marked `<TO SUPPLY>` in the design is assumed to be a single constant. This feature pays for `sh-chapter-row`. [Detailed design](../../detailed-designs/books/view-book/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient`, the `platform/` middleware, `sh-cover`, `sh-progress`, `sh-reward-card`, `sh-skeleton` and `sh-error-state` (view-shelf) are assumed present. The log form and the sent-answers page the rows link to are owned by reading-log. The collapse threshold is a single constant of 30 chapters. This feature pays for `sh-chapter-row`. [Detailed design](../../detailed-designs/books/view-book/README.md).
 
 ## Full design
 

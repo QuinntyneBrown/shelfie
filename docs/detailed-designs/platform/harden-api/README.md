@@ -43,7 +43,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 |-------|--------------|-------------|
 | `L2-027` | `L1-012` | Credential and session security. Passwords and PINs shall be stored only as salted, slow hashes (argon2id or bcrypt); the session cookie shall be HttpOnly, Secure and SameSite=Lax or Strict, and its token shall be rotated on sign-in; a state-changing request without a valid CSRF defence shall be rejected; more than 10 failed grown-up sign-ins from one source in 10 minutes shall be answered with 429; responses shall set CSP, X-Content-Type-Options, frame-ancestors and HSTS headers. |
 | `L2-028` | `L1-012` | Input validation and output encoding. Every API input shall be validated server-side for type, length and range, and invalid input shall return 400 with field errors; answers, notes and titles containing HTML or script shall be displayed as text and never executed; all database access shall be parameterised; error responses shall never expose stack traces, SQL or internal paths. |
-| `L2-029` | `L1-012` | Data protection and privacy. All traffic shall be served over TLS; logs shall never contain passwords, PINs, tokens or answer text; when the grown-up deletes a book, its data shall be removed from the database. |
+| `L2-029` | `L1-012` | Data protection and privacy. Logs shall never contain passwords, PINs, tokens or answer text; when the grown-up deletes a book, its data shall be removed from the database. |
 
 ## Diagrams
 

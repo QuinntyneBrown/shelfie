@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through page objects, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient`, the `platform/` middleware (`validate`, `requireRole`, `problemDetailsHandler`), `sh-dialog` and `ManageBookPage` (manage-book) and `GET /api/books/:id` (view-book) are assumed present. The log form endpoint and the answer snapshot are assumed delivered by reading-log/log-chapter calling `questionsForBook`. The `<TO SUPPLY>` items (minimum question length, the "First" placement) are assumed to be a 1-character minimum and no placement column. This feature pays for `sh-textarea`. [Detailed design](../../detailed-designs/books/manage-questions/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through page objects, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient`, the `platform/` middleware (`validate`, `requireRole`, `problemDetailsHandler`), `sh-dialog` and `ManageBookPage` (manage-book) and `GET /api/books/:id` (view-book) are assumed present. The log form endpoint and the answer snapshot are assumed delivered by reading-log/log-chapter calling `questionsForBook`. The minimum question length is 5 characters and there is no placement column. This feature pays for `sh-textarea`. [Detailed design](../../detailed-designs/books/manage-questions/README.md).
 
 ## Full design
 

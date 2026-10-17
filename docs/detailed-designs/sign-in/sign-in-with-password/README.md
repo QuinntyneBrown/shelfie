@@ -27,9 +27,9 @@ The slice runs from the sign-in page to the `profile`, `session` and `device` ta
 - **`auth.repo.ts`** — parameterised SQL over `profile`, `session` and `device`: `findGrownUpByEmail`, `createSession`, `findDevice`, `createDevice`.
 - **`profile`** table columns used: `id`, `household_id`, `role`, `name`, `color`, `email`, `password_hash`.
 - **`session`** table: `id`, `profile_id`, `created_at`, `expires_at`. The response sets cookie `shelfie_session` (HttpOnly, Secure, SameSite=Strict); a new session id is issued on every sign-in.
-- **`device`** table: `id`, `household_id`, `created_at`. Cookie `shelfie_device` carries the id and an HMAC-SHA256 signature over it (HttpOnly, Secure, SameSite=Strict, 1 year); the signing key comes from configuration `<TO SUPPLY>`.
+- **`device`** table: `id`, `household_id`, `created_at`. Cookie `shelfie_device` carries the id and an HMAC-SHA256 signature over it (HttpOnly, Secure, SameSite=Strict, 1 year); the signing key comes from the `SHELFIE_DEVICE_KEY` environment variable.
 
-The error body for wrong credentials is a problem document with `type: "credentials-invalid"` and status `401`; the page shows the `invalid` state, moves focus to the error summary and keeps the typed password so a typo can be fixed. A `429` from the rate limiter is shown in the same summary slot with copy `<TO SUPPLY>`, as no mock state exists for it. A network failure or a `5xx` shows the `error` state ("Shelfie isn't reachable right now") with a Try again action that resubmits.
+The error body for wrong credentials is a problem document with `type: "credentials-invalid"` and status `401`; the page shows the `invalid` state, moves focus to the error summary and keeps the typed password so a typo can be fixed. A `429` from the rate limiter is shown in the same summary slot with the copy "Too many tries. Wait 10 minutes and try again.", as no mock state exists for it. A network failure or a `5xx` shows the `error` state ("Shelfie isn't reachable right now") with a Try again action that resubmits.
 
 The mock's `invalid` copy reads "That password didn't match" because the e-mail is fixed by the chosen profile; in the form without a device cookie, where the e-mail is typed, the same failure reads "e-mail or password is wrong" so that neither field is singled out (`L2-002`).
 

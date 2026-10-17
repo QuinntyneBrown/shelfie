@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient` and `SessionService`, and the `platform/` middleware (`validate`, `problemDetailsHandler`, `rateLimit.ts`, session cookie handling) are assumed present from the `platform` subsystem; the login rate limiter itself is counted in the harden-api design and only applied here. `sh-profile-card` is assumed paid for by sign-in-with-pin. The device cookie signing key marked `<TO SUPPLY>` is assumed to be one environment variable. [Detailed design](../../detailed-designs/sign-in/sign-in-with-password/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through a page object, and review fixes. They exclude the requirements, mocks and this design. The `core` library's `ApiClient` and `SessionService`, and the `platform/` middleware (`validate`, `problemDetailsHandler`, `rateLimit.ts`, session cookie handling) are assumed present from the `platform` subsystem; the login rate limiter itself is counted in the harden-api design and only applied here. `sh-profile-card` is assumed paid for by sign-in-with-pin. The device cookie signing key is one environment variable. [Detailed design](../../detailed-designs/sign-in/sign-in-with-password/README.md).
 
 ## Full design
 

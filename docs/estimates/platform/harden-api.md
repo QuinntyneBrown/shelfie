@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, API tests with `supertest`, and review fixes. They exclude the requirements and this design. The Express application skeleton, `db.ts` with the migration runner, `logger.ts` and `requestContext` are assumed present from the sibling `operate-service` feature; the module routers, schemas and repositories that use `validate()`, `requireRole()` and `hashSecret()` are paid for by their own features. The session idle timeout is 30 days; the reverse proxy marked `<TO SUPPLY>` is assumed to be a single configuration file for a proxy already available on the host, and its installation is not costed. [Detailed design](../../detailed-designs/platform/harden-api/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, API tests with `supertest`, and review fixes. They exclude the requirements and this design. The Express application skeleton, `db.ts` with the migration runner, `logger.ts` and `requestContext` are assumed present from the sibling `operate-service` feature; the module routers, schemas and repositories that use `validate()`, `requireRole()` and `hashSecret()` are paid for by their own features. The session idle timeout is 30 days; TLS termination and hosting are deferred (AGENTS.md, Deferred work) and not costed. [Detailed design](../../detailed-designs/platform/harden-api/README.md).
 
 ## Full design
 

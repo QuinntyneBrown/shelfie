@@ -114,9 +114,31 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | D16 | `assets/ui.css` | Toasts on phones sat on top of the grown-up's fixed tab bar | Region lifted above the tab bar while it shows (`body:has(.tabbar)`) |
 | D17 | log-chapter/success, finished | Confetti looped forever; the mock note says it runs 2.5 s then stops | One pass with `animation-fill-mode: both` |
 | D18 | `README.md` cast | "Today: Friday 17 October 2026" — 17 October 2026 is a Saturday | Not changed in the mocks; the story date needs a decision |
+| D19 | `assets/ui.css` | `.table-wrap` scrolled its table, but the table's visually-hidden `<caption>` (absolutely positioned) escaped the scroll box and widened the whole page on phones | `.table-wrap { position: relative }` so the caption is clipped with the table |
+| D20 | `assets/ui.css` | Sticker-choice emoji at 1.75rem (28px), off the type scale | `--font-size-3xl` (30px); the picker grows by 2px per row |
+| D21 | `assets/ui.css` | Radio inputs, accent bubbles and similar raw `1.25rem`/`0.5rem` literals | `--size-icon-md`, `--space-2` |
+
+### Open issues in the mocks (not fixed by this extraction)
+
+- **Books list at 360 px** (`pages/books/default`): the row puts cover, title, status badge and a Manage button side by side, so the title wraps into a column about 65 px wide ("The / Lion, / the / Witch…"). Snapping the badge to 24 px high and its dot to 8 px made it a little worse. Stack the badge and button under the title below 640 px.
 
 ### Still in the mocks (not changed by this extraction)
 
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Verification
+
+Run on 2026-10-17 from the repository root.
+
+| Check | Command | Result |
+|---|---|---|
+| Mocks structure | `python3 .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 23 screens, 101 mocks, 0 errors, 0 warnings (before and after pointing the mocks at this system) |
+| Contrast, both themes | `python3 .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 158 passed, 0 failed, 0 unresolved |
+| Token export | `tokens_to_json.py docs/design-system/tokens/tokens.css` | 302 tokens written to `tokens/tokens.json` |
+| Structure | `python3 .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 65 pages (12 foundations, 44 components, 8 patterns, index), 0 errors, 0 warnings |
+| Token coverage | script over `tokens.css` | All 245 custom properties appear in a `data-token` cell on exactly one foundation page |
+| Layout and live values | headless Chrome over all 65 pages at 360 px (light, dark) and 1280 px (dark) | No horizontal page scroll, no failing live contrast ratio, no empty token cell, no script error |
+| Screenshots | `screenshot_mocks.py` at 360×800 and 1280×800, both themes | 256 design-system and 404 mock shots captured. Looked at by eye: the colour, button, toast and dialog pages, and three changed mocks (books, review chapter, toast with action). The other pages were covered by the automated layout audit only |
+| Mocks before vs after | pixel diff of the 404 mock shots | 312 differ. Static differences are the token snaps (D4, D13, D20), the toast lift (D16) and the tab-bar state; the rest are animated states captured at different phases |
+
+Not verified by tooling: a screen-reader pass, 200 % and 400 % zoom, and `forced-colors` rendering. The accessibility foundation page lists them as the manual checks to run when the components exist in Angular.

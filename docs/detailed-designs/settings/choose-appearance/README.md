@@ -18,12 +18,12 @@ The slice runs from the Appearance radio group to the `household` table and back
 - **`ThemeService`** — service in the `core` library. `apply(theme: 'device' | 'light' | 'dark')` sets `data-theme="light"` or `data-theme="dark"` on `document.documentElement`. For `device` it resolves the value from `matchMedia('(prefers-color-scheme: dark)')`, sets `data-theme` to the result and listens to the query's `change` event so the attribute follows the operating system while the app is open. `theme: Signal<'device' | 'light' | 'dark'>` and `resolved: Signal<'light' | 'dark'>` expose the current values. `SessionService` calls `apply(session.theme)` whenever a session is set, and `apply('device')` when the session is cleared.
 - **`SessionService`** — service in the `core` library; its `Session` gains a `theme` field read from the API.
 - **Design tokens** — the `components` library ships `tokens.css` copied from `docs/design-system/tokens/tokens.css`: light values on `:root`, dark values under `[data-theme="dark"]` and under `@media (prefers-color-scheme: dark)` for `:root:not([data-theme="light"])`, plus `color-scheme`. Because `ThemeService` always writes an explicit `data-theme`, the attribute decides the theme and the media-query rule serves only the moment before the service runs.
-- **`AuthApi` responses** — `GET /api/auth/session`, `POST /api/auth/pin` and `POST /api/auth/password` include `theme` in the session payload; `auth.service.ts` reads it by joining `household` through the profile. Whether `GET /api/auth/profiles` also carries the theme for the sign-in page is `<TO SUPPLY>`.
+- **`AuthApi` responses** — `GET /api/auth/session`, `POST /api/auth/pin` and `POST /api/auth/password` include `theme` in the session payload; `auth.service.ts` reads it by joining `household` through the profile. `GET /api/auth/profiles` also carries the theme, so the sign-in page renders in the household theme on a known device.
 - **`settings.router.ts`** — `settingsPatchSchema` accepts `theme` in `device|light|dark`; `GET /api/settings` returns the current value.
 - **`settings.service.ts`** / **`settings.repo.ts`** — `updateSettings` writes `household.theme` through `updateTheme(householdId, theme)` inside the same transaction as the profile rows; `findHouseholdSettings` reads it.
 - **`household`** table column used: `theme` (`'device' | 'light' | 'dark'`).
 
-Whether the last applied theme is cached in `localStorage` so that a reload renders in the saved theme before the session response arrives is `<TO SUPPLY>`; the design assumes no cache.
+`ThemeService` caches the last applied theme in `localStorage` (reads and writes wrapped in try/catch) so that a reload renders in the saved theme before the session response arrives.
 
 ## Requirements
 

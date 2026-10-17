@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through page objects, and review fixes. They exclude the requirements, mocks and this design. `sh-text-field` and `sh-button` are assumed paid for by sign-in-with-password, and the `device` table, session creation and `platform/` middleware are assumed present. SMTP configuration marked `<TO SUPPLY>` is assumed to be environment variables; the acceptance tests are assumed to read the reset link from a local SMTP sink started by the test setup, which is counted here. [Detailed design](../../detailed-designs/sign-in/reset-password/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, Playwright acceptance tests through page objects, and review fixes. They exclude the requirements, mocks and this design. `sh-text-field` and `sh-button` are assumed paid for by sign-in-with-password, and the `device` table, session creation and `platform/` middleware are assumed present. SMTP configuration comes from environment variables and the production mail provider is deferred (AGENTS.md, Deferred work); the acceptance tests are assumed to read the reset link from a local SMTP sink started by the test setup, which is counted here. [Detailed design](../../detailed-designs/sign-in/reset-password/README.md).
 
 ## Full design
 

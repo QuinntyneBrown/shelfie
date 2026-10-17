@@ -17,7 +17,7 @@ Every mock tells the same story so a reviewer can follow it across screens. Reus
   CAST
   Household:  the Bells, one reader and one grown-up (a single household per account).
   Reader:     Nia (9). Avatar "N", rose. Signs in with a 4-digit PIN. 5-day reading streak.
-  Grown-up:   Dad = Marcus Bell, marcus@example.com. Avatar "MB", sky. Signs in with a password.
+  Grown-up:   Dad = Marcus Bell, marcus@example.com. Avatar "D", sky. Signs in with a password.
   Today:      Friday 17 October 2026, late afternoon.
 
   CATALOG (cover colour · sticker)
@@ -40,7 +40,7 @@ Every mock tells the same story so a reviewer can follow it across screens. Reus
 | Who | Details |
 |---|---|
 | Nia | The reader, 9. Signs in with a 4-digit PIN. 5-day streak. Avatar "N" in rose. |
-| Dad (Marcus Bell) | The grown-up. Signs in with `marcus@example.com` and a password. Avatar "MB" in sky. |
+| Dad (Marcus Bell) | The grown-up. Signs in with `marcus@example.com` and a password. Avatar "D" in sky. |
 | Today | Friday 17 October 2026 |
 
 | Book | Author | Chapters | Where it is |
@@ -92,7 +92,7 @@ These are decisions the mocks make that nobody has confirmed. Each is marked in 
 3. **Chapters are numbered, not titled.** Adding a book asks only for the number of chapters. A chapter row shows the first line of her first answer instead of a title.
 4. **Covers are made, not fetched.** A cover is a pastel colour plus a sticker chosen when the book is added. No image upload, no online lookup.
 5. **Only question 1 is required.** The other answers can be left blank so a tired reader can still log a chapter.
-6. **Answers are final once sent.** There is no edit after "I'm done!"; Undo on the success toast is the only way back, for the life of the toast.
+6. **Answers are final once sent.** There is no edit after "I'm done!"; Undo on the success toast is the only way back, for the life of the toast (10 seconds).
 7. **A sticker is required to send feedback;** the note is optional. The reader sees feedback on the chapter page and in a banner on her shelf.
 8. **Rewards are free text** with four quick picks. Giving a reward is the only "finish" step for Dad; there is no approval of the book itself.
 9. **Streak** counts consecutive days with at least one chapter logged and is shown to both of them. It is derived, never edited.

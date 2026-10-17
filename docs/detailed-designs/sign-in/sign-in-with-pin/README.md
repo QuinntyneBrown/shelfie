@@ -27,7 +27,7 @@ The slice runs from the sign-in page to the `profile` and `session` tables.
 - **`profile`** table columns used: `id`, `household_id`, `role`, `name`, `color`, `pin_hash`, `pin_failed_count`, `pin_locked_until`.
 - **`session`** table: `id`, `profile_id`, `created_at`, `expires_at`. The response sets cookie `shelfie_session` (HttpOnly, Secure, SameSite=Strict).
 
-The error body for a wrong PIN is a problem document with `type: "pin-invalid"`; for a lock it is `type: "pin-locked"` and carries `lockedUntil`. The page maps these to the `pin-invalid` and `locked` states. Rate limiting of the endpoint beyond the per-profile lock is `<TO SUPPLY>`.
+The error body for a wrong PIN is a problem document with `type: "pin-invalid"`; for a lock it is `type: "pin-locked"` and carries `lockedUntil`. The page maps these to the `pin-invalid` and `locked` states. The endpoint has no rate limit beyond the per-profile lock.
 
 ## Requirements
 

@@ -105,16 +105,24 @@
     if (event.key === 't' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.target.matches('input, textarea, select')) apply(theme() === 'dark' ? 'light' : 'dark', true);
   });
 
-  // On narrow screens collapse nav groups except the one holding the current page.
-  if (matchMedia('(max-width: 63.99rem)').matches) {
+  // On narrow screens keep every nav group collapsed so the page content is the first thing on screen.
+  var narrow = matchMedia('(max-width: 63.99rem)').matches;
+  if (narrow) {
     document.querySelectorAll('.ds-nav details').forEach(function (d) { d.open = false; });
   }
+  // Documentation tables scroll inside their own box instead of widening the page.
+  document.querySelectorAll('table.ds-table').forEach(function (t) {
+    if (t.closest('.ds-table-wrap, .ds-matrix')) return;
+    var wrap = document.createElement('div'); wrap.className = 'ds-table-wrap'; wrap.tabIndex = 0;
+    wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', (t.querySelector('caption') ? t.querySelector('caption').textContent : 'Table') + ' (scrollable)');
+    t.parentNode.insertBefore(wrap, t); wrap.appendChild(t);
+  });
   var here = location.pathname.split('/').pop();
   document.querySelectorAll('.ds-nav a[href]').forEach(function (a) {
     var target = a.getAttribute('href').split('/').pop().split('#')[0];
     if (target && target === here) {
       a.setAttribute('aria-current', 'page');
-      var group = a.closest('details'); if (group) group.open = true;
+      var group = a.closest('details'); if (group && !narrow) group.open = true;
     }
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh); else refresh();

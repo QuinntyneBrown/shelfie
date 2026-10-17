@@ -63,7 +63,7 @@ pre code { background: none; padding: 0; }
 /* Example frames: a checker-free canvas that shows a component as it ships */
 .ds-example { background: var(--color-bg-surface); border: 1px solid var(--color-border-default); border-radius: var(--radius-lg); overflow: hidden; margin-block: var(--space-4); }
 .ds-example__canvas { padding: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
-.ds-example__canvas--stack { flex-direction: column; align-items: stretch; }
+.ds-example__canvas--stack { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
 .ds-example__canvas--canvas { background: var(--color-bg-canvas); }
 .ds-example__canvas--inverse { background: var(--color-bg-inverse); color: var(--color-fg-inverse); }
 .ds-example__caption { padding: var(--space-2) var(--space-4); border-top: 1px solid var(--color-border-default); font: var(--text-caption); color: var(--color-fg-muted); display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
@@ -76,7 +76,7 @@ pre code { background: none; padding: 0; }
 .ds-themes > [data-theme]::before { content: attr(data-theme) " theme"; display: block; font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-subtle); margin-bottom: var(--space-4); }
 
 /* State matrix: variants down, states across */
-.ds-matrix { overflow-x: auto; margin-block: var(--space-4); }
+.ds-matrix { position: relative; overflow-x: auto; margin-block: var(--space-4); }
 .ds-matrix table { border-collapse: collapse; min-width: 100%; }
 .ds-matrix th { font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-subtle); text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-default); white-space: nowrap; }
 .ds-matrix th[scope="row"] { font: var(--text-label); text-transform: none; letter-spacing: 0; color: var(--color-fg-default); border-bottom: 0; border-right: 1px solid var(--color-border-default); }
@@ -100,7 +100,9 @@ pre code { background: none; padding: 0; }
 .ds-table th { background: var(--color-bg-surface-sunken); font: var(--text-label); color: var(--color-fg-muted); }
 .ds-table tr:last-child td { border-bottom: 0; }
 .ds-table code { white-space: nowrap; }
-.ds-table-wrap { overflow-x: auto; }
+.ds-table-wrap { position: relative; overflow-x: auto; }
+/* Children of grid/flex example canvases may shrink below their content so inner tables scroll instead of widening the page. */
+.ds-example__canvas > *, .ds-themes > *, .ds-dodont > * { min-width: 0; }
 .ds-swatch-cell { display: inline-flex; align-items: center; gap: var(--space-2); }
 .ds-swatch-cell i { width: 1rem; height: 1rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-default); background: var(--swatch, transparent); flex: none; }
 .ds-copy { font: var(--text-caption); border: 1px solid var(--color-border-default); background: var(--color-bg-surface); color: var(--color-fg-muted); border-radius: var(--radius-sm); padding: 0 var(--space-1); cursor: pointer; min-height: var(--target-min); }

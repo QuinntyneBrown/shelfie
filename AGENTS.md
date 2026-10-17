@@ -90,3 +90,12 @@ shelfie/
 *   **Dependencies point one way:** `shelfie` (application) → feature libraries → `components` and `core`. `components` depends on no other project.
 *   **The application is thin:** it holds the shell, routes and bootstrapping only. Features live in libraries.
 *   **No single-file components (MANDATORY):** every component, in every project, splits its class, markup and styling into separate files in its own folder: `<name>.ts`, `<name>.html` and `<name>.css`. Use `templateUrl` and `styleUrl`; never inline `template` or `styles`. Where a component has more than one concern (for example a view-model, or state kept apart from presentation), give each its own file too. Do not collapse a component into one file to save time.
+
+## Deferred work
+
+Not built until Shelfie moves from local use to Azure. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete.
+
+*   TLS termination, reverse proxy and the hosting target itself (Azure).
+*   Scheduling of the nightly SQLite backup and off-host copies (the backup job and the restore runbook are built).
+*   Uptime monitoring and log shipping beyond stdout.
+*   The production e-mail provider for password-reset links (Mailpit locally).
