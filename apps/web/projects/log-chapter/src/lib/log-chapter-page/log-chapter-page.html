@@ -37,6 +37,16 @@
           </div>
         }
         <fieldset class="card stack">
+          <legend class="legend">When did you read it?</legend>
+          <sh-segmented label="Day you read it" [options]="dayOptions" [value]="day()" (valueChange)="pickDay($event)" />
+          @if (day() === 'other') {
+            <input class="input input--sm day-input" type="date" aria-label="Pick the day" [max]="form.today" [value]="otherDay() || form.today" (input)="otherDay.set($any($event.target).value); dayInFuture.set(false)" />
+          }
+          @if (dayInFuture()) {
+            <div class="field__error">Pick today or an earlier day.</div>
+          }
+        </fieldset>
+        <fieldset class="card stack">
           <legend class="legend">Tell {{ form.grownUpName }} about it</legend>
           <p class="text-muted hint">A sentence or two for each one is perfect. Spelling doesn’t matter.</p>
           @for (question of form.questions; track question.position; let i = $index) {

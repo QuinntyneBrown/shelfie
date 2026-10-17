@@ -3,6 +3,7 @@ import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { ShelfPage } from '../pages/shelf.page';
 import { LogChapterPage } from '../pages/log-chapter.page';
+import { householdDay, readOnOf } from '../support/database';
 
 const LION = 'The Lion, the Witch and the Wardrobe';
 
@@ -66,4 +67,68 @@ test('Given a request that skips the form, when question 1 is blank or an answer
   const tooLong = await log.postLog('b-lion', 12, { readOn: '2026-10-17', answers: [{ position: 1, text: 'a'.repeat(2001) }] });
 
   expect([blank.status(), tooLong.status()]).toEqual([400, 400]);
+});
+
+test('Given she did not change the day, when she logs a chapter, then it is saved as read today', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.answer(1, 'He said sorry.');
+  await log.done();
+
+  await expect(log.heading()).toHaveText('Chapter 12 done!');
+  expect(readOnOf('b-lion', 12)).toBe(householdDay());
+});
+
+test('Given she chooses Yesterday, when she logs a chapter, then it is saved as read yesterday', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.chooseDay('Yesterday');
+  await log.answer(1, 'He said sorry.');
+  await log.done();
+
+  await expect(log.heading()).toHaveText('Chapter 12 done!');
+  expect(readOnOf('b-lion', 12)).toBe(householdDay(-1));
+});
+
+test('Given she chooses Another day, when she picks a past day and logs, then that day is saved', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.chooseDay('Another day');
+  await log.pickDay(householdDay(-5));
+  await log.answer(1, 'He said sorry.');
+  await log.done();
+
+  await expect(log.heading()).toHaveText('Chapter 12 done!');
+  expect(readOnOf('b-lion', 12)).toBe(householdDay(-5));
+});
+
+test('Given she picks a day in the future, when she presses I’m done!, then she is asked for today or earlier and nothing is saved', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.chooseDay('Another day');
+  await log.pickDay(householdDay(2));
+  await log.answer(1, 'He said sorry.');
+  await log.done();
+
+  await expect(log.dayError()).toBeVisible();
+  await expect(log.heading()).toHaveText('Chapter 12');
+  expect(readOnOf('b-lion', 12)).toBeUndefined();
+});
+
+test('Given a request that skips the form, when the day is in the future, then the API refuses it', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  const response = await log.postLog('b-lion', 12, { readOn: householdDay(2), answers: [{ position: 1, text: 'He said sorry.' }] });
+
+  expect(response.status()).toBe(400);
+  expect(readOnOf('b-lion', 12)).toBeUndefined();
 });

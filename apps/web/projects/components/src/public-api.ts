@@ -7,3 +7,4 @@ export * from './lib/reward-card/reward-card';
 export * from './lib/empty-state/empty-state';
 export * from './lib/skeleton/skeleton';
 export * from './lib/question-field/question-field';
+export * from './lib/segmented/segmented';

@@ -1,0 +1,5 @@
+<div class="cluster" role="group" [attr.aria-label]="label()">
+  @for (option of options(); track option.value) {
+    <button class="chip" type="button" [attr.aria-pressed]="value() === option.value" (click)="value.set(option.value)">{{ option.label }}</button>
+  }
+</div>

@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Cover, Progress, QuestionField } from 'components';
+import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
-const isoDay = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+const addDays = (isoDay: string, days: number) => {
+  const date = new Date(`${isoDay}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
 
 @Component({
   selector: 'sh-log-chapter-page',
-  imports: [Cover, Progress, QuestionField, RouterLink],
+  imports: [Cover, Progress, QuestionField, RouterLink, Segmented],
   templateUrl: './log-chapter-page.html',
   styleUrl: './log-chapter-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +27,14 @@ export class LogChapterPage {
   protected readonly result = signal<LogResult | null>(null);
   protected readonly submitting = signal(false);
   protected readonly questionOneMissing = signal(false);
+  protected readonly dayOptions: SegmentedOption[] = [
+    { value: 'today', label: 'Today' },
+    { value: 'yesterday', label: 'Yesterday' },
+    { value: 'other', label: 'Another day' },
+  ];
+  protected readonly day = signal('today');
+  protected readonly otherDay = signal('');
+  protected readonly dayInFuture = signal(false);
   private readonly fields = viewChildren(QuestionField);
   protected readonly chaptersToGo = computed(() => {
     const result = this.result();
@@ -36,11 +47,24 @@ export class LogChapterPage {
       this.form.set(null);
       this.result.set(null);
       this.questionOneMissing.set(false);
+      this.day.set('today');
+      this.otherDay.set('');
+      this.dayInFuture.set(false);
       this.api.form(id, n).then((form) => {
         this.form.set(form);
         this.answers.set(form.questions.map(() => ''));
       });
     });
+  }
+
+  protected pickDay(day: string) {
+    this.day.set(day);
+    this.dayInFuture.set(false);
+  }
+
+  private readOn(form: ChapterForm) {
+    if (this.day() === 'yesterday') return addDays(form.today, -1);
+    return this.day() === 'other' ? this.otherDay() || form.today : form.today;
   }
 
   protected focusFirstQuestion() {
@@ -60,11 +84,16 @@ export class LogChapterPage {
       setTimeout(() => this.focusFirstQuestion());
       return;
     }
+    const readOn = this.readOn(form);
+    if (readOn > form.today) {
+      this.dayInFuture.set(true);
+      return;
+    }
     this.submitting.set(true);
     try {
       this.result.set(
         await this.api.log(form.book.id, form.chapterNumber, {
-          readOn: isoDay(new Date()),
+          readOn,
           answers: form.questions.map((q, i) => ({ position: q.position, text: this.answers()[i] })),
         }),
       );

@@ -9,6 +9,13 @@ export const DEFAULT_QUESTIONS = [
 
 const UNDO_SECONDS = 10;
 
+const dayIn = (timeZone: string, date: Date) => new Intl.DateTimeFormat('en-CA', { timeZone }).format(date);
+
+function householdToday(db: DatabaseSync, householdId: string): string {
+  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
+  return dayIn(time_zone, new Date());
+}
+
 export class Problem extends Error {
   status: number;
   type: string;
@@ -48,6 +55,7 @@ export function getForm(db: DatabaseSync, householdId: string, bookId: string, n
   return {
     book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker },
     chapterNumber: n,
+    today: householdToday(db, householdId),
     grownUpName: grownUp.name,
     questions: DEFAULT_QUESTIONS.map((text, i) => ({ position: i + 1, text, required: i === 0 })),
   };
@@ -55,6 +63,7 @@ export function getForm(db: DatabaseSync, householdId: string, bookId: string, n
 
 export function logChapter(db: DatabaseSync, householdId: string, bookId: string, n: number, request: LogRequest) {
   const book = findBook(db, householdId, bookId, n);
+  if (request.readOn > householdToday(db, householdId)) throw new Problem(400, 'future-date');
   const id = randomUUID();
   const loggedAt = new Date();
   const undoUntil = new Date(loggedAt.getTime() + UNDO_SECONDS * 1000);

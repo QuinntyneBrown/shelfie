@@ -32,6 +32,18 @@ export class LogChapterPage {
     return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { data });
   }
 
+  async chooseDay(day: 'Today' | 'Yesterday' | 'Another day') {
+    await this.page.getByRole('button', { name: day }).click();
+  }
+
+  async pickDay(isoDate: string) {
+    await this.page.getByLabel('Pick the day').fill(isoDate);
+  }
+
+  dayError() {
+    return this.page.getByText('Pick today or an earlier day.');
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

@@ -1,0 +1,19 @@
+import { DatabaseSync } from 'node:sqlite';
+
+/** The day a chapter was read, as stored; undefined when the chapter is not logged. */
+export function readOnOf(bookId: string, chapter: number): string | undefined {
+  const db = new DatabaseSync('e2e.db', { readOnly: true });
+  try {
+    const row = db.prepare('SELECT read_on FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(bookId, chapter) as
+      | { read_on: string }
+      | undefined;
+    return row?.read_on;
+  } finally {
+    db.close();
+  }
+}
+
+/** Calendar day in the seeded household's time zone (UTC), `offset` days from today. */
+export function householdDay(offset = 0): string {
+  return new Date(Date.now() + offset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
