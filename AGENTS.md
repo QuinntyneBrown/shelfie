@@ -32,6 +32,18 @@ This is a hard, absolute limit. The entire app, production ready, shall NOT take
 *   **The budget guides the mocks:** Mocks define what gets built, so they are scoped by this budget first. Only mock the screens, dialogs, notifications and states that fit within 45 days in total. Estimate the mock set against the budget before writing it, and drop or simplify screens and states rather than mocking something that cannot be built in time. Never mock a feature that has been cut.
 *   **No exceptions:** Do not argue that an addition is "small", "worth it", or "almost done". The budget is not negotiable by the agent.
 
+## Components library is mandatory (CRITICAL)
+
+- The `shelfie` application and its feature libraries MUST be built from the `components` library.
+  Never hand-write markup, CSS, icons, overlays or toasts the library already
+  provides. Use the `sh-*` component, `sh-dialog`, `ToastService` and `BannerService`.
+- `docs/screen-composition.md` is binding. Before implementing any page,
+  dialog, notification or shell part, read its entry and use exactly the
+  components it lists. Build locally only the UI it marks as local.
+- If the library lacks something the entry needs, STOP. Update the detailed design
+  and the library first. Do not work around it in the app.
+- Keep `docs/screen-composition.md` aligned with the mocks and the detailed designs.
+
 ## Scope, Simplicity, and Zero-Waste Engineering (CRITICAL)
 
 This is the absolute highest-priority rule in this repository. AI agents tend to over-engineer, hallucinate future needs, and balloon codebase complexity. This kills project velocity and comprehensibility. You must resist this impulse. Deliver radically simple solutions that fulfill the exact prompt—nothing more.
