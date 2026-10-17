@@ -11,6 +11,8 @@ export interface Session {
 export class SessionService {
   private readonly api = inject(ApiClient);
   readonly current = signal<Session | null>(null);
+  /** Set when the API reports the session ran out, so sign-in can say why. */
+  readonly expired = signal(false);
 
   /** Asks the API whether this browser still has a session; run once at start-up. */
   async restore() {

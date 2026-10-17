@@ -17,3 +17,13 @@ export function readOnOf(bookId: string, chapter: number): string | undefined {
 export function householdDay(offset = 0): string {
   return new Date(Date.now() + offset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
+
+/** Ages every session past its 30-day idle limit, as if nobody had touched the app for a month. */
+export function expireSessions() {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.exec("UPDATE session SET expires_at = '2020-01-01T00:00:00.000Z'");
+  } finally {
+    db.close();
+  }
+}

@@ -1,6 +1,21 @@
 <main id="main" class="auth-layout">
   <div class="auth-card stack">
     <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+    @if (reason() === 'expired') {
+      <div class="alert alert--info" role="status">
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 11v5M12 8h.01" />
+        </svg>
+        <div class="alert__body">
+          <div class="alert__title">You were signed out</div>
+          <div>
+            Shelfie signs out after 30 days of quiet, to keep the answers private. Pick your name to
+            carry on.
+          </div>
+        </div>
+      </div>
+    }
     <div class="card stack centred">
       @if (pinProfile(); as profile) {
         <span

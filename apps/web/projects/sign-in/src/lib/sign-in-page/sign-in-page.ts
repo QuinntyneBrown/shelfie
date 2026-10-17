@@ -4,6 +4,7 @@ import {
   ElementRef,
   computed,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -20,6 +21,8 @@ import { AuthApi, ProfileSummary } from '../auth-api';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
+  /** Query parameter: 'expired' when the session ran out. */
+  readonly reason = input<string>();
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);

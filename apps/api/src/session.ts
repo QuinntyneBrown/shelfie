@@ -16,11 +16,16 @@ export function requireSession(db: DatabaseSync) {
     const row = id
       ? (db
           .prepare(
-            'SELECT p.id AS profileId, p.name AS name, p.household_id AS householdId, p.role AS role FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ? AND s.expires_at > ?',
+            'SELECT p.id AS profileId, p.name AS name, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ?',
           )
-          .get(id, new Date().toISOString()) as RequestSession | undefined)
+          .get(id) as (RequestSession & { expiresAt: string }) | undefined)
       : undefined;
     if (!row) return res.status(401).json({ type: 'no-session' });
+    if (row.expiresAt <= new Date().toISOString()) {
+      db.prepare('DELETE FROM session WHERE id = ?').run(id);
+      res.clearCookie('shelfie_session');
+      return res.status(401).json({ type: 'session-expired' });
+    }
     res.locals['session'] = row;
     next();
   };

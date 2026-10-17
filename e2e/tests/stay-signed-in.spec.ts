@@ -2,6 +2,8 @@
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { ShelfPage } from '../pages/shelf.page';
+import { SignInPage } from '../pages/sign-in.page';
+import { expireSessions } from '../support/database';
 
 test('Given Nia is signed in, when the page is reloaded, then she is still signed in on the same page', async ({ page }) => {
   await signInAsNia(page);
@@ -18,3 +20,26 @@ for (const path of ['/shelf', '/review', '/books/b-lion/chapters/12/log']) {
     await expect(page).toHaveURL(/\/sign-in$/);
   });
 }
+
+test('Given Nia’s session has expired, when she reloads, then the sign-in page says she was signed out', async ({ page }) => {
+  await signInAsNia(page);
+  await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
+  expireSessions();
+
+  await page.reload();
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=expired$/);
+  await expect(new SignInPage(page).signedOutNotice()).toBeVisible();
+});
+
+test('Given Nia’s session expires while the app is open, when she takes her next action, then she is sent to sign-in with the reason', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+  expireSessions();
+
+  await shelf.logChapter('On the go', 'The Wild Robot', 4);
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=expired$/);
+  await expect(new SignInPage(page).signedOutNotice()).toBeVisible();
+});

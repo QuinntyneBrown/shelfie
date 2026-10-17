@@ -75,6 +75,10 @@ export class SignInPage {
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }
 
+  signedOutNotice() {
+    return this.page.getByRole('status').filter({ hasText: 'You were signed out' });
+  }
+
   async chooseGrownUp(name: string) {
     await this.page.getByRole('button', { name: new RegExp(name) }).click();
   }
