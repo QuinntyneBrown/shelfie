@@ -86,3 +86,49 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     chapters,
   };
 }
+
+export interface BookListItem {
+  id: string;
+  title: string;
+  author: string | null;
+  chapterCount: number;
+  coverColor: string;
+  sticker: string;
+  loggedCount: number;
+  finishedOn: string | null;
+  reward: { text: string } | null;
+}
+
+export function listBooks(db: DatabaseSync, householdId: string): BookListItem[] {
+  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
+  const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
+  const rows = db
+    .prepare(
+      `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.finished_at, b.created_at,
+              (SELECT COUNT(*) FROM chapter_log c WHERE c.book_id = b.id) AS logged_count, r.text AS reward_text
+         FROM book b LEFT JOIN reward r ON r.book_id = b.id
+        WHERE b.household_id = ? ORDER BY b.created_at DESC`,
+    )
+    .all(householdId) as unknown as {
+    id: string;
+    title: string;
+    author: string | null;
+    chapter_count: number;
+    cover_color: string;
+    sticker: string;
+    finished_at: string | null;
+    logged_count: number;
+    reward_text: string | null;
+  }[];
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    author: r.author,
+    chapterCount: r.chapter_count,
+    coverColor: r.cover_color,
+    sticker: r.sticker,
+    loggedCount: r.logged_count,
+    finishedOn: r.finished_at ? dayFormat.format(new Date(r.finished_at)) : null,
+    reward: r.reward_text ? { text: r.reward_text } : null,
+  }));
+}

@@ -18,6 +18,11 @@ export const routes: Routes = [
     canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('settings').then((m) => m.SettingsPage),
   },
+  {
+    path: 'books',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('books').then((m) => m.BooksPage),
+  },
   { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
     path: 'review',

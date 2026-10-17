@@ -1,7 +1,7 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { MenuItem } from 'components';
+import { MenuItem, NavLink, TabBar } from 'components';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
 import { SessionService, ToastService } from 'core';
@@ -9,7 +9,7 @@ import { SessionService, ToastService } from 'core';
 const MAX_VISIBLE_TOASTS = 3;
 
 @Component({
-  imports: [RouterOutlet, Toast, TopBar],
+  imports: [RouterOutlet, TabBar, Toast, TopBar],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -18,6 +18,15 @@ export class App {
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
+  protected readonly navLinks = computed<NavLink[]>(() =>
+    this.session()?.role === 'grown_up'
+      ? [
+          { label: 'Review', route: '/review', icon: 'review' },
+          { label: 'Books', route: '/books', icon: 'books' },
+          { label: 'Settings', route: '/settings', icon: 'settings' },
+        ]
+      : [],
+  );
   protected readonly menuItems = computed<MenuItem[]>(() => [
     ...(this.session()?.role === 'grown_up' ? [{ id: 'settings', label: 'Settings' }] : []),
     { id: 'switch-reader', label: 'Switch reader' },

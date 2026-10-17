@@ -72,6 +72,16 @@ export class ShellPage {
     await this.page.emulateMedia({ colorScheme: dark ? 'dark' : 'light' });
   }
 
+  /** The top bar links, shown from 768px for the grown-up. */
+  topNav() {
+    return this.page.getByRole('navigation', { name: 'Primary', exact: true });
+  }
+
+  /** The bottom tab bar, shown below 768px for the grown-up. */
+  tabBar() {
+    return this.page.getByRole('navigation', { name: 'Primary, phone' });
+  }
+
   menu() {
     return this.page.getByRole('menu');
   }

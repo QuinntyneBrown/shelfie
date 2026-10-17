@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { createBook, getBook } from './books.service.ts';
+import { createBook, getBook, listBooks } from './books.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
@@ -30,6 +30,11 @@ export function booksRouter(db: DatabaseSync) {
     const body = createBookSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json({ type: 'validation' });
     res.status(201).json(createBook(db, householdId, role, body.data));
+  });
+
+  router.get('/', requireSession(db), requireRole('grown_up'), (_req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    res.json(listBooks(db, householdId));
   });
 
   router.get('/:id', requireSession(db), requireRole('reader'), (req, res) => {

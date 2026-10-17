@@ -1,0 +1,10 @@
+<nav class="tabbar" aria-label="Primary, phone">
+  @for (link of links(); track link.route) {
+    <a [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page">
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+        <path [attr.d]="paths[link.icon]" />
+      </svg>
+      {{ link.label }}
+    </a>
+  }
+</nav>
