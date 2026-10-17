@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class ReviewChapterPage {
   constructor(private readonly page: Page) {}
@@ -56,6 +57,6 @@ export class ReviewChapterPage {
   }
 
   sendViaApi(chapterLogId: string, data: unknown) {
-    return this.page.request.post(`/api/chapter-logs/${chapterLogId}/feedback`, { data });
+    return this.page.request.post(`/api/chapter-logs/${chapterLogId}/feedback`, { ...SAME_SITE, data });
   }
 }

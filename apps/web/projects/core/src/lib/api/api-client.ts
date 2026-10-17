@@ -12,24 +12,27 @@ export class ApiError extends Error {
   }
 }
 
+/** Sent with every request; the API refuses state changes that lack it. */
+const HEADERS = { 'X-Requested-With': 'Shelfie' };
+
 @Injectable({ providedIn: 'root' })
 export class ApiClient {
   private readonly http = inject(HttpClient);
 
   get<T>(path: string): Promise<T> {
-    return this.send(this.http.get<T>(`/api${path}`));
+    return this.send(this.http.get<T>(`/api${path}`, { headers: HEADERS }));
   }
 
   post<T>(path: string, body: unknown): Promise<T> {
-    return this.send(this.http.post<T>(`/api${path}`, body));
+    return this.send(this.http.post<T>(`/api${path}`, body, { headers: HEADERS }));
   }
 
   patch<T>(path: string, body: unknown): Promise<T> {
-    return this.send(this.http.patch<T>(`/api${path}`, body));
+    return this.send(this.http.patch<T>(`/api${path}`, body, { headers: HEADERS }));
   }
 
   delete(path: string): Promise<void> {
-    return this.send(this.http.delete<void>(`/api${path}`));
+    return this.send(this.http.delete<void>(`/api${path}`, { headers: HEADERS }));
   }
 
   private async send<T>(request: Observable<unknown>): Promise<T> {

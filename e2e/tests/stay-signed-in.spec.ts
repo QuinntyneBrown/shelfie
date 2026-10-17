@@ -1,5 +1,6 @@
 // Traces to: L2-003
 import { test, expect } from '../support/test';
+import { SAME_SITE } from '../support/same-site';
 import { signInAsNia } from '../support/signed-in';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
@@ -59,7 +60,7 @@ test('Given Nia is signed in, when she signs out, then the server ends the sessi
   await signInAsNia(page);
   await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
 
-  const signOut = await page.request.post('/api/auth/sign-out');
+  const signOut = await page.request.post('/api/auth/sign-out', SAME_SITE);
   const afterwards = await page.request.get('/api/shelf');
 
   expect(signOut.status()).toBe(204);

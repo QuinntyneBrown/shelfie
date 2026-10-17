@@ -1,5 +1,6 @@
 // Traces to: L2-014
 import { test, expect } from '../support/test';
+import { SAME_SITE } from '../support/same-site';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ReviewPage } from '../pages/review.page';
 import { ShellPage } from '../pages/shell.page';
@@ -72,7 +73,7 @@ test('Given a long queue on a phone, when Dad opens Review, then it fits the scr
 
 test('Given things happened lately, when Dad opens Review, then Recent activity lists them newest first in plain words', async ({ page }) => {
   await signInAsDad(page);
-  await page.request.post('/api/books', {
+  await page.request.post('/api/books', { ...SAME_SITE,
     data: { title: 'The Hobbit', author: '', chapterCount: 19, coverColor: 'peach', sticker: '🐉' },
   });
   await page.reload();

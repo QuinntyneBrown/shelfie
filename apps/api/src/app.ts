@@ -1,6 +1,7 @@
 import express from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { authRouter } from './auth.router.ts';
+import { csrfGuard } from './csrf.ts';
 import { problemDetailsHandler } from './errors.ts';
 import { booksRouter } from './books.router.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
@@ -26,6 +27,7 @@ export function createApp(db: DatabaseSync) {
     db.prepare('SELECT 1').get();
     res.json({ ok: true });
   });
+  app.use('/api', csrfGuard);
   app.use('/api/auth', authRouter(db));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db));

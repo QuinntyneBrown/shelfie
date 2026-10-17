@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class ManageBookPage {
   constructor(private readonly page: Page) {}
@@ -125,11 +126,11 @@ export class ManageBookPage {
   }
 
   deleteViaApi(bookId: string) {
-    return this.page.request.delete(`/api/books/${bookId}`);
+    return this.page.request.delete(`/api/books/${bookId}`, SAME_SITE);
   }
 
   /** Asks the API to change a book, as a client that skips the page would. */
   patchViaApi(bookId: string, data: unknown) {
-    return this.page.request.patch(`/api/books/${bookId}`, { data });
+    return this.page.request.patch(`/api/books/${bookId}`, { ...SAME_SITE, data });
   }
 }

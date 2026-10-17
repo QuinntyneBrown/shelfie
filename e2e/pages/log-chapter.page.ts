@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class LogChapterPage {
   constructor(private readonly page: Page) {}
@@ -29,7 +30,7 @@ export class LogChapterPage {
 
   /** Posts a log straight to the API, as a client that skips the form would. */
   postLog(bookId: string, chapter: number, data: unknown) {
-    return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { data });
+    return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { ...SAME_SITE, data });
   }
 
   async chooseDay(day: 'Today' | 'Yesterday' | 'Another day') {
@@ -88,7 +89,7 @@ export class LogChapterPage {
 
   /** Asks the API to undo a log, as a client that skips the toast would. */
   undoViaApi(chapterLogId: string) {
-    return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`);
+    return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`, SAME_SITE);
   }
 
   confetti() {

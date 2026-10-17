@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 /** The grown-up's Review page: chapters waiting for feedback and books waiting for a reward. */
 export class ReviewPage {
@@ -68,7 +69,7 @@ export class ReviewPage {
   }
 
   postRewardViaApi(bookId: string, data: unknown) {
-    return this.page.request.post(`/api/books/${bookId}/reward`, { data });
+    return this.page.request.post(`/api/books/${bookId}/reward`, { ...SAME_SITE, data });
   }
 
   caughtUp() {

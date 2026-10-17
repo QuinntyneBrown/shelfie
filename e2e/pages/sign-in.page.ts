@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class SignInPage {
   private passwordRequests = 0;
@@ -139,7 +140,7 @@ export class SignInPage {
   async postPin(profileName: string, pin: string) {
     const profiles = await (await this.page.request.get('/api/auth/profiles')).json();
     const profile = profiles.find((p: { name: string }) => p.name === profileName);
-    return this.page.request.post('/api/auth/pin', { data: { profileId: profile.id, pin } });
+    return this.page.request.post('/api/auth/pin', { ...SAME_SITE, data: { profileId: profile.id, pin } });
   }
 
   pinError() {

@@ -1,5 +1,6 @@
 // Traces to: L2-013
 import { test, expect } from '../support/test';
+import { SAME_SITE } from '../support/same-site';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { questionsAnswered } from '../support/database';
 import { BooksPage } from '../pages/books.page';
@@ -108,11 +109,11 @@ test('Given saving fails, when Dad adds a question, then the dialog says so and 
 
 test('Given a request that skips the page, when Nia writes a question or Dad targets another family’s book, then the API refuses it', async ({ page }) => {
   await signInAsNia(page);
-  expect((await page.request.post('/api/books/b-lion/questions', { data: { text: CUSTOM } })).status()).toBe(403);
+  expect((await page.request.post('/api/books/b-lion/questions', { ...SAME_SITE, data: { text: CUSTOM } })).status()).toBe(403);
 
   await page.context().clearCookies();
   await signInAsDad(page);
-  expect((await page.request.post('/api/books/b-other/questions', { data: { text: CUSTOM } })).status()).toBe(404);
-  expect((await page.request.patch('/api/questions/no-such-question', { data: { text: CUSTOM } })).status()).toBe(404);
-  expect((await page.request.delete('/api/questions/no-such-question')).status()).toBe(404);
+  expect((await page.request.post('/api/books/b-other/questions', { ...SAME_SITE, data: { text: CUSTOM } })).status()).toBe(404);
+  expect((await page.request.patch('/api/questions/no-such-question', { ...SAME_SITE, data: { text: CUSTOM } })).status()).toBe(404);
+  expect((await page.request.delete('/api/questions/no-such-question', SAME_SITE)).status()).toBe(404);
 });
