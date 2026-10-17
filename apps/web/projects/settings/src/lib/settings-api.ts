@@ -3,7 +3,7 @@ import { ApiClient } from 'core';
 
 export interface SettingsPatch {
   reader: { name: string; color: string; pin?: string };
-  grownUp: { name: string; email: string };
+  grownUp: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
 export interface SettingsView {

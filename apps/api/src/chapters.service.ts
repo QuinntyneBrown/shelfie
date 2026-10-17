@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
+import { Problem } from './problem.ts';
 
 export const DEFAULT_QUESTIONS = [
   'What happened in this chapter?',
@@ -16,18 +17,6 @@ function householdToday(db: DatabaseSync, householdId: string): string {
   return dayIn(time_zone, new Date());
 }
 
-export class Problem extends Error {
-  status: number;
-  type: string;
-  extra: Record<string, unknown>;
-
-  constructor(status: number, type: string, extra: Record<string, unknown> = {}) {
-    super(type);
-    this.status = status;
-    this.type = type;
-    this.extra = extra;
-  }
-}
 
 export interface LogRequest {
   readOn: string;

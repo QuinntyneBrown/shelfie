@@ -6,6 +6,7 @@ import { SettingsPage } from '../pages/settings.page';
 import { ErrorPage } from '../pages/error.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
+import { DAD } from '../support/accounts';
 
 test('Given Dad is signed in, when he chooses Settings from his account menu, then the page shows how the household is set up now', async ({ page }) => {
   await signInAsDad(page);
@@ -117,4 +118,38 @@ test('Given a new password that is short or typed differently twice, when Dad sa
   await settings.save();
   await expect(settings.confirmField()).toHaveAccessibleDescription(/These don’t match\. Type the same password in both boxes\./);
   expect(settings.saveRequestCount()).toBe(0);
+});
+
+test('Given a new password and a wrong current password, when Dad saves, then it is refused, nothing changes and what he typed stays', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setNewPassword('brand-new-pass-1');
+  await settings.setCurrentPassword('not-my-password');
+  await settings.save();
+
+  await expect(settings.failureBanner()).toContainText('Your current password isn’t right');
+  await expect(settings.newPasswordField()).toHaveValue('brand-new-pass-1');
+  await expect(settings.banner()).toBeHidden();
+});
+
+test('Given a new password and the right current one, when Dad saves, then he signs in with the new password and not the old', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setNewPassword('brand-new-pass-1');
+  await settings.setCurrentPassword(DAD.password);
+  await settings.save();
+  await expect(settings.banner()).toBeVisible();
+
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Dad');
+  await shell.menuItem('Sign out').click();
+  const signIn = new SignInPage(page);
+  await signIn.chooseGrownUp('Dad');
+  await signIn.typePasswordAndSignIn(DAD.password);
+  await expect(signIn.failureSummary()).toBeVisible();
+  await signIn.typePasswordAndSignIn('brand-new-pass-1');
+
+  await expect(page).toHaveURL(/\/review$/);
 });

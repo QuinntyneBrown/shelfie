@@ -1,7 +1,8 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { Problem, getForm, logChapter, undoLog } from './chapters.service.ts';
+import { getForm, logChapter, undoLog } from './chapters.service.ts';
+import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 const params = z.object({ id: z.string(), n: z.coerce.number().int().min(1) });

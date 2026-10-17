@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Banner, Button, ColorPicker, TextField } from 'components';
-import { SessionService } from 'core';
+import { ApiError, SessionService } from 'core';
 import { SettingsApi } from '../settings-api';
 
 const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
@@ -20,6 +20,7 @@ export class SettingsPage {
   protected readonly loaded = signal(false);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly failure = signal<string | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly newPasswordError = signal<string | null>(null);
   protected readonly confirmError = signal<string | null>(null);
@@ -64,6 +65,7 @@ export class SettingsPage {
     if (this.problems().length) return;
     this.saving.set(true);
     this.saved.set(false);
+    this.failure.set(null);
     try {
       const view = await this.api.save({
         reader: {
@@ -71,11 +73,23 @@ export class SettingsPage {
           color: this.readerColor(),
           ...(this.pin() ? { pin: this.pin() } : {}),
         },
-        grownUp: { name: this.grownUpName(), email: this.email() },
+        grownUp: {
+          name: this.grownUpName(),
+          email: this.email(),
+          ...(this.newPassword()
+            ? { newPassword: this.newPassword(), currentPassword: this.currentPassword() }
+            : {}),
+        },
       });
       this.session.update(view.grownUp.name);
       this.pin.set('');
+      this.newPassword.set('');
+      this.confirmPassword.set('');
+      this.currentPassword.set('');
       this.saved.set(true);
+    } catch (e) {
+      if (!(e instanceof ApiError) || e.type !== 'current-password-invalid') throw e;
+      this.failure.set('Your current password isn’t right.');
     } finally {
       this.saving.set(false);
     }

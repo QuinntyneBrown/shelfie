@@ -76,6 +76,10 @@ export class SettingsPage {
     return this.page.getByLabel('Type it again');
   }
 
+  failureBanner() {
+    return this.page.getByRole('alert').filter({ hasText: 'Couldn’t save' });
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

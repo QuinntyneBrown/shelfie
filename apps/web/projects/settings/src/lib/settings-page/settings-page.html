@@ -19,6 +19,13 @@
           </ul>
         </sh-banner>
       }
+      @if (failure(); as message) {
+        <sh-banner
+          severity="danger"
+          title="Couldn’t save your settings"
+          [message]="message + ' Nothing was changed; what you typed is still here.'"
+        />
+      }
       @if (saved()) {
         <sh-banner
           title="Saved"
