@@ -4,6 +4,8 @@ import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ErrorPage } from '../pages/error.page';
+import { ShelfPage } from '../pages/shelf.page';
+import { SignInPage } from '../pages/sign-in.page';
 
 test('Given Dad is signed in, when he chooses Settings from his account menu, then the page shows how the household is set up now', async ({ page }) => {
   await signInAsDad(page);
@@ -34,4 +36,35 @@ test('Given nobody is signed in, when the settings are asked for, then the API s
   const response = await new SettingsPage(page).getViaApi();
 
   expect(response.status()).toBe(401);
+});
+
+test('Given Dad changes Nia’s name and colour, when he saves, then Nia sees them at her next sign-in', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setReaderName('Nina');
+  await settings.chooseReaderColour('Mint');
+  await settings.save();
+  await expect(settings.banner()).toBeVisible();
+
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Dad');
+  await shell.menuItem('Switch reader').click();
+  const signIn = new SignInPage(page);
+  await signIn.choose('Nina');
+  await signIn.enterPin('1234');
+
+  await expect(new ShelfPage(page).greeting()).toHaveText('Hi Nina');
+  await expect(shell.accountMenuButton('Nina')).toHaveClass(/avatar--mint/);
+});
+
+test('Given Dad changes his own display name, when he saves, then the top bar shows it at once', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setGrownUpName('Marcus');
+  await settings.save();
+
+  await expect(settings.banner()).toBeVisible();
+  await expect(new ShellPage(page).accountMenuButton('Marcus')).toBeVisible();
 });

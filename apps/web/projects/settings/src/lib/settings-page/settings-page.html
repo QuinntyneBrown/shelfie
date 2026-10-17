@@ -6,7 +6,13 @@
     </div>
   </div>
   @if (loaded()) {
-    <form class="stack form" novalidate>
+    <form class="stack form" novalidate (submit)="$event.preventDefault(); save()">
+      @if (saved()) {
+        <sh-banner
+          title="Saved"
+          message="Your changes are in. Nia sees them the next time she signs in."
+        />
+      }
       <section class="card stack" aria-labelledby="reader-title">
         <h2 id="reader-title" class="section-title">Reader</h2>
         <sh-text-field label="Name" [(value)]="readerName" />
@@ -50,6 +56,9 @@
           [(value)]="currentPassword"
         />
       </section>
+      <div class="form-actions">
+        <sh-button [busy]="saving()">Save settings</sh-button>
+      </div>
     </form>
   }
 </div>

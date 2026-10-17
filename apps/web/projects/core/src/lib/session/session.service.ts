@@ -16,6 +16,11 @@ export class SessionService {
   /** Set when the API reports the session ran out, so sign-in can say why. */
   readonly expired = signal(false);
 
+  /** Shows a changed display name straight away, without another sign-in. */
+  update(name: string) {
+    this.current.update((session) => (session ? { ...session, name } : session));
+  }
+
   /** Ends the session on the server and forgets it here. */
   async signOut() {
     try {

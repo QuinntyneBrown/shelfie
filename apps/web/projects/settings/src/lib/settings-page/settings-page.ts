@@ -1,21 +1,25 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ColorPicker, TextField } from 'components';
+import { Banner, Button, ColorPicker, TextField } from 'components';
+import { SessionService } from 'core';
 import { SettingsApi } from '../settings-api';
 
 const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
 
 @Component({
   selector: 'sh-settings-page',
-  imports: [ColorPicker, TextField],
+  imports: [Banner, Button, ColorPicker, TextField],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsPage {
   private readonly api = inject(SettingsApi);
+  private readonly session = inject(SessionService);
 
   protected readonly colors = COLORS;
   protected readonly loaded = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly saved = signal(false);
   protected readonly readerName = signal('');
   protected readonly readerColor = signal('rose');
   protected readonly pin = signal('');
@@ -33,5 +37,21 @@ export class SettingsPage {
       this.email.set(view.grownUp.email);
       this.loaded.set(true);
     });
+  }
+
+  protected async save() {
+    if (this.saving()) return;
+    this.saving.set(true);
+    this.saved.set(false);
+    try {
+      const view = await this.api.save({
+        reader: { name: this.readerName(), color: this.readerColor() },
+        grownUp: { name: this.grownUpName(), email: this.email() },
+      });
+      this.session.update(view.grownUp.name);
+      this.saved.set(true);
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

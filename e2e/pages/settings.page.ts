@@ -19,6 +19,30 @@ export class SettingsPage {
     return this.page.getByLabel('E-mail address');
   }
 
+  async open() {
+    await this.page.goto('/settings');
+  }
+
+  async setReaderName(name: string) {
+    await this.readerName().fill(name);
+  }
+
+  async chooseReaderColour(colour: string) {
+    await this.page.getByRole('radio', { name: colour }).check({ force: true });
+  }
+
+  async setGrownUpName(name: string) {
+    await this.grownUpName().fill(name);
+  }
+
+  async save() {
+    await this.page.getByRole('button', { name: 'Save settings' }).click();
+  }
+
+  banner() {
+    return this.page.getByRole('status').filter({ hasText: 'Saved' });
+  }
+
   /** Asks the API for the settings, as a client that skips the page would. */
   getViaApi() {
     return this.page.request.get('/api/settings');

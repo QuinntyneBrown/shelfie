@@ -24,6 +24,10 @@ export class ApiClient {
     return this.send(this.http.post<T>(`/api${path}`, body));
   }
 
+  patch<T>(path: string, body: unknown): Promise<T> {
+    return this.send(this.http.patch<T>(`/api${path}`, body));
+  }
+
   delete(path: string): Promise<void> {
     return this.send(this.http.delete<void>(`/api${path}`));
   }
