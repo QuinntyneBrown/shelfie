@@ -157,3 +157,14 @@ test('Given she has no preference, when the shelf shows, then controls do animat
 
   expect(await shell.longestMotion()).toBeGreaterThan(0);
 });
+
+for (const screen of screens) {
+  test(`Given a dark device, when ${screen.name} shows, then an accessibility scan still finds nothing serious or critical`, async ({ page }) => {
+    const shell = new ShellPage(page);
+    await shell.preferDarkDevice(true);
+    await screen.open(page);
+    await expect.poll(() => shell.theme()).toBe('dark');
+
+    expect(await shell.seriousAccessibilityProblems()).toEqual([]);
+  });
+}
