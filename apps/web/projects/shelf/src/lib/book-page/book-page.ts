@@ -70,7 +70,9 @@ export class BookPage {
     try {
       this.book.set(await this.api.book(id));
     } catch (e) {
-      if (e instanceof ApiError && e.status === 404) {
+      if (e instanceof ApiError && e.status === 0 && !this.offline.online()) {
+        await this.router.navigate(['/offline'], { queryParams: { from: `/book/${id}` } });
+      } else if (e instanceof ApiError && e.status === 404) {
         await this.router.navigateByUrl('/not-found', { skipLocationChange: true });
       } else if (e instanceof ApiError && e.status > 0 && e.status < 500) {
         throw e;

@@ -12,6 +12,7 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('sign-in').then((m) => m.ResetPasswordPage),
   },
+  { path: 'offline', loadComponent: () => import('sign-in').then((m) => m.OfflinePage) },
   { path: 'error', loadComponent: () => import('sign-in').then((m) => m.ServerErrorPage) },
   {
     path: 'settings',

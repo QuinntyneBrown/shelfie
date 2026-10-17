@@ -108,3 +108,18 @@ test('Given sending a kept chapter fails, then it stays kept and Retry sends it 
   await expect(log.toast('Chapter 12 saved')).toBeVisible();
   await expect.poll(() => loggedAtOf('b-lion', 12)).toBeDefined();
 });
+
+test('Given Nia is offline, when she opens a book she has not opened before, then the Offline page shows and Try again works once she is back', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+  const shell = new ShellPage(page);
+  await shell.goOffline();
+
+  await shelf.openBook('On the go', 'The Wild Robot');
+  await expect(page.getByRole('heading', { name: 'You’re offline' })).toBeVisible();
+
+  await shell.goOnline();
+  await page.getByRole('button', { name: 'Try again' }).click();
+  await expect(new BookPage(page).heading()).toHaveText('The Wild Robot');
+});
