@@ -1,0 +1,9 @@
+{
+  "name": "shelfie",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "e2e"
+  ]
+}
