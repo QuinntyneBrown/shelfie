@@ -12,4 +12,6 @@ export class RewardCard {
   readonly title = input.required<string>();
   readonly coverColor = input.required<string>();
   readonly sticker = input.required<string>();
+  /** Second line, e.g. the reward and its date. */
+  readonly note = input.required<string>();
 }

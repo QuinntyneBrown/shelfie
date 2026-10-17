@@ -32,7 +32,7 @@
         <h2 id="finished" class="group-title">Finished <span class="badge">{{ shelf.finished.length }}</span></h2>
         <ul class="list finished-list">
           @for (book of shelf.finished; track book.id) {
-            <li><sh-reward-card [title]="book.title" [coverColor]="book.coverColor" [sticker]="book.sticker" /></li>
+            <li><sh-reward-card [title]="book.title" [coverColor]="book.coverColor" [sticker]="book.sticker" [note]="book.reward ? book.reward.text + ' · ' + (book.reward.givenOn | date: 'EEE d MMM' : 'UTC') : 'Finished ' + (book.finishedOn | date: 'EEE d MMM' : 'UTC') + ' · ' + shelf.grownUpName + ' is picking your reward'" /></li>
           }
         </ul>
       </section>

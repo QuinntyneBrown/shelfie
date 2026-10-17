@@ -17,9 +17,12 @@ export interface FinishedBook {
   title: string;
   coverColor: string;
   sticker: string;
+  finishedOn: string;
+  reward: { text: string; givenOn: string } | null;
 }
 
 export interface ShelfResponse {
+  grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];
   finished: FinishedBook[];

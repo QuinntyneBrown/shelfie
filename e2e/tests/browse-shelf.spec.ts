@@ -18,3 +18,12 @@ test('Given books in every state, when Nia opens her shelf, then each shows its 
 
   await expect(shelf.finishedBook('Matilda')).toBeVisible();
 });
+
+test('Given finished books, when Nia opens her shelf, then each shows its reward and date, or that the reward is still being picked', async ({ page }) => {
+  // Traces to: L2-018
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.finishedBook('Charlotte’s Web')).toContainText('Movie night with popcorn · Sun 11 Oct');
+  await expect(shelf.finishedBook('Matilda')).toContainText('Finished Tue 13 Oct · Dad is picking your reward');
+});

@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BookCard, RewardCard } from 'components';
@@ -6,7 +7,7 @@ import { ShelfApi, ShelfResponse } from '../shelf-api';
 
 @Component({
   selector: 'sh-shelf-page',
-  imports: [BookCard, RewardCard, RouterLink],
+  imports: [BookCard, DatePipe, RewardCard, RouterLink],
   templateUrl: './shelf-page.html',
   styleUrl: './shelf-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
