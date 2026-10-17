@@ -102,3 +102,19 @@ test('Given a PIN that is not exactly 4 digits, when Dad saves, then an inline e
   await expect(settings.problemSummary()).toContainText('Fix 1 thing');
   expect(settings.saveRequestCount()).toBe(0);
 });
+
+test('Given a new password that is short or typed differently twice, when Dad saves, then each box says what is wrong and nothing is sent', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  settings.watchSaves();
+  await settings.open();
+
+  await settings.setNewPassword('short');
+  await settings.save();
+  await expect(settings.newPasswordField()).toHaveAccessibleDescription(/Use at least 8 characters/);
+
+  await settings.setNewPassword('long-enough-1', 'long-enough-2');
+  await settings.save();
+  await expect(settings.confirmField()).toHaveAccessibleDescription(/These don’t match\. Type the same password in both boxes\./);
+  expect(settings.saveRequestCount()).toBe(0);
+});

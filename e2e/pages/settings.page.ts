@@ -59,6 +59,23 @@ export class SettingsPage {
     return this.page.getByLabel('New 4-digit PIN');
   }
 
+  async setNewPassword(password: string, again = password) {
+    await this.page.getByLabel('New password').fill(password);
+    await this.page.getByLabel('Type it again').fill(again);
+  }
+
+  async setCurrentPassword(password: string) {
+    await this.page.getByLabel('Current password').fill(password);
+  }
+
+  newPasswordField() {
+    return this.page.getByLabel('New password');
+  }
+
+  confirmField() {
+    return this.page.getByLabel('Type it again');
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

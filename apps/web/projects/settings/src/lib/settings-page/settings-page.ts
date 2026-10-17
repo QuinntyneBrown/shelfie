@@ -21,8 +21,12 @@ export class SettingsPage {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly pinError = signal<string | null>(null);
+  protected readonly newPasswordError = signal<string | null>(null);
+  protected readonly confirmError = signal<string | null>(null);
   protected readonly problems = computed(() =>
-    [this.pinError()].filter((p): p is string => p !== null),
+    [this.pinError(), this.newPasswordError(), this.confirmError()].filter(
+      (p): p is string => p !== null,
+    ),
   );
   protected readonly readerName = signal('');
   protected readonly readerColor = signal('rose');
@@ -47,6 +51,15 @@ export class SettingsPage {
     if (this.saving()) return;
     this.pinError.set(
       this.pin() && !/^[0-9]{4}$/.test(this.pin()) ? 'Use exactly 4 digits.' : null,
+    );
+    const newPassword = this.newPassword();
+    this.newPasswordError.set(
+      newPassword && newPassword.length < 8 ? 'Use at least 8 characters.' : null,
+    );
+    this.confirmError.set(
+      newPassword !== this.confirmPassword()
+        ? 'These don’t match. Type the same password in both boxes.'
+        : null,
     );
     if (this.problems().length) return;
     this.saving.set(true);

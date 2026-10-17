@@ -53,12 +53,14 @@
           label="New password (optional)"
           type="password"
           autocomplete="new-password"
+          [error]="newPasswordError()"
           [(value)]="newPassword"
         />
         <sh-text-field
           label="Type it again"
           type="password"
           autocomplete="new-password"
+          [error]="confirmError()"
           [(value)]="confirmPassword"
         />
         <sh-text-field
