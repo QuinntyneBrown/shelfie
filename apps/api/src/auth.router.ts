@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { DEVICE_COOKIE, deviceHousehold, readCookie, rememberDevice } from './device.ts';
+import { passwordSignInLimiter } from './rate-limit.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { listProfiles, requestPasswordReset, resetPassword, signInWithPassword, signInWithPin } from './auth.service.ts';
 
@@ -71,7 +72,7 @@ export function authRouter(db: DatabaseSync) {
     res.json(summary);
   });
 
-  router.post('/password', (req, res) => {
+  router.post('/password', passwordSignInLimiter(db), (req, res) => {
     const body = passwordSignInSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json({ type: 'validation' });
 

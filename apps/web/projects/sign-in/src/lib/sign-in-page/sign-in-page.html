@@ -56,7 +56,7 @@
           <h1>Welcome back</h1>
           <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
         }
-        @if (credentialsWrong()) {
+        @if (credentialsWrong() || tooManyTries()) {
           <div
             #summary
             class="alert alert--danger form-summary form-left"
@@ -70,7 +70,13 @@
             <div class="alert__body">
               <div class="alert__title">We couldn’t sign you in</div>
               <ul class="summary-list">
-                <li>E-mail or password is wrong</li>
+                <li>
+                  {{
+                    tooManyTries()
+                      ? 'Too many tries. Wait 10 minutes and try again.'
+                      : 'E-mail or password is wrong'
+                  }}
+                </li>
               </ul>
             </div>
           </div>
