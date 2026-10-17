@@ -90,6 +90,18 @@ export class ShellPage {
     return (where === 'top' ? this.topNav() : this.tabBar()).getByLabel(/chapters? to review$/);
   }
 
+  offlineBanner() {
+    return this.page.getByRole('status').filter({ hasText: 'No internet connection' });
+  }
+
+  async goOffline() {
+    await this.page.context().setOffline(true);
+  }
+
+  async goOnline() {
+    await this.page.context().setOffline(false);
+  }
+
   menu() {
     return this.page.getByRole('menu');
   }

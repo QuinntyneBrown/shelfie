@@ -11,6 +11,14 @@
     (menuSelect)="chooseFromMenu($event)"
   />
 }
+@for (banner of banners.banners(); track banner.id) {
+  <sh-banner
+    class="shell-banner"
+    [severity]="banner.severity"
+    [title]="banner.title"
+    [message]="banner.message ?? null"
+  />
+}
 <main #main id="main" tabindex="-1" [class.has-tabbar]="navLinks().length > 0">
   <router-outlet />
 </main>

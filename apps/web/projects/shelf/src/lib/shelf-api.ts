@@ -1,5 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { ApiClient } from 'core';
+import { ApiClient, ApiError } from 'core';
+
+/** The last shelf seen on this device, shown when there is no connection. */
+const CACHE_KEY = 'shelfie.shelf';
 
 export interface ChapterSummary {
   number: number;
@@ -80,7 +83,28 @@ export class ShelfApi {
     return this.api.post<{ id: string }>('/books', book);
   }
 
-  shelf() {
-    return this.api.get<ShelfResponse>('/shelf');
+  async shelf(): Promise<ShelfResponse> {
+    try {
+      const shelf = await this.api.get<ShelfResponse>('/shelf');
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(shelf));
+      } catch {
+        // Without storage there is simply no offline copy.
+      }
+      return shelf;
+    } catch (e) {
+      const cached = e instanceof ApiError && e.status === 0 ? readCache() : null;
+      if (cached) return cached;
+      throw e;
+    }
+  }
+}
+
+function readCache(): ShelfResponse | null {
+  try {
+    const stored = localStorage.getItem(CACHE_KEY);
+    return stored ? (JSON.parse(stored) as ShelfResponse) : null;
+  } catch {
+    return null;
   }
 }

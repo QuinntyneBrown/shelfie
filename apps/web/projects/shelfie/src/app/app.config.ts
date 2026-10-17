@@ -6,7 +6,13 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { GlobalErrorHandler, SessionService, ThemeService, sessionExpiredInterceptor } from 'core';
+import {
+  GlobalErrorHandler,
+  OfflineQueue,
+  SessionService,
+  ThemeService,
+  sessionExpiredInterceptor,
+} from 'core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 
@@ -18,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([sessionExpiredInterceptor])),
     provideAppInitializer(() => {
       inject(ThemeService);
+      inject(OfflineQueue);
       return inject(SessionService).restore();
     }),
   ],

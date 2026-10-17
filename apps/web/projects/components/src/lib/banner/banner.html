@@ -8,6 +8,10 @@
       <circle cx="12" cy="12" r="9" />
       <path d="M12 8v4M12 16h.01" />
     </svg>
+  } @else if (severity() === 'warning') {
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
+    </svg>
   } @else if (severity() === 'info') {
     <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="9" />

@@ -1,16 +1,16 @@
 import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { MenuItem, NavLink, TabBar } from 'components';
+import { Banner, MenuItem, NavLink, TabBar } from 'components';
 import { ReviewApi } from 'review';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
-import { SessionService, ShellStatusService, ToastService } from 'core';
+import { BannerService, SessionService, ShellStatusService, ToastService } from 'core';
 
 const MAX_VISIBLE_TOASTS = 3;
 
 @Component({
-  imports: [RouterOutlet, TabBar, Toast, TopBar],
+  imports: [Banner, RouterOutlet, TabBar, Toast, TopBar],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -49,6 +49,7 @@ export class App {
   });
   protected readonly toasts = inject(ToastService);
   protected readonly status = inject(ShellStatusService);
+  protected readonly banners = inject(BannerService);
   protected readonly showAllToasts = signal(false);
   /** The newest toasts; older ones collapse into a "+N more" line so the stack never covers the page. */
   protected readonly visibleToasts = computed(() => {

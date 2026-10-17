@@ -8,3 +8,5 @@ export * from './lib/session/grown-up.guard';
 export * from './lib/errors/global-error-handler';
 export * from './lib/theme/theme.service';
 export * from './lib/shell/shell-status.service';
+export * from './lib/banner/banner.service';
+export * from './lib/offline/offline-queue.service';
