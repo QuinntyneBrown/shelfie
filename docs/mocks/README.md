@@ -1,6 +1,115 @@
 # Shelfie mocks
 
-Static HTML mocks for every page, dialog and notification, in every state. Open [index.html](index.html) locally to browse them.
+Static HTML mocks for every page, dialog and notification of Shelfie, in every state, in light and dark, at phone, tablet and desktop widths, with a keyboard. They are the product on disk before the product exists: what gets built is what is mocked here, and nothing more.
+
+## How to open them
+
+- Open [index.html](index.html) from disk for the gallery, then click any state.
+- Every mock has a bar at the bottom linking its sibling states and toggling the theme (or press `t`).
+- `?theme=dark` forces dark, `?theme=light` forces light. `?chrome=0` hides the mock bar and the yellow design notes so the page looks exactly like the product.
+- Dialogs are shown over the page they open from; notifications on the page that triggers them. Under 640 px dialogs become bottom sheets.
+
+## Cast and catalog
+
+Every mock tells the same story so a reviewer can follow it across screens. Reuse these names, books and dates; do not invent new ones.
+
+<!--
+  CAST
+  Household:  the Bells, one reader and one grown-up (a single household per account).
+  Reader:     Nia (9). Avatar "N", rose. Signs in with a 4-digit PIN. 5-day reading streak.
+  Grown-up:   Dad = Marcus Bell, marcus@example.com. Avatar "MB", sky. Signs in with a password.
+  Today:      Friday 17 October 2026, late afternoon.
+
+  CATALOG (cover colour · sticker)
+  The Lion, the Witch and the Wardrobe — C. S. Lewis — 17 chapters — reading, 11 logged (ch 12 next) — sage · 🦁
+      ch 1–9 reviewed (ch 9 got a 🌟 on Wed 14 Oct), ch 10 logged yesterday and ch 11 today 4:12 pm, both waiting for Dad.
+      Questions: the 3 defaults + "Where did the children go in this chapter?" (added by Dad, Wed 7 Oct).
+  The Wild Robot — Peter Brown — 80 chapters — reading, 3 logged (ch 4 next) — mint · 🤖   (used for the long/edge states)
+  Because of Winn-Dixie — Kate DiCamillo — 26 chapters — not started, added by Dad Thu 15 Oct — sun · 🐕
+  Matilda — Roald Dahl — 21 chapters — finished Tue 13 Oct, reward not yet given — rose · 📚
+  Charlotte's Web — E. B. White — 22 chapters — finished Sun 23 Aug, reward "Movie night with popcorn" given Mon 24 Aug — sky · 🕷️
+
+  DEFAULT QUESTIONS (every book)
+  1. What happened in this chapter?
+  2. Who was your favourite character in this chapter, and why?
+  3. What do you think will happen next?
+
+  STICKERS Dad can give: 🌟 Star · 🦉 Wise owl · 🚀 Rocket · 🐉 Dragon · 🍪 Cookie · 💡 Bright idea
+-->
+
+| Who | Details |
+|---|---|
+| Nia | The reader, 9. Signs in with a 4-digit PIN. 5-day streak. Avatar "N" in rose. |
+| Dad (Marcus Bell) | The grown-up. Signs in with `marcus@example.com` and a password. Avatar "MB" in sky. |
+| Today | Friday 17 October 2026 |
+
+| Book | Author | Chapters | Where it is |
+|---|---|---|---|
+| The Lion, the Witch and the Wardrobe 🦁 | C. S. Lewis | 17 | Reading; 11 logged, chapters 10 and 11 waiting for Dad |
+| The Wild Robot 🤖 | Peter Brown | 80 | Reading; 3 logged (the long-list case) |
+| Because of Winn-Dixie 🐕 | Kate DiCamillo | 26 | Up next; Dad added it on Thursday |
+| Matilda 📚 | Roald Dahl | 21 | Finished Tuesday; reward not yet given |
+| Charlotte's Web 🕷️ | E. B. White | 22 | Finished in August; reward "Movie night with popcorn" |
+
+## The product in one paragraph
+
+Two people share one household. Nia opens her **shelf**, taps the book she is reading, logs the chapter she just read and answers a few short questions (three defaults, plus any Dad adds for that book). Dad opens **Review**, reads her answers, gives a sticker and a short note, and when she finishes a book he gives a **reward** that shows up on her trophy shelf. Everything else (sign-in, settings, error pages, toasts and banners) exists only to keep that loop smooth.
+
+## Screens
+
+| Area | Pages | Dialogs | Notifications |
+|---|---|---|---|
+| Entry | sign-in, forgot-password, reset-password | | |
+| Reader | shelf, book, add-book, log-chapter, chapter | account-menu | toast, banner |
+| Grown-up | review, review-chapter, books, manage-book, settings | give-reward, delete-book, edit-question | |
+| Errors | not-found, forbidden, server-error, offline | | |
+
+Navigation: the reader has one place to be (the shelf), so her top bar is just the brand, her streak and her avatar. The grown-up gets Review / Books / Settings in the top bar from 768 px and a bottom tab bar on phones.
+
+## Budget check (45-day limit)
+
+AGENTS.md caps the whole build at 45 developer-days and asks that the mock set be sized against it before writing. Estimated with the `estimating-designs` guideline (about one day per behaviour plus setup, 2 to 7 days per design):
+
+| Design | Behaviours | Days |
+|---|---|---|
+| Platform setup: Angular app, Node API, database, auth middleware, Playwright, CI | | 5 |
+| Sign in: profile picker, PIN with lockout, password, session expiry, forgot and reset password | 6 | 6 |
+| Books: shelf, add a book with cover, book page, grown-up list, manage (details, questions, remove) | 7 | 8 |
+| Reading log: log a chapter with answers, drafts, chapter page, finish-book celebration, streak | 5 | 6 |
+| Review: queue and activity, review a chapter with sticker and note, give a reward | 4 | 5 |
+| Settings: reader name, colour and PIN, grown-up e-mail and password, appearance | 3 | 3 |
+| Shell: top bar, tab bar, account menu, toasts, banners, offline queue, error pages | 4 | 4 |
+| **Total** | | **37** |
+
+37 of 45 days, leaving 8 days of margin for the unknowns that every build has. Things deliberately **not** mocked because they would not fit or are not asked for: book-cover lookup from an online catalogue, chapter titles, AI-generated questions, more than one reader per household, editing answers after they are sent, e-mail notifications, push notifications, exporting or printing.
+
+## Open questions and assumptions
+
+These are decisions the mocks make that nobody has confirmed. Each is marked in the relevant mock with a yellow note.
+
+1. **Who writes the questions.** Three default questions apply to every chapter of every book; Dad can add, edit or remove extra questions per book from Manage book. New questions apply to chapters logged from then on. (Alternative not mocked: AI-generated questions per chapter.)
+2. **One reader, one grown-up.** A household has exactly one of each. Nia signs in with a 4-digit PIN that Dad sets in Settings; five wrong tries lock the keypad for five minutes.
+3. **Chapters are numbered, not titled.** Adding a book asks only for the number of chapters. A chapter row shows the first line of her first answer instead of a title.
+4. **Covers are made, not fetched.** A cover is a pastel colour plus a sticker chosen when the book is added. No image upload, no online lookup.
+5. **Only question 1 is required.** The other answers can be left blank so a tired reader can still log a chapter.
+6. **Answers are final once sent.** There is no edit after "I'm done!"; Undo on the success toast is the only way back, for the life of the toast.
+7. **A sticker is required to send feedback;** the note is optional. The reader sees feedback on the chapter page and in a banner on her shelf.
+8. **Rewards are free text** with four quick picks. Giving a reward is the only "finish" step for Dad; there is no approval of the book itself.
+9. **Streak** counts consecutive days with at least one chapter logged and is shown to both of them. It is derived, never edited.
+10. **Offline:** the shelf shows cached data with a banner; a chapter logged offline is kept on the device and sent later.
+11. **Theme** is a household setting (match device, light, dark) saved in Settings; the mock bar's toggle only previews it.
+
+## Checking and screenshots
+
+```sh
+# coverage, HTML hygiene, accessibility basics, broken links; --write regenerates index.html and the matrix below
+python3 -I .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks --write
+
+# 606 screenshots (101 mocks × 360/768/1280 × light/dark) plus a contact sheet in docs/mocks/.cache/mocks/
+python3 -I .claude/skills/writing-html-mocks/scripts/screenshot_mocks.py docs/mocks
+```
+
+The screenshot script needs the Python `playwright` package with Chromium, or `npx playwright`. Never commit `.cache/`.
 
 ## Coverage
 
