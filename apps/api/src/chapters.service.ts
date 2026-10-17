@@ -19,11 +19,13 @@ function householdToday(db: DatabaseSync, householdId: string): string {
 export class Problem extends Error {
   status: number;
   type: string;
+  extra: Record<string, unknown>;
 
-  constructor(status: number, type: string) {
+  constructor(status: number, type: string, extra: Record<string, unknown> = {}) {
     super(type);
     this.status = status;
     this.type = type;
+    this.extra = extra;
   }
 }
 
@@ -49,8 +51,18 @@ function findBook(db: DatabaseSync, householdId: string, bookId: string, n: numb
   return book;
 }
 
+function loggedCount(db: DatabaseSync, bookId: string): number {
+  return (db.prepare('SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = ?').get(bookId) as { count: number }).count;
+}
+
+function refuseIfLogged(db: DatabaseSync, bookId: string, n: number) {
+  const existing = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(bookId, n) as { id: string } | undefined;
+  if (existing) throw new Problem(409, 'chapter-already-logged', { chapterLogId: existing.id });
+}
+
 export function getForm(db: DatabaseSync, householdId: string, bookId: string, n: number) {
   const book = findBook(db, householdId, bookId, n);
+  refuseIfLogged(db, bookId, n);
   const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
   return {
     book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker },
@@ -64,6 +76,8 @@ export function getForm(db: DatabaseSync, householdId: string, bookId: string, n
 export function logChapter(db: DatabaseSync, householdId: string, bookId: string, n: number, request: LogRequest) {
   const book = findBook(db, householdId, bookId, n);
   if (request.readOn > householdToday(db, householdId)) throw new Problem(400, 'future-date');
+  refuseIfLogged(db, bookId, n);
+  if (n !== loggedCount(db, bookId) + 1) throw new Problem(409, 'chapter-out-of-order');
   const id = randomUUID();
   const loggedAt = new Date();
   const undoUntil = new Date(loggedAt.getTime() + UNDO_SECONDS * 1000);
@@ -86,10 +100,11 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
     db.exec('COMMIT');
   } catch (e) {
     db.exec('ROLLBACK');
+    if (e instanceof Error && e.message.includes('UNIQUE')) throw new Problem(409, 'chapter-already-logged');
     throw e;
   }
 
-  const { count } = db.prepare('SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = ?').get(bookId) as { count: number };
+  const count = loggedCount(db, bookId);
   return {
     chapterLogId: id,
     undoUntil: undoUntil.toISOString(),

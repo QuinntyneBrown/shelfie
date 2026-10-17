@@ -44,6 +44,10 @@ export class LogChapterPage {
     return this.page.getByText('Pick today or an earlier day.');
   }
 
+  readForm(bookId: string, chapter: number) {
+    return this.page.request.get(`/api/books/${bookId}/chapters/${chapter}/form`);
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

@@ -132,3 +132,46 @@ test('Given a request that skips the form, when the day is in the future, then t
   expect(response.status()).toBe(400);
   expect(readOnOf('b-lion', 12)).toBeUndefined();
 });
+
+const answers = [{ position: 1, text: 'He said sorry.' }];
+
+test('Given a chapter is already logged, when it is logged again, then the API refuses the duplicate', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  const first = await log.postLog('b-lion', 12, { readOn: householdDay(), answers });
+  const second = await log.postLog('b-lion', 12, { readOn: householdDay(), answers });
+  const earlier = await log.postLog('b-lion', 11, { readOn: householdDay(), answers });
+
+  expect(first.status()).toBe(201);
+  expect([second.status(), (await second.json()).type]).toEqual([409, 'chapter-already-logged']);
+  expect([earlier.status(), (await earlier.json()).type]).toEqual([409, 'chapter-already-logged']);
+});
+
+test('Given chapter 12 is next, when a later chapter is logged, then the API refuses it', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  const skipped = await log.postLog('b-lion', 14, { readOn: householdDay(), answers });
+
+  expect([skipped.status(), (await skipped.json()).type]).toEqual([409, 'chapter-out-of-order']);
+  expect(readOnOf('b-lion', 14)).toBeUndefined();
+});
+
+test('Given a chapter that does not exist, when its form is asked for, then the API says not found', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  expect((await log.readForm('b-lion', 18)).status()).toBe(404);
+  expect((await log.readForm('b-nothing', 1)).status()).toBe(404);
+});
+
+test('Given a chapter is already logged, when its form is asked for, then the API names the existing log', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+
+  const response = await log.readForm('b-lion', 11);
+
+  expect(response.status()).toBe(409);
+  expect(await response.json()).toMatchObject({ type: 'chapter-already-logged', chapterLogId: 'b-lion-c11' });
+});

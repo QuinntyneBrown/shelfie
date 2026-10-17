@@ -24,7 +24,7 @@ export function chaptersRouter(db: DatabaseSync) {
       res.status(status).json(run());
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
-      res.status(e.status).json({ type: e.type });
+      res.status(e.status).json({ type: e.type, ...e.extra });
     }
   };
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
