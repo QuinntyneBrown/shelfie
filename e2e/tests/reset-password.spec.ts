@@ -3,6 +3,7 @@ import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
 import { clearMailbox, mailFor, resetLinkFor } from '../support/mailbox';
 import { signInAsDad } from '../support/signed-in';
+import { expireResetLinks } from '../support/database';
 import { ResetPasswordPage } from '../pages/reset-password.page';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { SignInPage } from '../pages/sign-in.page';
@@ -87,4 +88,40 @@ test('Given Dad is signed in on another device, when he resets his password, the
 
   expect((await other.request.get('/api/auth/session')).status()).toBe(401);
   await elsewhere.close();
+});
+
+test('Given a reset link that has been used, when it is opened again and submitted, then Dad is told it has expired and can ask for a new one', async ({ page }) => {
+  const forgot = new ForgotPasswordPage(page);
+  await forgot.open();
+  await forgot.requestLink(DAD.email);
+  const link = await resetLinkFor(DAD.email);
+  const reset = new ResetPasswordPage(page);
+  await reset.openLink(link);
+  await reset.choosePassword('a-fresh-password-7');
+  await expect(reset.heading()).toHaveText('Password updated');
+
+  await reset.openLink(link);
+  await reset.choosePassword('another-password-8');
+
+  await expect(reset.heading()).toHaveText('This link has expired');
+  await reset.askForNewLink();
+  await expect(forgot.heading()).toHaveText('Forgot your password?');
+});
+
+test('Given a reset link older than an hour, when Dad submits a new password, then he is told it has expired and nothing changes', async ({ page }) => {
+  const forgot = new ForgotPasswordPage(page);
+  await forgot.open();
+  await forgot.requestLink(DAD.email);
+  const link = await resetLinkFor(DAD.email);
+  expireResetLinks();
+
+  const reset = new ResetPasswordPage(page);
+  await reset.openLink(link);
+  await reset.choosePassword('a-fresh-password-7');
+
+  await expect(reset.heading()).toHaveText('This link has expired');
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.signInWithPassword(DAD.email, DAD.password);
+  await expect(page).toHaveURL(/\/review$/);
 });

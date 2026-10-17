@@ -47,3 +47,13 @@ export function sessionExpiresAt(): string {
     db.close();
   }
 }
+
+/** Makes every reset link older than its hour. */
+export function expireResetLinks() {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.exec("UPDATE password_reset SET expires_at = '2020-01-01T00:00:00.000Z'");
+  } finally {
+    db.close();
+  }
+}

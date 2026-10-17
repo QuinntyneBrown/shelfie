@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Button, TextField } from 'components';
-import { SessionService } from 'core';
+import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
 
 @Component({
@@ -23,6 +23,7 @@ export class ResetPasswordPage {
   protected readonly confirm = signal('');
   protected readonly saving = signal(false);
   protected readonly done = signal(false);
+  protected readonly linkExpired = signal(false);
 
   protected async save() {
     if (this.saving()) return;
@@ -30,6 +31,9 @@ export class ResetPasswordPage {
     try {
       this.session.current.set(await this.api.resetPassword(this.token() ?? '', this.password()));
       this.done.set(true);
+    } catch (e) {
+      if (!(e instanceof ApiError) || e.type !== 'reset-token-invalid') throw e;
+      this.linkExpired.set(true);
     } finally {
       this.saving.set(false);
     }

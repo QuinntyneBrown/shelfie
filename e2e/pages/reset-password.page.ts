@@ -21,6 +21,10 @@ export class ResetPasswordPage {
     await this.page.getByRole('button', { name: 'Save new password' }).click();
   }
 
+  async askForNewLink() {
+    await this.page.getByRole('link', { name: 'Send a new link' }).click();
+  }
+
   async goToReview() {
     await this.page.getByRole('link', { name: 'Go to Review' }).click();
   }
