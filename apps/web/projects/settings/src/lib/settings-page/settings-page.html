@@ -34,7 +34,7 @@
       }
       <section class="card stack" aria-labelledby="reader-title">
         <h2 id="reader-title" class="section-title">Reader</h2>
-        <sh-text-field label="Name" [(value)]="readerName" />
+        <sh-text-field label="Name" [error]="readerNameError()" [(value)]="readerName" />
         <sh-color-picker label="Colour" [colors]="colors" [(value)]="readerColor" />
         <sh-text-field
           label="New 4-digit PIN (optional)"
@@ -48,9 +48,10 @@
       </section>
       <section class="card stack" aria-labelledby="grownup-title">
         <h2 id="grownup-title" class="section-title">Grown-up</h2>
-        <sh-text-field label="Name Nia sees" [(value)]="grownUpName" />
+        <sh-text-field label="Name Nia sees" [error]="grownUpNameError()" [(value)]="grownUpName" />
         <sh-text-field
           label="E-mail address"
+          [error]="emailError()"
           type="email"
           autocomplete="email"
           help="Used to sign in and to reset your password."

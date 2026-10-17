@@ -21,13 +21,21 @@ export class SettingsPage {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly failure = signal<string | null>(null);
+  protected readonly readerNameError = signal<string | null>(null);
+  protected readonly grownUpNameError = signal<string | null>(null);
+  protected readonly emailError = signal<string | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly newPasswordError = signal<string | null>(null);
   protected readonly confirmError = signal<string | null>(null);
   protected readonly problems = computed(() =>
-    [this.pinError(), this.newPasswordError(), this.confirmError()].filter(
-      (p): p is string => p !== null,
-    ),
+    [
+      this.readerNameError(),
+      this.grownUpNameError(),
+      this.emailError(),
+      this.pinError(),
+      this.newPasswordError(),
+      this.confirmError(),
+    ].filter((p): p is string => p !== null),
   );
   protected readonly readerName = signal('');
   protected readonly readerColor = signal('rose');
@@ -50,6 +58,17 @@ export class SettingsPage {
 
   protected async save() {
     if (this.saving()) return;
+    const nameProblem = (name: string) =>
+      !name.trim()
+        ? 'Enter a name.'
+        : name.trim().length > 40
+          ? 'Use 40 characters or fewer.'
+          : null;
+    this.readerNameError.set(nameProblem(this.readerName()));
+    this.grownUpNameError.set(nameProblem(this.grownUpName()));
+    this.emailError.set(
+      /^\S+@\S+\.\S+$/.test(this.email().trim()) ? null : 'Enter a valid e-mail.',
+    );
     this.pinError.set(
       this.pin() && !/^[0-9]{4}$/.test(this.pin()) ? 'Use exactly 4 digits.' : null,
     );

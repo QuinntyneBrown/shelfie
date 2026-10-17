@@ -213,3 +213,20 @@ test('Given the server cannot be reached, when Dad saves, then he is told and ev
   await expect(settings.banner()).toBeVisible();
   await expect(settings.failureBanner()).toBeHidden();
 });
+
+test('Given an empty name or a malformed e-mail, when Dad saves, then each field says what to fix and nothing is sent', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  settings.watchSaves();
+  await settings.open();
+  await settings.setReaderName('');
+  await settings.setGrownUpName('x'.repeat(41));
+  await settings.setEmail('dad@');
+  await settings.save();
+
+  await expect(settings.readerName()).toHaveAccessibleDescription(/Enter a name/);
+  await expect(settings.grownUpName()).toHaveAccessibleDescription(/Use 40 characters or fewer/);
+  await expect(settings.email()).toHaveAccessibleDescription(/Enter a valid e-mail/);
+  await expect(settings.problemSummary()).toContainText('Fix 3 things');
+  expect(settings.saveRequestCount()).toBe(0);
+});
