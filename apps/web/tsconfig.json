@@ -8,6 +8,7 @@
       "core": ["./projects/core/src/public-api.ts"],
       "log-chapter": ["./projects/log-chapter/src/public-api.ts"],
       "review": ["./projects/review/src/public-api.ts"],
+      "settings": ["./projects/settings/src/public-api.ts"],
       "shelf": ["./projects/shelf/src/public-api.ts"],
       "sign-in": ["./projects/sign-in/src/public-api.ts"]
     },

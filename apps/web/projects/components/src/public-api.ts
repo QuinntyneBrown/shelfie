@@ -14,3 +14,4 @@ export * from './lib/text-field/text-field';
 export * from './lib/error-state/error-state';
 export * from './lib/top-bar/top-bar';
 export * from './lib/menu/menu';
+export * from './lib/color-picker/color-picker';

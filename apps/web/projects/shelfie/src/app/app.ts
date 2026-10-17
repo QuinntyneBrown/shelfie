@@ -18,10 +18,11 @@ export class App {
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
-  protected readonly menuItems: MenuItem[] = [
+  protected readonly menuItems = computed<MenuItem[]>(() => [
+    ...(this.session()?.role === 'grown_up' ? [{ id: 'settings', label: 'Settings' }] : []),
     { id: 'switch-reader', label: 'Switch reader' },
     { id: 'sign-out', label: 'Sign out' },
-  ];
+  ]);
   protected readonly menuHeader = computed(() => {
     const s = this.session();
     if (!s) return '';
@@ -55,7 +56,11 @@ export class App {
   }
 
   /** Switch reader and Sign out both end the session and return to the profile picker. */
-  protected async chooseFromMenu(_id: string) {
+  protected async chooseFromMenu(id: string) {
+    if (id === 'settings') {
+      await this.router.navigateByUrl('/settings');
+      return;
+    }
     await this.sessionService.signOut();
     await this.router.navigateByUrl('/sign-in');
   }

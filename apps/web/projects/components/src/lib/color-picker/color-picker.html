@@ -1,0 +1,17 @@
+<div class="field">
+  <span class="field__label" [id]="group + '-label'">{{ label() }}</span>
+  <div class="swatches" role="radiogroup" [attr.aria-labelledby]="group + '-label'">
+    @for (color of colors(); track color) {
+      <label class="swatch" [style.--cover]="'var(--color-cover-' + color + ')'">
+        <input
+          type="radio"
+          [name]="group"
+          [value]="color"
+          [checked]="value() === color"
+          (change)="value.set(color)"
+        />
+        <span class="visually-hidden">{{ color.charAt(0).toUpperCase() + color.slice(1) }}</span>
+      </label>
+    }
+  </div>
+</div>

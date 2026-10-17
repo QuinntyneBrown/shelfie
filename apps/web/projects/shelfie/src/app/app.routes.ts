@@ -5,6 +5,11 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
   { path: 'sign-in', loadComponent: () => import('sign-in').then((m) => m.SignInPage) },
   { path: 'error', loadComponent: () => import('sign-in').then((m) => m.ServerErrorPage) },
+  {
+    path: 'settings',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('settings').then((m) => m.SettingsPage),
+  },
   { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
     path: 'review',

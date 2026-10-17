@@ -3,6 +3,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { authRouter } from './auth.router.ts';
 import { problemDetailsHandler } from './errors.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
+import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
 export function createApp(db: DatabaseSync) {
@@ -19,6 +20,7 @@ export function createApp(db: DatabaseSync) {
   app.use('/api/auth', authRouter(db));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api/books', chaptersRouter(db));
+  app.use('/api/settings', settingsRouter(db));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use(problemDetailsHandler);
   return app;

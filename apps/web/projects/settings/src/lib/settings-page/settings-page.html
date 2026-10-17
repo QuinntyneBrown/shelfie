@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Settings</h1>
+      <p class="subtitle">Who’s in the house, how you sign in, how Shelfie looks.</p>
+    </div>
+  </div>
+  @if (loaded()) {
+    <form class="stack form" novalidate>
+      <section class="card stack" aria-labelledby="reader-title">
+        <h2 id="reader-title" class="section-title">Reader</h2>
+        <sh-text-field label="Name" [(value)]="readerName" />
+        <sh-color-picker label="Colour" [colors]="colors" [(value)]="readerColor" />
+        <sh-text-field
+          label="New 4-digit PIN (optional)"
+          type="password"
+          inputmode="numeric"
+          [maxlength]="4"
+          help="Leave blank to keep the current PIN. She uses this to open her shelf."
+          [(value)]="pin"
+        />
+      </section>
+      <section class="card stack" aria-labelledby="grownup-title">
+        <h2 id="grownup-title" class="section-title">Grown-up</h2>
+        <sh-text-field label="Name Nia sees" [(value)]="grownUpName" />
+        <sh-text-field
+          label="E-mail address"
+          type="email"
+          autocomplete="email"
+          help="Used to sign in and to reset your password."
+          [(value)]="email"
+        />
+        <sh-text-field
+          label="New password (optional)"
+          type="password"
+          autocomplete="new-password"
+          [(value)]="newPassword"
+        />
+        <sh-text-field
+          label="Type it again"
+          type="password"
+          autocomplete="new-password"
+          [(value)]="confirmPassword"
+        />
+        <sh-text-field
+          label="Current password"
+          type="password"
+          autocomplete="current-password"
+          help="Needed only to change your e-mail or password."
+          [(value)]="currentPassword"
+        />
+      </section>
+    </form>
+  }
+</div>
