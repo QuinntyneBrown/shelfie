@@ -1,13 +1,17 @@
 :host {
   display: block;
+  /* Fill the row, even inside a flex column, so the grid can lay out several stickers across. */
+  align-self: stretch;
 }
 .stickers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--target-comfortable), 1fr));
   gap: var(--space-2);
 }
 .sticker-choice {
   position: relative;
+  min-width: 0;
+  overflow: hidden;
   display: grid;
   place-items: center;
   min-height: var(--target-comfortable);

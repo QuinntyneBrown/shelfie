@@ -8,7 +8,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Banner, Button, Cover, Dialog, Progress, TextField } from 'components';
 import { ApiError, ToastService } from 'core';
 import { BookDetail, BooksApi, CustomQuestion } from '../books-api';
@@ -16,7 +16,17 @@ import { QuestionDialog } from '../question-dialog/question-dialog';
 
 @Component({
   selector: 'sh-manage-book-page',
-  imports: [Banner, Button, Cover, DatePipe, Dialog, Progress, QuestionDialog, TextField],
+  imports: [
+    Banner,
+    Button,
+    Cover,
+    DatePipe,
+    Dialog,
+    Progress,
+    QuestionDialog,
+    RouterLink,
+    TextField,
+  ],
   templateUrl: './manage-book-page.html',
   styleUrl: './manage-book-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

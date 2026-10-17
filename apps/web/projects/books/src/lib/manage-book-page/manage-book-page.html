@@ -86,6 +86,7 @@
                 <th scope="col">Read</th>
                 <th scope="col">What happened</th>
                 <th scope="col">Review</th>
+                <th scope="col"><span class="visually-hidden">Open</span></th>
               </tr>
             </thead>
             <tbody>
@@ -94,7 +95,8 @@
                   <td>{{ chapter.number }}</td>
                   <td>{{ chapter.log!.readOn | date: 'EEE d MMM' : 'UTC' }}</td>
                   <td class="first-line">{{ chapter.log!.firstLine }}</td>
-                  <td>To review</td>
+                  <td>{{ chapter.log!.reviewSticker ? 'Reviewed' : 'To review' }}</td>
+                  <td><a [routerLink]="['/review/chapters', chapter.log!.id]">Open</a></td>
                 </tr>
               }
             </tbody>

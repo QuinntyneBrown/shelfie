@@ -80,6 +80,8 @@ test('Given Dad opens a book to manage, then he sees its logged chapters newest 
   await expect(rows.nth(1)).toContainText('Father Christmas gave them presents.');
   await expect(rows.nth(1)).toContainText('To review');
   await expect(rows.nth(11)).toContainText('Lucy found a wardrobe');
+  await expect(rows.nth(3)).toContainText('Reviewed');
+  await expect(rows.nth(1).getByRole('link', { name: 'Open' })).toHaveAttribute('href', '/review/chapters/b-lion-c11');
   await expect(manage.title()).toHaveValue(LION);
   await expect(manage.author()).toHaveValue('C. S. Lewis');
   await expect(manage.chapters()).toHaveValue('17');

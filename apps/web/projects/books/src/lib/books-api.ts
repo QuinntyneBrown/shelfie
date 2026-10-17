@@ -16,7 +16,7 @@ export interface BookListItem {
 export interface ChapterSummary {
   number: number;
   state: 'logged' | 'next' | 'future';
-  log: { id: string; readOn: string; firstLine: string } | null;
+  log: { id: string; readOn: string; firstLine: string; reviewSticker: string | null } | null;
 }
 
 export interface CustomQuestion {
