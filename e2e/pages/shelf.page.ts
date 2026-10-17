@@ -15,6 +15,14 @@ export class ShelfPage {
     return this.group(group).getByRole('article').filter({ hasText: title });
   }
 
+  async addBook() {
+    await this.page.getByRole('link', { name: 'Add a book' }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
   async logChapter(group: 'On the go' | 'Up next', title: string, chapter: number) {
     await this.book(group, title).getByRole('link', { name: new RegExp(`Chapter ${chapter}\$`) }).click();
   }

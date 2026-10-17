@@ -1,0 +1,18 @@
+<div class="field">
+  <span class="field__label" [id]="group + '-label'">{{ label() }}</span>
+  <div class="stickers" role="radiogroup" [attr.aria-labelledby]="group + '-label'">
+    @for (sticker of stickers; track sticker.name) {
+      <label class="sticker-choice">
+        <input
+          type="radio"
+          [name]="group"
+          [value]="sticker.emoji"
+          [checked]="value() === sticker.emoji"
+          (change)="value.set(sticker.emoji)"
+        />
+        <span aria-hidden="true">{{ sticker.emoji }}</span>
+        <span class="visually-hidden">{{ sticker.name }}</span>
+      </label>
+    }
+  </div>
+</div>

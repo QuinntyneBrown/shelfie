@@ -1,6 +1,7 @@
 <div class="container">
   <div class="page-header">
     <h1>Hi {{ session.current()?.name }}</h1>
+    <a class="btn" routerLink="/add-book">Add a book</a>
   </div>
   @if (failed()) {
     <sh-empty-state

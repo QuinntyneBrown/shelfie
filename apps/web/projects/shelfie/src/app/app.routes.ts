@@ -25,6 +25,11 @@ export const routes: Routes = [
     loadComponent: () => import('review').then((m) => m.ReviewPage),
   },
   {
+    path: 'add-book',
+    canActivate: [authGuard],
+    loadComponent: () => import('shelf').then((m) => m.AddBookPage),
+  },
+  {
     path: 'shelf',
     canActivate: [authGuard],
     loadComponent: () => import('shelf').then((m) => m.ShelfPage),

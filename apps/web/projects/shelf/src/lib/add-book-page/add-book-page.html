@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Add a book</h1>
+  </div>
+  <form class="stack form" (submit)="$event.preventDefault(); submit()" novalidate>
+    <div class="card stack">
+      <sh-text-field label="Title" [maxlength]="120" [(value)]="title" />
+      <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
+      <sh-text-field
+        label="Chapters"
+        type="number"
+        inputmode="numeric"
+        help="Count them in the contents page. You can change this later."
+        [(value)]="chapters"
+      />
+      <sh-color-picker label="Cover colour" [colors]="colors" [(value)]="color" />
+      <sh-sticker-picker label="Sticker" [(value)]="sticker" />
+    </div>
+    <div class="form-actions">
+      <a class="btn btn--ghost" routerLink="/shelf">Cancel</a>
+      <sh-button [large]="true" [busy]="saving()">Add to my shelf</sh-button>
+    </div>
+  </form>
+</div>
