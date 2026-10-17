@@ -58,6 +58,22 @@ export class ShelfPage {
     await this.page.unroute('**/api/shelf');
   }
 
+  /** Number of columns the first grid on the page lays out. */
+  async columns() {
+    return this.page
+      .locator('.grid')
+      .first()
+      .evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length);
+  }
+
+  async scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  }
+
+  async cardOverflows(group: 'On the go' | 'Up next', title: string) {
+    return this.book(group, title).evaluate((card) => card.scrollWidth > card.clientWidth);
+  }
+
   cover(group: 'On the go' | 'Up next', title: string) {
     return this.book(group, title).locator('.cover');
   }

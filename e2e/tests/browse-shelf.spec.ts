@@ -51,6 +51,35 @@ test('Given the server cannot be reached, when Nia opens her shelf, then she can
   await expect(shelf.loadError()).toBeHidden();
 });
 
+const viewports = [
+  { name: 'XS', width: 375, min: 1, max: 2 },
+  { name: 'MD', width: 768, min: 3, max: 3 },
+  { name: 'XL', width: 1280, min: 4, max: 6 },
+];
+
+for (const { name, width, min, max } of viewports) {
+  test(`Given a ${name} screen, when Nia opens her shelf, then the books fit in ${min}-${max} columns without sideways scrolling`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await signInAsNia(page);
+    const shelf = new ShelfPage(page);
+
+    await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+    expect(await shelf.columns()).toBeGreaterThanOrEqual(min);
+    expect(await shelf.columns()).toBeLessThanOrEqual(max);
+    expect(await shelf.scrollsSideways()).toBe(false);
+  });
+}
+
+test('Given a book with 80 chapters, when Nia opens her shelf on a phone, then its progress fits inside the card', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  const robot = shelf.book('On the go', 'The Wild Robot');
+  await expect(robot.getByText('3 of 80')).toBeVisible();
+  expect(await shelf.cardOverflows('On the go', 'The Wild Robot')).toBe(false);
+});
+
 test.describe('with no books', () => {
   test.use({ shelf: 'empty' });
 

@@ -25,7 +25,7 @@
     @if (data.reading.length) {
       <section class="section" aria-labelledby="on-the-go">
         <h2 id="on-the-go" class="group-title">On the go</h2>
-        <div class="grid grid--auto">
+        <div class="grid book-grid">
           @for (book of data.reading; track book.id) {
             <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
               <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', book.nextChapter, 'log']">Log Chapter {{ book.nextChapter }}</a>
@@ -37,7 +37,7 @@
     @if (data.upNext.length) {
       <section class="section" aria-labelledby="up-next">
         <h2 id="up-next" class="group-title">Up next</h2>
-        <div class="grid grid--auto">
+        <div class="grid book-grid">
           @for (book of data.upNext; track book.id) {
             <sh-book-card [title]="book.title" [author]="book.author" [coverColor]="book.coverColor" [sticker]="book.sticker" [logged]="book.loggedCount" [chapters]="book.chapterCount">
               <a class="btn btn--sm" [routerLink]="['/books', book.id, 'chapters', 1, 'log']">Start with Chapter 1</a>

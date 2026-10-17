@@ -1,3 +1,9 @@
 .group-title { font: var(--text-h3); margin-bottom: var(--space-4); }
 .finished-list { gap: var(--space-2); }
 .loading-grid { margin-top: var(--space-4); }
+
+/* 1 column under 576px, then 2 (SM), 3 (MD) and 4 (XL). */
+.book-grid { grid-template-columns: 1fr; }
+@media (min-width: 36rem) { .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 48rem) { .book-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 80rem) { .book-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
