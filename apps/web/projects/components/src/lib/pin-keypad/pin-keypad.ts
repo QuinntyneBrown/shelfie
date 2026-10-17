@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
   templateUrl: './pin-keypad.html',
   styleUrl: './pin-keypad.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'onKey($event)' },
 })
 export class PinKeypad {
   readonly name = input.required<string>();
@@ -25,6 +26,11 @@ export class PinKeypad {
 
   clear() {
     this.digits.set('');
+  }
+
+  protected onKey(event: KeyboardEvent) {
+    if (/^[0-9]$/.test(event.key)) this.add(event.key);
+    else if (event.key === 'Backspace') this.remove();
   }
 
   protected remove() {

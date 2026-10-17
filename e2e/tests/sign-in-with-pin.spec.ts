@@ -28,3 +28,14 @@ test('Given Nia has chosen her profile, when she enters a wrong PIN, then an inl
   await expect(signIn.digitsEntered(0)).toBeVisible();
   await expect(page).toHaveURL(/\/sign-in$/);
 });
+
+test('Given the PIN keypad is showing, when she types letters and digits, then only digits count and the last can be deleted', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.choose('Nia');
+  await signIn.typePin('a1?2');
+
+  await expect(signIn.digitsEntered(2)).toBeVisible();
+  await signIn.deleteLastDigit();
+  await expect(signIn.digitsEntered(1)).toBeVisible();
+});
