@@ -1,0 +1,6 @@
+interface:
+  display_name: "Writing Component Requirements Documents"
+  short_description: "Complete, L2-traced requirements and renderings for one UI component"
+  default_prompt: "Use $writing-component-requirements-documents to write docs/specs/components/<component>.md and .html: every requirement needed to build the component in full, with Given/When/Then criteria traced to L2 and a rendering of every state in light and dark."
+policy:
+  allow_implicit_invocation: true

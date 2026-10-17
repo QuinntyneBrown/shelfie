@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forgot password · submitting — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="forgot-password">
+<meta name="mock:state" content="submitting">
+<meta name="description" content="Sending: button busy, field read-only.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+<div class="card stack">
+  <h1>Forgot your password?</h1>
+  <p class="text-muted">Enter the grown-up e-mail and we’ll send a link to choose a new one.</p>
+  
+  <form class="stack" action="success.html" method="get" novalidate>
+    <div class="field"><label class="field__label" for="email">E-mail address</label><input class="input" id="email" name="email" type="email" autocomplete="email" required value="marcus@example.com" autofocus readonly></div>
+    <button class="btn btn--primary btn--lg btn--block" type="submit" disabled aria-busy="true">Send reset link</button>
+    <p style="text-align: center;"><a href="../../pages/sign-in/password.html">Back to sign in</a></p>
+  </form>
+</div>
+  </div>
+</main>
+
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Forgot password</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html" aria-current="page">submitting</a></li><li><a href="success.html">success</a></li><li><a href="error.html">error</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

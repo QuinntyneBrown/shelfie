@@ -1,0 +1,378 @@
+{
+  "project": "Shelfie",
+  "required_states": {
+    "page": [
+      "default",
+      "loading",
+      "empty",
+      "error"
+    ],
+    "dialog": [
+      "default",
+      "busy",
+      "invalid"
+    ],
+    "notification": [
+      "info",
+      "success",
+      "warning",
+      "danger"
+    ]
+  },
+  "screens": [
+    {
+      "id": "sign-in",
+      "kind": "page",
+      "title": "Sign in",
+      "route": "/sign-in",
+      "states": [
+        "default",
+        "pin",
+        "pin-invalid",
+        "locked",
+        "password",
+        "invalid",
+        "submitting",
+        "error",
+        "expired"
+      ],
+      "not_applicable": {
+        "loading": "The sign-in screen loads no data; profiles are part of the household and render instantly.",
+        "empty": "A household always has one reader and one grown-up, so there is nothing to be empty."
+      }
+    },
+    {
+      "id": "forgot-password",
+      "kind": "page",
+      "title": "Forgot password",
+      "route": "/forgot-password",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "success",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "Nothing is fetched before the form shows.",
+        "empty": "A single form; there is no collection to be empty."
+      }
+    },
+    {
+      "id": "reset-password",
+      "kind": "page",
+      "title": "Reset password",
+      "route": "/reset-password",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "success",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The token is checked on submit, not before rendering.",
+        "empty": "A single form; there is no collection to be empty."
+      }
+    },
+    {
+      "id": "shelf",
+      "kind": "page",
+      "title": "My shelf",
+      "route": "/shelf",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "long"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "book",
+      "kind": "page",
+      "title": "Book",
+      "route": "/books/:id",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "finished",
+        "edge"
+      ],
+      "not_applicable": {
+        "empty": "A book always has at least one chapter row because the chapter count is required when the book is added."
+      }
+    },
+    {
+      "id": "add-book",
+      "kind": "page",
+      "title": "Add a book",
+      "route": "/books/new",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The form needs no data before it renders.",
+        "empty": "A single form; nothing to be empty.",
+        "success": "Success navigates to the new book and shows the toast in notifications/toast/success.html."
+      }
+    },
+    {
+      "id": "log-chapter",
+      "kind": "page",
+      "title": "Log a chapter",
+      "route": "/books/:id/chapters/:n/log",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "finished"
+      ],
+      "not_applicable": {
+        "empty": "There is always at least one question: the three defaults apply to every book."
+      }
+    },
+    {
+      "id": "chapter",
+      "kind": "page",
+      "title": "Chapter answers",
+      "route": "/books/:id/chapters/:n",
+      "states": [
+        "default",
+        "pending",
+        "loading",
+        "error"
+      ],
+      "not_applicable": {
+        "empty": "A chapter page exists only once answers were saved, so there is always content."
+      }
+    },
+    {
+      "id": "review",
+      "kind": "page",
+      "title": "Review",
+      "route": "/review",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "long"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "review-chapter",
+      "kind": "page",
+      "title": "Review a chapter",
+      "route": "/review/chapters/:id",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "reviewed"
+      ],
+      "not_applicable": {
+        "empty": "Only logged chapters appear in the queue, so there are always answers to show."
+      }
+    },
+    {
+      "id": "books",
+      "kind": "page",
+      "title": "Books",
+      "route": "/books",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "manage-book",
+      "kind": "page",
+      "title": "Manage a book",
+      "route": "/books/:id/manage",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "rewarded"
+      ],
+      "not_applicable": {
+        "empty": "A book always has its three default questions and a chapter count, so the page is never empty."
+      }
+    },
+    {
+      "id": "settings",
+      "kind": "page",
+      "title": "Settings",
+      "route": "/settings",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "Settings always have values; there is no empty collection."
+      }
+    },
+    {
+      "id": "not-found",
+      "kind": "page",
+      "title": "Page not found",
+      "route": "/*",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "A static page; nothing is fetched.",
+        "empty": "A static message; there is no collection.",
+        "error": "This page is itself the error state."
+      }
+    },
+    {
+      "id": "forbidden",
+      "kind": "page",
+      "title": "Grown-ups only",
+      "route": "/review (as reader)",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "A static page; nothing is fetched.",
+        "empty": "A static message; there is no collection.",
+        "error": "This page is itself the error state."
+      }
+    },
+    {
+      "id": "server-error",
+      "kind": "page",
+      "title": "Something went wrong",
+      "route": "/* (HTTP 500)",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "A static page; nothing is fetched.",
+        "empty": "A static message; there is no collection.",
+        "error": "This page is itself the error state."
+      }
+    },
+    {
+      "id": "offline",
+      "kind": "page",
+      "title": "Offline",
+      "route": "/* (offline)",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "A static page; nothing is fetched.",
+        "empty": "A static message; there is no collection.",
+        "error": "This page is itself the error state."
+      }
+    },
+    {
+      "id": "give-reward",
+      "kind": "dialog",
+      "title": "Give a reward",
+      "opens_from": "review",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "delete-book",
+      "kind": "dialog",
+      "title": "Remove a book",
+      "opens_from": "manage-book",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "The dialog has no inputs; it only confirms."
+      }
+    },
+    {
+      "id": "edit-question",
+      "kind": "dialog",
+      "title": "Add a question",
+      "opens_from": "manage-book",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "account-menu",
+      "kind": "dialog",
+      "title": "Account menu",
+      "opens_from": "shelf",
+      "states": [
+        "default",
+        "parent"
+      ],
+      "not_applicable": {
+        "busy": "The menu only navigates; nothing is submitted.",
+        "invalid": "The menu has no inputs."
+      }
+    },
+    {
+      "id": "toast",
+      "kind": "notification",
+      "title": "Toast",
+      "opens_from": "shelf",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action",
+        "stacked"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "banner",
+      "kind": "notification",
+      "title": "Banner",
+      "opens_from": "shelf",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ],
+      "not_applicable": {}
+    }
+  ]
+}

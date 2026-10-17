@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussions
+    url: https://github.com/QuinntyneBrown/shelfie/discussions
+    about: Ask a question or start a discussion.
+  - name: Security vulnerability
+    url: https://github.com/QuinntyneBrown/shelfie/security/advisories/new
+    about: Report a security issue privately. Do not open a public issue.

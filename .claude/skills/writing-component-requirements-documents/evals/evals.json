@@ -1,0 +1,47 @@
+{
+  "skill_name": "writing-component-requirements-documents",
+  "evals": [
+    {
+      "id": 0,
+      "name": "planned-component-tooltip",
+      "prompt": "Write the CRD for sh-tooltip. It isn't built yet; the design system has a tooltip page.",
+      "expected_output": "docs/specs/components/tooltip.md and tooltip.html. The Markdown has every required section, a usage inventory found by searching all of docs/mocks, a CDK Overlay-based API, keyboard (Escape dismisses, focus shows) and hover/focus delay requirements, and numbered GWT criteria each ending with an L2 ID that exists. The HTML links the design-system styles and renders every state in light and dark. The index row is added and check_crds.py exits 0.",
+      "files": [],
+      "expectations": [
+        "tooltip.md and tooltip.html both exist in docs/specs/components/",
+        "tooltip.md contains every required section heading in order",
+        "Every acceptance criterion is Given/When/Then and ends with an L2 ID that exists in docs/specs/L2.md",
+        "The Usage table lists mocks found by searching docs/mocks, not only the design-system Sources",
+        "The Markdown names tokens by role and contains no hex colours",
+        "tooltip.html links ../../design-system/tokens/tokens.css and components.css and has data-theme=\"light\" and data-theme=\"dark\" renderings",
+        "The Decisions section records choices instead of leaving open questions",
+        "check_crds.py exits 0"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "built-component-with-gaps-button",
+      "prompt": "We already have sh-button in the components library. Write its component requirements doc so the next person can finish it without guessing.",
+      "expected_output": "button.md and button.html. The API matches the design system (all six variants and three sizes, block, icon-only, pressed, expanded, busy, disabled). Implementation notes list the gaps against the current code (no link or danger variants, no sm size, no block). The usage inventory covers every btn usage in the mocks. Criteria cover L2-108 busy behaviour, L2-096 targets and L2-103 contrast.",
+      "files": [],
+      "expectations": [
+        "The API lists the link and danger variants and the sm size even though the current code lacks them",
+        "Implementation notes list each gap between frontend/projects/components/src/lib/button and the CRD",
+        "An acceptance criterion covers the busy state using aria-busy and aria-disabled and traces to L2-108",
+        "The Performance section names the Button perf-test scenario",
+        "check_crds.py exits 0"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "gate-blocks-without-design",
+      "prompt": "Write a CRD for sh-video-player.",
+      "expected_output": "The skill checks the gate: there is no docs/design-system/components/video-player.html and no distinct video-player mock, so it stops, says which artifact is missing (a design-system page or mock) and which skill produces it, and writes no files.",
+      "files": [],
+      "expectations": [
+        "No file is written to docs/specs/components/",
+        "The response names the missing design-system page or mock and points to extracting-design-systems or writing-html-mocks"
+      ]
+    }
+  ]
+}

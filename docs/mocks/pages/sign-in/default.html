@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · default — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="sign-in">
+<meta name="mock:state" content="default">
+<meta name="description" content="Profile picker: Nia (reader) or Dad (grown-up). The first tile has focus.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+<div class="card stack" style="text-align: center;">
+  <h1>Who’s reading today?</h1>
+  <p class="text-muted" style="margin-inline: auto;">Pick your name to open your shelf.</p>
+  <div class="profiles">
+  <button class="profile-tile" type="button" autofocus>
+    <span class="avatar avatar--rose">N</span>Nia<small>Reader</small>
+  </button>
+  <button class="profile-tile" type="button">
+    <span class="avatar avatar--sky">MB</span>Dad<small>Grown-up</small>
+  </button>
+</div>
+</div>
+  </div>
+</main>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">Tapping Nia opens the PIN keypad; tapping Dad opens the password form. The last-used profile is remembered on this device and pre-focused.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Sign in</span>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="pin.html">pin</a></li><li><a href="pin-invalid.html">pin-invalid</a></li><li><a href="locked.html">locked</a></li><li><a href="password.html">password</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="expired.html">expired</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

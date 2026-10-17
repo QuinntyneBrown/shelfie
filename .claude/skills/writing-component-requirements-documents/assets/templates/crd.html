@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{Component name} — Component requirements rendering</title>
+<meta name="description" content="Every variant, size and state of {component}, in light and dark, keyed to the acceptance criteria in {component}.md.">
+<meta name="crd:component" content="{component}">
+<!-- The real design-system styles: what renders here is the component, not a picture of it. -->
+<link rel="stylesheet" href="../../design-system/tokens/tokens.css">
+<link rel="stylesheet" href="../../design-system/assets/components.css">
+<link rel="stylesheet" href="../../design-system/assets/ds.css">
+<style>
+/* CRD page chrome only. Never restyle the component here. */
+.crd-shell { max-width: 80rem; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+.crd-bar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; }
+.crd-ac { font: var(--text-overline); color: var(--color-fg-muted); display: block; margin-top: var(--space-2); }
+.crd-frames { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: flex-start; }
+.crd-frame { margin: 0; border: var(--border-width-hairline) dashed var(--color-border-default); padding: var(--space-3); max-width: 100%; overflow: auto; }
+.crd-frame iframe { display: block; border: 0; max-width: 100%; }
+</style>
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="crd-shell">
+  <header class="ds-header">
+    <div class="crd-bar">
+      <p class="ds-kicker">Component requirements · rendering</p>
+      <button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button>
+    </div>
+    <h1>{Component name}</h1>
+    <p class="ds-lead">{One sentence.} Requirements: <a href="{component}.md">{component}.md</a>. Design system: <a href="../../design-system/components/{component}.html">{component}</a>.</p>
+    <div class="ds-meta"><span class="ds-pill">Selector <code>sh-{component}</code></span><span class="ds-pill">Status: {built | planned}</span><span class="ds-pill">Traces to {L2-xxx}</span></div>
+    <ul class="ds-toc">
+      <li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#themes">Both themes</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#contrast">Contrast</a></li><li><a href="#tokens">Tokens</a></li>
+    </ul>
+  </header>
+
+  <section class="ds-section" id="variants"><h2>Variants</h2>
+    <div class="ds-example"><div class="ds-example__canvas">
+      <!-- one specimen per variant, real markup -->
+    </div><div class="ds-example__caption"><span>{Caption.} <span class="crd-ac">AC-1, AC-2</span></span></div></div>
+  </section>
+
+  <section class="ds-section" id="sizes"><h2>Sizes</h2>
+    <!-- or: <p class="ds-na">One size; width comes from …</p> -->
+  </section>
+
+  <section class="ds-section" id="states"><h2>States</h2>
+    <div class="ds-matrix"><table>
+      <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Busy</th></tr></thead>
+      <tbody>
+        <!-- data-state="hover|focus|active" forces pointer/focus states; real attributes for the rest -->
+      </tbody>
+    </table></div>
+    <span class="crd-ac">AC-n…</span>
+  </section>
+
+  <section class="ds-section" id="themes"><h2>Both themes</h2>
+    <div class="ds-themes">
+      <div data-theme="light"><!-- the key specimens --></div>
+      <div data-theme="dark"><!-- the same specimens --></div>
+    </div>
+    <span class="crd-ac">AC-n</span>
+  </section>
+
+  <section class="ds-section" id="responsive"><h2>Responsive</h2>
+    <!-- Component CSS uses viewport media queries, so each frame is a real viewport: an iframe of that
+         width whose srcdoc links the same stylesheets (relative URLs resolve against this page). -->
+    <div class="crd-frames">
+      <figure class="crd-frame"><span class="crd-ac">320 px · light · AC-n</span><iframe title="320 pixel wide frame, light theme" width="320" height="360" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;en&quot; data-theme=&quot;light&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;../../design-system/tokens/tokens.css&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;../../design-system/assets/components.css&quot;&gt;&lt;/head&gt;&lt;body&gt;&lt;!-- specimen --&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></figure>
+      <!-- repeat at 360 (light and dark) and 768 -->
+    </div>
+    <!-- or: <p class="ds-na">The layout does not change across breakpoints.</p> -->
+  </section>
+
+  <section class="ds-section" id="contrast"><h2>Contrast</h2>
+    <div class="ds-example__canvas ds-example__canvas--stack">
+      <div class="ds-pair"><span>{Use}</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+      <div class="ds-pair" data-theme="dark"><span>Dark: {use}</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+    </div>
+    <span class="crd-ac">AC-n</span>
+  </section>
+
+  <section class="ds-section" id="tokens"><h2>Tokens</h2>
+    <div class="ds-table-wrap"><table class="ds-table">
+      <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+      <tbody>
+        <tr><td>{Part}</td><td><code>--color-…</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-…" data-swatch></i><span data-token="--color-…"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-…" data-swatch></i><span data-token="--color-…"></span></span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer class="ds-footer"><span>Sweet Hand component requirements · <a href="README.md">index</a></span><a href="#top">Back to top</a></footer>
+</main>
+<script src="../../design-system/assets/ds.js"></script>
+</body>
+</html>
