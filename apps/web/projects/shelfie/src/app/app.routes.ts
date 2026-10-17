@@ -23,6 +23,11 @@ export const routes: Routes = [
     canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('books').then((m) => m.BooksPage),
   },
+  {
+    path: 'manage-book/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('books').then((m) => m.ManageBookPage),
+  },
   { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
     path: 'review',

@@ -36,6 +36,7 @@ export interface BookResponse {
   reward: { text: string; givenOn: string } | null;
   today: string;
   grownUpName: string;
+  readerName: string;
   chapters: ChapterSummary[];
 }
 
@@ -50,6 +51,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
   const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   const logs = db
     .prepare(
       `SELECT c.id, c.chapter_number, c.read_on, a.text AS first_answer
@@ -83,6 +85,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     reward: reward ? { text: reward.text, givenOn: dayFormat.format(new Date(reward.given_at)) } : null,
     today: dayFormat.format(new Date()),
     grownUpName: grownUp.name,
+    readerName: reader.name,
     chapters,
   };
 }
@@ -138,4 +141,33 @@ export function listBooks(db: DatabaseSync, householdId: string): BookList {
     reward: r.reward_text ? { text: r.reward_text } : null,
   }));
   return { readerName: reader.name, books };
+}
+
+export interface BookPatch {
+  title?: string;
+  author?: string | null;
+  chapterCount?: number;
+}
+
+export function updateBook(db: DatabaseSync, householdId: string, bookId: string, patch: BookPatch): BookResponse {
+  const book = db.prepare('SELECT id, finished_at FROM book WHERE id = ? AND household_id = ?').get(bookId, householdId) as
+    | { id: string; finished_at: string | null }
+    | undefined;
+  if (!book) throw new Problem(404, 'not-found');
+  const { count } = db.prepare('SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = ?').get(bookId) as { count: number };
+  if (patch.chapterCount !== undefined && patch.chapterCount < count) {
+    throw new Problem(400, 'chapter-count-too-low', { errors: [{ field: 'chapterCount' }] });
+  }
+
+  db.prepare('UPDATE book SET title = COALESCE(?, title), chapter_count = COALESCE(?, chapter_count) WHERE id = ?').run(
+    patch.title ?? null,
+    patch.chapterCount ?? null,
+    bookId,
+  );
+  if (patch.author !== undefined) db.prepare('UPDATE book SET author = ? WHERE id = ?').run(patch.author, bookId);
+  // Adding chapters to a finished book means it is no longer finished; its reward stays.
+  if (patch.chapterCount !== undefined && patch.chapterCount > count && book.finished_at) {
+    db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(bookId);
+  }
+  return getBook(db, householdId, bookId);
 }

@@ -4,6 +4,9 @@ import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { BooksPage } from '../pages/books.page';
 import { ShellPage } from '../pages/shell.page';
 import { ErrorPage } from '../pages/error.page';
+import { ManageBookPage } from '../pages/manage-book.page';
+import { ShelfPage } from '../pages/shelf.page';
+import { LogChapterPage } from '../pages/log-chapter.page';
 
 test('Given Dad opens Books from the top bar, then every book shows its progress and status with a Manage link', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -59,4 +62,80 @@ test.describe('with no books', () => {
     await expect(books.emptyState()).toBeVisible();
     await expect(page.getByRole('link', { name: 'Add a book' })).toHaveCount(2);
   });
+});
+
+const LION = 'The Lion, the Witch and the Wardrobe';
+
+test('Given Dad opens a book to manage, then he sees its logged chapters newest first and its details', async ({ page }) => {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage(LION);
+
+  const manage = new ManageBookPage(page);
+  await expect(manage.heading()).toHaveText(LION);
+  const rows = manage.loggedChapters().getByRole('row');
+  await expect(rows).toHaveCount(12);
+  await expect(rows.nth(1)).toContainText('11');
+  await expect(rows.nth(1)).toContainText('Father Christmas gave them presents.');
+  await expect(rows.nth(1)).toContainText('To review');
+  await expect(rows.nth(11)).toContainText('Lucy found a wardrobe');
+  await expect(manage.title()).toHaveValue(LION);
+  await expect(manage.author()).toHaveValue('C. S. Lewis');
+  await expect(manage.chapters()).toHaveValue('17');
+});
+
+test('Given Dad changes a book’s details, when he saves, then Nia sees them on her shelf', async ({ page, browser, baseURL }) => {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage('Because of Winn-Dixie');
+  const manage = new ManageBookPage(page);
+  await manage.title().fill('Because of Winn Dixie');
+  await manage.author().fill('K. DiCamillo');
+  await manage.chapters().fill('14');
+  await manage.save();
+  await expect(manage.saved()).toBeVisible();
+
+  const herDevice = await browser.newContext({ baseURL });
+  const nia = await herDevice.newPage();
+  await signInAsNia(nia);
+  await expect(new ShelfPage(nia).book('Up next', 'Because of Winn Dixie')).toContainText('K. DiCamillo');
+  await herDevice.close();
+});
+
+test('Given a book with 11 chapters logged, when Dad sets the count below 11, then an inline error shows and nothing is saved', async ({ page }) => {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage(LION);
+  const manage = new ManageBookPage(page);
+  manage.watchSaves();
+  await manage.chapters().fill('10');
+  await manage.save();
+
+  await expect(manage.chapters()).toHaveAccessibleDescription(/Enter 11 or more\. Nia has already logged 11 chapters\./);
+  expect(manage.saveRequestCount()).toBe(0);
+});
+
+test('Given a request that skips the page, when the count is below the logged chapters or Nia asks, then the API refuses it', async ({ page }) => {
+  await signInAsNia(page);
+  const manage = new ManageBookPage(page);
+
+  const asReader = await manage.patchViaApi('b-lion', { title: 'Mine now' });
+  expect(asReader.status()).toBe(403);
+
+  await page.context().clearCookies();
+  await signInAsDad(page);
+  const tooFew = await manage.patchViaApi('b-lion', { chapterCount: 5 });
+  const foreign = await manage.patchViaApi('b-other', { title: 'Not yours' });
+  expect(tooFew.status()).toBe(400);
+  expect(foreign.status()).toBe(404);
+});
+
+test('Given a book that is not in the family, when Dad opens its manage page, then he sees Not found', async ({ page }) => {
+  await signInAsDad(page);
+  await page.goto('/manage-book/b-other');
+
+  await expect(new ErrorPage(page).heading()).toHaveText('We can’t find that page');
 });

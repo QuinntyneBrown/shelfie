@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { createBook, getBook, listBooks } from './books.service.ts';
+import { createBook, getBook, listBooks, updateBook } from './books.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
@@ -20,6 +20,18 @@ const createBookSchema = z.object({
   chapterCount: z.number().int().min(1).max(200),
   coverColor: z.enum(COVER_COLORS),
   sticker: z.enum(STICKERS),
+});
+
+const updateBookSchema = z.object({
+  title: z.string().trim().min(1).max(120).optional(),
+  author: z
+    .string()
+    .trim()
+    .max(120)
+    .nullable()
+    .optional()
+    .transform((author) => (author === undefined ? undefined : author || null)),
+  chapterCount: z.number().int().min(1).max(200).optional(),
 });
 
 export function booksRouter(db: DatabaseSync) {
@@ -44,6 +56,18 @@ export function booksRouter(db: DatabaseSync) {
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });
+    }
+  });
+
+  router.patch('/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    const body = updateBookSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json({ type: 'validation' });
+    try {
+      res.json(updateBook(db, householdId, String(req.params['id']), body.data));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
     }
   });
 
