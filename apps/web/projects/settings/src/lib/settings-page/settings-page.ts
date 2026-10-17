@@ -91,8 +91,10 @@ export class SettingsPage {
         this.failure.set('Your current password isn’t right.');
       } else if (e instanceof ApiError && e.type === 'email-in-use') {
         this.failure.set('That e-mail address is already in use.');
-      } else {
+      } else if (e instanceof ApiError && e.status > 0 && e.status < 500) {
         throw e;
+      } else {
+        this.failure.set('Shelfie couldn’t be reached. Check your connection and try again.');
       }
     } finally {
       this.saving.set(false);

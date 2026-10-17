@@ -196,3 +196,20 @@ test('Given an e-mail address another family already uses, when Dad saves, then 
   await expect(settings.failureBanner()).toContainText('That e-mail address is already in use');
   await expect(settings.email()).toHaveValue('other@example.com');
 });
+
+test('Given the server cannot be reached, when Dad saves, then he is told and everything he typed stays so he can save again', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setReaderName('Nina');
+  await settings.breakSaving();
+  await settings.save();
+
+  await expect(settings.failureBanner()).toBeVisible();
+  await expect(settings.readerName()).toHaveValue('Nina');
+
+  await settings.repairSaving();
+  await settings.save();
+  await expect(settings.banner()).toBeVisible();
+  await expect(settings.failureBanner()).toBeHidden();
+});

@@ -84,6 +84,14 @@ export class SettingsPage {
     await this.email().fill(email);
   }
 
+  async breakSaving() {
+    await this.page.route('**/api/settings', (route) => (route.request().method() === 'PATCH' ? route.abort() : route.continue()));
+  }
+
+  async repairSaving() {
+    await this.page.unroute('**/api/settings');
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }
