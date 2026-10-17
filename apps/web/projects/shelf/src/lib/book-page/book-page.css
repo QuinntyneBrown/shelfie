@@ -10,3 +10,9 @@
 .finished-label {
   font: var(--text-label);
 }
+.folded-summary {
+  padding: var(--space-3) var(--space-4);
+  min-height: var(--target-comfortable);
+  cursor: pointer;
+  font: var(--text-label);
+}

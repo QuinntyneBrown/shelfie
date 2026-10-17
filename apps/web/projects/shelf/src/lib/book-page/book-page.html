@@ -1,5 +1,14 @@
 <div class="container">
-  @if (book(); as book) {
+  @if (failed()) {
+    <sh-empty-state
+      tone="error"
+      title="The chapters didn’t load"
+      text="Shelfie couldn’t reach the server. Your books and answers are safe; try again in a moment."
+    >
+      <button class="btn btn--primary" type="button" (click)="load(id())">Try again</button>
+      <a class="btn" routerLink="/shelf">Back to my shelf</a>
+    </sh-empty-state>
+  } @else if (book(); as book) {
     <nav aria-label="Breadcrumb">
       <ol class="breadcrumb">
         <li><a routerLink="/shelf">My shelf</a></li>
@@ -48,35 +57,46 @@
         }
       </section>
     }
+    <ng-template #row let-chapter>
+      @switch (chapter.state) {
+        @case ('logged') {
+          <sh-chapter-row
+            [number]="chapter.number"
+            state="logged"
+            [meta]="
+              (whenRead(book, chapter) ?? (chapter.log.readOn | date: 'EEE d MMM' : 'UTC')) +
+              ' · ' +
+              chapter.log.firstLine
+            "
+            [status]="'Waiting for ' + book.grownUpName"
+          />
+        }
+        @case ('next') {
+          <sh-chapter-row
+            [number]="chapter.number"
+            state="next"
+            [link]="['/books', book.id, 'chapters', chapter.number, 'log']"
+            meta="Up next · tap when you’ve read it"
+          />
+        }
+        @default {
+          <sh-chapter-row [number]="chapter.number" state="future" />
+        }
+      }
+    </ng-template>
     <section aria-labelledby="chapters">
       <h2 id="chapters" class="group-title">Chapters</h2>
       <div class="card card--flush">
-        @for (chapter of book.chapters; track chapter.number) {
-          @switch (chapter.state) {
-            @case ('logged') {
-              <sh-chapter-row
-                [number]="chapter.number"
-                state="logged"
-                [meta]="
-                  (whenRead(book, chapter) ?? (chapter.log!.readOn | date: 'EEE d MMM' : 'UTC')) +
-                  ' · ' +
-                  chapter.log!.firstLine
-                "
-                status="Waiting for {{ book.grownUpName }}"
-              />
+        @for (chapter of shown(); track chapter.number) {
+          <ng-container *ngTemplateOutlet="row; context: { $implicit: chapter }" />
+        }
+        @if (folded().length) {
+          <details>
+            <summary class="folded-summary">{{ foldedLabel() }}</summary>
+            @for (chapter of folded(); track chapter.number) {
+              <ng-container *ngTemplateOutlet="row; context: { $implicit: chapter }" />
             }
-            @case ('next') {
-              <sh-chapter-row
-                [number]="chapter.number"
-                state="next"
-                [link]="['/books', book.id, 'chapters', chapter.number, 'log']"
-                meta="Up next · tap when you’ve read it"
-              />
-            }
-            @default {
-              <sh-chapter-row [number]="chapter.number" state="future" />
-            }
-          }
+          </details>
         }
       </div>
     </section>

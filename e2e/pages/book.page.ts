@@ -19,6 +19,26 @@ export class BookPage {
     await this.chapterRow(number).click();
   }
 
+  async breakLoading() {
+    await this.page.route('**/api/books/b-lion', (route) => route.abort());
+  }
+
+  async repairLoading() {
+    await this.page.unroute('**/api/books/b-lion');
+  }
+
+  loadFailure() {
+    return this.page.getByRole('heading', { name: 'The chapters didn’t load' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  hiddenChapters() {
+    return this.page.getByText(/^Chapters \d+ to \d+ \(\d+ more\)$/);
+  }
+
   trophy() {
     return this.page.getByRole('region', { name: 'Reward' });
   }
