@@ -46,6 +46,9 @@
     @if (book.finishedAt) {
       <section class="card stack trophy-card" aria-label="Reward">
         <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
+        <p class="finished-line">
+          You finished {{ book.title }} on {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}!
+        </p>
         @if (book.reward; as reward) {
           <h2>{{ reward.text }}</h2>
           <p class="text-muted">Given on {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>

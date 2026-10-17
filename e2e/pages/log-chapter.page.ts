@@ -91,6 +91,14 @@ export class LogChapterPage {
     return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`);
   }
 
+  confetti() {
+    return this.page.locator('.confetti');
+  }
+
+  async addNextBook() {
+    await this.page.getByRole('link', { name: 'Add my next book' }).click();
+  }
+
   finishedHeading() {
     return this.page.getByRole('heading', { name: 'You finished the whole book!' });
   }

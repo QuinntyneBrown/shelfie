@@ -1,0 +1,6 @@
+:host {
+  display: block;
+}
+.celebrate--book {
+  background: linear-gradient(160deg, var(--color-warning-bg), var(--color-bg-surface) 60%);
+}

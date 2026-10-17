@@ -34,6 +34,7 @@ export interface BookResponse {
   sticker: string;
   loggedCount: number;
   finishedAt: string | null;
+  finishedOn: string | null;
   reward: { text: string; givenOn: string } | null;
   today: string;
   grownUpName: string;
@@ -85,6 +86,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     sticker: book.sticker,
     loggedCount: logs.length,
     finishedAt: book.finished_at,
+    finishedOn: book.finished_at ? dayFormat.format(new Date(book.finished_at)) : null,
     reward: reward ? { text: reward.text, givenOn: dayFormat.format(new Date(reward.given_at)) } : null,
     today: dayFormat.format(new Date()),
     grownUpName: grownUp.name,

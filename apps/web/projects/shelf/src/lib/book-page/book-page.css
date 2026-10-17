@@ -16,3 +16,6 @@
   cursor: pointer;
   font: var(--text-label);
 }
+.finished-line {
+  font: var(--text-h4);
+}

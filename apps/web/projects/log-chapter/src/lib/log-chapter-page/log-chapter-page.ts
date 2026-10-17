@@ -9,7 +9,14 @@ import {
   viewChildren,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
+import {
+  Celebration,
+  Cover,
+  Progress,
+  QuestionField,
+  Segmented,
+  SegmentedOption,
+} from 'components';
 import { ApiError, DraftStore, ToastService } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
@@ -27,7 +34,7 @@ const DRAFT_DELAY_MS = 3000;
 
 @Component({
   selector: 'sh-log-chapter-page',
-  imports: [Cover, Progress, QuestionField, RouterLink, Segmented],
+  imports: [Celebration, Cover, Progress, QuestionField, RouterLink, Segmented],
   templateUrl: './log-chapter-page.html',
   styleUrl: './log-chapter-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

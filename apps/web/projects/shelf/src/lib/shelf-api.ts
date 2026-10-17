@@ -16,6 +16,7 @@ export interface BookResponse {
   sticker: string;
   loggedCount: number;
   finishedAt: string | null;
+  finishedOn: string | null;
   reward: { text: string; givenOn: string } | null;
   today: string;
   grownUpName: string;

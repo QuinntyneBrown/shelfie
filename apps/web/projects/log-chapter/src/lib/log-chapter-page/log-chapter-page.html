@@ -2,7 +2,7 @@
   @if (form(); as form) {
     @if (result(); as result) {
       @if (result.bookFinished) {
-        <div class="celebrate card">
+        <sh-celebration variant="book">
           <sh-cover [color]="form.book.coverColor" [sticker]="form.book.sticker" size="xl" />
           <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
           <h1>You finished the whole book!</h1>
@@ -12,10 +12,11 @@
           </p>
           <div class="cluster done-actions">
             <a class="btn btn--primary btn--lg" routerLink="/shelf">Back to my shelf</a>
+            <a class="btn" routerLink="/add-book">Add my next book</a>
           </div>
-        </div>
+        </sh-celebration>
       } @else {
-        <div class="celebrate card">
+        <sh-celebration>
           <span class="sticker sticker--xl" aria-hidden="true">🎉</span>
           <h1>Chapter {{ form.chapterNumber }} done!</h1>
           <p class="text-muted">
@@ -38,7 +39,7 @@
               >
             }
           </div>
-        </div>
+        </sh-celebration>
       }
     } @else {
       <div class="page-header">

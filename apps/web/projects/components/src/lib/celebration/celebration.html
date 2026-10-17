@@ -1,0 +1,14 @@
+<div class="celebrate card" [class.celebrate--book]="variant() === 'book'">
+  @if (moving) {
+    <div class="confetti" aria-hidden="true">
+      @for (piece of pieces; track $index) {
+        <span
+          [style.--x]="piece.x + '%'"
+          [style.--d]="piece.delay + 's'"
+          [style.--c]="'var(--color-cover-' + piece.color + ')'"
+        ></span>
+      }
+    </div>
+  }
+  <ng-content />
+</div>
