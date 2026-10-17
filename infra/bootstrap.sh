@@ -39,12 +39,17 @@ echo "==> Deployment identity $IDENTITY for GitHub Actions"
 az identity create -g "$RG" -n "$IDENTITY" -o none
 CLIENT_ID=$(tsv identity show -g "$RG" -n "$IDENTITY" --query clientId)
 PRINCIPAL_ID=$(tsv identity show -g "$RG" -n "$IDENTITY" --query principalId)
-if ! az identity federated-credential show -g "$RG" --identity-name "$IDENTITY" -n github-production -o none 2>/dev/null; then
-  az identity federated-credential create -g "$RG" --identity-name "$IDENTITY" -n github-production -o none \
-    --issuer https://token.actions.githubusercontent.com \
-    --subject "repo:$REPO:environment:production" \
-    --audiences api://AzureADTokenExchange
+# GitHub's OIDC subject names the owner and repository with their numeric ids.
+SUBJECT="repo:$(gh api "repos/$REPO" --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"'):environment:production"
+if az identity federated-credential show -g "$RG" --identity-name "$IDENTITY" -n github-production -o none 2>/dev/null; then
+  verb=update
+else
+  verb=create
 fi
+az identity federated-credential $verb -g "$RG" --identity-name "$IDENTITY" -n github-production -o none \
+  --issuer https://token.actions.githubusercontent.com \
+  --subject "$SUBJECT" \
+  --audiences api://AzureADTokenExchange
 az role assignment create -o none --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal \
   --role "Virtual Machine Contributor" --scope "$VM_ID"
 az role assignment create -o none --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal \
