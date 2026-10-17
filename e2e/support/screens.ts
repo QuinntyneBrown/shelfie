@@ -120,4 +120,12 @@ export const screens: Screen[] = [
       await page.getByRole('heading', { name: 'Chapter 10' }).waitFor();
     },
   },
+  {
+    name: 'review a chapter',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/review/chapters/b-lion-c11');
+      await page.getByRole('button', { name: 'Send to Nia' }).waitFor();
+    },
+  },
 ];
