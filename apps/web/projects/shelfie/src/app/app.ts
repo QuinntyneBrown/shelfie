@@ -1,16 +1,40 @@
-import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { Toast } from 'components';
-import { ToastService } from 'core';
+import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, skip } from 'rxjs';
+import { Toast, TopBar } from 'components';
+import { SessionService, ToastService } from 'core';
 
 @Component({
-  imports: [RouterOutlet, Toast],
+  imports: [RouterOutlet, Toast, TopBar],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
+  protected readonly session = inject(SessionService).current;
   protected readonly toasts = inject(ToastService);
+  protected readonly home = computed(() =>
+    this.session()?.role === 'grown_up' ? '/review' : '/shelf',
+  );
+  private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+
+  constructor() {
+    // After moving to another page keyboard focus would be lost, so put it on the new page's content.
+    // The first navigation is the page load itself, where the skip link must stay the first Tab stop.
+    inject(Router)
+      .events.pipe(
+        filter((event) => event instanceof NavigationEnd),
+        skip(1),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.main().nativeElement.focus());
+  }
+
+  protected skipToContent(event: Event) {
+    event.preventDefault();
+    this.main().nativeElement.focus();
+  }
 
   protected act(id: number, run: () => void) {
     run();

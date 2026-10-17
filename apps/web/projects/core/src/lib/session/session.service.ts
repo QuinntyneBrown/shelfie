@@ -5,6 +5,7 @@ export interface Session {
   profileId: string;
   name: string;
   role: 'reader' | 'grown_up';
+  color: string;
 }
 
 @Injectable({ providedIn: 'root' })

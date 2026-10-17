@@ -15,8 +15,8 @@ export function authRouter(db: DatabaseSync) {
   const router = Router();
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, role } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, role });
+    const { profileId, name, role, color } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, role, color });
   });
 
   router.post('/sign-out', (req, res) => {

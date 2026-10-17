@@ -84,7 +84,7 @@ export class SignInPage {
   }
 
   async chooseGrownUp(name: string) {
-    await this.page.getByRole('button', { name: new RegExp(name) }).click();
+    await this.page.getByRole('button', { name: new RegExp(`^${name} Grown-up`) }).click();
   }
 
   signingInAs() {
@@ -97,7 +97,7 @@ export class SignInPage {
   }
 
   async choose(name: string) {
-    await this.page.getByRole('button', { name: new RegExp(name) }).click();
+    await this.page.getByRole('button', { name: new RegExp(`^${name} Reader`) }).click();
     await this.page.getByRole('group', { name: 'PIN keypad' }).waitFor();
   }
 
