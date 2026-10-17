@@ -31,6 +31,30 @@ export class AddBookPage {
     if (book.sticker) await this.page.getByRole('radio', { name: book.sticker, exact: true }).check({ force: true });
   }
 
+  private requests = 0;
+
+  watchRequests() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'POST' && request.url().endsWith('/api/books')) this.requests++;
+    });
+  }
+
+  requestCount() {
+    return this.requests;
+  }
+
+  problemSummary() {
+    return this.page.getByRole('alert').filter({ hasText: /Fix \d+ things?/ });
+  }
+
+  async typeMoreInTitle(text: string) {
+    await this.titleField().pressSequentially(text);
+  }
+
+  async typeMoreInAuthor(text: string) {
+    await this.authorField().pressSequentially(text);
+  }
+
   preview() {
     return this.page.getByRole('complementary', { name: 'Cover preview' });
   }

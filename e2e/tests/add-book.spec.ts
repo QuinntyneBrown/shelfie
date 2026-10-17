@@ -36,3 +36,33 @@ test('Given the form is opened, when Nia types and picks, then the preview follo
   await expect(add.previewCover()).toHaveText('🐕');
   await expect(add.previewCover()).toHaveClass(/cover--sun/);
 });
+
+test('Given no title and a chapter count that is not 1 to 200, when Nia submits, then each field says what is wrong and nothing is saved', async ({ page }) => {
+  await signInAsNia(page);
+  const add = new AddBookPage(page);
+  add.watchRequests();
+  await add.open();
+
+  for (const chapters of ['', '0', '201', '2.5']) {
+    await add.chaptersField().fill(chapters);
+    await add.submit();
+    await expect(add.chaptersField()).toHaveAccessibleDescription(/Enter a number from 1 to 200\./);
+  }
+  await expect(add.titleField()).toHaveAccessibleDescription(/The book needs a title/);
+  await expect(add.problemSummary()).toContainText('Fix 2 things');
+  expect(add.requestCount()).toBe(0);
+});
+
+test('Given a long title and author, when Nia keeps typing, then each stops at 120 characters', async ({ page }) => {
+  await signInAsNia(page);
+  const add = new AddBookPage(page);
+  await add.open();
+
+  await add.titleField().fill('t'.repeat(100));
+  await add.typeMoreInTitle('x'.repeat(40));
+  await add.authorField().fill('a'.repeat(100));
+  await add.typeMoreInAuthor('x'.repeat(40));
+
+  expect((await add.titleField().inputValue()).length).toBe(120);
+  expect((await add.authorField().inputValue()).length).toBe(120);
+});

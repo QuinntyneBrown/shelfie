@@ -4,11 +4,24 @@
   </div>
   <div class="layout">
     <form class="stack form" (submit)="$event.preventDefault(); submit()" novalidate>
+      @if (problems().length) {
+        <sh-banner
+          severity="danger"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
       <div class="card stack">
-        <sh-text-field label="Title" [maxlength]="120" [(value)]="title" />
+        <sh-text-field label="Title" [error]="titleError()" [maxlength]="120" [(value)]="title" />
         <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
         <sh-text-field
           label="Chapters"
+          [error]="chaptersError()"
           type="number"
           inputmode="numeric"
           help="Count them in the contents page. You can change this later."
