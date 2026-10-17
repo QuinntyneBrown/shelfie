@@ -33,7 +33,7 @@
         <form class="stack form-left" (submit)="$event.preventDefault(); submitPassword()" novalidate>
           <sh-text-field label="Email" type="email" autocomplete="username" [error]="emailError()" [(value)]="email" />
           <sh-text-field label="Password" type="password" autocomplete="current-password" [error]="passwordError()" [(value)]="password" />
-          <sh-button [large]="true" [block]="true">Sign in</sh-button>
+          <sh-button [large]="true" [block]="true" [busy]="submitting()">Sign in</sh-button>
         </form>
       } @else {
         <h1>Who’s reading today?</h1>

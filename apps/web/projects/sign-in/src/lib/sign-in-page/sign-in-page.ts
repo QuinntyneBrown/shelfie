@@ -28,6 +28,7 @@ export class SignInPage {
   protected readonly pinError = signal<string | null>(null);
   protected readonly lockedUntil = signal<number | null>(null);
   protected readonly credentialsWrong = signal(false);
+  protected readonly submitting = signal(false);
   private readonly keypad = viewChild(PinKeypad);
   private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
 
@@ -41,12 +42,14 @@ export class SignInPage {
   }
 
   protected async submitPassword() {
+    if (this.submitting()) return;
     const email = this.email().trim();
     this.emailError.set(!email ? 'Enter your e-mail' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid e-mail' : null);
     this.passwordError.set(this.password() ? null : 'Enter your password');
     if (this.emailError() || this.passwordError()) return;
 
     this.credentialsWrong.set(false);
+    this.submitting.set(true);
     try {
       this.session.current.set(await this.api.signInWithPassword(email, this.password()));
     } catch (e) {
@@ -54,6 +57,8 @@ export class SignInPage {
       this.credentialsWrong.set(true);
       setTimeout(() => this.summary()?.nativeElement.focus());
       return;
+    } finally {
+      this.submitting.set(false);
     }
     await this.router.navigateByUrl('/review');
   }

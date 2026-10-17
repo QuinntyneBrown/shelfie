@@ -46,3 +46,18 @@ test('Given wrong credentials, when Dad signs in, then one generic error shows w
   await expect(signIn.failureSummary()).toContainText('E-mail or password is wrong');
   await expect(page).toHaveURL(/\/sign-in$/);
 });
+
+test('Given a sign-in is in flight, when Dad submits again, then no second request is sent and the button shows busy', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  const release = await signIn.holdPasswordResponse();
+  await signIn.fillCredentials(DAD.email, DAD.password);
+
+  await signIn.submitWithEnter();
+  await expect(signIn.signInButton()).toHaveAttribute('aria-busy', 'true');
+  await signIn.submitWithEnter();
+  release();
+
+  await expect(page).toHaveURL(/\/review$/);
+  expect(signIn.passwordRequestCount()).toBe(1);
+});

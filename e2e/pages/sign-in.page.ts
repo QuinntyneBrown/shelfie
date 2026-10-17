@@ -25,6 +25,30 @@ export class SignInPage {
     return this.page.getByRole('alert');
   }
 
+  async fillCredentials(email: string, password: string) {
+    await this.emailField().fill(email);
+    await this.passwordField().fill(password);
+  }
+
+  async submitWithEnter() {
+    await this.passwordField().press('Enter');
+  }
+
+  signInButton() {
+    return this.page.getByRole('button', { name: 'Sign in' });
+  }
+
+  /** Holds the password sign-in response until the returned function is called. */
+  async holdPasswordResponse() {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route('**/api/auth/password', async (route) => {
+      await gate;
+      await route.continue();
+    });
+    return release;
+  }
+
   async pressSignIn() {
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }
