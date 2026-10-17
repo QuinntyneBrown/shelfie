@@ -6,7 +6,7 @@ import { ShellPage } from '../pages/shell.page';
 import { ErrorPage } from '../pages/error.page';
 import { ManageBookPage } from '../pages/manage-book.page';
 import { ShelfPage } from '../pages/shelf.page';
-import { LogChapterPage } from '../pages/log-chapter.page';
+import { readOnOf } from '../support/database';
 
 test('Given Dad opens Books from the top bar, then every book shows its progress and status with a Manage link', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -138,4 +138,71 @@ test('Given a book that is not in the family, when Dad opens its manage page, th
   await page.goto('/manage-book/b-other');
 
   await expect(new ErrorPage(page).heading()).toHaveText('We can’t find that page');
+});
+
+async function manageLion(page: import('@playwright/test').Page) {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage(LION);
+  return new ManageBookPage(page);
+}
+
+test('Given Dad confirms Remove, then the book, its chapters and answers are gone and a toast says so', async ({ page }) => {
+  const manage = await manageLion(page);
+  await manage.openRemoveDialog();
+  await expect(manage.removeDialog()).toHaveAccessibleName(`Remove “${LION}”?`);
+  await expect(manage.keepButton()).toBeFocused();
+  await manage.confirmRemove();
+
+  await expect(page).toHaveURL(/\/books$/);
+  await expect(page.getByRole('status').getByText(`${LION} removed from the shelf`)).toBeVisible();
+  await expect(new BooksPage(page).row(LION)).toHaveCount(0);
+  expect(readOnOf('b-lion', 1)).toBeUndefined();
+});
+
+for (const how of ['Keep the book', 'Escape']) {
+  test(`Given the Remove dialog, when Dad chooses ${how}, then nothing is deleted and focus returns to Remove book`, async ({ page }) => {
+    const manage = await manageLion(page);
+    await manage.openRemoveDialog();
+    if (how === 'Escape') await manage.pressEscape();
+    else await manage.keepButton().click();
+
+    await expect(manage.removeDialog()).toBeHidden();
+    await expect(manage.removeButton()).toBeFocused();
+    expect(readOnOf('b-lion', 1)).toBeDefined();
+  });
+}
+
+test('Given removing fails, when Dad confirms, then the dialog says so and the book stays', async ({ page }) => {
+  const manage = await manageLion(page);
+  await manage.breakRemoving();
+  await manage.openRemoveDialog();
+  await manage.confirmRemove();
+
+  await expect(manage.removeDialog()).toContainText('The book wasn’t removed');
+  expect(readOnOf('b-lion', 1)).toBeDefined();
+});
+
+test('Given a delete that skips the page, when Nia asks or the book is another family’s, then the API refuses it', async ({ page }) => {
+  await signInAsNia(page);
+  const manage = new ManageBookPage(page);
+  expect((await manage.deleteViaApi('b-lion')).status()).toBe(403);
+
+  await page.context().clearCookies();
+  await signInAsDad(page);
+  expect((await manage.deleteViaApi('b-other')).status()).toBe(404);
+});
+
+test('Given a phone screen, when the Remove dialog opens, then it sits on the bottom edge as a sheet; on a wide screen it floats', async ({ page }) => {
+  // Traces to: L2-025
+  await page.setViewportSize({ width: 360, height: 800 });
+  const manage = await manageLion(page);
+  await manage.openRemoveDialog();
+  expect(await manage.gapBelowDialog()).toBeLessThan(1);
+
+  await manage.pressEscape();
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await manage.openRemoveDialog();
+  expect(await manage.gapBelowDialog()).toBeGreaterThan(40);
 });

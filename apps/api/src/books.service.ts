@@ -171,3 +171,20 @@ export function updateBook(db: DatabaseSync, householdId: string, bookId: string
   }
   return getBook(db, householdId, bookId);
 }
+
+/** Deletes a book and everything that hangs off it: answers, chapter logs and its reward. */
+export function deleteBook(db: DatabaseSync, householdId: string, bookId: string) {
+  const book = db.prepare('SELECT id FROM book WHERE id = ? AND household_id = ?').get(bookId, householdId);
+  if (!book) throw new Problem(404, 'not-found');
+  db.exec('BEGIN');
+  try {
+    db.prepare('DELETE FROM answer WHERE chapter_log_id IN (SELECT id FROM chapter_log WHERE book_id = ?)').run(bookId);
+    db.prepare('DELETE FROM chapter_log WHERE book_id = ?').run(bookId);
+    db.prepare('DELETE FROM reward WHERE book_id = ?').run(bookId);
+    db.prepare('DELETE FROM book WHERE id = ?').run(bookId);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+}

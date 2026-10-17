@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { createBook, getBook, listBooks, updateBook } from './books.service.ts';
+import { createBook, deleteBook, getBook, listBooks, updateBook } from './books.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
@@ -68,6 +68,17 @@ export function booksRouter(db: DatabaseSync) {
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type, ...e.extra });
+    }
+  });
+
+  router.delete('/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    try {
+      deleteBook(db, householdId, String(req.params['id']));
+      res.status(204).end();
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
     }
   });
 

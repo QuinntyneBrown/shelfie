@@ -9,13 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Button, Cover, Progress, TextField } from 'components';
-import { ApiError } from 'core';
+import { Banner, Button, Cover, Dialog, Progress, TextField } from 'components';
+import { ApiError, ToastService } from 'core';
 import { BookDetail, BooksApi } from '../books-api';
 
 @Component({
   selector: 'sh-manage-book-page',
-  imports: [Button, Cover, DatePipe, Progress, TextField],
+  imports: [Banner, Button, Cover, DatePipe, Dialog, Progress, TextField],
   templateUrl: './manage-book-page.html',
   styleUrl: './manage-book-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +23,7 @@ import { BookDetail, BooksApi } from '../books-api';
 export class ManageBookPage {
   private readonly api = inject(BooksApi);
   private readonly router = inject(Router);
+  private readonly toasts = inject(ToastService);
 
   /** Route parameter. */
   readonly id = input.required<string>();
@@ -34,6 +35,9 @@ export class ManageBookPage {
   protected readonly chaptersError = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly removeOpen = signal(false);
+  protected readonly removing = signal(false);
+  protected readonly removeFailed = signal(false);
   /** Logged chapters, newest first. */
   protected readonly logged = computed(() =>
     (this.book()?.chapters ?? []).filter((c) => c.log !== null).reverse(),
@@ -91,6 +95,29 @@ export class ManageBookPage {
       this.saved.set(true);
     } finally {
       this.saving.set(false);
+    }
+  }
+
+  protected openRemove() {
+    this.removeFailed.set(false);
+    this.removeOpen.set(true);
+  }
+
+  protected async remove() {
+    const book = this.book();
+    if (!book || this.removing()) return;
+    this.removing.set(true);
+    this.removeFailed.set(false);
+    try {
+      await this.api.remove(book.id);
+      this.removeOpen.set(false);
+      this.toasts.show({ title: `${book.title} removed from the shelf` });
+      await this.router.navigateByUrl('/books');
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.removeFailed.set(true);
+    } finally {
+      this.removing.set(false);
     }
   }
 }

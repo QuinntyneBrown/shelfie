@@ -43,6 +43,43 @@ export class ManageBookPage {
     return this.saves;
   }
 
+  removeButton() {
+    return this.page.getByRole('button', { name: 'Remove book', exact: true });
+  }
+
+  async openRemoveDialog() {
+    await this.removeButton().click();
+  }
+
+  removeDialog() {
+    return this.page.getByRole('dialog');
+  }
+
+  keepButton() {
+    return this.removeDialog().getByRole('button', { name: 'Keep the book' });
+  }
+
+  async confirmRemove() {
+    await this.removeDialog().getByRole('button', { name: 'Remove book and answers' }).click();
+  }
+
+  /** Gap between the dialog's bottom edge and the bottom of the window, in px. */
+  async gapBelowDialog() {
+    return this.removeDialog().evaluate((dialog) => window.innerHeight - dialog.getBoundingClientRect().bottom);
+  }
+
+  async pressEscape() {
+    await this.page.keyboard.press('Escape');
+  }
+
+  async breakRemoving() {
+    await this.page.route('**/api/books/*', (route) => (route.request().method() === 'DELETE' ? route.abort() : route.continue()));
+  }
+
+  deleteViaApi(bookId: string) {
+    return this.page.request.delete(`/api/books/${bookId}`);
+  }
+
   /** Asks the API to change a book, as a client that skips the page would. */
   patchViaApi(bookId: string, data: unknown) {
     return this.page.request.patch(`/api/books/${bookId}`, { data });

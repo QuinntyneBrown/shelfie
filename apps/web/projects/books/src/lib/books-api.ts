@@ -54,6 +54,10 @@ export class BooksApi {
     return this.api.patch<BookDetail>(`/books/${id}`, patch);
   }
 
+  remove(id: string) {
+    return this.api.delete(`/books/${id}`);
+  }
+
   list() {
     return this.api.get<BookList>('/books');
   }

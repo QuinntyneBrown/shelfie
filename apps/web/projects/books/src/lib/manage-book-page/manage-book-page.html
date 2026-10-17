@@ -80,5 +80,61 @@
         <sh-button [busy]="saving()">Save details</sh-button>
       </div>
     </form>
+
+    <section class="card stack" aria-labelledby="remove-title">
+      <h2 id="remove-title" class="section-title">Remove this book</h2>
+      <p class="text-muted">
+        This deletes the book with every chapter {{ book.readerName }} logged for it.
+      </p>
+      <div>
+        <button class="btn btn--danger" type="button" (click)="openRemove()">Remove book</button>
+      </div>
+    </section>
+
+    <sh-dialog
+      [heading]="'Remove “' + book.title + '”?'"
+      [open]="removeOpen()"
+      (closed)="removeOpen.set(false)"
+    >
+      @if (removeFailed()) {
+        <sh-banner
+          severity="danger"
+          title="The book wasn’t removed"
+          message="Shelfie couldn’t reach the server. Nothing has changed; try again."
+        />
+      }
+      <div class="book-card">
+        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="sm" />
+        <div class="book-card__body">
+          <strong>{{ book.title }}</strong>
+          <span class="book-card__author"
+            >{{ book.author ? book.author + ' · ' : '' }}{{ book.loggedCount }} of
+            {{ book.chapterCount }} chapters logged</span
+          >
+        </div>
+      </div>
+      <p>
+        {{ book.readerName }}’s {{ book.loggedCount }} logged chapters and answers for this book
+        will be deleted too, along with your feedback. This can’t be undone.
+      </p>
+      <p class="text-muted">
+        If she just finished it, give a reward instead of removing it; finished books live on her
+        trophy shelf.
+      </p>
+      <div dialog-actions class="cluster">
+        <button class="btn" type="button" autofocus (click)="removeOpen.set(false)">
+          Keep the book
+        </button>
+        <button
+          class="btn btn--danger"
+          type="button"
+          [disabled]="removing()"
+          [attr.aria-busy]="removing() ? true : null"
+          (click)="remove()"
+        >
+          Remove book and answers
+        </button>
+      </div>
+    </sh-dialog>
   }
 </div>

@@ -104,4 +104,12 @@ export const screens: Screen[] = [
       await new BooksPage(page).heading().waitFor();
     },
   },
+  {
+    name: 'manage a book',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/manage-book/b-lion');
+      await page.getByRole('button', { name: 'Remove book', exact: true }).waitFor();
+    },
+  },
 ];
