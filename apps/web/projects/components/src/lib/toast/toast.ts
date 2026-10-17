@@ -21,10 +21,12 @@ import {
   },
 })
 export class Toast {
+  readonly severity = input<'success' | 'danger'>('success');
   readonly title = input.required<string>();
   readonly text = input<string | null>(null);
   readonly actionLabel = input<string | null>(null);
-  readonly durationMs = input.required<number>();
+  /** Null keeps the toast until it is dismissed. */
+  readonly durationMs = input.required<number | null>();
   readonly action = output<void>();
   readonly dismissed = output<void>();
 
@@ -36,7 +38,7 @@ export class Toast {
 
   constructor() {
     afterNextRender(() => {
-      this.remaining = this.durationMs();
+      this.remaining = this.durationMs() ?? 0;
       this.run();
     });
     inject(DestroyRef).onDestroy(() => clearTimeout(this.timer));
@@ -58,6 +60,7 @@ export class Toast {
   }
 
   private run() {
+    if (this.durationMs() === null) return;
     this.startedAt = Date.now();
     this.timer = setTimeout(() => this.dismissed.emit(), Math.max(0, this.remaining));
   }

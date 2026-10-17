@@ -1,8 +1,15 @@
-<div class="toast toast--success">
-  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="9" />
-    <path d="m8 12 3 3 5-6" />
-  </svg>
+<div class="toast" [class]="'toast--' + severity()">
+  @if (severity() === 'danger') {
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v4M12 16h.01" />
+    </svg>
+  } @else {
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8 12 3 3 5-6" />
+    </svg>
+  }
   <div class="toast__body">
     <div class="toast__title">{{ title() }}</div>
     @if (text(); as text) {

@@ -99,6 +99,25 @@ export class LogChapterPage {
     await this.page.getByRole('link', { name: 'Not yet' }).click();
   }
 
+  /** Makes saving a chapter fail as if the connection dropped; other requests are unaffected. */
+  async failSaving() {
+    await this.page.route('**/api/books/*/chapters/*', (route) =>
+      route.request().method() === 'POST' ? route.abort() : route.continue(),
+    );
+  }
+
+  async repairSaving() {
+    await this.page.unroute('**/api/books/*/chapters/*');
+  }
+
+  failureToasts() {
+    return this.page.getByRole('status').getByText('Couldn’t save your answers');
+  }
+
+  async retry() {
+    await this.page.getByRole('button', { name: 'Retry' }).click();
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

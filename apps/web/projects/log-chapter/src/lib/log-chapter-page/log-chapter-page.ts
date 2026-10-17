@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Cover, Progress, QuestionField, Segmented, SegmentedOption } from 'components';
-import { DraftStore, ToastService } from 'core';
+import { ApiError, DraftStore, ToastService } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -55,6 +55,7 @@ export class LogChapterPage {
   protected readonly otherDay = signal('');
   protected readonly dayInFuture = signal(false);
   private readonly fields = viewChildren(QuestionField);
+  private failureToast: number | null = null;
   private readonly draftKey = computed(() => `draft:chapter:${this.id()}:${this.n()}`);
   protected readonly chaptersToGo = computed(() => {
     const result = this.result();
@@ -167,9 +168,18 @@ export class LogChapterPage {
         readOn,
         answers: form.questions.map((q, i) => ({ position: q.position, text: this.answers()[i] })),
       });
+      if (this.failureToast !== null) this.toasts.dismiss(this.failureToast);
       this.drafts.clear(this.draftKey());
       this.result.set(result);
       this.offerUndo(form, result, readOn);
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.failureToast = this.toasts.show({
+        severity: 'danger',
+        title: 'Couldn’t save your answers',
+        text: 'They’re still on the page. Check your connection and try again.',
+        action: { label: 'Retry', run: () => this.submit() },
+      });
     } finally {
       this.submitting.set(false);
     }
