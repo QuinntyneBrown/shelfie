@@ -19,6 +19,14 @@ export class ShelfPage {
     return this.group('Finished').getByRole('listitem').filter({ hasText: title });
   }
 
+  emptyTitle() {
+    return this.page.getByRole('heading', { name: 'Your shelf is empty' });
+  }
+
+  askAGrownUp() {
+    return this.page.getByText(/Ask a grown-up to add/);
+  }
+
   cover(group: 'On the go' | 'Up next', title: string) {
     return this.book(group, title).locator('.cover');
   }

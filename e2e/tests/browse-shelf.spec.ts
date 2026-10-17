@@ -27,3 +27,15 @@ test('Given finished books, when Nia opens her shelf, then each shows its reward
   await expect(shelf.finishedBook('Charlotte’s Web')).toContainText('Movie night with popcorn · Sun 11 Oct');
   await expect(shelf.finishedBook('Matilda')).toContainText('Finished Tue 13 Oct · Dad is picking your reward');
 });
+
+test.describe('with no books', () => {
+  test.use({ shelf: 'empty' });
+
+  test('Given no books, when Nia opens her shelf, then it tells her to ask a grown-up to add one', async ({ page }) => {
+    await signInAsNia(page);
+    const shelf = new ShelfPage(page);
+
+    await expect(shelf.emptyTitle()).toBeVisible();
+    await expect(shelf.askAGrownUp()).toBeVisible();
+  });
+});

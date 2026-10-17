@@ -2,7 +2,9 @@
   <div class="page-header">
     <h1>Hi {{ session.current()?.name }}</h1>
   </div>
-  @if (shelf(); as shelf) {
+  @if (isEmpty()) {
+    <sh-empty-state title="Your shelf is empty" text="Ask a grown-up to add the book you’re reading right now, then you can log your first chapter." />
+  } @else if (shelf(); as shelf) {
     @if (shelf.reading.length) {
       <section class="section" aria-labelledby="on-the-go">
         <h2 id="on-the-go" class="group-title">On the go</h2>
