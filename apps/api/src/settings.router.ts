@@ -7,7 +7,11 @@ import { getSettings, updateSettings } from './settings.service.ts';
 
 const name = z.string().trim().min(1).max(40);
 const settingsPatchSchema = z.object({
-  reader: z.object({ name, color: z.enum(['rose', 'sky', 'sun', 'mint', 'lilac']) }),
+  reader: z.object({
+    name,
+    color: z.enum(['rose', 'sky', 'sun', 'mint', 'lilac']),
+    pin: z.string().regex(/^[0-9]{4}$/).optional(),
+  }),
   grownUp: z.object({ name }),
 });
 

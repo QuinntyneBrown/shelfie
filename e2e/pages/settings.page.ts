@@ -35,6 +35,10 @@ export class SettingsPage {
     await this.grownUpName().fill(name);
   }
 
+  async setPin(pin: string) {
+    await this.page.getByLabel('New 4-digit PIN').fill(pin);
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

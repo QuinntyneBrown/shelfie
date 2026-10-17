@@ -68,3 +68,24 @@ test('Given Dad changes his own display name, when he saves, then the top bar sh
   await expect(settings.banner()).toBeVisible();
   await expect(new ShellPage(page).accountMenuButton('Marcus')).toBeVisible();
 });
+
+test('Given Dad sets a new PIN, when he saves, then Nia needs the new PIN, not the old one', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setPin('4321');
+  await settings.save();
+  await expect(settings.banner()).toBeVisible();
+  await expect(page.getByLabel('New 4-digit PIN')).toHaveValue('');
+
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Dad');
+  await shell.menuItem('Switch reader').click();
+  const signIn = new SignInPage(page);
+  await signIn.choose('Nia');
+  await signIn.enterPin('1234');
+  await expect(signIn.pinError()).toBeVisible();
+  await signIn.enterPin('4321');
+
+  await expect(new ShelfPage(page).greeting()).toHaveText('Hi Nia');
+});

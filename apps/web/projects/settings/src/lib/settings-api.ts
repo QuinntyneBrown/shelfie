@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
 
 export interface SettingsPatch {
-  reader: { name: string; color: string };
+  reader: { name: string; color: string; pin?: string };
   grownUp: { name: string; email: string };
 }
 

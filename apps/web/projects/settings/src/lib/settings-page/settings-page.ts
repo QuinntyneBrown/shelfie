@@ -45,10 +45,15 @@ export class SettingsPage {
     this.saved.set(false);
     try {
       const view = await this.api.save({
-        reader: { name: this.readerName(), color: this.readerColor() },
+        reader: {
+          name: this.readerName(),
+          color: this.readerColor(),
+          ...(this.pin() ? { pin: this.pin() } : {}),
+        },
         grownUp: { name: this.grownUpName(), email: this.email() },
       });
       this.session.update(view.grownUp.name);
+      this.pin.set('');
       this.saved.set(true);
     } finally {
       this.saving.set(false);
