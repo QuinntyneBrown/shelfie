@@ -65,3 +65,10 @@ CREATE TABLE IF NOT EXISTS password_reset (
   expires_at TEXT NOT NULL,
   used_at TEXT
 );
+CREATE TABLE IF NOT EXISTS question (
+  id TEXT PRIMARY KEY,
+  book_id TEXT NOT NULL REFERENCES book(id),
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  removed_at TEXT
+);

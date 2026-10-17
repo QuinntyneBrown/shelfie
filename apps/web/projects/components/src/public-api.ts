@@ -20,3 +20,4 @@ export * from './lib/sticker-picker/sticker-picker';
 export * from './lib/chapter-row/chapter-row';
 export * from './lib/tab-bar/tab-bar';
 export * from './lib/dialog/dialog';
+export * from './lib/textarea/textarea';

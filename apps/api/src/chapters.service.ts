@@ -1,12 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { Problem } from './problem.ts';
-
-export const DEFAULT_QUESTIONS = [
-  'What happened in this chapter?',
-  'Who was your favourite character in this chapter, and why?',
-  'What do you think will happen next?',
-];
+import { questionsForBook } from './questions.service.ts';
 
 const UNDO_SECONDS = 10;
 
@@ -58,7 +53,7 @@ export function getForm(db: DatabaseSync, householdId: string, bookId: string, n
     chapterNumber: n,
     today: householdToday(db, householdId),
     grownUpName: grownUp.name,
-    questions: DEFAULT_QUESTIONS.map((text, i) => ({ position: i + 1, text, required: i === 0 })),
+    questions: questionsForBook(db, bookId).map((text, i) => ({ position: i + 1, text, required: i === 0 })),
   };
 }
 
@@ -82,7 +77,7 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
       undoUntil.toISOString(),
     );
     const insertAnswer = db.prepare('INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES (?, ?, ?, ?, ?)');
-    DEFAULT_QUESTIONS.forEach((question, i) => {
+    questionsForBook(db, bookId).forEach((question, i) => {
       const text = request.answers.find((a) => a.position === i + 1)?.text ?? '';
       insertAnswer.run(randomUUID(), id, i + 1, question, text);
     });

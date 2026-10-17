@@ -57,3 +57,18 @@ export function expireResetLinks() {
     db.close();
   }
 }
+
+/** The question texts stored with a logged chapter's answers, in order. */
+export function questionsAnswered(bookId: string, chapter: number): string[] {
+  const db = new DatabaseSync('e2e.db', { readOnly: true });
+  try {
+    const rows = db
+      .prepare(
+        'SELECT a.question_text FROM answer a JOIN chapter_log c ON c.id = a.chapter_log_id WHERE c.book_id = ? AND c.chapter_number = ? ORDER BY a.position',
+      )
+      .all(bookId, chapter) as { question_text: string }[];
+    return rows.map((r) => r.question_text);
+  } finally {
+    db.close();
+  }
+}

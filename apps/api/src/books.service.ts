@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { Problem } from './problem.ts';
+import { DEFAULT_QUESTIONS, customQuestions, type CustomQuestion } from './questions.service.ts';
 
 export interface NewBook {
   title: string;
@@ -37,6 +38,8 @@ export interface BookResponse {
   today: string;
   grownUpName: string;
   readerName: string;
+  defaultQuestions: string[];
+  questions: CustomQuestion[];
   chapters: ChapterSummary[];
 }
 
@@ -86,6 +89,8 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     today: dayFormat.format(new Date()),
     grownUpName: grownUp.name,
     readerName: reader.name,
+    defaultQuestions: DEFAULT_QUESTIONS,
+    questions: customQuestions(db, bookId),
     chapters,
   };
 }
@@ -181,6 +186,7 @@ export function deleteBook(db: DatabaseSync, householdId: string, bookId: string
     db.prepare('DELETE FROM answer WHERE chapter_log_id IN (SELECT id FROM chapter_log WHERE book_id = ?)').run(bookId);
     db.prepare('DELETE FROM chapter_log WHERE book_id = ?').run(bookId);
     db.prepare('DELETE FROM reward WHERE book_id = ?').run(bookId);
+    db.prepare('DELETE FROM question WHERE book_id = ?').run(bookId);
     db.prepare('DELETE FROM book WHERE id = ?').run(bookId);
     db.exec('COMMIT');
   } catch (e) {

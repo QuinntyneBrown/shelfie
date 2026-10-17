@@ -1,0 +1,37 @@
+<sh-dialog
+  [heading]="editing() === null ? 'Add a question' : 'Edit question'"
+  [open]="open()"
+  (closed)="closed.emit()"
+>
+  <form id="question-form" (submit)="$event.preventDefault(); save()" novalidate>
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        title="The question wasn’t saved"
+        message="Shelfie couldn’t reach the server. Your wording is still here."
+      />
+    }
+    <sh-textarea
+      label="Question"
+      [help]="
+        readerName() +
+        ' answers it for every chapter of ' +
+        bookTitle() +
+        '. Chapters she has already logged keep their old questions.'
+      "
+      [(value)]="text"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="question-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      {{ editing() === null ? 'Add question' : 'Save' }}
+    </button>
+  </div>
+</sh-dialog>

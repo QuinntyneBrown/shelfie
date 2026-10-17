@@ -12,10 +12,11 @@ import { Router } from '@angular/router';
 import { Banner, Button, Cover, Dialog, Progress, TextField } from 'components';
 import { ApiError, ToastService } from 'core';
 import { BookDetail, BooksApi } from '../books-api';
+import { QuestionDialog } from '../question-dialog/question-dialog';
 
 @Component({
   selector: 'sh-manage-book-page',
-  imports: [Banner, Button, Cover, DatePipe, Dialog, Progress, TextField],
+  imports: [Banner, Button, Cover, DatePipe, Dialog, Progress, QuestionDialog, TextField],
   templateUrl: './manage-book-page.html',
   styleUrl: './manage-book-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +36,9 @@ export class ManageBookPage {
   protected readonly chaptersError = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly questionOpen = signal(false);
+  protected readonly questionBusy = signal(false);
+  protected readonly questionFailed = signal(false);
   protected readonly removeOpen = signal(false);
   protected readonly removing = signal(false);
   protected readonly removeFailed = signal(false);
@@ -95,6 +99,28 @@ export class ManageBookPage {
       this.saved.set(true);
     } finally {
       this.saving.set(false);
+    }
+  }
+
+  protected openAddQuestion() {
+    this.questionFailed.set(false);
+    this.questionOpen.set(true);
+  }
+
+  protected async saveQuestion(text: string) {
+    const book = this.book();
+    if (!book) return;
+    this.questionBusy.set(true);
+    this.questionFailed.set(false);
+    try {
+      const question = await this.api.addQuestion(book.id, text);
+      this.book.set({ ...book, questions: [...book.questions, question] });
+      this.questionOpen.set(false);
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.questionFailed.set(true);
+    } finally {
+      this.questionBusy.set(false);
     }
   }
 

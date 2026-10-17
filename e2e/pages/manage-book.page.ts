@@ -43,6 +43,38 @@ export class ManageBookPage {
     return this.saves;
   }
 
+  questions() {
+    return this.page.getByRole('region', { name: /Questions/ }).getByRole('listitem');
+  }
+
+  question(text: string) {
+    return this.questions().filter({ hasText: text });
+  }
+
+  async addQuestion(text: string) {
+    await this.page.getByRole('button', { name: 'Add a question' }).click();
+    await this.questionDialog().getByLabel('Question').fill(text);
+    await this.questionDialog().getByRole('button', { name: 'Add question' }).click();
+  }
+
+  async editQuestion(from: string, to: string) {
+    await this.question(from).getByRole('button', { name: 'Edit' }).click();
+    await this.questionDialog().getByLabel('Question').fill(to);
+    await this.questionDialog().getByRole('button', { name: 'Save' }).click();
+  }
+
+  async removeQuestion(text: string) {
+    await this.question(text).getByRole('button', { name: 'Remove' }).click();
+  }
+
+  questionDialog() {
+    return this.page.getByRole('dialog', { name: /question/i });
+  }
+
+  questionField() {
+    return this.questionDialog().getByLabel('Question');
+  }
+
   removeButton() {
     return this.page.getByRole('button', { name: 'Remove book', exact: true });
   }
@@ -52,7 +84,7 @@ export class ManageBookPage {
   }
 
   removeDialog() {
-    return this.page.getByRole('dialog');
+    return this.page.getByRole('dialog', { name: /^Remove/ });
   }
 
   keepButton() {

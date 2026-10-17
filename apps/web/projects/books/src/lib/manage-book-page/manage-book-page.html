@@ -17,6 +17,46 @@
       </div>
     </div>
 
+    <section class="card stack" aria-labelledby="questions-title">
+      <h2 id="questions-title" class="section-title">
+        Questions {{ book.readerName }} answers for every chapter
+      </h2>
+      <ol class="list questions">
+        @for (text of book.defaultQuestions; track $index) {
+          <li class="list__item">
+            <span class="qa__num">{{ $index + 1 }}.</span>
+            <div class="list__body">
+              <div class="list__title">{{ text }}</div>
+              <div class="list__meta">Default question</div>
+            </div>
+          </li>
+        }
+        @for (question of book.questions; track question.id) {
+          <li class="list__item">
+            <span class="qa__num">{{ book.defaultQuestions.length + $index + 1 }}.</span>
+            <div class="list__body">
+              <div class="list__title">{{ question.text }}</div>
+              <div class="list__meta">
+                Added by you · {{ question.createdAt | date: 'EEE d MMM' }}
+              </div>
+            </div>
+          </li>
+        }
+      </ol>
+      <div>
+        <button class="btn" type="button" (click)="openAddQuestion()">Add a question</button>
+      </div>
+    </section>
+    <sh-question-dialog
+      [open]="questionOpen()"
+      [readerName]="book.readerName"
+      [bookTitle]="book.title"
+      [busy]="questionBusy()"
+      [failed]="questionFailed()"
+      (saved)="saveQuestion($event)"
+      (closed)="questionOpen.set(false)"
+    />
+
     <section class="card stack" aria-labelledby="logged-title">
       <h2 id="logged-title" class="section-title">Chapters logged</h2>
       @if (logged().length) {

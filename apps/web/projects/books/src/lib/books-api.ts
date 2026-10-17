@@ -19,6 +19,12 @@ export interface ChapterSummary {
   log: { id: string; readOn: string; firstLine: string } | null;
 }
 
+export interface CustomQuestion {
+  id: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface BookDetail {
   id: string;
   title: string;
@@ -28,6 +34,8 @@ export interface BookDetail {
   sticker: string;
   loggedCount: number;
   readerName: string;
+  defaultQuestions: string[];
+  questions: CustomQuestion[];
   chapters: ChapterSummary[];
 }
 
@@ -52,6 +60,10 @@ export class BooksApi {
 
   update(id: string, patch: BookPatch) {
     return this.api.patch<BookDetail>(`/books/${id}`, patch);
+  }
+
+  addQuestion(bookId: string, text: string) {
+    return this.api.post<CustomQuestion>(`/books/${bookId}/questions`, { text });
   }
 
   remove(id: string) {
