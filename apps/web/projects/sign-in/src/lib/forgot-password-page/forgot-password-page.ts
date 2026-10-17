@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Banner, Button, TextField } from 'components';
+import { ApiError } from 'core';
 import { AuthApi } from '../auth-api';
 
 @Component({
@@ -17,6 +18,7 @@ export class ForgotPasswordPage {
   protected readonly sentTo = signal<string | null>(null);
   protected readonly sending = signal(false);
   protected readonly emailError = signal<string | null>(null);
+  protected readonly unreachable = signal(false);
 
   protected async send() {
     if (this.sending()) return;
@@ -25,11 +27,16 @@ export class ForgotPasswordPage {
       incomplete ? 'Enter the e-mail address you sign in with, like name@example.com.' : null,
     );
     if (incomplete) return;
+
     this.sending.set(true);
+    this.unreachable.set(false);
     try {
       const email = this.email().trim();
       await this.api.forgotPassword(email);
       this.sentTo.set(email);
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.unreachable.set(true);
     } finally {
       this.sending.set(false);
     }

@@ -125,3 +125,32 @@ test('Given a reset link older than an hour, when Dad submits a new password, th
   await signIn.signInWithPassword(DAD.email, DAD.password);
   await expect(page).toHaveURL(/\/review$/);
 });
+
+test('Given a short password that does not match, when Dad saves, then both boxes say what is wrong and nothing is sent', async ({ page }) => {
+  const forgot = new ForgotPasswordPage(page);
+  await forgot.open();
+  await forgot.requestLink(DAD.email);
+  const reset = new ResetPasswordPage(page);
+  reset.watchRequests();
+  await reset.openLink(await resetLinkFor(DAD.email));
+  await reset.choosePassword('short', 'shorter');
+
+  await expect(reset.problemSummary()).toContainText('Fix 2 things');
+  await expect(reset.newPasswordField()).toHaveAccessibleDescription(/Use at least 8 characters\./);
+  await expect(reset.confirmField()).toHaveAccessibleDescription(/These don’t match\. Type the same password in both boxes\./);
+  expect(reset.requestCount()).toBe(0);
+});
+
+test('Given the server cannot be reached, when Dad asks for a link, then he is told the mail could not be sent, keeps his address and can try again', async ({ page }) => {
+  const forgot = new ForgotPasswordPage(page);
+  await forgot.open();
+  await forgot.breakMail();
+  await forgot.requestLink(DAD.email);
+
+  await expect(forgot.failure()).toBeVisible();
+  await expect(forgot.emailField()).toHaveValue(DAD.email);
+  await forgot.repairMail();
+  await forgot.tryAgain();
+
+  await expect(forgot.confirmation()).toBeVisible();
+});

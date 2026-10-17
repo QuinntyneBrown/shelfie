@@ -39,4 +39,20 @@ export class ForgotPasswordPage {
   problemSummary() {
     return this.page.getByRole('alert').filter({ hasText: 'Check one thing' });
   }
+
+  async breakMail() {
+    await this.page.route('**/api/auth/forgot-password', (route) => route.abort());
+  }
+
+  async repairMail() {
+    await this.page.unroute('**/api/auth/forgot-password');
+  }
+
+  failure() {
+    return this.page.getByRole('alert').filter({ hasText: 'The e-mail couldn’t be sent' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
 }
