@@ -1,11 +1,11 @@
 # Estimates
 
-- Overall effort: 40 days
+- Overall effort: 42 days
 - Complete: 0%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [platform](platform.md) | 5 days | 0% |
+| [platform](platform.md) | 7 days | 0% |
 | [shell](shell.md) | 5 days | 0% |
 | [sign-in](sign-in.md) | 7 days | 0% |
 | [books](books.md) | 8 days | 0% |

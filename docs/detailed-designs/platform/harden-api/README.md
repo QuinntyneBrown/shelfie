@@ -30,10 +30,10 @@ The slice is the middleware chain of the Express application plus three helpers 
 - **`platform/logger.ts`** — the `pino` logger (described in `operate-service`) is configured with `redact` on `req.headers.cookie`, `req.headers.authorization`, and the fields `password`, `currentPassword`, `newPassword`, `pin`, `token`, `text` and `answers`; request and response bodies are never logged at all. Log lines therefore cannot contain passwords, PINs, tokens or answer text (`L2-029`).
 - **Parameterised SQL** — every `<name>.repo.ts` uses `better-sqlite3` prepared statements with `?` or `@name` placeholders. String concatenation into SQL does not occur; sorting and filtering options are mapped through fixed allow-lists (`L2-028`).
 - **Output encoding** — the API returns JSON only and never HTML. The Angular application renders stored text (titles, authors, answers, notes, questions, rewards) through default `{{ }}` interpolation and property bindings, which escape markup; `[innerHTML]` and `bypassSecurityTrust*` are not used. Text such as `<script>alert(1)</script>` in an answer is displayed literally (`L2-028`).
-- **TLS** — deferred until the Azure deployment (AGENTS.md, Deferred work). Locally the API listens on plain HTTP on a loopback address; `helmet` sends HSTS and cookies carry `Secure` only when `NODE_ENV=production`.
+- **TLS** — terminated by Caddy on the VM (`infra/host/Caddyfile`, see `operate-service`, Deployment), which holds the Let's Encrypt certificate for `shelfie.kids` and proxies to the API on `127.0.0.1:3000`. Locally the API listens on plain HTTP on a loopback address; `helmet` sends HSTS and cookies carry `Secure` only when `NODE_ENV=production`.
 - **Hard delete** — `migrations/*.sql` declares every child table with `ON DELETE CASCADE` (`question`, `chapter_log`, `reward` reference `book`; `answer` references `chapter_log`), and `db.ts` sets `PRAGMA foreign_keys = ON` on every connection. `DELETE /api/books/:id` runs a single `DELETE FROM book WHERE id = ? AND household_id = ?`, and the engine removes the chapters, answers, questions and reward with it (`L2-029`).
 
-The deployment target is Azure; its shape is deferred (AGENTS.md, Deferred work).
+The deployment is described in `operate-service`, Deployment, and `docs/runbook.md`.
 
 ## Requirements
 
