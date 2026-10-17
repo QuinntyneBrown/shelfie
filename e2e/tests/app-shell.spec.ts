@@ -132,3 +132,28 @@ for (const width of [360, 768, 1280]) {
     });
   }
 }
+
+for (const screen of screens) {
+  test(`Given ${screen.name} shows, then an accessibility scan finds nothing serious or critical`, async ({ page }) => {
+    await screen.open(page);
+
+    expect(await new ShellPage(page).seriousAccessibilityProblems()).toEqual([]);
+  });
+}
+
+test('Given she prefers reduced motion, when the shelf shows, then no control animates', async ({ page }) => {
+  await new ShellPage(page).preferReducedMotion();
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
+  await expect(shell.accountMenuButton('Nia')).toBeVisible();
+
+  expect(await shell.longestMotion()).toBeLessThan(0.001);
+});
+
+test('Given she has no preference, when the shelf shows, then controls do animate', async ({ page }) => {
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
+  await expect(shell.accountMenuButton('Nia')).toBeVisible();
+
+  expect(await shell.longestMotion()).toBeGreaterThan(0);
+});
