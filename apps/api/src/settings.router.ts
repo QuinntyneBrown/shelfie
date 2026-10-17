@@ -13,7 +13,7 @@ const settingsPatchSchema = z.object({
     color: z.enum(['rose', 'sky', 'sun', 'mint', 'lilac']),
     pin: z.string().regex(/^[0-9]{4}$/).optional(),
   }),
-  grownUp: z.object({ name, newPassword: z.string().min(8).optional(), currentPassword: z.string().optional() }),
+  grownUp: z.object({ name, email: z.email(), newPassword: z.string().min(8).optional(), currentPassword: z.string().optional() }),
 });
 
 export function settingsRouter(db: DatabaseSync) {

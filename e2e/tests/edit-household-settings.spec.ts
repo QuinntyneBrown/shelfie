@@ -153,3 +153,46 @@ test('Given a new password and the right current one, when Dad saves, then he si
 
   await expect(page).toHaveURL(/\/review$/);
 });
+
+test('Given a new e-mail address, when Dad saves without his current password, then it is refused', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setEmail('marcus@example.com');
+  await settings.save();
+
+  await expect(settings.failureBanner()).toContainText('Your current password isn’t right');
+  await expect(settings.banner()).toBeHidden();
+});
+
+test('Given a new e-mail address and the current password, when Dad saves, then that is the e-mail he signs in with', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setEmail('marcus@example.com');
+  await settings.setCurrentPassword(DAD.password);
+  await settings.save();
+  await expect(settings.banner()).toBeVisible();
+
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Dad');
+  await shell.menuItem('Sign out').click();
+  const signIn = new SignInPage(page);
+  await signIn.chooseGrownUp('Dad');
+  await expect(signIn.signingInAs()).toContainText('Signing in as marcus@example.com');
+  await signIn.typePasswordAndSignIn(DAD.password);
+
+  await expect(page).toHaveURL(/\/review$/);
+});
+
+test('Given an e-mail address another family already uses, when Dad saves, then it is refused and he is told why', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.setEmail('other@example.com');
+  await settings.setCurrentPassword(DAD.password);
+  await settings.save();
+
+  await expect(settings.failureBanner()).toContainText('That e-mail address is already in use');
+  await expect(settings.email()).toHaveValue('other@example.com');
+});

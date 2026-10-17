@@ -80,6 +80,10 @@ export class SettingsPage {
     return this.page.getByRole('alert').filter({ hasText: 'Couldn’t save' });
   }
 
+  async setEmail(email: string) {
+    await this.email().fill(email);
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

@@ -76,9 +76,8 @@ export class SettingsPage {
         grownUp: {
           name: this.grownUpName(),
           email: this.email(),
-          ...(this.newPassword()
-            ? { newPassword: this.newPassword(), currentPassword: this.currentPassword() }
-            : {}),
+          ...(this.newPassword() ? { newPassword: this.newPassword() } : {}),
+          ...(this.currentPassword() ? { currentPassword: this.currentPassword() } : {}),
         },
       });
       this.session.update(view.grownUp.name);
@@ -88,8 +87,13 @@ export class SettingsPage {
       this.currentPassword.set('');
       this.saved.set(true);
     } catch (e) {
-      if (!(e instanceof ApiError) || e.type !== 'current-password-invalid') throw e;
-      this.failure.set('Your current password isn’t right.');
+      if (e instanceof ApiError && e.type === 'current-password-invalid') {
+        this.failure.set('Your current password isn’t right.');
+      } else if (e instanceof ApiError && e.type === 'email-in-use') {
+        this.failure.set('That e-mail address is already in use.');
+      } else {
+        throw e;
+      }
     } finally {
       this.saving.set(false);
     }
