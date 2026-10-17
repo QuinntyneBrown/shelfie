@@ -1,6 +1,7 @@
 import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { MenuItem } from 'components';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
 import { SessionService, ToastService } from 'core';
@@ -12,7 +13,18 @@ import { SessionService, ToastService } from 'core';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly session = inject(SessionService).current;
+  private readonly sessionService = inject(SessionService);
+  private readonly router = inject(Router);
+  protected readonly session = this.sessionService.current;
+  protected readonly menuItems: MenuItem[] = [
+    { id: 'switch-reader', label: 'Switch reader' },
+    { id: 'sign-out', label: 'Sign out' },
+  ];
+  protected readonly menuHeader = computed(() => {
+    const s = this.session();
+    if (!s) return '';
+    return s.role === 'reader' ? `${s.name} · Reader` : `${s.name} · ${s.email} · grown-up`;
+  });
   protected readonly toasts = inject(ToastService);
   protected readonly home = computed(() =>
     this.session()?.role === 'grown_up' ? '/review' : '/shelf',
@@ -22,13 +34,19 @@ export class App {
   constructor() {
     // After moving to another page keyboard focus would be lost, so put it on the new page's content.
     // The first navigation is the page load itself, where the skip link must stay the first Tab stop.
-    inject(Router)
-      .events.pipe(
+    this.router.events
+      .pipe(
         filter((event) => event instanceof NavigationEnd),
         skip(1),
         takeUntilDestroyed(),
       )
       .subscribe(() => this.main().nativeElement.focus());
+  }
+
+  /** Switch reader and Sign out both end the session and return to the profile picker. */
+  protected async chooseFromMenu(_id: string) {
+    await this.sessionService.signOut();
+    await this.router.navigateByUrl('/sign-in');
   }
 
   protected skipToContent(event: Event) {

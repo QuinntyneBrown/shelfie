@@ -6,13 +6,13 @@
     Shelfie
   </a>
   <span class="topbar__spacer"></span>
-  <button
-    class="avatar avatar--sm account"
-    [class]="'avatar--' + color()"
-    type="button"
-    aria-haspopup="menu"
-    [attr.aria-label]="'Account menu for ' + name()"
+  <sh-menu
+    [label]="'Account menu for ' + name()"
+    [triggerClass]="'avatar avatar--sm avatar--' + color()"
+    [header]="menuHeader()"
+    [items]="menuItems()"
+    (select)="menuSelect.emit($event)"
   >
     {{ initial() }}
-  </button>
+  </sh-menu>
 </header>

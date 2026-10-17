@@ -20,6 +20,7 @@ export interface Session {
   name: string;
   role: 'reader' | 'grown_up';
   color: string;
+  email: string | null;
 }
 
 export type PinResult = { session: Session } | { triesLeft: number } | { lockedUntil: string };
@@ -29,7 +30,7 @@ const DUMMY_HASH = hashSecret('not-a-real-password');
 
 function createSession(
   db: DatabaseSync,
-  profile: { id: string; name: string; role: 'reader' | 'grown_up'; color: string },
+  profile: { id: string; name: string; role: 'reader' | 'grown_up'; color: string; email: string | null },
 ): Session {
   const id = randomBytes(32).toString('hex');
   const now = new Date();
@@ -40,7 +41,7 @@ function createSession(
     now.toISOString(),
     expires.toISOString(),
   );
-  return { id, profileId: profile.id, name: profile.name, role: profile.role, color: profile.color };
+  return { id, profileId: profile.id, name: profile.name, role: profile.role, color: profile.color, email: profile.email };
 }
 
 export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
@@ -51,8 +52,8 @@ export function listProfiles(db: DatabaseSync, householdId: string): ProfileSumm
 
 export function signInWithPassword(db: DatabaseSync, email: string, password: string): (Session & { householdId: string }) | null {
   const profile = db
-    .prepare("SELECT id, name, role, color, household_id, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
-    .get(email) as { id: string; name: string; role: 'grown_up'; color: string; household_id: string; password_hash: string | null } | undefined;
+    .prepare("SELECT id, name, role, color, email, household_id, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
+    .get(email) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string; password_hash: string | null } | undefined;
   const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
   return profile && valid ? { ...createSession(db, profile), householdId: profile.household_id } : null;
 }
@@ -60,7 +61,7 @@ export function signInWithPassword(db: DatabaseSync, email: string, password: st
 export function signInWithPin(db: DatabaseSync, householdId: string, profileId: string, pin: string): PinResult {
   const profile = db
     .prepare(
-      "SELECT id, name, role, color, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'",
+      "SELECT id, name, role, color, email, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'",
     )
     .get(profileId, householdId) as
     | {
@@ -68,6 +69,7 @@ export function signInWithPin(db: DatabaseSync, householdId: string, profileId: 
         name: string;
         role: 'reader';
         color: string;
+        email: string | null;
         pin_hash: string | null;
         pin_failed_count: number;
         pin_locked_until: string | null;

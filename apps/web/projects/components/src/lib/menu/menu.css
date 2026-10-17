@@ -1,0 +1,42 @@
+:host {
+  position: relative;
+  display: inline-block;
+}
+button[aria-haspopup] {
+  border: 0;
+  cursor: pointer;
+}
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: var(--z-dropdown, 20);
+  min-width: 14rem;
+  padding: var(--space-2);
+  background: var(--color-bg-surface);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3, var(--shadow-2));
+}
+.menu__header {
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+.menu__item {
+  display: block;
+  width: 100%;
+  min-height: var(--target-min, 2.75rem);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-fg-default);
+  font: var(--text-body);
+  cursor: pointer;
+}
+.menu__item:hover,
+.menu__item:focus-visible {
+  background: var(--color-bg-subtle, var(--color-accent-subtle));
+}
