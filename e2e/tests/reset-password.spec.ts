@@ -31,3 +31,14 @@ test('Given an address with no account, when a link is asked for, then the same 
   await new Promise((resolve) => setTimeout(resolve, 500));
   expect((await mailFor('nobody@example.com')).length).toBe(0);
 });
+
+test('Given a malformed e-mail, when Dad asks for a link, then he is told what to fix and nothing is sent', async ({ page }) => {
+  const forgot = new ForgotPasswordPage(page);
+  forgot.watchRequests();
+  await forgot.open();
+  await forgot.requestLink('dad@');
+
+  await expect(forgot.problemSummary()).toContainText('E-mail address is not complete');
+  await expect(forgot.emailField()).toHaveAccessibleDescription(/Enter the e-mail address you sign in with, like name@example\.com\./);
+  expect(forgot.requestCount()).toBe(0);
+});

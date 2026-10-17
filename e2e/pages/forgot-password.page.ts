@@ -23,4 +23,20 @@ export class ForgotPasswordPage {
   confirmation() {
     return this.page.getByRole('status').filter({ hasText: 'a reset link is on its way' });
   }
+
+  private requests = 0;
+
+  watchRequests() {
+    this.page.on('request', (request) => {
+      if (request.url().endsWith('/api/auth/forgot-password')) this.requests++;
+    });
+  }
+
+  requestCount() {
+    return this.requests;
+  }
+
+  problemSummary() {
+    return this.page.getByRole('alert').filter({ hasText: 'Check one thing' });
+  }
 }
