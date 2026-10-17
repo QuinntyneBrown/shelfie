@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { DEVICE_COOKIE, deviceHousehold, rememberDevice } from './device.ts';
+import { requireSession, type RequestSession } from './session.ts';
 import { listProfiles, signInWithPassword, signInWithPin } from './auth.service.ts';
 
 const pinSignInSchema = z.object({ profileId: z.string(), pin: z.string().regex(/^[0-9]{4}$/) });
@@ -12,6 +13,11 @@ const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as con
 
 export function authRouter(db: DatabaseSync) {
   const router = Router();
+
+  router.get('/session', requireSession(db), (_req, res) => {
+    const { profileId, name, role } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, role });
+  });
 
   router.get('/profiles', (req, res) => {
     const householdId = deviceHousehold(db, req.headers.cookie);

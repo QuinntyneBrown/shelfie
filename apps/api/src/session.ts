@@ -4,6 +4,7 @@ import { readCookie } from './device.ts';
 
 export interface RequestSession {
   profileId: string;
+  name: string;
   householdId: string;
   role: 'reader' | 'grown_up';
 }
@@ -15,7 +16,7 @@ export function requireSession(db: DatabaseSync) {
     const row = id
       ? (db
           .prepare(
-            'SELECT p.id AS profileId, p.household_id AS householdId, p.role AS role FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ? AND s.expires_at > ?',
+            'SELECT p.id AS profileId, p.name AS name, p.household_id AS householdId, p.role AS role FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ? AND s.expires_at > ?',
           )
           .get(id, new Date().toISOString()) as RequestSession | undefined)
       : undefined;
