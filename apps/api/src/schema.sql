@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS reward (
   text TEXT NOT NULL,
   given_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS answer (
+  id TEXT PRIMARY KEY,
+  chapter_log_id TEXT NOT NULL REFERENCES chapter_log(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  question_text TEXT NOT NULL,
+  text TEXT NOT NULL
+);

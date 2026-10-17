@@ -15,6 +15,10 @@ export class ShelfPage {
     return this.group(group).getByRole('article').filter({ hasText: title });
   }
 
+  async logChapter(group: 'On the go' | 'Up next', title: string, chapter: number) {
+    await this.book(group, title).getByRole('link', { name: new RegExp(`Chapter ${chapter}\$`) }).click();
+  }
+
   finishedBook(title: string) {
     return this.group('Finished').getByRole('listitem').filter({ hasText: title });
   }

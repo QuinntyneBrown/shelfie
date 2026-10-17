@@ -1,0 +1,4 @@
+<div class="field">
+  <label class="field__label" [for]="inputId()"><span class="qa__num">{{ number() }}.</span> {{ label() }}</label>
+  <textarea class="textarea" [id]="inputId()" rows="3" [value]="value()" (input)="edit($event)"></textarea>
+</div>
