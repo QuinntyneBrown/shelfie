@@ -1,7 +1,9 @@
 <article class="card book-card">
   <sh-cover [color]="coverColor()" [sticker]="sticker()" />
   <div class="book-card__body">
-    <h3 class="book-card__title">{{ title() }}</h3>
+    <h3 class="book-card__title">
+      <a [routerLink]="link()">{{ title() }}</a>
+    </h3>
     @if (author()) {
       <span class="book-card__author">{{ author() }}</span>
     }

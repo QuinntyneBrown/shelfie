@@ -39,6 +39,7 @@
           @for (book of data.reading; track book.id) {
             <sh-book-card
               [title]="book.title"
+              [link]="['/book', book.id]"
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"
@@ -62,6 +63,7 @@
           @for (book of data.upNext; track book.id) {
             <sh-book-card
               [title]="book.title"
+              [link]="['/book', book.id]"
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"

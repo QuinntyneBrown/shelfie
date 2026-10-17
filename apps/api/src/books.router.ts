@@ -2,7 +2,8 @@ import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { createBook } from './books.service.ts';
+import { createBook, getBook } from './books.service.ts';
+import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 export const COVER_COLORS = ['sage', 'rose', 'sky', 'sun', 'lilac', 'mint', 'peach'] as const;
@@ -29,6 +30,16 @@ export function booksRouter(db: DatabaseSync) {
     const body = createBookSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json({ type: 'validation' });
     res.status(201).json(createBook(db, householdId, role, body.data));
+  });
+
+  router.get('/:id', requireSession(db), requireRole('reader'), (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    try {
+      res.json(getBook(db, householdId, String(req.params['id'])));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
   return router;

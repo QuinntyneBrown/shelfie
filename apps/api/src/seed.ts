@@ -38,15 +38,29 @@ if (!process.argv.includes('--no-books')) {
   const reward = db.prepare('INSERT INTO reward (book_id, text, given_at) VALUES (?, ?, ?)');
 
   const day = (n: number) => `2026-10-${String(n).padStart(2, '0')}`;
-  const logChapters = (bookId: string, count: number, lastDay: number) => {
+  const answer = db.prepare('INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES (?, ?, 1, ?, ?)');
+  const logChapters = (bookId: string, count: number, lastDay: number, firstLines: string[] = []) => {
     for (let n = 1; n <= count; n++) {
       const stamp = `${day(lastDay)}T16:00:00.000Z`;
       log.run(`${bookId}-c${n}`, bookId, n, day(lastDay), stamp, stamp);
+      answer.run(`${bookId}-c${n}-a1`, `${bookId}-c${n}`, 'What happened in this chapter?', firstLines[n - 1] ?? `Chapter ${n} happened.`);
     }
   };
 
   book.run('b-lion', 'h1', 'The Lion, the Witch and the Wardrobe', 'C. S. Lewis', 17, 'sage', '🦁', 'grown_up', `${day(1)}T09:00:00.000Z`, null);
-  logChapters('b-lion', 11, 15);
+  logChapters('b-lion', 11, 15, [
+    'Lucy found a wardrobe in the empty room and went inside.',
+    'Lucy met Mr Tumnus the faun and had tea with him.',
+    'Edmund followed Lucy into the wardrobe.',
+    'The White Witch gave Edmund Turkish Delight.',
+    'Edmund said Lucy made it all up, which was mean.',
+    'All four of them went through the wardrobe into Narnia.',
+    'They met Mr Beaver and had dinner at his house.',
+    'Mr Beaver told them about Aslan and Edmund sneaked off.',
+    'Edmund got to the Witch’s house and was locked up.',
+    'Aslan came back and the snow started to melt.',
+    'Father Christmas gave them presents.',
+  ]);
   book.run('b-robot', 'h1', 'The Wild Robot', 'Peter Brown', 80, 'mint', '🤖', 'grown_up', `${day(2)}T09:00:00.000Z`, null);
   logChapters('b-robot', 3, 14);
   book.run('b-bfg', 'h1', 'The BFG', 'Roald Dahl', 3, 'lilac', '🌈', 'grown_up', `${day(5)}T09:00:00.000Z`, null);

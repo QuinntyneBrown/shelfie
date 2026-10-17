@@ -1,6 +1,27 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
 
+export interface ChapterSummary {
+  number: number;
+  state: 'logged' | 'next' | 'future';
+  log: { id: string; readOn: string; firstLine: string } | null;
+}
+
+export interface BookResponse {
+  id: string;
+  title: string;
+  author: string | null;
+  chapterCount: number;
+  coverColor: string;
+  sticker: string;
+  loggedCount: number;
+  finishedAt: string | null;
+  reward: { text: string; givenOn: string } | null;
+  today: string;
+  grownUpName: string;
+  chapters: ChapterSummary[];
+}
+
 export interface NewBook {
   title: string;
   author: string;
@@ -39,6 +60,10 @@ export interface ShelfResponse {
 @Injectable({ providedIn: 'root' })
 export class ShelfApi {
   private readonly api = inject(ApiClient);
+
+  book(id: string) {
+    return this.api.get<BookResponse>(`/books/${id}`);
+  }
 
   addBook(book: NewBook) {
     return this.api.post<{ id: string }>('/books', book);

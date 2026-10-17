@@ -30,6 +30,11 @@ export const routes: Routes = [
     loadComponent: () => import('shelf').then((m) => m.AddBookPage),
   },
   {
+    path: 'book/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('shelf').then((m) => m.BookPage),
+  },
+  {
     path: 'shelf',
     canActivate: [authGuard],
     loadComponent: () => import('shelf').then((m) => m.ShelfPage),

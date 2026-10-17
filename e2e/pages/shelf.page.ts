@@ -15,6 +15,10 @@ export class ShelfPage {
     return this.group(group).getByRole('article').filter({ hasText: title });
   }
 
+  async openBook(group: 'On the go' | 'Up next', title: string) {
+    await this.book(group, title).getByRole('link', { name: title, exact: true }).click();
+  }
+
   async addBook() {
     await this.page.getByRole('link', { name: 'Add a book' }).click();
   }

@@ -17,3 +17,4 @@ export * from './lib/menu/menu';
 export * from './lib/color-picker/color-picker';
 export * from './lib/banner/banner';
 export * from './lib/sticker-picker/sticker-picker';
+export * from './lib/chapter-row/chapter-row';

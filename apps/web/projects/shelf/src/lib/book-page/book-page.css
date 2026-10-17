@@ -1,0 +1,4 @@
+.group-title {
+  font: var(--text-h3);
+  margin-bottom: var(--space-4);
+}
