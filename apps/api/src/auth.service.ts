@@ -11,6 +11,7 @@ export interface ProfileSummary {
   name: string;
   role: 'reader' | 'grown_up';
   color: string;
+  email: string | null;
 }
 
 export interface Session {
@@ -40,16 +41,16 @@ function createSession(db: DatabaseSync, profile: { id: string; name: string; ro
 
 export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
   return db
-    .prepare('SELECT id, name, role, color FROM profile WHERE household_id = ? ORDER BY role DESC')
+    .prepare('SELECT id, name, role, color, email FROM profile WHERE household_id = ? ORDER BY role DESC')
     .all(householdId) as unknown as ProfileSummary[];
 }
 
-export function signInWithPassword(db: DatabaseSync, email: string, password: string): Session | null {
+export function signInWithPassword(db: DatabaseSync, email: string, password: string): (Session & { householdId: string }) | null {
   const profile = db
-    .prepare("SELECT id, name, role, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
-    .get(email) as { id: string; name: string; role: 'grown_up'; password_hash: string | null } | undefined;
+    .prepare("SELECT id, name, role, household_id, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
+    .get(email) as { id: string; name: string; role: 'grown_up'; household_id: string; password_hash: string | null } | undefined;
   const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
-  return profile && valid ? createSession(db, profile) : null;
+  return profile && valid ? { ...createSession(db, profile), householdId: profile.household_id } : null;
 }
 
 export function signInWithPin(db: DatabaseSync, householdId: string, profileId: string, pin: string): PinResult {

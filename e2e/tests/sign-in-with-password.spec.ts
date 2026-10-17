@@ -74,3 +74,18 @@ test('Given the server cannot be reached, when Dad signs in, then he is told so 
 
   await expect(page).toHaveURL(/\/review$/);
 });
+
+test('Given Dad has signed in on this browser before, when he returns, then he picks his profile and types only his password', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.signInWithPassword(DAD.email, DAD.password);
+  await expect(page).toHaveURL(/\/review$/);
+
+  await signIn.open();
+  await signIn.chooseGrownUp('Dad');
+  await expect(signIn.signingInAs()).toContainText('Signing in as dad@example.com');
+  await expect(signIn.emailField()).toBeHidden();
+  await signIn.typePasswordAndSignIn(DAD.password);
+
+  await expect(page).toHaveURL(/\/review$/);
+});

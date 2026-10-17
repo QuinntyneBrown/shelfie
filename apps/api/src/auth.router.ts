@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { deviceHousehold } from './device.ts';
+import { DEVICE_COOKIE, deviceHousehold, rememberDevice } from './device.ts';
 import { listProfiles, signInWithPassword, signInWithPin } from './auth.service.ts';
 
 const pinSignInSchema = z.object({ profileId: z.string(), pin: z.string().regex(/^[0-9]{4}$/) });
@@ -14,12 +14,12 @@ export function authRouter(db: DatabaseSync) {
   const router = Router();
 
   router.get('/profiles', (req, res) => {
-    const householdId = deviceHousehold(req.headers.cookie);
+    const householdId = deviceHousehold(db, req.headers.cookie);
     res.json(householdId ? listProfiles(db, householdId) : []);
   });
 
   router.post('/pin', (req, res) => {
-    const householdId = deviceHousehold(req.headers.cookie);
+    const householdId = deviceHousehold(db, req.headers.cookie);
     const body = pinSignInSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json({ type: 'validation' });
     if (!householdId) return res.status(401).json({ type: 'no-device' });
@@ -40,7 +40,9 @@ export function authRouter(db: DatabaseSync) {
     const session = signInWithPassword(db, body.data.email, body.data.password);
     if (!session) return res.status(401).json({ type: 'credentials-invalid' });
 
-    const { id, ...summary } = session;
+    const { id, householdId, ...summary } = session;
+    const newDevice = rememberDevice(db, householdId, req.headers.cookie);
+    if (newDevice) res.cookie('shelfie_device', newDevice, DEVICE_COOKIE);
     res.cookie('shelfie_session', id, SESSION_COOKIE);
     res.json(summary);
   });

@@ -2,7 +2,7 @@
   <div class="auth-card stack">
     <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
     <div class="card stack centred">
-      @if (chosen(); as profile) {
+      @if (pinProfile(); as profile) {
         <span
           class="avatar avatar--lg centred-item"
           [class]="'avatar--' + profile.color"
@@ -19,39 +19,95 @@
           (switchReader)="chosen.set(null); pinError.set(null); lockedUntil.set(null)"
         />
       } @else if (passwordStep()) {
-        <h1>Welcome back</h1>
-        <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
+        @if (chosen(); as grownUp) {
+          <span
+            class="avatar avatar--lg centred-item"
+            [class]="'avatar--' + grownUp.color"
+            aria-hidden="true"
+            >{{ grownUp.name.charAt(0) }}</span
+          >
+          <h1>Hi {{ grownUp.name }}!</h1>
+          <p class="text-muted centred-item">
+            Signing in as <strong>{{ grownUp.email }}</strong> ·
+            <button
+              class="link-button"
+              type="button"
+              (click)="chosen.set(null); credentialsWrong.set(false)"
+            >
+              Not {{ grownUp.name }}?
+            </button>
+          </p>
+        } @else {
+          <h1>Welcome back</h1>
+          <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
+        }
         @if (credentialsWrong()) {
-          <div #summary class="alert alert--danger form-summary form-left" role="alert" tabindex="-1">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+          <div
+            #summary
+            class="alert alert--danger form-summary form-left"
+            role="alert"
+            tabindex="-1"
+          >
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
             <div class="alert__body">
               <div class="alert__title">We couldn’t sign you in</div>
-              <ul class="summary-list"><li>E-mail or password is wrong</li></ul>
+              <ul class="summary-list">
+                <li>E-mail or password is wrong</li>
+              </ul>
             </div>
           </div>
         }
         @if (unreachable()) {
           <div class="alert alert--danger form-left" role="alert">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
             <div class="alert__body">
               <div class="alert__title">Shelfie isn’t reachable right now</div>
-              <div>Your password wasn’t checked because the server didn’t answer. Check your connection and try again.</div>
+              <div>
+                Your password wasn’t checked because the server didn’t answer. Check your connection
+                and try again.
+              </div>
               <div class="alert__actions">
-                <button class="btn btn--sm" type="button" (click)="submitPassword()">Try again</button>
+                <button class="btn btn--sm" type="button" (click)="submitPassword()">
+                  Try again
+                </button>
               </div>
             </div>
           </div>
         }
-        <form class="stack form-left" (submit)="$event.preventDefault(); submitPassword()" novalidate>
-          <sh-text-field label="Email" type="email" autocomplete="username" [error]="emailError()" [(value)]="email" />
-          <sh-text-field label="Password" type="password" autocomplete="current-password" [error]="passwordError()" [(value)]="password" />
+        <form
+          class="stack form-left"
+          (submit)="$event.preventDefault(); submitPassword()"
+          novalidate
+        >
+          @if (!chosen()) {
+            <sh-text-field
+              label="Email"
+              type="email"
+              autocomplete="username"
+              [error]="emailError()"
+              [(value)]="email"
+            />
+          }
+          <sh-text-field
+            label="Password"
+            type="password"
+            autocomplete="current-password"
+            [error]="passwordError()"
+            [(value)]="password"
+          />
           <sh-button [large]="true" [block]="true" [busy]="submitting()">Sign in</sh-button>
         </form>
       } @else {
         <h1>Who’s reading today?</h1>
         <p class="text-muted centred-item">Pick your name to open your shelf.</p>
         <div class="profiles">
-          @for (profile of readers(); track profile.id) {
+          @for (profile of profiles(); track profile.id) {
             <sh-profile-card
               [name]="profile.name"
               [role]="profile.role"

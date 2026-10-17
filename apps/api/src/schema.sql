@@ -53,3 +53,8 @@ CREATE TABLE IF NOT EXISTS answer (
   question_text TEXT NOT NULL,
   text TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS device (
+  id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES household(id),
+  created_at TEXT NOT NULL
+);

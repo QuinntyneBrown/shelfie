@@ -2,10 +2,10 @@
 import { test, expect } from '../support/test';
 import { SignInPage } from '../pages/sign-in.page';
 import { ShelfPage } from '../pages/shelf.page';
-import { giveDeviceCookie } from '../support/device-cookie';
+import { rememberDevice } from '../support/remember-device';
 
 test.beforeEach(async ({ context }) => {
-  await giveDeviceCookie(context);
+  await rememberDevice(context);
 });
 
 test('Given the device knows the household, when Nia enters her correct PIN, then she is taken to her shelf', async ({ page }) => {

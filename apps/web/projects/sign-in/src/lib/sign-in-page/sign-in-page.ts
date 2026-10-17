@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Button, PinKeypad, ProfileCard, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
@@ -16,14 +24,20 @@ export class SignInPage {
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
-  protected readonly readers = signal<ProfileSummary[]>([]);
+  protected readonly profiles = signal<ProfileSummary[]>([]);
   private readonly loaded = signal(false);
   protected readonly email = signal('');
   protected readonly password = signal('');
   protected readonly emailError = signal<string | null>(null);
   protected readonly passwordError = signal<string | null>(null);
+  /** The reader's PIN step; the grown-up's password step has no keypad. */
+  protected readonly pinProfile = computed(() =>
+    this.chosen()?.role === 'reader' ? this.chosen() : null,
+  );
   // With no device cookie there are no profiles to pick from, so the grown-up types his e-mail.
-  protected readonly passwordStep = computed(() => this.loaded() && this.readers().length === 0);
+  protected readonly passwordStep = computed(
+    () => this.loaded() && (this.profiles().length === 0 || this.chosen()?.role === 'grown_up'),
+  );
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly lockedUntil = signal<number | null>(null);
@@ -34,18 +48,18 @@ export class SignInPage {
   private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
 
   constructor() {
-    this.api
-      .profiles()
-      .then((profiles) => {
-        this.readers.set(profiles.filter((p) => p.role === 'reader'));
-        this.loaded.set(true);
-      });
+    this.api.profiles().then((profiles) => {
+      this.profiles.set(profiles);
+      this.loaded.set(true);
+    });
   }
 
   protected async submitPassword() {
     if (this.submitting()) return;
-    const email = this.email().trim();
-    this.emailError.set(!email ? 'Enter your e-mail' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid e-mail' : null);
+    const email = (this.chosen()?.email ?? this.email()).trim();
+    this.emailError.set(
+      !email ? 'Enter your e-mail' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid e-mail' : null,
+    );
     this.passwordError.set(this.password() ? null : 'Enter your password');
     if (this.emailError() || this.passwordError()) return;
 

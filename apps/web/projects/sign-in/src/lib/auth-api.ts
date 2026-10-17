@@ -6,6 +6,7 @@ export interface ProfileSummary {
   name: string;
   role: 'reader' | 'grown_up';
   color: string;
+  email: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
