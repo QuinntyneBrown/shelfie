@@ -37,6 +37,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Initial JavaScript within 300 kB gzipped (L2-030)
+        run: npm run check:bundle -w apps/web
       - uses: actions/upload-artifact@v5
         with:
           name: web-dist

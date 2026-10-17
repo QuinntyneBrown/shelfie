@@ -81,3 +81,5 @@ CREATE TABLE IF NOT EXISTS sign_in_attempt (
   source TEXT NOT NULL,
   at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS book_household ON book (household_id);
+CREATE INDEX IF NOT EXISTS chapter_log_reviewed ON chapter_log (reviewed_at);
