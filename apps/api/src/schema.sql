@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS profile (
   role TEXT NOT NULL CHECK (role IN ('reader','grown_up')),
   name TEXT NOT NULL,
   color TEXT NOT NULL,
+  email TEXT UNIQUE,
+  password_hash TEXT,
   pin_hash TEXT,
   pin_failed_count INTEGER NOT NULL DEFAULT 0,
   pin_locked_until TEXT

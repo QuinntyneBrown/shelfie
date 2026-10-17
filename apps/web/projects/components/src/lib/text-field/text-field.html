@@ -1,0 +1,16 @@
+<div class="field">
+  <label class="field__label" [for]="inputId()">{{ label() }}</label>
+  <input
+    class="input"
+    [id]="inputId()"
+    [type]="type()"
+    [attr.autocomplete]="autocomplete()"
+    [value]="value()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="error() ? inputId() + '-error' : null"
+    (input)="edit($event)"
+  />
+  @if (error(); as message) {
+    <div class="field__error" [id]="inputId() + '-error'">{{ message }}</div>
+  }
+</div>

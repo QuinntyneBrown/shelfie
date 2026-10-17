@@ -7,6 +7,12 @@ export class SignInPage {
     await this.page.goto('/sign-in');
   }
 
+  async signInWithPassword(email: string, password: string) {
+    await this.page.getByLabel('Email').fill(email);
+    await this.page.getByLabel('Password').fill(password);
+    await this.page.getByRole('button', { name: 'Sign in' }).click();
+  }
+
   async choose(name: string) {
     await this.page.getByRole('button', { name: new RegExp(name) }).click();
     await this.page.getByRole('group', { name: 'PIN keypad' }).waitFor();

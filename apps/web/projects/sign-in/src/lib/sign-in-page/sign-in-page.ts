@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { PinKeypad, ProfileCard } from 'components';
+import { Button, PinKeypad, ProfileCard, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi, ProfileSummary } from '../auth-api';
 
 @Component({
   selector: 'sh-sign-in-page',
-  imports: [PinKeypad, ProfileCard],
+  imports: [Button, PinKeypad, ProfileCard, TextField],
   templateUrl: './sign-in-page.html',
   styleUrl: './sign-in-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +17,11 @@ export class SignInPage {
   private readonly router = inject(Router);
 
   protected readonly readers = signal<ProfileSummary[]>([]);
+  private readonly loaded = signal(false);
+  protected readonly email = signal('');
+  protected readonly password = signal('');
+  // With no device cookie there are no profiles to pick from, so the grown-up types his e-mail.
+  protected readonly passwordStep = computed(() => this.loaded() && this.readers().length === 0);
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly lockedUntil = signal<number | null>(null);
@@ -25,7 +30,15 @@ export class SignInPage {
   constructor() {
     this.api
       .profiles()
-      .then((profiles) => this.readers.set(profiles.filter((p) => p.role === 'reader')));
+      .then((profiles) => {
+        this.readers.set(profiles.filter((p) => p.role === 'reader'));
+        this.loaded.set(true);
+      });
+  }
+
+  protected async submitPassword() {
+    this.session.current.set(await this.api.signInWithPassword(this.email(), this.password()));
+    await this.router.navigateByUrl('/review');
   }
 
   protected async submit(pin: string) {

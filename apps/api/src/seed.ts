@@ -1,21 +1,23 @@
 import { openDb } from './db.ts';
-import { hashPin } from './pin.ts';
+import { hashSecret } from './secret.ts';
 
 export const SEED = {
   householdId: 'h1',
   readerId: 'p-nia',
   grownUpId: 'p-dad',
   pin: '1234',
+  grownUpEmail: 'dad@example.com',
+  grownUpPassword: 'sunny-days-42',
 };
 
 const db = openDb(process.env.SHELFIE_DB ?? 'shelfie.db');
 db.exec('DELETE FROM session; DELETE FROM answer; DELETE FROM chapter_log; DELETE FROM reward; DELETE FROM book');
 db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
 const profile = db.prepare(
-  'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, pin_hash) VALUES (?, ?, ?, ?, ?, ?)',
+  'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, email, password_hash, pin_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
 );
-profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', hashPin(SEED.pin));
-profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', null);
+profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', null, null, hashSecret(SEED.pin));
+profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', SEED.grownUpEmail, hashSecret(SEED.grownUpPassword), null);
 
 if (!process.argv.includes('--no-books')) {
   const book = db.prepare(

@@ -16,6 +16,10 @@ export class AuthApi {
     return this.api.get<ProfileSummary[]>('/auth/profiles');
   }
 
+  signInWithPassword(email: string, password: string) {
+    return this.api.post<Session>('/auth/password', { email, password });
+  }
+
   signInWithPin(profileId: string, pin: string) {
     return this.api.post<Session>('/auth/pin', { profileId, pin });
   }

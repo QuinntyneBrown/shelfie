@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import { verifyPin } from './pin.ts';
+import { hashSecret, verifySecret } from './secret.ts';
 
 const SESSION_DAYS = 30;
 const MAX_FAILURES = 5;
@@ -20,23 +20,58 @@ export interface Session {
   role: 'reader' | 'grown_up';
 }
 
+export type PinResult = { session: Session } | { triesLeft: number } | { lockedUntil: string };
+
+// Verified against when the e-mail is unknown, so both failures take the same time.
+const DUMMY_HASH = hashSecret('not-a-real-password');
+
+function createSession(db: DatabaseSync, profile: { id: string; name: string; role: 'reader' | 'grown_up' }): Session {
+  const id = randomBytes(32).toString('hex');
+  const now = new Date();
+  const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  db.prepare('INSERT INTO session (id, profile_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
+    id,
+    profile.id,
+    now.toISOString(),
+    expires.toISOString(),
+  );
+  return { id, profileId: profile.id, name: profile.name, role: profile.role };
+}
+
 export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
   return db
     .prepare('SELECT id, name, role, color FROM profile WHERE household_id = ? ORDER BY role DESC')
     .all(householdId) as unknown as ProfileSummary[];
 }
 
-export type PinResult = { session: Session } | { triesLeft: number } | { lockedUntil: string };
+export function signInWithPassword(db: DatabaseSync, email: string, password: string): Session | null {
+  const profile = db
+    .prepare("SELECT id, name, role, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
+    .get(email) as { id: string; name: string; role: 'grown_up'; password_hash: string | null } | undefined;
+  const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
+  return profile && valid ? createSession(db, profile) : null;
+}
 
 export function signInWithPin(db: DatabaseSync, householdId: string, profileId: string, pin: string): PinResult {
   const profile = db
-    .prepare("SELECT id, name, role, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'")
-    .get(profileId, householdId) as { id: string; name: string; role: 'reader'; pin_hash: string | null; pin_failed_count: number; pin_locked_until: string | null } | undefined;
+    .prepare(
+      "SELECT id, name, role, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'",
+    )
+    .get(profileId, householdId) as
+    | {
+        id: string;
+        name: string;
+        role: 'reader';
+        pin_hash: string | null;
+        pin_failed_count: number;
+        pin_locked_until: string | null;
+      }
+    | undefined;
   if (!profile?.pin_hash) return { triesLeft: MAX_FAILURES };
   if (profile.pin_locked_until && profile.pin_locked_until > new Date().toISOString()) {
     return { lockedUntil: profile.pin_locked_until };
   }
-  if (!verifyPin(pin, profile.pin_hash)) {
+  if (!verifySecret(pin, profile.pin_hash)) {
     const failed = profile.pin_failed_count + 1;
     if (failed >= MAX_FAILURES) {
       const lockedUntil = new Date(Date.now() + LOCK_MINUTES * 60 * 1000).toISOString();
@@ -47,15 +82,5 @@ export function signInWithPin(db: DatabaseSync, householdId: string, profileId: 
     return { triesLeft: MAX_FAILURES - failed };
   }
   db.prepare('UPDATE profile SET pin_failed_count = 0 WHERE id = ?').run(profile.id);
-
-  const id = randomBytes(32).toString('hex');
-  const now = new Date();
-  const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  db.prepare('INSERT INTO session (id, profile_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
-    id,
-    profile.id,
-    now.toISOString(),
-    expires.toISOString(),
-  );
-  return { session: { id, profileId: profile.id, name: profile.name, role: profile.role } };
+  return { session: createSession(db, profile) };
 }
