@@ -13,7 +13,13 @@ export function createApp(db: DatabaseSync) {
   const app = express();
   app.use(express.json());
   app.use('/api', (_req, res, next) => {
-    res.set('Cache-Control', 'no-store');
+    res.set({
+      'Cache-Control': 'no-store',
+      'Content-Security-Policy':
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      'X-Content-Type-Options': 'nosniff',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    });
     next();
   });
   app.get('/api/health', (_req, res) => {
