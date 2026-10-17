@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { signInAsDad, signInAsNia } from './signed-in';
 import { rememberDevice } from './remember-device';
 import { ErrorPage } from '../pages/error.page';
+import { AddBookPage } from '../pages/add-book.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
@@ -83,6 +84,15 @@ export const screens: Screen[] = [
       await signInAsDad(page);
       await page.goto('/settings');
       await new SettingsPage(page).readerName().waitFor();
+    },
+  },
+  {
+    name: 'add a book',
+    open: async (page) => {
+      await signInAsNia(page);
+      const add = new AddBookPage(page);
+      await add.open();
+      await add.titleField().waitFor();
     },
   },
 ];
