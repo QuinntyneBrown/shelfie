@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Banner, Button, ColorPicker, TextField } from 'components';
 import { SessionService } from 'core';
 import { SettingsApi } from '../settings-api';
@@ -20,6 +20,10 @@ export class SettingsPage {
   protected readonly loaded = signal(false);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly pinError = signal<string | null>(null);
+  protected readonly problems = computed(() =>
+    [this.pinError()].filter((p): p is string => p !== null),
+  );
   protected readonly readerName = signal('');
   protected readonly readerColor = signal('rose');
   protected readonly pin = signal('');
@@ -41,6 +45,10 @@ export class SettingsPage {
 
   protected async save() {
     if (this.saving()) return;
+    this.pinError.set(
+      this.pin() && !/^[0-9]{4}$/.test(this.pin()) ? 'Use exactly 4 digits.' : null,
+    );
+    if (this.problems().length) return;
     this.saving.set(true);
     this.saved.set(false);
     try {

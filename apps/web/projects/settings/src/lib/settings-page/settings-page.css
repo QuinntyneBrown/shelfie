@@ -4,3 +4,7 @@
 .section-title {
   font: var(--text-h4);
 }
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}

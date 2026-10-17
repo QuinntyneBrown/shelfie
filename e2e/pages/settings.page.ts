@@ -39,6 +39,26 @@ export class SettingsPage {
     await this.page.getByLabel('New 4-digit PIN').fill(pin);
   }
 
+  private saveRequests = 0;
+
+  watchSaves() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'PATCH' && request.url().endsWith('/api/settings')) this.saveRequests++;
+    });
+  }
+
+  saveRequestCount() {
+    return this.saveRequests;
+  }
+
+  problemSummary() {
+    return this.page.getByRole('alert').filter({ hasText: /Fix \d+ thing/ });
+  }
+
+  pinField() {
+    return this.page.getByLabel('New 4-digit PIN');
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

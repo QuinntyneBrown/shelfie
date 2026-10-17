@@ -7,6 +7,18 @@
   </div>
   @if (loaded()) {
     <form class="stack form" novalidate (submit)="$event.preventDefault(); save()">
+      @if (problems().length) {
+        <sh-banner
+          severity="danger"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
       @if (saved()) {
         <sh-banner
           title="Saved"
@@ -23,6 +35,7 @@
           inputmode="numeric"
           [maxlength]="4"
           help="Leave blank to keep the current PIN. She uses this to open her shelf."
+          [error]="pinError()"
           [(value)]="pin"
         />
       </section>

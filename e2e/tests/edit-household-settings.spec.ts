@@ -89,3 +89,16 @@ test('Given Dad sets a new PIN, when he saves, then Nia needs the new PIN, not t
 
   await expect(new ShelfPage(page).greeting()).toHaveText('Hi Nia');
 });
+
+test('Given a PIN that is not exactly 4 digits, when Dad saves, then an inline error and a summary show and nothing is sent', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  settings.watchSaves();
+  await settings.open();
+  await settings.setPin('12');
+  await settings.save();
+
+  await expect(settings.pinField()).toHaveAccessibleDescription(/Use exactly 4 digits/);
+  await expect(settings.problemSummary()).toContainText('Fix 1 thing');
+  expect(settings.saveRequestCount()).toBe(0);
+});
