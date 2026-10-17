@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Show a toast
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as user
+box "Frontend — Shelfie web (log-chapter library)" #E0F2FE
+  participant "LogChapterPage" as page
+end box
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "ToastService" as svc
+end box
+box "Frontend — Shelfie web (components library)" #E0F2FE
+  participant "sh-toast-stack\n(role=status, aria-live=polite)" as stack
+  participant "sh-toast" as toast
+end box
+
+page -> svc : show({severity: success, title: "Chapter 12 saved",\nmessage: "5 to go.", action: Undo})
+svc -> svc : Append Toast to toasts(); no timer (has action — L2-023)
+svc --> page : id
+stack -> svc : Read toasts()
+stack -> toast : Render newest at the bottom edge (L2-023)
+toast --> user : Announced by the live region (L2-023)
+alt Toast without action, severity not danger
+  svc -> svc : Start 8 s timer
+  user -> toast : Hover or focus
+  toast -> stack : pause
+  stack -> svc : pause(id) (L2-023)
+  user -> toast : Leave or blur
+  toast -> stack : resume
+  stack -> svc : resume(id)
+  svc -> svc : Timer elapses
+  svc -> svc : Remove from toasts()
+  stack -> toast : Leave animation (none under prefers-reduced-motion)
+else Action pressed
+  user -> toast : Press "Undo"
+  toast -> stack : action
+  stack -> svc : Run action.run()
+  svc -> page : run() callback
+  page -> svc : dismiss(id)
+  svc -> svc : Remove from toasts()
+else Dismiss pressed
+  user -> toast : Press "Dismiss"
+  toast -> stack : dismiss
+  stack -> svc : dismiss(id)
+  svc -> svc : Remove from toasts()
+end
+opt More than three toasts visible
+  stack -> stack : Collapse oldest into "+N more"; expand on activation
+end
+@enduml

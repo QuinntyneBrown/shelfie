@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Edit household settings
+
+Person(grownUp, "Grown-up", "Edits household settings")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "SettingsPage with Reader and Grown-up sections")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Verifies the current password, hashes credentials, writes both profiles")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "profile and household tables")
+}
+Rel(grownUp, web, "Edits and saves the form", "HTTPS")
+Rel(web, api, "GET /api/settings, PATCH /api/settings", "JSON/HTTPS")
+Rel(api, db, "Reads and updates profile rows in one transaction", "SQL")
+@enduml

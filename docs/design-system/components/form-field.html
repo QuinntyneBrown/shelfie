@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form field — Shelfie design system</title>
+<meta name="description" content="The wrapper that gives every Shelfie control a visible label, an optional marker, help text and an error message, in every state and both themes.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Form field</h1>
+      <p class="ds-lead">The field wraps one control with everything around it: a visible label, an optional marker, help text and an error message that says how to fix it.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;label&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+<section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Every <a href="text-field.html">text field</a> and <a href="textarea.html">textarea</a> sits inside a <code>.field</code>. The field stacks its parts in a fixed order: label, help, control, error. It has no look of its own beyond spacing and type.</p>
+      <ul>
+        <li><b>Required is the default.</b> Only optional fields are marked, with <code>&lt;span class="optional"&gt;(optional)&lt;/span&gt;</code> inside the label. The mocks mark 31 optional fields and no required ones.</li>
+        <li><b>Help</b> (<code>.field__help</code>) says why the field exists or what a good answer looks like. It sits above the control so it is read before typing.</li>
+        <li><b>Error</b> (<code>.field__error</code>) replaces nothing; it is added below the control when the value is wrong, and says how to fix it.</li>
+      </ul>
+      <p>For a group of radios use a <code>fieldset</code> and <code>legend</code> instead (<a href="radio-group.html">radio group</a>). For a group of swatches, the field's label is a <code>&lt;span class="field__label" id&gt;</code> that the <code>role="radiogroup"</code> points at with <code>aria-labelledby</code> (<a href="swatch-picker.html">swatch picker</a>).</p>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="field" style="width: 100%; max-width: 22rem;"><label class="field__label" for="ff-anatomy-pin">New 4-digit PIN <span class="optional">(optional)</span></label><div class="field__help" id="ff-anatomy-pin-help">Leave blank to keep the current PIN. Nia uses this to open her shelf.</div><input class="input" id="ff-anatomy-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" value="12" style="max-width: 8rem;" aria-invalid="true" aria-describedby="ff-anatomy-pin-error ff-anatomy-pin-help"><div class="field__error" id="ff-anatomy-pin-error">Use exactly 4 digits.</div></div>
+          <span class="ds-callout" style="left: 6%; top: 6%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 62%; top: 6%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 6%; top: 32%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 38%; top: 62%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 6%; top: 86%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Label</b><small><code>&lt;label class="field__label" for&gt;</code>, <code>--text-label</code>, always visible.</small></div></li>
+          <li><div><b>Optional marker</b><small><code>.optional</code>, regular weight in <code>--color-fg-subtle</code>.</small></div></li>
+          <li><div><b>Help (optional)</b><small><code>.field__help</code>, <code>--text-body-sm</code> in <code>--color-fg-muted</code>.</small></div></li>
+          <li><div><b>Control</b><small>An <code>.input</code> or <code>.textarea</code>.</small></div></li>
+          <li><div><b>Error (when invalid)</b><small><code>.field__error</code> in <code>--color-danger-fg</code> with a ⚠ glyph, so colour is not the only cue.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>One component; the parts you include make the variant.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="field" style="width: 100%;"><label class="field__label" for="ff-var-title">Title</label><input class="input" id="ff-var-title" type="text" required value="Because of Winn-Dixie"></div>
+          <div class="field" style="width: 100%;"><label class="field__label" for="ff-var-author">Author <span class="optional">(optional)</span></label><input class="input" id="ff-var-author" type="text" value="Kate DiCamillo"></div>
+          <div class="field" style="width: 100%;"><label class="field__label" for="ff-var-chapters">How many chapters?</label><div class="field__help" id="ff-var-chapters-help">Count them in the contents page. You can change this later.</div><input class="input" id="ff-var-chapters" type="number" inputmode="numeric" min="1" max="200" required value="26" style="max-width: 8rem;" aria-describedby="ff-var-chapters-help"></div>
+          <div class="field" style="width: 100%;"><label class="field__label" for="ff-var-reward">The reward</label><div class="field__help" id="ff-var-reward-help">Nia sees this on her shelf next to the book.</div><input class="input" id="ff-var-reward" type="text" required value="" aria-invalid="true" aria-describedby="ff-var-reward-error ff-var-reward-help"><div class="field__error" id="ff-var-reward-error">Tell Nia what the reward is.</div></div>
+        </div>
+        <div class="ds-example__caption"><span>Label only; optional; with help; with help and an error.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field"&gt;
+  &lt;label class="field__label" for="reward"&gt;The reward&lt;/label&gt;
+  &lt;div class="field__help" id="reward-help"&gt;Nia sees this on her shelf next to the book.&lt;/div&gt;
+  &lt;input class="input" id="reward" type="text" required aria-invalid="true"
+         aria-describedby="reward-error reward-help"&gt;
+  &lt;div class="field__error" id="reward-error"&gt;Tell Nia what the reward is.&lt;/div&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="The field takes its control's size; label, help and error text do not scale."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">The field takes its control's size; label, help and error text do not scale.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The field's state is its control's state, plus the error text when invalid. Focus and hover are forced on the control with <code>data-state</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Field</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Invalid</th><th scope="col">Read-only</th><th scope="col">Disabled</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">The reward</th>
+            <td><div class="field"><label class="field__label" for="ff-st-default">The reward</label><input class="input" id="ff-st-default" type="text" value="Ice cream Saturday"></div></td>
+            <td><div class="field"><label class="field__label" for="ff-st-hover">The reward</label><input class="input" id="ff-st-hover" type="text" value="Ice cream Saturday" data-state="hover"></div></td>
+            <td><div class="field"><label class="field__label" for="ff-st-focus">The reward</label><input class="input" id="ff-st-focus" type="text" value="Ice cream Saturday" data-state="focus"></div></td>
+            <td><div class="field"><label class="field__label" for="ff-st-invalid">The reward</label><input class="input" id="ff-st-invalid" type="text" value="" aria-invalid="true" aria-describedby="ff-st-invalid-error"><div class="field__error" id="ff-st-invalid-error">Tell Nia what the reward is.</div></div></td>
+            <td><div class="field"><label class="field__label" for="ff-st-readonly">The reward</label><input class="input" id="ff-st-readonly" type="text" value="Ice cream Saturday" readonly></div></td>
+            <td><div class="field"><label class="field__label" for="ff-st-disabled">The reward</label><input class="input" id="ff-st-disabled" type="text" value="Ice cream Saturday" disabled></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><div class="field" style="width: 100%;"><label class="field__label" for="ff-th-light-author">Author <span class="optional">(optional)</span></label><input class="input" id="ff-th-light-author" type="text" value="C. S. Lewis"></div><div class="field" style="width: 100%;"><label class="field__label" for="ff-th-light-chapters">Number of chapters</label><div class="field__help" id="ff-th-light-chapters-help">Nia has logged 11 chapters, so this can’t go below 11.</div><input class="input" id="ff-th-light-chapters" type="number" inputmode="numeric" value="9" style="max-width: 8rem;" aria-invalid="true" aria-describedby="ff-th-light-chapters-error ff-th-light-chapters-help"><div class="field__error" id="ff-th-light-chapters-error">Enter 11 or more. Nia has already logged 11 chapters.</div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><div class="field" style="width: 100%;"><label class="field__label" for="ff-th-dark-author">Author <span class="optional">(optional)</span></label><input class="input" id="ff-th-dark-author" type="text" value="C. S. Lewis"></div><div class="field" style="width: 100%;"><label class="field__label" for="ff-th-dark-chapters">Number of chapters</label><div class="field__help" id="ff-th-dark-chapters-help">Nia has logged 11 chapters, so this can’t go below 11.</div><input class="input" id="ff-th-dark-chapters" type="number" inputmode="numeric" value="9" style="max-width: 8rem;" aria-invalid="true" aria-describedby="ff-th-dark-chapters-error ff-th-dark-chapters-help"><div class="field__error" id="ff-th-dark-chapters-error">Enter 11 or more. Nia has already logged 11 chapters.</div></div></div></div>
+      </div>
+      <ul>
+        <li>Errors appear after a submit attempt, never while typing; they clear when the field is next changed.</li>
+        <li>An invalid field keeps the value that was typed, so a typo can be fixed rather than retyped.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The field is full width of its container on phones. Short answers are capped so the box hints at the answer's length: chapter counts and the PIN at 8rem, names at 16rem, the e-mail at 24rem.</li>
+        <li>Label, help and error wrap freely; nothing truncates.</li>
+        <li>Fields stack in a single column. The only side-by-side pair is "New password" and "Type it again" in Settings, which shares a two-column <code>.grid</code>.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The field reads <code>--color-fg-default</code> (label), <code>--color-fg-subtle</code> (optional marker), <code>--color-fg-muted</code> (help) and <code>--color-danger-fg</code> (error). All four are re-mapped by the dark theme; the field itself has no component tokens. The gap between parts is <code>--space-1</code>.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Native <code>&lt;label for&gt;</code> tied to the control's <code>id</code>. Help and error are tied with <code>aria-describedby</code>, error first, then help: <code>aria-describedby="chapters-error chapters-help"</code>. An invalid control sets <code>aria-invalid="true"</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves between controls; label, help and error are not focusable.</td></tr>
+        <tr><td>Error-summary link</td><td>Moves focus straight to the field; see <a href="form-layout.html">form layout</a>.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Focus is shown on the control, not the field. Clicking or tapping the label also focuses the control.</p>
+      <h3>Labelling</h3>
+      <p>Every control has a visible label (WCAG 3.3.2). Shelfie uses no placeholders, so nothing disappears when typing starts. "(optional)" is part of the label text and is read with it.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Label on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Optional marker on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Help on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Help in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error on card</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface-raised" data-min="4.5"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None. Errors appear without animation.</p>
+      <h3>Touch</h3>
+      <p>The label is part of the target: tapping it focuses the control, which helps small fingers on narrow fields like the PIN.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Labels are short nouns or the question itself: "Title", "E-mail address", "How many chapters?", "What happened in this chapter?".</li>
+        <li>Help says why or how, in one sentence: "Count them in the contents page. You can change this later."</li>
+        <li>Errors say how to fix it, not what went wrong in system terms: "Enter 11 or more. Nia has already logged 11 chapters." Never "Invalid value".</li>
+        <li>Errors Nia sees are kind and reassuring: "Write a sentence or two about what happened. There are no wrong answers!"</li>
+        <li>"(optional)" in brackets, lower case, after the label.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="field" style="width: 100%;"><label class="field__label" for="ff-do-q1"><span class="qa__num">1.</span> What happened in this chapter?</label><textarea class="textarea" id="ff-do-q1" rows="2" required></textarea></div><div class="field" style="width: 100%;"><label class="field__label" for="ff-do-q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why? <span class="optional">(optional)</span></label><textarea class="textarea" id="ff-do-q2" rows="2"></textarea></div></div><figcaption>Only question 1 is required, so questions 2 onwards say "(optional)" and drop <code>required</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="field" style="width: 100%;"><label class="field__label" for="ff-dont-q1"><span class="qa__num">1.</span> What happened in this chapter?</label><textarea class="textarea" id="ff-dont-q1" rows="2" required></textarea></div><div class="field" style="width: 100%;"><label class="field__label" for="ff-dont-q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label><textarea class="textarea" id="ff-dont-q2" rows="2" required></textarea></div></div><figcaption>The log-chapter mocks put <code>required</code> on all four answers although only question 1 is required. Assistive tech tells Nia every answer is mandatory.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-do-email">E-mail address</label><div class="field__help" id="ff-do-email-help">Used to sign in and to reset your password.</div><input class="input" id="ff-do-email" type="email" autocomplete="email" value="marcus@example.com" aria-describedby="ff-do-email-help"></div></div><figcaption>A visible label, and help tied with <code>aria-describedby</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><input class="input" id="ff-dont-email" type="email" autocomplete="email" aria-label="E-mail address" placeholder="E-mail address"></div></div><figcaption>A placeholder as the label vanishes as soon as Dad starts typing.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Optional marker</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
+          <tr><td>Help</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Error</td><td><code>--color-danger-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td></tr>
+          <tr><td>Label font</td><td><code>--text-label</code></td><td><span data-token="--text-label"></span></td><td><span data-theme="dark" data-token="--text-label"></span></td></tr>
+          <tr><td>Help and error font</td><td><code>--text-body-sm</code></td><td><span data-token="--text-body-sm"></span></td><td><span data-theme="dark" data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Gap between parts</td><td><code>--space-1</code></td><td><span data-token="--space-1"></span></td><td><span data-theme="dark" data-token="--space-1"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="field"&gt;
+  &lt;label class="field__label" for="author"&gt;Author &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;
+  &lt;input class="input" id="author" name="author" type="text"&gt;
+&lt;/div&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.field</code></td><td>Column of label, help, control and error with a <code>--space-1</code> gap.</td></tr>
+        <tr><td><code>.field__label</code></td><td>Label text; on a <code>&lt;label for&gt;</code>, or a <code>&lt;span id&gt;</code> for a radiogroup.</td></tr>
+        <tr><td><code>.optional</code></td><td>"(optional)" marker inside the label.</td></tr>
+        <tr><td><code>.field__help</code></td><td>Help text; give it an <code>id</code> for <code>aria-describedby</code>.</td></tr>
+        <tr><td><code>.field__error</code></td><td>Error text with a ⚠ glyph; give it an <code>id</code> and list it first in <code>aria-describedby</code>.</td></tr>
+        <tr><td><code>aria-invalid="true"</code> on the control</td><td>Red border and inset ring on the control.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/add-book/invalid.html">pages/add-book/invalid</a> (optional author, help plus error on chapters)</li>
+        <li><a href="../../mocks/pages/manage-book/invalid.html">pages/manage-book/invalid</a> (chapter count error)</li>
+        <li><a href="../../mocks/pages/settings/invalid.html">pages/settings/invalid</a> (optional PIN with help and error)</li>
+        <li><a href="../../mocks/dialogs/give-reward/invalid.html">dialogs/give-reward/invalid</a> (field inside a dialog)</li>
+        <li><a href="../../mocks/pages/log-chapter/invalid.html">pages/log-chapter/invalid</a> (Nia's kind error)</li>
+      </ul>
+      <p>Drift fixed during extraction: none in the field itself. Still open in the mocks: the log-chapter answers all carry <code>required</code> though only question 1 is required (see do and don't).</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

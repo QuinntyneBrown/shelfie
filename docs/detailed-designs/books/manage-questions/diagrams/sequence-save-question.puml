@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Add or edit a question
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (books library)" #E0F2FE
+  participant "ManageBookPage\n(Questions section)" as page
+  participant "EditQuestionDialog\n(sh-dialog, sh-textarea)" as dialog
+  participant "BooksApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "questions.router.ts\n+ requireRole('grown-up')\n+ validate(questionSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "questions.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : "Add a question", or "Edit" on a custom question
+page -> dialog : Open in add or edit mode (defaults have no Edit — L2-013)
+grownUp -> dialog : Type question text (limited to 200); press Add question / Save
+dialog -> dialog : Validate text 1..200 after trim
+alt empty or over-length
+  dialog --> grownUp : "Finish the question …" inline error; nothing sent (L2-013)
+else valid
+  dialog -> dialog : Set busy; disable actions
+  alt add mode
+    dialog -> client : addQuestion(bookId, text)
+    client -> router : POST /api/books/:id/questions {text}
+  else edit mode
+    dialog -> client : updateQuestion(id, text)
+    client -> router : PATCH /api/questions/:id {text}
+  end
+  router -> router : Require grown-up session; validate body (L2-013)
+  router -> service : addQuestion / updateQuestion(householdId, …, text)
+  service -> db : SELECT book (or question JOIN book) WHERE household_id = ?
+  db --> service : row (404 when none or removed)
+  alt server failure
+    router --> client : 500 problem {requestId}
+    client --> dialog : ApiError
+    dialog --> grownUp : "The question wasn't saved … Your wording is still here." (L2-013)
+  else saved
+    service -> db : INSERT question (book_id, text, created_at)\nor UPDATE question SET text WHERE id = ?
+    db --> service : question row
+    service --> router : Question
+    router --> client : 201 or 200 {id, text, createdAt}
+    client --> dialog : CustomQuestion
+    dialog -> page : closed(question)
+    page --> grownUp : Questions list updated; focus returns to the trigger
+    note over service, db : Earlier answers keep answer.question_text;\nonly chapters logged afterwards see the change (L2-013)
+  end
+end
+@enduml

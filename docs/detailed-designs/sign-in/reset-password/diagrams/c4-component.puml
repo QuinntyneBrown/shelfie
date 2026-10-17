@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Reset a forgotten password
+
+Container(web, "Shelfie web", "Angular", "ForgotPasswordPage, ResetPasswordPage; AuthApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "POST /api/auth/forgot-password; POST /api/auth/reset-password")
+  Component(validate, "validate()", "Middleware (zod)", "forgotPasswordSchema, resetPasswordSchema; 400 on failure")
+  Component(service, "auth.service.ts", "Service", "requestPasswordReset: hashed token, 1-hour expiry, mail; resetPassword: single use, argon2id, delete all sessions, new session")
+  Component(mailer, "nodemailer transport", "SMTP client", "Sends the plain-text reset link")
+  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over password_reset, profile, session and device")
+  ComponentDb(db, "Shelfie database", "SQLite", "password_reset, profile, session, device")
+}
+System_Ext(mail, "E-mail provider", "SMTP")
+Rel(web, router, "POST forgot-password, POST reset-password", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "requestPasswordReset(email), resetPassword(token, password, deviceId)")
+Rel(service, repo, "createPasswordReset, findPasswordResetByHash, markPasswordResetUsed,\nupdatePasswordHash, deleteSessionsForProfile, createSession")
+Rel(service, mailer, "sendMail(reset link)")
+Rel(mailer, mail, "Delivers", "SMTP")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

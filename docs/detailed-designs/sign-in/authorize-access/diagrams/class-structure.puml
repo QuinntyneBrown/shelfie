@@ -1,0 +1,100 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Authorize access
+
+class SessionService {
+  +session: Signal<Session | null>
+  +restored: Promise<void>
+}
+
+class authGuard <<CanActivateFn>> {
+  +canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree>
+}
+
+class grownUpGuard <<CanActivateFn>> {
+  +canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree>
+}
+
+class GlobalErrorHandler {
+  +handleError(error: unknown): void
+}
+
+class ApiError {
+  +status: number
+  +problem: Problem
+}
+
+class Problem {
+  +type: string
+  +title: string
+  +status: number
+  +detail: string | null
+  +requestId: string | null
+}
+
+class "sh-error-state" as ErrorState {
+  +icon: string
+  +heading: string
+  +body: string
+}
+
+class NotFoundPage {
+  +homeLink: Signal<string>
+}
+
+class ForbiddenPage {
+  +switchReader(): Promise<void>
+}
+
+class ServerErrorPage {
+  +requestId: string | null
+  +from: string | null
+  +tryAgain(): void
+}
+
+class requireRole <<Express middleware>> {
+  +requireRole(role: 'reader' | 'grown_up'): RequestHandler
+}
+
+class RequestSession {
+  +id: string
+  +profileId: string
+  +householdId: string
+  +role: 'reader' | 'grown_up'
+}
+
+class NotFoundError {
+  +resource: string
+}
+
+class problemDetailsHandler <<Express error handler>> {
+  +handle(err: unknown, req: Request, res: Response): void
+}
+
+class BooksRepo <<example repository>> {
+  +findBook(householdId: string, id: string): Book | undefined
+  +findChapterLog(householdId: string, id: string): ChapterLog | undefined
+}
+
+authGuard ..> SessionService : reads
+grownUpGuard ..> SessionService : reads
+GlobalErrorHandler ..> ApiError : inspects
+ApiError --> Problem : carries
+NotFoundPage *-- ErrorState : renders
+ForbiddenPage *-- ErrorState : renders
+ServerErrorPage *-- ErrorState : renders
+GlobalErrorHandler ..> ServerErrorPage : navigates to
+requireRole ..> RequestSession : reads req.session
+BooksRepo ..> RequestSession : scoped by householdId
+problemDetailsHandler ..> NotFoundError : maps to 404
+problemDetailsHandler ..> Problem : writes
+@enduml

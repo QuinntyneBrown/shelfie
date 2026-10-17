@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Navigate the shell
+
+Person(reader, "Reader", "Brand, streak badge, avatar")
+Person(grownUp, "Grown-up", "Brand, Review / Books / Settings, avatar")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "AppComponent shell: top bar, tab bar, account menu, banner slot, toast stack, main landmark")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Supplies the streak (GET /api/shelf) and the review queue count (GET /api/review)")
+}
+Rel(reader, web, "Uses on phone, tablet or desktop", "HTTPS")
+Rel(grownUp, web, "Uses on phone, tablet or desktop", "HTTPS")
+Rel(web, api, "Reads streak and queue count for the badges", "JSON/HTTPS")
+@enduml

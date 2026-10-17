@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage a session
+
+Person(reader, "Reader", "Switches reader or signs out")
+Person(grownUp, "Grown-up", "Signs out")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Restores the session at start, shows the account menu and the expired message")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Resolves the session cookie, refuses expired sessions, deletes sessions on sign-out")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "session table")
+}
+Rel(reader, web, "Opens the account menu", "HTTPS")
+Rel(grownUp, web, "Opens the account menu", "HTTPS")
+Rel(web, api, "GET /api/auth/session, POST /api/auth/sign-out", "JSON/HTTPS")
+Rel(api, db, "Reads and deletes session rows", "SQL")
+@enduml

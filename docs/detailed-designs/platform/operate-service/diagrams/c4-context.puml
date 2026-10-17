@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Operate the service
+
+Person(reader, "Reader", "Child who logs chapters on a phone")
+Person(grownUp, "Grown-up", "Parent who reviews answers and operates the service")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(ci, "GitHub Actions", "Runs lint, unit, API, Playwright and Lighthouse CI checks on every change")
+System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer on the host (<TO SUPPLY>)")
+
+Rel(reader, shelfie, "Uses on a phone over 4G", "HTTPS")
+Rel(grownUp, shelfie, "Uses; reads the health endpoint and logs", "HTTPS")
+Rel(ci, shelfie, "Builds, tests and checks budgets of")
+Rel(scheduler, shelfie, "Starts the backup job nightly")
+@enduml

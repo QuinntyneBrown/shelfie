@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Notify with toasts and banners
+
+Person(user, "Reader or Grown-up", "Receives the outcome of each action")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ToastService and BannerService in core; sh-toast, sh-toast-stack, sh-banner in components; slots in AppComponent")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Returns the success or problem responses that pages report")
+}
+Rel(user, web, "Reads toasts and banners; presses Undo, Retry, Dismiss", "HTTPS")
+Rel(web, api, "Action requests whose outcome becomes a toast", "JSON/HTTPS")
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Celebrate a finished book
+
+Person(reader, "Reader", "Logs the last chapter")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "LogChapterPage finished state and BookPage finished hero with sh-celebration")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Sets book.finished_at with the last log; returns bookFinished")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "book.finished_at, chapter_log")
+}
+Rel(reader, web, "Presses I'm done! on the last chapter", "HTTPS")
+Rel(web, api, "POST /api/books/:id/chapters/:n; GET /api/books/:id", "JSON/HTTPS")
+Rel(api, db, "Inserts the log, counts logs, sets finished_at in one transaction", "SQL")
+@enduml

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Question and answer — Shelfie design system</title>
+<meta name="description" content="One comprehension question and Nia's answer, read back on the chapter page and the review page. Anatomy, states, both themes and accessibility.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Question and answer</h1>
+      <p class="ds-lead">Shows one question and the answer Nia wrote for it, exactly as she typed it. Nia reads her own answers back on the chapter page; Dad reads them on the review page.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Read only</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a question and answer block to play back an answer that has been sent. Answers are final once Nia taps "I'm done!", so this block never turns into a form. While she is still writing, the question is a <a href="textarea.html">textarea</a> label instead.</p>
+      <ul>
+        <li>Stack the blocks inside one <a href="card.html">card</a>, in question order, under a heading: "Your answers" for Nia, "Nia's answers" for Dad.</li>
+        <li>Every chapter has the three default questions plus any Dad added for that book, so a card holds three to about six blocks.</li>
+        <li>The number (<code>.qa__num</code>) also numbers questions in the Manage book question list, where it sits in a <a href="list.html">list</a> row instead of a <code>.qa</code>.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="qa" style="width: 100%; max-width: 28rem;"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Stone Table on the hill.</div></div>
+          <span class="ds-callout" style="left: 12%; top: 26%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 40%; top: 26%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 60%; top: 62%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 86%; top: 74%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Number</b><small><code>.qa__num</code>: "1." to "n.", accent colour, matches the order she answered in.</small></div></li>
+          <li><div><b>Question</b><small><code>.qa__q</code>: label font, muted colour, so the answer reads as the main text.</small></div></li>
+          <li><div><b>Answer</b><small><code>.qa__a</code>: body font, relaxed line height, line breaks kept (<code>pre-wrap</code>), long words broken.</small></div></li>
+          <li><div><b>Well</b><small>Sunken surface, <code>--radius-md</code>, 12 × 16px padding.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>There is one look. The two readers differ only in the card heading around the blocks.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <section class="card stack" aria-labelledby="qa-var-yours"><h3 id="qa-var-yours" class="card__title">Your answers</h3>
+            <div class="qa"><div class="qa__q"><span class="qa__num">1.</span>What happened in this chapter?</div><div class="qa__a">Edmund walked all the way to the Witch’s house in the snow and it was really scary. There were statues everywhere that used to be animals. A wolf called Maugrim stopped him and the Witch was angry because he came without the others.</div></div>
+            <div class="qa"><div class="qa__q"><span class="qa__num">2.</span>Who was your favourite character in this chapter, and why?</div><div class="qa__a">Edmund, because even though he’s being bad I felt sorry for him when he was cold and scared.</div></div>
+          </section>
+        </div>
+        <div class="ds-example__caption"><span>Reader view, from the chapter page (Chapter 9). Dad's view is the same with the heading "Nia's answers".</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="card stack" aria-labelledby="your-answers"&gt;
+  &lt;h2 id="your-answers" class="card__title"&gt;Your answers&lt;/h2&gt;
+  &lt;div class="qa"&gt;
+    &lt;div class="qa__q"&gt;&lt;span class="qa__num"&gt;1.&lt;/span&gt;What happened in this chapter?&lt;/div&gt;
+    &lt;div class="qa__a"&gt;Edmund walked all the way to the Witch’s house…&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="One size only"><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">The block has one size. It takes the width of its card and grows with the answer.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The block is read only and never focusable, so it has no hover, focus, active or disabled state. What changes is the content and whether it has loaded.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Short answer</th><td><div class="qa"><div class="qa__q"><span class="qa__num">3.</span>What do you think will happen next?</div><div class="qa__a">I think Aslan is going to help Edmund escape and Peter will have to fight something.</div></div></td></tr>
+          <tr><th scope="row">Long answer</th><td><div class="qa" style="max-width: 20rem;"><div class="qa__q"><span class="qa__num">1.</span>What happened in this chapter?</div><div class="qa__a">The Witch’s sledge got stuck because the snow was melting and Edmund saw spring coming. The Beavers and the others got to the Stone Table and met Aslan.</div></div></td></tr>
+          <tr><th scope="row">Loading</th><td><div class="stack" aria-busy="true" aria-label="Loading your answers" style="max-width: 20rem;"><span class="skeleton skeleton--title" aria-hidden="true"></span><span class="skeleton skeleton--text" aria-hidden="true"></span><span class="skeleton skeleton--text" aria-hidden="true"></span></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="qa"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Witch’s house between the two hills.</div></div></div>
+        <div data-theme="dark"><div class="qa"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Witch’s house between the two hills.</div></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b> replaces the whole card body with a title skeleton and text skeletons; the container carries <code>aria-busy="true"</code>. See <a href="skeleton.html">skeleton</a>.</li>
+        <li><b>Waiting for Dad</b> is not a state of this block: the chapter page adds an <a href="alert.html">alert</a> above the card ("Dad hasn’t read this yet") and the answers look the same.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The block is fluid: the answer wraps at any width and never scrolls sideways. <code>overflow-wrap: anywhere</code> breaks a long run of letters ("sooooo good") instead of overflowing at 360px.</li>
+        <li>On Review a chapter the answers card spans 7 of 12 columns from 1024px (<code>.span-7</code>) with the feedback form beside it; below that the card is full width and the form follows it.</li>
+        <li>The question wraps under its number on phones; the number does not shrink (<code>gap: --space-2</code>).</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The block reads <code>--color-fg-muted</code> for the question, <code>--color-fg-accent</code> for the number, and <code>--color-bg-surface-sunken</code> with <code>--color-fg-default</code> for the answer well. In the dark theme the well is darker than the card, so it still reads as recessed. No component tokens are needed; a re-theme changes the semantic tokens.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Plain structure, no ARIA role. The surrounding card is a <code>&lt;section&gt;</code> named by its heading through <code>aria-labelledby</code>, so "Your answers" is a landmark-like group in the rotor. The question is text, not a heading, so the heading outline stays short.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Not a stop. Focus moves from the breadcrumb to the next control after the card ("Back to the book").</td></tr>
+        <tr><td>Arrow keys (screen reader)</td><td>Read number, question and answer in order, one after the other.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Nothing inside the block takes focus. Do not add <code>tabindex</code> to make answers focusable.</p>
+      <h3>Labelling</h3>
+      <p>The number is real text ("1."), so a screen reader says "1. What happened in this chapter?" and then the answer. The answer is Nia's text unchanged; never replace it with a summary.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Question on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Number on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Answer in well</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-sunken" data-min="4.5"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None. The loading skeleton shimmers and stops under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>No targets inside the block. Text stays selectable so Dad can copy an answer.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Questions are full sentences ending in a question mark, in words a 9-year-old reads alone: "What do you think will happen next?"</li>
+        <li>The three default questions come first, in this order; questions Dad added for the book follow, numbered on ("4. Where did the children go in this chapter?").</li>
+        <li>Show the answer exactly as written: her spelling, her line breaks, her emoji. Do not trim, correct or quote it.</li>
+        <li>Heading: "Your answers" when Nia reads, "Nia’s answers" when Dad reads.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="qa"><div class="qa__q"><span class="qa__num">2.</span>Who was your favourite character in this chapter, and why?</div><div class="qa__a">Edmund, because he started to feel sorry and he was nice to the little animals even though the Witch was mean.</div></div></div><figcaption>Show the whole answer; the well grows to fit it.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="qa" style="max-width: 16rem;"><div class="qa__q"><span class="qa__num">2.</span>Who was your favourite character in this chapter, and why?</div><div class="qa__a truncate">Edmund, because he started to feel sorry and he was nice to the little animals even though the Witch was mean.</div></div></div><figcaption>Truncate an answer. Dad needs every word to review it.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><section class="card stack" aria-labelledby="qa-do-heading" style="width: 100%;"><h3 id="qa-do-heading" class="card__title">Nia’s answers</h3><div class="qa"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Stone Table on the hill.</div></div></section></div><figcaption>Use <code>.card__title</code> for the card heading.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><section class="card stack" aria-labelledby="qa-dont-heading" style="width: 100%;"><h3 id="qa-dont-heading" style="font: var(--text-h4);">Nia’s answers</h3><div class="qa"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Stone Table on the hill.</div></div></section></div><figcaption>Restyle the heading inline with <code>style="font: var(--text-h4)"</code>, as the chapter and review mocks did.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Question text</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Number</td><td><code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Answer well</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
+          <tr><td>Answer text</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Question font</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+          <tr><td>Answer font / line height</td><td><code>--text-body</code>, <code>--line-height-relaxed</code></td><td colspan="2"><span data-token="--text-body"></span> / <span data-token="--line-height-relaxed"></span></td></tr>
+          <tr><td>Well padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Gap question to answer</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Well radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="qa"&gt;
+  &lt;div class="qa__q"&gt;&lt;span class="qa__num"&gt;3.&lt;/span&gt;What do you think will happen next?&lt;/div&gt;
+  &lt;div class="qa__a"&gt;I think the Witch is going to use Edmund to catch Peter, Susan and Lucy.&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.qa</code></td><td>Column with an 8px gap.</td></tr>
+        <tr><td><code>.qa__q</code></td><td>Question line: label font, muted.</td></tr>
+        <tr><td><code>.qa__num</code></td><td>Accent number; also used alone in question list rows.</td></tr>
+        <tr><td><code>.qa__a</code></td><td>Answer well: sunken surface, keeps line breaks, breaks long words.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/chapter/default.html">pages/chapter/default</a> (Nia reads Chapter 9 back)</li>
+        <li><a href="../../mocks/pages/chapter/pending.html">pages/chapter/pending</a> (Chapter 11, waiting for Dad)</li>
+        <li><a href="../../mocks/pages/chapter/loading.html">pages/chapter/loading</a> (skeleton)</li>
+        <li><a href="../../mocks/pages/review-chapter/default.html">pages/review-chapter/default</a> (Dad reads Chapter 11)</li>
+        <li><a href="../../mocks/pages/review-chapter/reviewed.html">pages/review-chapter/reviewed</a></li>
+        <li><a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a> (numbers in the question list)</li>
+      </ul>
+      <p>Drift fixed during extraction: D8, card headings restyled inline become <code>.card__title</code>; D5, the review page's inline <code>grid-column: span 7</code> and its <code>max-width: 63.99rem</code> patch become <code>.span-7</code> / <code>.span-5</code> with <code>.sticky-aside</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

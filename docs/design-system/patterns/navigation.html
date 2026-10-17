@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation and page structure — Shelfie design system</title>
+<meta name="description" content="The three Shelfie shells (sign-in, reader, grown-up), the page header, breadcrumbs and how people go back.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern · Navigation</p>
+      <h1>Navigation and page structure</h1>
+      <p class="ds-lead">Nia has one place to be, so her shell has no navigation at all: brand, streak, avatar. Dad has three areas, reached from the top bar on tablets and desktops and from a bottom tab bar on phones. Every page below the top level has a breadcrumb, and that is the way back.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Shelfie's structure is deliberately shallow. The reader's world is the shelf and the pages under one book; the grown-up's world is Review, Books and Settings. There are no tabs, no sidebar and no sub-navigation.</p>
+      <ul>
+        <li><b>Sign-in shell</b>: no top bar. A centred card (<code>.auth-layout</code> + <code>.auth-card</code>) under the Shelfie sticker. Sign in, forgot password, reset password.</li>
+        <li><b>Reader shell</b>: <a href="../components/top-bar.html">top bar</a> with the brand (links to the shelf), the <a href="../components/streak.html">streak</a> and Nia's <a href="../components/avatar.html">avatar</a>, which opens the account <a href="../components/menu.html">menu</a>. Nothing else.</li>
+        <li><b>Grown-up shell</b>: top bar with the brand (links to Review), Review / Books / Settings as nav links from 768px, and Dad's avatar. Below 768px the links move to a bottom <a href="../components/tab-bar.html">tab bar</a>.</li>
+        <li><b>Page header</b>: every page starts with <code>.page-header</code>: the <code>&lt;h1&gt;</code>, a one-line subtitle that summarises the page's state, and at most one action.</li>
+        <li><b>Breadcrumb</b>: every page that is not a top-level page shows a <a href="../components/breadcrumb.html">breadcrumb</a> above the page header.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Page</th><th scope="col">Shell</th><th scope="col">Breadcrumb</th><th scope="col">Header action</th></tr></thead>
+        <tbody>
+          <tr><td>Sign in, forgot and reset password</td><td>Sign-in</td><td>None</td><td>None</td></tr>
+          <tr><td>My shelf</td><td>Reader</td><td>None (top level)</td><td>Add a book</td></tr>
+          <tr><td>Book, add a book</td><td>Reader</td><td>My shelf / [book]</td><td>I read Chapter 12</td></tr>
+          <tr><td>Log a chapter, chapter answers</td><td>Reader</td><td>My shelf / [book] / Chapter 12</td><td>None; the form ends with its own actions</td></tr>
+          <tr><td>Review, Books, Settings</td><td>Grown-up</td><td>None (top level)</td><td>Books: Add a book</td></tr>
+          <tr><td>Review a chapter</td><td>Grown-up</td><td>Review / Chapter 11 · [book]</td><td>None</td></tr>
+          <tr><td>Manage a book</td><td>Grown-up</td><td>Books / [book]</td><td>None</td></tr>
+          <tr><td>Error pages</td><td>The shell of whoever is signed in</td><td>None</td><td>None</td></tr>
+        </tbody>
+      </table></div>
+      <p>Use a separate page, not tabs, when content needs its own address. Use sections on one page (Settings: "Nia", "You", "Appearance") when it does not.</p>
+    </section>
+
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <h3>Reader shell</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;">
+          <div class="topbar" style="position: relative; width: 100%;">
+            <a class="topbar__brand" href="../../mocks/pages/shelf/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+            <span class="topbar__spacer"></span>
+            <span class="streak" aria-label="5-day reading streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days</span>
+            <button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false">N</button>
+          </div>
+          <div class="container stack" style="padding-block: var(--space-4);">
+            <nav aria-label="Breadcrumb (reader example)"><ol class="breadcrumb"><li><a href="../../mocks/pages/shelf/default.html">My shelf</a></li><li><a href="../../mocks/pages/book/default.html">The Lion, the Witch and the Wardrobe</a></li><li aria-current="page">Chapter 12</li></ol></nav>
+            <div class="page-header" style="margin: 0;">
+              <div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><h3 style="font: var(--text-h1);">Chapter 12</h3><span class="book-card__author">The Lion, the Witch and the Wardrobe · chapter 12 of 17</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/log-chapter/default: brand, streak, avatar; breadcrumb, then a page header that uses the book's cover beside the title.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;header class="topbar"&gt;
+  &lt;a class="topbar__brand" href="/shelf"&gt;&lt;svg class="icon icon--lg" aria-hidden="true"&gt;…&lt;/svg&gt; Shelfie&lt;/a&gt;
+  &lt;span class="topbar__spacer"&gt;&lt;/span&gt;
+  &lt;span class="streak" aria-label="5-day reading streak"&gt;…5 days&lt;/span&gt;
+  &lt;button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia"
+          aria-haspopup="menu" aria-expanded="false"&gt;N&lt;/button&gt;
+&lt;/header&gt;</code></pre></details>
+      </div>
+
+      <h3>Grown-up shell</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;">
+          <div class="topbar" style="position: relative; width: 100%;">
+            <a class="topbar__brand" href="../../mocks/pages/review/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+            <nav class="topbar__nav" aria-label="Primary (example)">
+              <a class="nav-link" href="../../mocks/pages/review/default.html" aria-current="page">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+              <a class="nav-link" href="../../mocks/pages/books/default.html">Books</a>
+              <a class="nav-link" href="../../mocks/pages/settings/default.html">Settings</a>
+            </nav>
+            <span class="topbar__spacer"></span>
+            <button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false">MB</button>
+          </div>
+          <div class="container" style="padding-block: var(--space-4);">
+            <div class="page-header" style="margin: 0;"><div><h3 style="font: var(--text-h1);">Review</h3><p class="subtitle">2 chapters to read · 1 reward to give</p></div></div>
+          </div>
+          <nav class="tabbar tabbar--static" aria-label="Primary, phone (example)" style="width: 100%;">
+            <a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+            <a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+            <a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
+          </nav>
+        </div>
+        <div class="ds-example__caption"><span>pages/review/default. The top-bar links show from 768px; the tab bar is shown here in flow (<code>.tabbar--static</code>) but in the product is fixed to the bottom of phones only.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="has-tabbar"&gt;
+  &lt;header class="topbar"&gt;
+    &lt;a class="topbar__brand" href="/review"&gt;… Shelfie&lt;/a&gt;
+    &lt;nav class="topbar__nav" aria-label="Primary"&gt;
+      &lt;a class="nav-link" href="/review" aria-current="page"&gt;Review &lt;span class="badge badge--count" aria-label="2 chapters to review"&gt;2&lt;/span&gt;&lt;/a&gt;
+      &lt;a class="nav-link" href="/books"&gt;Books&lt;/a&gt;
+      &lt;a class="nav-link" href="/settings"&gt;Settings&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;span class="topbar__spacer"&gt;&lt;/span&gt;
+    &lt;button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false"&gt;MB&lt;/button&gt;
+  &lt;/header&gt;
+  &lt;main id="main" class="container"&gt;…&lt;/main&gt;
+  &lt;nav class="tabbar" aria-label="Primary, phone"&gt;…&lt;/nav&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+
+      <h3>Sign-in shell</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="auth-card stack" style="margin-inline: auto;">
+            <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+            <div class="card stack" style="text-align: center;">
+              <h3 style="font: var(--text-h1);">Who’s reading today?</h3>
+              <p class="text-muted" style="margin-inline: auto;">Pick your name to open your shelf.</p>
+              <div class="profiles">
+                <button class="profile-tile" type="button"><span class="avatar avatar--rose">N</span>Nia<small>Reader</small></button>
+                <button class="profile-tile" type="button"><span class="avatar avatar--sky">MB</span>Dad<small>Grown-up</small></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/sign-in/default. No top bar, no navigation; the choice of profile is the navigation.</span></div>
+      </div>
+
+      <h3>Back behaviour</h3>
+      <ul>
+        <li><b>The breadcrumb is the way back.</b> There is no back-arrow button in the top bar. The parent crumb is always a link; the current page is plain text with <code>aria-current="page"</code>.</li>
+        <li><b>Forms offer a way out next to the primary button</b> that goes to the parent page: "Not yet" on log a chapter, "Cancel" on add a book. A draft is kept (see <a href="forms.html">forms</a>).</li>
+        <li><b>Finishing a task offers the way home first</b>: "Back to my shelf" on Nia's celebrations, "Back to Review" after feedback is sent, with the next task as a second choice.</li>
+        <li><b>The browser's back button always works.</b> Every page and every state a person can link to has its own address; dialogs and the account menu do not change the address.</li>
+        <li><b>The brand goes home</b>: the shelf for Nia, Review for Dad.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Part</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Current</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Nav link</th><td><a class="nav-link" href="../../mocks/pages/books/default.html">Books</a></td><td><a class="nav-link" href="../../mocks/pages/books/default.html" data-state="hover">Books</a></td><td><a class="nav-link" href="../../mocks/pages/books/default.html" data-state="focus">Books</a></td><td><a class="nav-link" href="../../mocks/pages/books/default.html" aria-current="page">Books</a></td></tr>
+          <tr><th scope="row">Breadcrumb link</th><td><ol class="breadcrumb"><li><a href="../../mocks/pages/shelf/default.html">My shelf</a></li></ol></td><td><ol class="breadcrumb"><li><a href="../../mocks/pages/shelf/default.html" data-state="hover">My shelf</a></li></ol></td><td><ol class="breadcrumb"><li><a href="../../mocks/pages/shelf/default.html" data-state="focus">My shelf</a></li></ol></td><td><ol class="breadcrumb"><li aria-current="page">Chapter 12</li></ol></td></tr>
+          <tr><th scope="row">Avatar</th><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" data-state="hover">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" data-state="focus">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad, open" aria-expanded="true">MB</button></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><nav class="tabbar tabbar--static" aria-label="Tab bar, light theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html" data-state="hover"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
+        <div data-theme="dark"><nav class="tabbar tabbar--static" aria-label="Tab bar, dark theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html" data-state="hover"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
+      </div>
+      <ul>
+        <li><b>Current</b> uses <code>aria-current="page"</code> on the area's link, in the top bar and the tab bar. On a page inside an area (review a chapter) the area stays current.</li>
+        <li><b>Count</b>: the Review link carries the number of chapters waiting; it disappears at zero.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Width</th><th scope="col">Reader</th><th scope="col">Grown-up</th></tr></thead>
+        <tbody>
+          <tr><td>Under 768px</td><td>Brand, streak, avatar</td><td>Brand and avatar in the top bar; Review / Books / Settings in the fixed bottom tab bar; the page wrapper has <code>.has-tabbar</code> so content clears it</td></tr>
+          <tr><td>768px and up</td><td>Same</td><td>Nav links in the top bar (<code>.topbar__nav</code>); tab bar hidden; <code>.has-tabbar</code> padding removed</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li>The top bar is sticky at every width and 56px tall; the page scrolls under it, and <code>scroll-padding-top</code> keeps focused elements clear of it.</li>
+        <li>The tab bar respects the phone's safe area at the bottom.</li>
+        <li>Breadcrumbs wrap rather than truncate, so long book titles stay readable.</li>
+        <li>The page header wraps its action under the title on phones.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Landmarks: <code>&lt;header class="topbar"&gt;</code>, <code>&lt;main id="main"&gt;</code>, <code>&lt;nav aria-label="Primary"&gt;</code> for the top-bar links, <code>&lt;nav aria-label="Primary, phone"&gt;</code> for the tab bar (only one is visible at a time) and <code>&lt;nav aria-label="Breadcrumb"&gt;</code> around an <code>&lt;ol&gt;</code>. The avatar is a menu button (WAI-ARIA APG Menu Button). A skip link to <code>#main</code> is the first focusable element on every page.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> (first press)</td><td>Shows the skip link; <kbd>Enter</kbd> jumps to the page content.</td></tr>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Brand, nav links, avatar, then breadcrumb and page content.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows a link.</td></tr>
+        <tr><td><kbd>Enter</kbd>, <kbd>Space</kbd>, <kbd>↓</kbd> on the avatar</td><td>Opens the account menu.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>After a route change focus goes to the new page's <code>&lt;h1&gt;</code> so the title is read. The shared focus ring shows on nav links, tabs, crumbs and the avatar.</p>
+      <h3>Labelling</h3>
+      <p>The streak has <code>aria-label="5-day reading streak"</code> because "5 days" alone is unclear. The Review count has <code>aria-label="2 chapters to review"</code>. The avatar names whose menu it is: "Account menu for Nia". Tab-bar icons are <code>aria-hidden</code>; the text label is the name.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Nav link on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current link on accent tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current tab on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Count on danger</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-danger|--color-danger-solid" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Streak on warning tint</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Nav links fade their background over <code>--duration-fast</code>; nothing slides. The skip link drops in over the same duration. Reduced motion removes both.</p>
+      <h3>Touch</h3>
+      <p>Nav links and tabs are at least 44px tall; each tab takes a third of the bar. The avatar button is 32px, above the 24px minimum, with nothing else tappable beside it.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li><b>Area names are one word</b>: Review, Books, Settings. Nia's home is "My shelf" in breadcrumbs.</li>
+        <li><b>Page titles greet or name</b>: "Hi Nia 👋" on the shelf; the book's title on a book page; "Chapter 12" on the log form; "Review", "Books", "Settings" for Dad.</li>
+        <li><b>Subtitles summarise state</b> with middots: "🔥 5-day streak · 2 books on the go · 1 reward waiting"; "5 books · 2 on the go · 2 finished · 1 up next".</li>
+        <li><b>Crumbs use the page's title</b>, so the last crumb matches the <code>&lt;h1&gt;</code>: "Chapter 12", "Chapter 11 · The Lion, the Witch and the Wardrobe".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas" style="padding: 0;"><div class="topbar" style="position: relative; width: 100%;"><a class="topbar__brand" href="../../mocks/pages/shelf/default.html">Shelfie</a><span class="topbar__spacer"></span><span class="streak" aria-label="5-day reading streak">5 days</span><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia">N</button></div></div><figcaption>Give Nia a top bar with nothing to get lost in.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas" style="padding: 0;"><div class="topbar" style="position: relative; width: 100%;"><a class="topbar__brand" href="../../mocks/pages/shelf/default.html">Shelfie</a><span class="nav-link">Shelf</span><span class="nav-link">Books</span><span class="nav-link">Stats</span></div></div><figcaption>Add grown-up style navigation to the reader shell. Her shelf already links to everything she needs.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad">MB</button></div><figcaption>Use <code>button.avatar</code>; the reset and hover ring are built in.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" style="border: 0; cursor: pointer;">MB</button></div><figcaption>Reset the avatar button inline with <code>border: 0; cursor: pointer</code>, as 58 mocks did (drift D6).</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li>Reader shell: <a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a>, <a href="../../mocks/pages/book/default.html">pages/book/default</a>, <a href="../../mocks/pages/log-chapter/default.html">pages/log-chapter/default</a>, <a href="../../mocks/pages/chapter/default.html">pages/chapter/default</a></li>
+        <li>Grown-up shell: <a href="../../mocks/pages/review/default.html">pages/review/default</a>, <a href="../../mocks/pages/books/default.html">pages/books/default</a>, <a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a>, <a href="../../mocks/pages/review-chapter/default.html">pages/review-chapter/default</a>, <a href="../../mocks/pages/settings/default.html">pages/settings/default</a></li>
+        <li>Sign-in shell: <a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a>, <a href="../../mocks/pages/forgot-password/default.html">pages/forgot-password/default</a></li>
+        <li>Account menu: <a href="../../mocks/dialogs/account-menu/default.html">dialogs/account-menu/default</a>, <a href="../../mocks/dialogs/account-menu/parent.html">parent</a></li>
+      </ul>
+      <p>Drift fixed during extraction:</p>
+      <ul>
+        <li><b>D6</b>: 58 mocks reset <code>&lt;button class="avatar"&gt;</code> inline; <code>button.avatar</code> now does it, with a hover ring.</li>
+        <li><b>D5</b>: the top-bar nav and tab bar switched with desktop-first <code>max-width: 47.99rem</code> queries; both now use a mobile-first <code>min-width: 48rem</code>.</li>
+      </ul>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

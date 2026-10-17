@@ -1,0 +1,80 @@
+@startuml
+title UML sequence behaviour — A state-changing request passes the middleware chain
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as actor
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "Feature page" as page
+  participant "ApiClient" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "helmet\n+ express.json(16 kB)" as helmet
+  participant "sessionMiddleware" as session
+  participant "csrfGuard" as csrf
+  participant "passwordSignInLimiter\n(POST /api/auth/password only)" as rate
+  participant "router\n+ requireRole\n+ validate(schema)" as router
+  participant "problemDetailsHandler" as problem
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "feature *.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+actor -> page : Save a change
+page -> client : patch('/api/settings', body)
+client -> helmet : PATCH /api/settings\ncookie shelfie_session; X-Requested-With: Shelfie
+helmet -> helmet : Set CSP, nosniff, frame-ancestors, HSTS (L2-027)\nparse JSON up to 16 kB
+helmet -> session : next()
+session -> db : SELECT session JOIN profile WHERE id = ? AND expires_at > now
+db --> session : row or none
+session -> csrf : next() with req.session set or undefined
+alt Sec-Fetch-Site cross-site, foreign Origin, or header missing
+  csrf -> problem : HttpError 403 type "cross-site" (L2-027)
+  problem --> client : 403 Problem {requestId}
+  client --> page : ApiError
+else same-site request with X-Requested-With: Shelfie
+  csrf -> router : next()
+  alt POST /api/auth/password and 11th request from this IP in 10 minutes
+    rate -> problem : 429 with Retry-After (L2-027)
+    problem --> client : 429 Problem {requestId}
+    client --> page : ApiError
+  else no session
+    router -> problem : HttpError 401 type "unauthenticated"
+    problem --> client : 401 Problem {requestId}
+    client --> page : ApiError
+    page --> actor : Redirect to sign-in
+  else body fails the zod schema
+    router -> problem : HttpError 400 with errors[{field, message}] (L2-028)
+    problem --> client : 400 Problem {requestId, errors[]}
+    client --> page : ApiError
+    page --> actor : Inline field errors
+  else valid body and grown-up session
+    router -> service : update(householdId, input)
+    service -> db : Prepared statement with ? placeholders (L2-028)
+    db --> service : ok
+    service --> router : result
+    router --> client : 200 JSON\nCache-Control: no-store
+    client --> page : typed result
+    page --> actor : Success toast
+  end
+end
+note over problem
+  Problem body never carries a stack,
+  SQL or a file path (L2-028); the full
+  error goes to pino with redaction (L2-029)
+end note
+@enduml

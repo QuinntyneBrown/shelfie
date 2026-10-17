@@ -1,0 +1,108 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage questions
+
+class ManageBookPage {
+  +questions: Signal<CustomQuestion[]>
+  +openAdd(): void
+  +openEdit(question: CustomQuestion): void
+  +remove(question: CustomQuestion): Promise<void>
+}
+
+class EditQuestionDialog {
+  +mode: 'add' | 'edit'
+  +text: Signal<string>
+  +state: Signal<'idle' | 'busy' | 'invalid' | 'failed'>
+  +save(): Promise<void>
+  +cancel(): void
+}
+
+class "sh-dialog" as Dialog {
+  +open: boolean
+  +initialFocus: HTMLElement
+  +closed: EventEmitter<void>
+}
+
+class "sh-textarea" as Textarea {
+  +label: string
+  +help: string
+  +maxlength: number
+  +error: string | null
+}
+
+class BooksApi {
+  +addQuestion(bookId: string, text: string): Promise<CustomQuestion>
+  +updateQuestion(id: string, text: string): Promise<CustomQuestion>
+  +removeQuestion(id: string): Promise<void>
+}
+
+class CustomQuestion {
+  +id: string
+  +text: string
+  +createdAt: string
+}
+
+class QuestionRequest {
+  +text: string
+}
+
+class QuestionsService {
+  +DEFAULT_QUESTIONS: readonly [string, string, string]
+  +addQuestion(householdId: string, bookId: string, text: string): Question
+  +updateQuestion(householdId: string, questionId: string, text: string): Question
+  +removeQuestion(householdId: string, questionId: string): void
+  +questionsForBook(bookId: string): string[]
+  +listCustomQuestions(bookId: string): Question[]
+}
+
+class QuestionsRepo {
+  +insert(bookId: string, text: string): Question
+  +findWithBook(questionId: string): QuestionWithBook | undefined
+  +updateText(questionId: string, text: string): void
+  +markRemoved(questionId: string, at: Date): void
+  +listActive(bookId: string): Question[]
+}
+
+class Question {
+  +id: string
+  +bookId: string
+  +text: string
+  +createdAt: Date
+  +removedAt: Date | null
+}
+
+class Answer {
+  +id: string
+  +chapterLogId: string
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+class ChaptersService {
+  +getForm(bookId: string, chapterNumber: number): ChapterForm
+}
+
+ManageBookPage ..> EditQuestionDialog : opens
+ManageBookPage ..> BooksApi : removeQuestion
+EditQuestionDialog *-- Dialog : built on
+EditQuestionDialog *-- Textarea : renders
+EditQuestionDialog ..> BooksApi : addQuestion / updateQuestion
+BooksApi ..> QuestionRequest : sends
+BooksApi ..> CustomQuestion : returns
+QuestionsService ..> QuestionRequest : receives
+QuestionsService --> QuestionsRepo : uses
+QuestionsRepo --> Question : inserts / updates
+ChaptersService ..> QuestionsService : questionsForBook
+ChaptersService --> Answer : writes questionText snapshot
+Answer ..> Question : snapshot of text at logging time
+@enduml

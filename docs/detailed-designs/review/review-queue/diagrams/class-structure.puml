@@ -1,0 +1,119 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Review queue
+
+class ReviewPage {
+  +overview: Signal<ReviewOverview | null>
+  +state: Signal<'loading' | 'default' | 'empty' | 'error'>
+  +load(): Promise<void>
+  +openGiveReward(book: FinishedBook): void
+}
+
+class "sh-activity-item" as ActivityItem {
+  +item: ActivityItem
+}
+
+class ReviewApi {
+  +queueCount: Signal<number | null>
+  +load(): Promise<ReviewOverview>
+}
+
+class ReviewOverview {
+  +queue: QueueItem[]
+  +finishedUnrewarded: FinishedBook[]
+  +thisWeek: WeekStats
+  +activity: ActivityItem[]
+}
+
+class QueueItem {
+  +chapterLogId: string
+  +bookId: string
+  +bookTitle: string
+  +coverColor: string
+  +coverSticker: string
+  +chapterNumber: number
+  +chapterCount: number
+  +readOn: string
+  +loggedAt: Date
+}
+
+class FinishedBook {
+  +bookId: string
+  +title: string
+  +coverColor: string
+  +coverSticker: string
+  +chapterCount: number
+  +finishedAt: Date
+  +daysToFinish: number
+}
+
+class WeekStats {
+  +chapters: number
+  +streak: number
+}
+
+class ActivityItem {
+  +kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished'
+  +at: Date
+  +bookId: string
+  +bookTitle: string
+  +chapterNumber: number | null
+  +sticker: string | null
+  +byRole: 'reader' | 'grown_up'
+}
+
+class ReviewService {
+  +overview(householdId: string, now: Date): ReviewOverview
+}
+
+class ReviewRepo {
+  +pendingChapterLogs(householdId: string): QueueItem[]
+  +finishedBooksWithoutReward(householdId: string): FinishedBook[]
+  +chaptersLoggedSince(householdId: string, from: string): number
+  +activitySince(householdId: string, from: Date, limit: number): ActivityItem[]
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: Date
+  +reviewedAt: Date | null
+  +sticker: string | null
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +chapterCount: number
+  +coverColor: string
+  +sticker: string
+  +addedByProfileId: string
+  +finishedAt: Date | null
+  +createdAt: Date
+}
+
+ReviewPage *-- ActivityItem : renders
+ReviewPage ..> ReviewApi : calls
+ReviewApi ..> ReviewOverview : returns
+ReviewOverview *-- QueueItem
+ReviewOverview *-- FinishedBook
+ReviewOverview *-- WeekStats
+ReviewOverview *-- ActivityItem
+ReviewService ..> ReviewOverview : assembles
+ReviewService --> ReviewRepo : uses
+ReviewRepo --> ChapterLog : reads
+ReviewRepo --> Book : reads
+Book "1" --> "*" ChapterLog : has
+@enduml

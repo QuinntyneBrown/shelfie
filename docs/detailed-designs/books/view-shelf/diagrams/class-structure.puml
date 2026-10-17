@@ -1,0 +1,144 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View the shelf
+
+class ShelfPage {
+  +state: Signal<'loading' | 'ready' | 'empty' | 'error'>
+  +shelf: Signal<ShelfResponse | null>
+  +rewardsWaiting: Signal<number>
+  +load(): Promise<void>
+  +retry(): void
+}
+
+class "sh-book-card" as BookCard {
+  +book: ShelfBook
+  +actionLabel: string
+  +open: EventEmitter<string>
+}
+
+class "sh-cover" as Cover {
+  +color: CoverColor
+  +sticker: Sticker
+  +size: 'sm' | 'md' | 'lg'
+}
+
+class "sh-progress" as Progress {
+  +value: number
+  +max: number
+  +label: string
+}
+
+class "sh-reward-card" as RewardCard {
+  +book: FinishedBook
+}
+
+class ShelfApi {
+  +shelf(): Promise<ShelfResponse>
+}
+
+class ShelfResponse {
+  +streak: number
+  +hero: ShelfBook | null
+  +reading: ShelfBook[]
+  +upNext: ShelfBook[]
+  +finished: FinishedBook[]
+  +unseenFeedback: UnseenFeedback[]
+}
+
+class ShelfBook {
+  +id: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: CoverColor
+  +sticker: Sticker
+  +loggedCount: number
+  +nextChapter: number
+  +lastLoggedAt: string | null
+  +addedByRole: 'reader' | 'grown_up'
+  +createdAt: string
+}
+
+class FinishedBook {
+  +id: string
+  +title: string
+  +coverColor: CoverColor
+  +sticker: Sticker
+  +finishedAt: string
+  +reward: RewardSummary | null
+}
+
+class RewardSummary {
+  +text: string
+  +givenAt: string
+}
+
+class UnseenFeedback {
+  +chapterLogId: string
+  +bookId: string
+  +bookTitle: string
+  +chapterNumber: number
+}
+
+class ShelfService {
+  +getShelf(householdId: string): ShelfResponse
+}
+
+class ShelfRepo {
+  +listBooksWithProgress(householdId: string): BookWithProgress[]
+  +listRewards(householdId: string): Reward[]
+  +listUnseenFeedback(householdId: string): UnseenFeedback[]
+}
+
+class ChaptersService {
+  +streak(householdId: string): number
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: string
+  +sticker: string
+  +addedByProfileId: string
+  +finishedAt: Date | null
+  +createdAt: Date
+}
+
+class Reward {
+  +id: string
+  +bookId: string
+  +text: string
+  +note: string | null
+  +givenAt: Date
+}
+
+ShelfPage *-- BookCard : renders
+ShelfPage *-- RewardCard : renders
+BookCard *-- Cover : shows
+BookCard *-- Progress : shows
+RewardCard *-- Cover : shows
+ShelfPage ..> ShelfApi : calls
+ShelfApi ..> ShelfResponse : returns
+ShelfResponse "1" --> "*" ShelfBook : groups
+ShelfResponse "1" --> "*" FinishedBook : trophy shelf
+ShelfResponse "1" --> "*" UnseenFeedback : lists
+FinishedBook --> RewardSummary : has
+ShelfService ..> ShelfResponse : builds
+ShelfService --> ShelfRepo : uses
+ShelfService --> ChaptersService : streak
+ShelfRepo --> Book : reads
+ShelfRepo --> Reward : reads
+Book "1" --> "0..1" Reward : rewarded by
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage questions
+
+Person(grownUp, "Grown-up", "Adds, edits and removes custom questions per book")
+Person(reader, "Reader", "Answers the default and custom questions when logging a chapter")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(grownUp, shelfie, "Manages a book's questions", "HTTPS")
+Rel(reader, shelfie, "Answers the composed questions", "HTTPS")
+@enduml

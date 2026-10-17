@@ -1,0 +1,117 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Sign in with a password
+
+class SignInPage {
+  +profiles: Signal<ProfileSummary[]>
+  +step: Signal<'pick' | 'pin' | 'password'>
+  +state: Signal<'idle' | 'submitting' | 'invalid' | 'error'>
+  +email: FormControl<string>
+  +password: FormControl<string>
+  +fieldErrors: Signal<Record<string, string>>
+  +choose(profile: ProfileSummary): void
+  +submitPassword(): Promise<void>
+  +retry(): Promise<void>
+}
+
+class "sh-text-field" as TextField {
+  +label: string
+  +type: 'text' | 'email' | 'password'
+  +help: string | null
+  +error: string | null
+  +autocomplete: string
+}
+
+class "sh-button" as Button {
+  +variant: 'primary' | 'ghost'
+  +busy: boolean
+  +pressed: EventEmitter<void>
+}
+
+class AuthApi {
+  +profiles(): Promise<ProfileSummary[]>
+  +signInWithPassword(email: string, password: string): Promise<Session>
+}
+
+class SessionService {
+  +session: Signal<Session | null>
+  +set(session: Session): void
+}
+
+class PasswordSignInRequest {
+  +email: string
+  +password: string
+}
+
+class ProfileSummary {
+  +id: string
+  +role: 'reader' | 'grown_up'
+  +name: string
+  +color: string
+  +email: string | null
+}
+
+class Profile {
+  +id: string
+  +householdId: string
+  +role: 'reader' | 'grown_up'
+  +name: string
+  +color: string
+  +email: string | null
+  +passwordHash: string | null
+}
+
+class Session {
+  +id: string
+  +profileId: string
+  +createdAt: Date
+  +expiresAt: Date
+}
+
+class Device {
+  +id: string
+  +householdId: string
+  +createdAt: Date
+}
+
+class AuthService {
+  +listProfiles(deviceId: string | null): ProfileSummary[]
+  +signInWithPassword(email: string, password: string, deviceId: string | null): SignInResult
+}
+
+class SignInResult {
+  +session: Session
+  +device: Device | null
+}
+
+class AuthRepo {
+  +findGrownUpByEmail(email: string): Profile | undefined
+  +findProfilesByHousehold(householdId: string): Profile[]
+  +createSession(profileId: string, expiresAt: Date): Session
+  +findDevice(id: string): Device | undefined
+  +createDevice(householdId: string): Device
+}
+
+SignInPage *-- TextField : renders
+SignInPage *-- Button : renders
+SignInPage ..> AuthApi : calls
+SignInPage ..> SessionService : sets
+AuthApi ..> PasswordSignInRequest : sends
+AuthApi ..> ProfileSummary : receives
+AuthService ..> PasswordSignInRequest : receives
+AuthService ..> SignInResult : returns
+AuthService --> AuthRepo : uses
+AuthRepo --> Profile : reads
+AuthRepo --> Session : creates
+AuthRepo --> Device : reads / creates
+Profile "1" --> "*" Session : owns
+@enduml

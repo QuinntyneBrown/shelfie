@@ -1,0 +1,81 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Choose appearance
+
+enum Theme {
+  device
+  light
+  dark
+}
+
+class ThemeService {
+  +theme: Signal<Theme>
+  +resolved: Signal<'light' | 'dark'>
+  -query: MediaQueryList
+  +apply(theme: Theme): void
+  -onDeviceChange(event: MediaQueryListEvent): void
+}
+
+class SessionService {
+  +session: Signal<Session | null>
+  +set(session: Session): void
+  +clear(): void
+}
+
+class Session {
+  +householdId: string
+  +profileId: string
+  +role: 'reader' | 'grown-up'
+  +name: string
+  +color: string
+  +theme: Theme
+}
+
+class SettingsPage {
+  +theme: Signal<Theme>
+  +save(): Promise<void>
+}
+
+class SettingsApi {
+  +save(patch: SettingsPatch): Promise<SettingsView>
+}
+
+class AuthService {
+  +sessionPayload(session: SessionRow): Session
+}
+
+class SettingsService {
+  +updateSettings(householdId: string, profileId: string, patch: SettingsPatch): SettingsView
+}
+
+class SettingsRepo {
+  +updateTheme(householdId: string, theme: Theme): void
+  +findHouseholdSettings(householdId: string): SettingsView
+}
+
+class Household {
+  +id: string
+  +timeZone: string
+  +theme: Theme
+}
+
+SessionService ..> ThemeService : apply(session.theme)
+SessionService --> Session : holds
+Session --> Theme : has
+SettingsPage ..> SettingsApi : save(patch)
+SettingsPage ..> ThemeService : apply after save
+AuthService ..> Session : builds
+AuthService --> Household : reads theme
+SettingsService --> SettingsRepo : uses
+SettingsRepo --> Household : updates theme
+Household --> Theme : has
+@enduml

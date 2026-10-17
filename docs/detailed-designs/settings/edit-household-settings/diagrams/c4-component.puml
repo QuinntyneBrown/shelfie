@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit household settings
+
+Container(web, "Shelfie web", "Angular", "SettingsPage with sh-color-picker and sh-text-field; SettingsApi; SessionService")
+Container_Boundary(api, "Shelfie API") {
+  Component(authz, "requireRole('grown-up')", "Middleware", "401 without a session, 403 for the reader")
+  Component(router, "settings.router.ts", "Express Router", "GET /api/settings; PATCH /api/settings validated with settingsPatchSchema")
+  Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400 and errors[]")
+  Component(service, "settings.service.ts", "Service", "getSettings; updateSettings: current-password verify, e-mail uniqueness, argon2id hashing, counter reset")
+  Component(repo, "settings.repo.ts", "Repository", "Parameterised SQL over profile and household")
+  ComponentDb(db, "Shelfie database", "SQLite", "profile, household")
+}
+Rel(web, router, "GET /api/settings, PATCH /api/settings", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, validate, "Applies")
+Rel(router, service, "getSettings(householdId), updateSettings(householdId, profileId, patch)")
+Rel(service, repo, "findHouseholdSettings, findProfileByEmail, updateReader, updateGrownUp, updateTheme")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

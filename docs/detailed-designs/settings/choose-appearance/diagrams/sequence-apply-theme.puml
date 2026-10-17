@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Apply the theme at sign-in
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or Grown-up" as person
+box "Frontend — Shelfie web (core and sign-in libraries)" #E0F2FE
+  participant "AuthApi" as client
+  participant "SessionService" as session
+  participant "ThemeService" as theme
+  participant "html element (data-theme)" as html
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "auth.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "auth.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+person -> client : Sign in, or open the app with a session cookie
+client -> router : POST /api/auth/pin, POST /api/auth/password\nor GET /api/auth/session
+router -> service : sessionPayload(session)
+service -> db : SELECT profile JOIN household WHERE profile.id = ?
+db --> service : profile row with household.theme
+service --> router : Session {householdId, profileId, role, name, color, theme}
+router --> client : 200 {session}
+client -> session : set(session)
+session -> theme : apply(session.theme)
+alt theme is light or dark
+  theme -> html : data-theme = session.theme (L2-022)
+else theme is device
+  theme -> theme : matchMedia("(prefers-color-scheme: dark)")
+  theme -> html : data-theme = dark when the device prefers dark, else light (L2-022)
+  theme -> theme : Listen for change events
+  theme -> html : data-theme follows later device changes
+end
+html --> person : Pages render in the household theme
+@enduml

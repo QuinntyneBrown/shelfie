@@ -1,0 +1,138 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Review a chapter
+
+class ReviewChapterPage {
+  +chapterLog: Signal<ChapterLogDetail | null>
+  +state: Signal<'loading' | 'default' | 'invalid' | 'submitting' | 'success' | 'reviewed' | 'error'>
+  +sticker: Signal<StickerValue | null>
+  +note: Signal<string>
+  +next: Signal<QueueItem | null>
+  +load(): Promise<void>
+  +send(): Promise<void>
+}
+
+class "sh-sticker-picker" as StickerPicker {
+  +value: StickerValue | null
+  +error: string | null
+  +disabled: boolean
+}
+
+class Sticker {
+  +value: StickerValue
+  +emoji: string
+  +label: string
+}
+
+class ReviewApi {
+  +queueCount: Signal<number | null>
+  +chapterLog(id: string): Promise<ChapterLogDetail>
+  +sendFeedback(id: string, body: FeedbackRequest): Promise<FeedbackResult>
+}
+
+class FeedbackRequest {
+  +sticker: StickerValue
+  +note: string | undefined
+}
+
+class FeedbackResult {
+  +chapterLog: ChapterLogDetail
+  +next: QueueItem | null
+  +queueCount: number
+}
+
+class ChapterLogDetail {
+  +id: string
+  +book: BookSummary
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: Date
+  +answers: Answer[]
+  +feedback: Feedback | null
+}
+
+class Answer {
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+class Feedback {
+  +sticker: StickerValue
+  +note: string | null
+  +reviewedAt: Date
+  +feedbackSeenAt: Date | null
+}
+
+class ShelfPage {
+  +unseenFeedback: Signal<UnseenFeedback[]>
+  +dismiss(chapterLogId: string): void
+}
+
+class "sh-banner" as Banner {
+  +severity: 'info' | 'success' | 'warning' | 'danger'
+  +title: string
+  +actionLabel: string
+  +dismissible: boolean
+}
+
+class UnseenFeedback {
+  +chapterLogId: string
+  +bookId: string
+  +bookTitle: string
+  +chapterNumber: number
+  +sticker: StickerValue
+  +reviewedAt: Date
+}
+
+class ReviewService {
+  +sendFeedback(householdId: string, id: string, sticker: StickerValue, note: string | null, now: Date): FeedbackResult
+}
+
+class ReviewRepo {
+  +findChapterLogForHousehold(id: string, householdId: string): ChapterLog | undefined
+  +markReviewed(id: string, sticker: StickerValue, note: string | null, now: Date): number
+  +pendingChapterLogs(householdId: string): QueueItem[]
+}
+
+class ShelfRepo {
+  +unseenFeedback(householdId: string): UnseenFeedback[]
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: Date
+  +reviewedAt: Date | null
+  +sticker: StickerValue | null
+  +note: string | null
+  +feedbackSeenAt: Date | null
+}
+
+ReviewChapterPage *-- StickerPicker : renders
+StickerPicker --> "6" Sticker : lists
+ReviewChapterPage ..> ReviewApi : calls
+ReviewApi ..> FeedbackRequest : sends
+ReviewApi ..> FeedbackResult : returns
+ReviewApi ..> ChapterLogDetail : returns
+ChapterLogDetail *-- Answer
+ChapterLogDetail --> Feedback : has
+ReviewService ..> FeedbackRequest : receives
+ReviewService --> ReviewRepo : uses
+ReviewRepo --> ChapterLog : reads / updates
+ShelfPage *-- Banner : renders per item
+ShelfPage --> UnseenFeedback : shows
+ShelfRepo --> ChapterLog : reads unseen
+ShelfRepo ..> UnseenFeedback : returns
+@enduml

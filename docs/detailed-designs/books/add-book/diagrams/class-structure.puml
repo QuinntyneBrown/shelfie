@@ -1,0 +1,123 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Add a book
+
+class AddBookPage {
+  +form: FormGroup<CreateBookForm>
+  +state: Signal<'idle' | 'invalid' | 'submitting' | 'error'>
+  +preview: Signal<CoverPreview>
+  +submit(): Promise<void>
+  +cancel(): void
+}
+
+class "sh-text-field" as TextField {
+  +label: string
+  +maxlength: number
+  +error: string | null
+}
+
+class "sh-color-picker" as ColorPicker {
+  +value: CoverColor
+  +valueChange: EventEmitter<CoverColor>
+}
+
+class "sh-sticker-picker" as StickerPicker {
+  +value: Sticker
+  +valueChange: EventEmitter<Sticker>
+}
+
+class "sh-cover" as Cover {
+  +color: CoverColor
+  +sticker: Sticker
+  +size: 'sm' | 'md' | 'lg'
+}
+
+enum CoverColor {
+  sage
+  rose
+  sky
+  sun
+  lilac
+  mint
+  peach
+}
+
+enum Sticker {
+  lion
+  robot
+  dog
+  books
+  spider
+  rabbit
+  wizard
+  rocket
+  dragon
+  tree
+  elephant
+  chocolate
+}
+
+class ShelfApi {
+  +addBook(request: CreateBookRequest): Promise<BookCreated>
+}
+
+class CreateBookRequest {
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: CoverColor
+  +sticker: Sticker
+}
+
+class BookCreated {
+  +id: string
+}
+
+class ToastService {
+  +success(text: string): void
+}
+
+class BooksService {
+  +createBook(householdId: string, profileId: string, body: CreateBookRequest): Book
+}
+
+class BooksRepo {
+  +insertBook(book: Book): void
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: string
+  +sticker: string
+  +addedByProfileId: string
+  +finishedAt: Date | null
+  +createdAt: Date
+}
+
+AddBookPage *-- TextField : title, author
+AddBookPage *-- ColorPicker : renders
+AddBookPage *-- StickerPicker : renders
+AddBookPage *-- Cover : preview
+ColorPicker --> CoverColor : offers
+StickerPicker --> Sticker : offers
+AddBookPage ..> ShelfApi : calls
+AddBookPage ..> ToastService : success toast
+ShelfApi ..> CreateBookRequest : sends
+ShelfApi ..> BookCreated : returns
+BooksService ..> CreateBookRequest : receives
+BooksService --> BooksRepo : uses
+BooksRepo --> Book : inserts
+@enduml

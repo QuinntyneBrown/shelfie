@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter row — Shelfie design system</title>
+<meta name="description" content="Chapter rows list every chapter of a book on its page: done chapters with Dad's review status, the next chapter to log, and the ones still to come.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Chapter row</h1>
+      <p class="ds-lead">One row per chapter on a book's page. Done chapters show a tick and whether Dad has read them, the next chapter is highlighted and opens the log form, and future chapters wait quietly in grey.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;a&gt;</code> or <code>&lt;div&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>The chapter row is the book page's table of contents and Nia's map of how far she has come. Chapters are numbered, not titled, so each done row shows the first line of her first answer instead. Rows stack inside a <code>.card--flush</code>. For Dad's view of logged chapters with dates and review status, use the <a href="table.html">table</a> on Manage a book.</p>
+      <ul>
+        <li><b>Done</b> (<code>.chapter--done</code>): logged. A link to her answers.</li>
+        <li><b>Next</b> (<code>.chapter--next</code>): the one to read now. A link to the log form, highlighted.</li>
+        <li><b>Future</b> (<code>.chapter--future</code>): not yet reachable. A plain <code>&lt;div&gt;</code>, not a link.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="card card--flush" style="width: 100%;"><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html">
+            <span class="chapter__num" aria-hidden="true">✓</span>
+            <span class="chapter__body"><span class="chapter__title">Chapter 9</span><span class="chapter__meta">Tue 13 Oct · Edmund got to the Witch’s house and it was really scary.</span></span>
+            <span class="chapter__status">⭐ Dad read it</span>
+          </a></div>
+          <span class="ds-callout" style="left: 6%; top: 20%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 24%; top: 20%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 40%; top: 76%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 86%; top: 20%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Number bubble</b><small><code>.chapter__num</code>: 32px circle. A tick when done, the number otherwise. Green when done, accent when next, grey when future.</small></div></li>
+          <li><div><b>Title</b><small><code>.chapter__title</code>: "Chapter 9", <code>--text-label</code>.</small></div></li>
+          <li><div><b>Meta</b><small><code>.chapter__meta</code>: date and the first line of her answer, or "Up next · tap when you’ve read it".</small></div></li>
+          <li><div><b>Status</b><small><code>.chapter__status</code>: "⭐ Dad read it", "Waiting for Dad" with a clock, or a chevron on the next row.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>The variant follows where the chapter is in Nia's reading; never set it by hand.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="card card--flush">
+            <a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html">
+              <span class="chapter__num" aria-hidden="true">✓</span>
+              <span class="chapter__body"><span class="chapter__title">Chapter 9</span><span class="chapter__meta">Tue 13 Oct · Edmund got to the Witch’s house and it was really scary.</span></span>
+              <span class="chapter__status">⭐ Dad read it</span>
+            </a>
+            <a class="chapter chapter--done" href="../../mocks/pages/chapter/pending.html">
+              <span class="chapter__num" aria-hidden="true">✓</span>
+              <span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm · The Witch’s sledge got stuck because the snow was melting.</span></span>
+              <span class="chapter__status"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Waiting for Dad</span>
+            </a>
+            <a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html">
+              <span class="chapter__num" aria-hidden="true">12</span>
+              <span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next · tap when you’ve read it</span></span>
+              <span class="chapter__status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></span>
+            </a>
+            <div class="chapter chapter--future">
+              <span class="chapter__num" aria-hidden="true">13</span>
+              <span class="chapter__body"><span class="chapter__title">Chapter 13</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>Done and reviewed, done and waiting, next, future: The Lion, the Witch and the Wardrobe today.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="card card--flush"&gt;
+  &lt;a class="chapter chapter--done" href="…"&gt;
+    &lt;span class="chapter__num" aria-hidden="true"&gt;✓&lt;/span&gt;
+    &lt;span class="chapter__body"&gt;
+      &lt;span class="chapter__title"&gt;Chapter 9&lt;/span&gt;
+      &lt;span class="chapter__meta"&gt;Tue 13 Oct · Edmund got to the Witch’s house…&lt;/span&gt;
+    &lt;/span&gt;
+    &lt;span class="chapter__status"&gt;⭐ Dad read it&lt;/span&gt;
+  &lt;/a&gt;
+  &lt;a class="chapter chapter--next" href="…"&gt;
+    &lt;span class="chapter__num" aria-hidden="true"&gt;12&lt;/span&gt;
+    &lt;span class="chapter__body"&gt;&lt;span class="chapter__title"&gt;Chapter 12&lt;/span&gt;
+      &lt;span class="chapter__meta"&gt;Up next · tap when you’ve read it&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="chapter__status"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;…&lt;/svg&gt;&lt;/span&gt;
+  &lt;/a&gt;
+  &lt;div class="chapter chapter--future"&gt;
+    &lt;span class="chapter__num" aria-hidden="true"&gt;13&lt;/span&gt;
+    &lt;span class="chapter__body"&gt;&lt;span class="chapter__title"&gt;Chapter 13&lt;/span&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+      <h3>Long books</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="card card--flush">
+            <a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">4</span><span class="chapter__body"><span class="chapter__title">Chapter 4</span><span class="chapter__meta">Up next · tap when you’ve read it</span></span><span class="chapter__status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></span></a>
+            <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">5</span><span class="chapter__body"><span class="chapter__title">Chapter 5</span></span></div>
+            <details class="accordion accordion--flush"><summary>Chapters 11 to 80 <span class="text-caption">70 more</span></summary><div class="accordion__body"><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">11</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span></span></div></div></details>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>The Wild Robot has 80 chapters: the next few show, the rest fold into a flush <a href="accordion.html">accordion</a>.</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size: at least 44px tall (<code>--target-comfortable</code>), 12 × 16px padding, a 32px number bubble.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Done and next rows are links and get hover and focus; future rows are inert. Forced here with <code>data-state</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Done</th><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 8</span><span class="chapter__meta">Fri 9 Oct</span></span><span class="chapter__status">⭐ Dad read it</span></a></td><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html" data-state="hover"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 8</span><span class="chapter__meta">Fri 9 Oct</span></span><span class="chapter__status">⭐ Dad read it</span></a></td><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html" data-state="focus"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 8</span><span class="chapter__meta">Fri 9 Oct</span></span><span class="chapter__status">⭐ Dad read it</span></a></td></tr>
+          <tr><th scope="row">Next</th><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next</span></span></a></td><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html" data-state="hover"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next</span></span></a></td><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html" data-state="focus"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next</span></span></a></td></tr>
+          <tr><th scope="row">Future</th><td><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div></td><td>Not interactive</td><td>Not focusable</td></tr>
+          <tr><th scope="row">Loading</th><td><div class="chapter" aria-hidden="true"><span class="skeleton chapter__num"></span><span class="chapter__body"><span class="skeleton skeleton--text"></span></span></div></td><td>Not interactive</td><td>Not focusable</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="card card--flush"><a class="chapter chapter--done" href="../../mocks/pages/chapter/pending.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm</span></span><span class="chapter__status">Waiting for Dad</span></a><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next · tap when you’ve read it</span></span></a><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div></div></div>
+        <div data-theme="dark"><div class="card card--flush"><a class="chapter chapter--done" href="../../mocks/pages/chapter/pending.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm</span></span><span class="chapter__status">Waiting for Dad</span></a><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next · tap when you’ve read it</span></span></a><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div></div></div>
+      </div>
+      <ul>
+        <li><b>Done, reviewed</b>: "⭐ Dad read it". <b>Done, waiting</b>: a clock and "Waiting for Dad"; it links to the pending chapter page.</li>
+        <li><b>Finished book</b>: every row is done; there is no next row.</li>
+        <li><b>Loading</b>: rows with a skeleton bubble and one skeleton line, inside an <code>aria-busy</code> container.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>One flex row at every width. The meta line wraps under the title; the status stays on the right and never wraps (<code>flex: none</code>).</li>
+        <li>At 360px, "Waiting for Dad" plus a long first answer still fits because the meta wraps to two or three lines.</li>
+        <li>On long books, rows after chapter 10 fold into an <code>.accordion--flush</code> ("Chapters 11 to 80") so the page does not become an 80-row scroll.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The bubble reads <code>--color-success-bg/fg</code> (done), <code>--color-accent</code> and <code>--color-fg-on-accent</code> (next) and <code>--color-bg-subtle</code> with muted ink (future). The next row's background is <code>--color-accent-subtle</code>; future rows dim their text to <code>--color-fg-subtle</code>. All semantic, so both themes work without overrides.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Done and next rows are native links (<code>&lt;a href&gt;</code>); future rows are plain <code>&lt;div&gt;</code>s, so they are read but cannot be activated. The bubble is <code>aria-hidden</code> because the title already says "Chapter 12" and the tick is repeated by the status text.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through done and next rows in chapter order; future rows are skipped.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Opens the chapter's answers, or the log form for the next chapter.</td></tr>
+        <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd> on the accordion summary</td><td>Shows or hides the folded chapters.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>The shared ring around the whole row. On the next row it sits on <code>--color-accent-subtle</code> and stays above 3:1.</p>
+      <h3>Labelling</h3>
+      <p>The link's name is its whole text: "Chapter 9, Tue 13 Oct · Edmund got to…, ⭐ Dad read it". The status is words, never just the star or the clock. Do not add a <code>title</code> attribute to the status (the mock does); it is not reliably announced and duplicates the text.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Done bubble</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Next bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div><div class="ds-pair"><span>Next title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Next meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Future text</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Status and meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Focus on next row</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-accent-subtle" data-min="3"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Done bubble</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Next bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div><div class="ds-pair"><span>Next title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Next meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Future text</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Status and meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Focus on next row</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-accent-subtle" data-min="3"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>None on the row. The accordion's plus sign rotates over <code>--duration-base</code>, zeroed under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>The whole row is the target, at least 44px tall and full width. Rows touch, but each is a separate full-width target with a divider between.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Title: "Chapter 12". Chapters have no names in Shelfie.</li>
+        <li>Done meta: the day, then the first line of her first answer, in her words: "Tue 13 Oct · Edmund got to the Witch’s house and it was really scary."</li>
+        <li>Next meta: "Up next · tap when you’ve read it".</li>
+        <li>Status: "⭐ Dad read it" or "Waiting for Dad". Written to Nia, not about her.</li>
+        <li>Folded chapters: "Chapters 11 to 80" with "70 more" as a caption.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div></div><figcaption>Future chapters are plain rows; she cannot log a chapter out of order.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><a class="chapter chapter--future" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></a></div><figcaption>A greyed-out link: it looks disabled but still takes focus and opens.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="card card--flush"><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">10</span><span class="chapter__body"><span class="chapter__title">Chapter 10</span></span></div><details class="accordion accordion--flush"><summary>Chapters 11 to 80 <span class="text-caption">70 more</span></summary><div class="accordion__body"><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">11</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span></span></div></div></details></div></div><figcaption>Fold long runs of future chapters into <code>.accordion--flush</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="card card--flush"><details class="accordion" style="border: var(--space-0); border-top: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--space-0);"><summary>Chapters 11 to 80 <span class="text-caption">70 more</span></summary><div class="accordion__body"><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">11</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span></span></div></div></details></div></div><figcaption>Restyling the accordion inline into a divider, as the edge mock did.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Done bubble background</td><td><code>--color-success-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td></tr>
+          <tr><td>Done bubble ink</td><td><code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr>
+          <tr><td>Next row background</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Next bubble background</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Next bubble ink</td><td><code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Future bubble background</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Future text</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
+          <tr><td>Meta and status</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Hover background</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Row min height</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>Row padding</td><td><code>--space-3</code> × <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Bubble size</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr>
+          <tr><td>Title / meta font</td><td><code>--text-label</code> / <code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-body-sm"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;a class="chapter chapter--done" href="…"&gt;
+  &lt;span class="chapter__num" aria-hidden="true"&gt;✓&lt;/span&gt;
+  &lt;span class="chapter__body"&gt;
+    &lt;span class="chapter__title"&gt;Chapter 11&lt;/span&gt;
+    &lt;span class="chapter__meta"&gt;Today, 4:12 pm · The Witch’s sledge got stuck…&lt;/span&gt;
+  &lt;/span&gt;
+  &lt;span class="chapter__status"&gt;&lt;svg class="icon icon--sm" aria-hidden="true" …&gt;…&lt;/svg&gt; Waiting for Dad&lt;/span&gt;
+&lt;/a&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.chapter</code></td><td>The row: flex, padding, divider, 44px min height. On <code>&lt;a&gt;</code> it gets a hover background.</td></tr>
+        <tr><td><code>.chapter--done</code> <code>.chapter--next</code> <code>.chapter--future</code></td><td>Bubble colour, next-row tint, dimmed future text.</td></tr>
+        <tr><td><code>.chapter__num</code></td><td>32px number bubble.</td></tr>
+        <tr><td><code>.chapter__body</code> <code>.chapter__title</code> <code>.chapter__meta</code></td><td>Title and meta, stacked.</td></tr>
+        <tr><td><code>.chapter__status</code></td><td>Right-hand status text with an optional small icon.</td></tr>
+        <tr><td><code>.skeleton.chapter__num</code></td><td>Loading bubble.</td></tr>
+        <tr><td><code>data-state="hover|focus"</code></td><td>Documentation only.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/book/default.html">pages/book/default</a> (done, waiting, next and future rows)</li>
+        <li><a href="../../mocks/pages/book/finished.html">pages/book/finished</a> (all 21 done)</li>
+        <li><a href="../../mocks/pages/book/edge.html">pages/book/edge</a> (80 chapters, folded into an accordion)</li>
+        <li><a href="../../mocks/pages/book/loading.html">pages/book/loading</a> (skeleton rows)</li>
+      </ul>
+      <p>Drift fixed during extraction: D10, the edge mock restyled <code>.accordion</code> inline (<code>border: 0; border-top: 1px solid …; border-radius: 0</code>) to fold future chapters; it is now <code>.accordion--flush</code>. D8, the "Chapters" heading set its font inline. One fix beyond the drift list: the status's <code>title="Dad has read this"</code> is dropped because the visible text already says it.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage and remove a book
+
+Person(grownUp, "Grown-up", "Manages books")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "BooksPage, ManageBookPage, DeleteBookDialog")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Lists, updates and deletes books; enforces the chapter-count floor")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "book, chapter_log, answer, question, reward tables")
+}
+Rel(grownUp, web, "Opens /books and /manage-book/:id", "HTTPS")
+Rel(web, api, "GET /api/books, GET /api/books/:id, PATCH /api/books/:id, DELETE /api/books/:id", "JSON/HTTPS")
+Rel(api, db, "Reads, updates, deletes in one transaction", "SQL")
+@enduml

@@ -1,0 +1,88 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Track the reading streak
+
+class "sh-streak-badge" as StreakBadge {
+  +days: number
+  +label(): string
+}
+
+class ShelfPage {
+  +shelf: Signal<ShelfView | null>
+  +streak: Signal<number>
+}
+
+class ReviewPage {
+  +review: Signal<ReviewView | null>
+  +streak: Signal<number>
+}
+
+class ShelfView {
+  +reading: BookCard[]
+  +upNext: BookCard[]
+  +finished: BookCard[]
+  +streak: number
+}
+
+class ReviewView {
+  +queue: QueueItem[]
+  +finishedUnrewarded: BookCard[]
+  +thisWeek: ThisWeek
+}
+
+class ThisWeek {
+  +chapters: number
+  +streak: number
+}
+
+class StreakService {
+  {static} +computeStreak(readOnDays: string[], today: string): number
+  {static} +todayIn(timeZone: string, now: Date): string
+  +streakFor(householdId: string, now: Date): number
+}
+
+class ShelfService {
+  +getShelf(householdId: string): ShelfView
+}
+
+class ReviewService {
+  +getReview(householdId: string): ReviewView
+}
+
+class ChaptersRepo {
+  +distinctReadOnDays(householdId: string): string[]
+  +householdTimeZone(householdId: string): string
+}
+
+class Household {
+  +id: string
+  +timeZone: string
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +readOn: string
+}
+
+ShelfPage *-- StreakBadge : renders in top bar
+ShelfPage ..> ShelfView : reads streak
+ReviewPage ..> ReviewView : reads thisWeek.streak
+ReviewView *-- ThisWeek
+ShelfService ..> ShelfView : builds
+ReviewService ..> ReviewView : builds
+ShelfService --> StreakService : streakFor
+ReviewService --> StreakService : streakFor
+StreakService --> ChaptersRepo : uses
+ChaptersRepo --> Household : reads timeZone
+ChaptersRepo --> ChapterLog : reads distinct readOn
+@enduml

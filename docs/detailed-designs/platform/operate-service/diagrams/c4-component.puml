@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Operate the service
+
+Container(web, "Shelfie web", "Angular", "ApiClient maps errors to ApiError{status, problem}; server-error page shows problem.requestId")
+System_Ext(scheduler, "Nightly scheduler", "<TO SUPPLY>")
+Container_Boundary(api, "Shelfie API") {
+  Component(context, "requestContext", "Middleware (logger.ts)", "Generates requestId SHF-XXXX; sets req.context and X-Request-Id")
+  Component(logger, "logger", "pino (logger.ts)", "One line per request: requestId, method, route, status, durationMs")
+  Component(app, "app.ts", "Express app", "Mounts requestContext first and problemDetailsHandler last")
+  Component(health, "health.router.ts", "Express Router", "GET /api/health: SELECT 1 then 200 or 503")
+  Component(routers, "Feature routers", "Express Routers", "Mounted under /api")
+  Component(errors, "errors.ts", "Error handler", "problemDetailsHandler: logs unhandled error with requestId; 500 generic body with requestId")
+  Component(dbmod, "db.ts", "better-sqlite3 connection", "WAL, synchronous=NORMAL, foreign_keys ON; applies migrations/*.sql with indexes")
+  ComponentDb(db, "Shelfie database", "SQLite", "Single file plus -wal and -shm")
+}
+Container_Boundary(job, "Backup job") {
+  Component(backup, "backup.ts", "BackupJob", "VACUUM INTO dated file; PRAGMA integrity_check; prune older than retention")
+}
+Rel(web, app, "JSON/HTTPS requests")
+Rel(app, context, "Applies first")
+Rel(context, logger, "Writes the request line on finish")
+Rel(app, health, "Mounts GET /api/health")
+Rel(app, routers, "Mounts under /api")
+Rel(app, errors, "Applies last")
+Rel(errors, logger, "logger.error({requestId, err})")
+Rel(health, dbmod, "SELECT 1")
+Rel(routers, dbmod, "Prepared statements")
+Rel(dbmod, db, "Reads and writes", "SQL")
+Rel(scheduler, backup, "Runs nightly")
+Rel(backup, db, "VACUUM INTO", "SQL")
+@enduml

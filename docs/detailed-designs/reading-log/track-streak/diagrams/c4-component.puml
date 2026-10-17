@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Track the reading streak
+
+Container(web, "Shelfie web", "Angular", "ShelfPage and ReviewPage; sh-streak-badge")
+Container_Boundary(api, "Shelfie API") {
+  Component(shelfRouter, "shelf.router.ts", "Express Router", "GET /shelf")
+  Component(reviewRouter, "review.router.ts", "Express Router", "GET /review")
+  Component(shelfService, "shelf.service.ts", "Service", "Assembles the shelf response; includes streak")
+  Component(reviewService, "review.service.ts", "Service", "Assembles the review response; includes thisWeek.streak")
+  Component(streak, "streak.service.ts", "Service (chapters module)", "computeStreak(days, today); todayIn(timeZone, now); streakFor(householdId, now)")
+  Component(repo, "chapters.repo.ts", "Repository", "distinctReadOnDays(householdId)")
+  ComponentDb(db, "Shelfie database", "SQLite", "household, chapter_log, book")
+}
+Rel(web, shelfRouter, "GET /api/shelf", "JSON/HTTPS")
+Rel(web, reviewRouter, "GET /api/review", "JSON/HTTPS")
+Rel(shelfRouter, shelfService, "getShelf")
+Rel(reviewRouter, reviewService, "getReview")
+Rel(shelfService, streak, "streakFor(householdId, now)")
+Rel(reviewService, streak, "streakFor(householdId, now)")
+Rel(streak, repo, "distinctReadOnDays(householdId), household time_zone")
+Rel(repo, db, "Reads", "SQL")
+@enduml

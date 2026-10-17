@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Notify with toasts and banners
+
+Person(reader, "Reader", "Sees toasts after logging chapters and banners for feedback or offline")
+Person(grownUp, "Grown-up", "Sees toasts after reviewing and banners for the waiting queue or a server outage")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Acts; reads toasts and banners", "HTTPS")
+Rel(grownUp, shelfie, "Acts; reads toasts and banners", "HTTPS")
+@enduml

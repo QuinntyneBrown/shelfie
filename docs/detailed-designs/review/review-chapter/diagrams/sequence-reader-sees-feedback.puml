@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Reader sees feedback
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+box "Frontend — Shelfie web (shelf and log-chapter libraries)" #E0F2FE
+  participant "ShelfPage" as shelf
+  participant "sh-banner" as banner
+  participant "ChapterPage" as chapter
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "shelf.router.ts\n+ session (reader)" as shelfRouter
+  participant "chapters.router.ts" as chaptersRouter
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "shelf.service.ts" as shelfService
+  participant "chapters.service.ts" as chaptersService
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+reader -> shelf : Open My shelf
+shelf -> shelfRouter : GET /api/shelf
+shelfRouter -> shelfService : shelf(householdId)
+shelfService -> db : SELECT chapter_log JOIN book WHERE household_id = ?\nAND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL\nORDER BY reviewed_at DESC
+db --> shelfService : unseen feedback rows
+shelfService --> shelfRouter : Shelf {…, unseenFeedback}
+shelfRouter --> shelf : 200 Shelf
+alt unseenFeedback empty
+  shelf --> reader : Shelf without a feedback banner (L2-016)
+else unseen feedback present
+  shelf -> banner : info: "Dad read Chapter 9 and gave you a Star", Open Chapter 9
+  banner --> reader : Banner under the top bar, announced politely (L2-016)
+  reader -> banner : Open Chapter 9
+  banner -> chapter : Navigate to the chapter page
+  chapter -> chaptersRouter : GET /api/chapter-logs/:id
+  chaptersRouter --> chapter : 200 ChapterLogDetail (sticker and note)
+  chapter -> chaptersRouter : POST /api/chapter-logs/:id/seen
+  chaptersRouter -> chaptersService : markSeen(householdId, id, now)
+  chaptersService -> db : UPDATE chapter_log SET feedback_seen_at = ?\nWHERE id = ? AND feedback_seen_at IS NULL
+  db --> chaptersService : ok
+  chaptersService --> chaptersRouter : done
+  chaptersRouter --> chapter : 204
+  chapter --> reader : Sticker and note shown
+  reader -> shelf : Return to My shelf
+  shelf -> shelfRouter : GET /api/shelf
+  shelfRouter --> shelf : 200 Shelf with unseenFeedback empty
+  shelf --> reader : No banner for that chapter (L2-016)
+end
+@enduml

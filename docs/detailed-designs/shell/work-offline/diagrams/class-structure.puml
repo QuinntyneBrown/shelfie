@@ -1,0 +1,84 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Work offline
+
+class PendingChapterLog {
+  +id: number | null
+  +bookId: string
+  +chapterNumber: number
+  +body: ChapterLogBody
+  +queuedAt: string
+}
+
+class ChapterLogBody {
+  +readOn: string
+  +answers: string[]
+}
+
+class OfflineQueue {
+  +online: Signal<boolean>
+  +pending: Signal<PendingChapterLog[]>
+  -bannerId: string | null
+  -db: IDBDatabase
+  +enqueue(log: PendingChapterLog): Promise<void>
+  +isPending(bookId: string, chapterNumber: number): boolean
+  +replay(): Promise<void>
+  -onOnline(): void
+  -onOffline(): void
+}
+
+class ApiClient {
+  +post<T>(path: string, body: unknown): Promise<T>
+}
+
+class ApiError {
+  +status: number
+  +problem: Problem | null
+}
+
+class BannerService {
+  +show(options: BannerOptions): string
+  +clear(id: string): void
+}
+
+class ToastService {
+  +show(options: ToastOptions): string
+}
+
+class LogChapterPage {
+  +submit(): Promise<void>
+}
+
+class BookPage {
+  +isPending(n: number): boolean
+}
+
+class OfflinePage {
+  +tryAgain(): void
+}
+
+class "Angular service worker" as SW {
+  assetGroups: app (prefetch)
+  dataGroups: shelf (/api/shelf, freshness)
+}
+
+OfflineQueue --> "*" PendingChapterLog : holds / persists in IndexedDB
+PendingChapterLog *-- ChapterLogBody : carries
+OfflineQueue ..> ApiClient : post on replay
+ApiClient ..> ApiError : throws (status 0 = no response)
+OfflineQueue ..> BannerService : offline banner
+OfflineQueue ..> ToastService : per-chapter and Back online toasts
+LogChapterPage ..> OfflineQueue : enqueue when offline
+BookPage ..> OfflineQueue : isPending
+OfflinePage ..> OfflineQueue : online()
+SW ..> OfflineQueue : independent; serves shell and cached shelf
+@enduml

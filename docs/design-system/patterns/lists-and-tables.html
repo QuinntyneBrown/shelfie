@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lists and tables — Shelfie design system</title>
+<meta name="description" content="How Shelfie shows collections: the chapter list, book cards, the grown-up book list, the chapters-logged table, the review queue and the activity feed, and what happens when they get long.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern · Data display</p>
+      <h1>Lists and tables</h1>
+      <p class="ds-lead">Shelfie's collections are small and personal: one family's books and one child's chapters. They are shown whole, newest or next first, with no paging, sorting, filtering or selection.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Six collections appear in the mocks, each with the lightest structure that does its job:</p>
+      <ul>
+        <li><b>Chapter list</b> (<a href="../components/chapter-row.html">chapter row</a>): every chapter of one book in order, done, next and future. Nia's main way into her answers.</li>
+        <li><b>Book cards</b> (<a href="../components/book-card.html">book card</a> in <code>.grid--auto</code>): the books on her shelf, "On the go" and "Up next".</li>
+        <li><b>Trophy list</b> (<a href="../components/trophy.html">trophy</a>): finished books and their rewards.</li>
+        <li><b>Book list</b> (<a href="../components/list.html">list</a>): Dad's Books page; one row per book with status <a href="../components/badge.html">badge</a> and "Manage".</li>
+        <li><b>Chapters-logged table</b> (<a href="../components/table.html">table</a>): on Manage book, the only real table; chapter, date, first answer, review status.</li>
+        <li><b>Review queue and activity feed</b> (<a href="../components/list.html">list</a>, <a href="../components/feed.html">activity feed</a>): what is waiting for Dad, and what happened this week.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Use</th><th scope="col">When</th><th scope="col">Shelfie example</th></tr></thead>
+        <tbody>
+          <tr><td>Card grid</td><td>Few items, each with a picture and one action, browsed by a child.</td><td>Shelf: On the go, Up next</td></tr>
+          <tr><td>List</td><td>Items with a title, one line of detail, a status and one action. Reads on a phone without scrolling sideways.</td><td>Books page, review queue, questions on Manage book</td></tr>
+          <tr><td>Chapter list</td><td>An ordered sequence where position matters and each item has a state.</td><td>Book page</td></tr>
+          <tr><td>Table</td><td>Several facts per item that Dad compares down a column.</td><td>Manage book → Chapters logged</td></tr>
+          <tr><td>Feed</td><td>Events in time order, read and not acted on.</td><td>Review → This week</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Long lists</h3>
+      <ul>
+        <li><b>No pagination below 50 books.</b> A family's shelf will not reach it; every list is shown whole.</li>
+        <li><b>Long books fold their future.</b> When a book has many unread chapters (The Wild Robot, 80 chapters), the chapter list shows everything up to the next chapter plus a few, then folds the rest into one flush accordion: "Chapters 11 to 80 · 70 more".</li>
+        <li><b>Finished books stay on one list</b>, newest first, with titles truncated to one line and the full title in <code>title</code>.</li>
+        <li><b>A long review queue</b> keeps one list, newest first, with a count badge in the heading and a "Newest first" caption.</li>
+        <li>No sorting, filtering, search, bulk selection or infinite scroll. If a list ever needs them it needs a new design and an estimate first.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <h3>Chapter list</h3>
+      <p>A flush card of rows. A done row links to her answers; the next row links to the log form and is tinted; future rows are not links.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="card card--flush" style="width: 100%;">
+            <a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 9</span><span class="chapter__meta">Tue 13 Oct · Edmund got to the Witch’s house and it was really scary.</span></span><span class="chapter__status">⭐ Dad read it</span></a>
+            <a class="chapter chapter--done" href="../../mocks/pages/chapter/pending.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm · The Witch’s sledge got stuck because the snow was melting.</span></span><span class="chapter__status"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Waiting for Dad</span></a>
+            <a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next · tap when you’ve read it</span></span><span class="chapter__status"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></span></a>
+            <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div>
+            <details class="accordion accordion--flush"><summary>Chapters 14 to 17 <span class="text-caption">4 more</span></summary><div class="accordion__body">
+              <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">14</span><span class="chapter__body"><span class="chapter__title">Chapter 14</span></span></div>
+              <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">15</span><span class="chapter__body"><span class="chapter__title">Chapter 15</span></span></div>
+            </div></details>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/book/default, with the fold from pages/book/edge applied to show the composition (the real fold only appears on long books).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="card card--flush"&gt;
+  &lt;a class="chapter chapter--done" href="…"&gt;…&lt;/a&gt;
+  &lt;a class="chapter chapter--next" href="…"&gt;…&lt;/a&gt;
+  &lt;div class="chapter chapter--future"&gt;…&lt;/div&gt;
+  &lt;details class="accordion accordion--flush"&gt;
+    &lt;summary&gt;Chapters 11 to 80 &lt;span class="text-caption"&gt;70 more&lt;/span&gt;&lt;/summary&gt;
+    &lt;div class="accordion__body"&gt;…future rows…&lt;/div&gt;
+  &lt;/details&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+
+      <h3>Book list</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="card card--flush" style="width: 100%;"><ul class="list">
+            <li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">The Lion, the Witch and the Wardrobe</div><div class="list__meta">C. S. Lewis · 11 of 17 chapters</div></div><span class="badge badge--info">Reading</span><a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage<span class="visually-hidden"> The Lion, the Witch and the Wardrobe</span></a></li>
+            <li class="list__item"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="list__body"><div class="list__title">Matilda</div><div class="list__meta">Roald Dahl · finished Tue 13 Oct</div></div><span class="badge badge--warning">Reward to give</span><a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage<span class="visually-hidden"> Matilda</span></a></li>
+            <li class="list__item"><span class="cover cover--sun cover--sm" aria-hidden="true">🐕</span><div class="list__body"><div class="list__title">Because of Winn-Dixie</div><div class="list__meta">Kate DiCamillo · 0 of 26 chapters</div></div><span class="badge">Not started</span><a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage<span class="visually-hidden"> Because of Winn-Dixie</span></a></li>
+            <li class="list__item"><span class="cover cover--sky cover--sm" aria-hidden="true">🕷️</span><div class="list__body"><div class="list__title">Charlotte’s Web</div><div class="list__meta">E. B. White · finished Sun 23 Aug · Movie night with popcorn</div></div><span class="badge badge--success">Rewarded</span><a class="btn btn--sm" href="../../mocks/pages/manage-book/rewarded.html">Manage<span class="visually-hidden"> Charlotte’s Web</span></a></li>
+          </ul></div>
+        </div>
+        <div class="ds-example__caption"><span>pages/books/default: cover, title and one meta line, status badge, one action.</span></div>
+      </div>
+
+      <h3>Chapters-logged table</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <section class="card card--flush" style="width: 100%;" aria-labelledby="lt-table-title">
+            <h3 class="card__title" id="lt-table-title">Chapters logged</h3>
+            <div class="table-wrap table-wrap--flush"><table class="table">
+              <caption class="visually-hidden">Chapters Nia has logged for this book</caption>
+              <thead><tr><th scope="col">Chapter</th><th scope="col">Read</th><th scope="col">What happened</th><th scope="col">Review</th><th scope="col"><span class="visually-hidden">Open</span></th></tr></thead>
+              <tbody>
+                <tr><td>Chapter 11</td><td>Today, 4:12 pm</td><td class="truncate">The Witch’s sledge got stuck because the snow was melting.</td><td><span class="badge badge--warning">To review</span></td><td><a href="../../mocks/pages/review-chapter/default.html">Open<span class="visually-hidden"> chapter 11</span></a></td></tr>
+                <tr><td>Chapter 10</td><td>Yesterday</td><td class="truncate">Father Christmas came and gave everyone presents.</td><td><span class="badge badge--warning">To review</span></td><td><a href="../../mocks/pages/review-chapter/default.html">Open<span class="visually-hidden"> chapter 10</span></a></td></tr>
+                <tr data-state="hover"><td>Chapter 9</td><td>Tue 13 Oct</td><td class="truncate">Edmund got to the Witch’s house and it was really scary.</td><td><span class="badge badge--success">Reviewed</span></td><td><a href="../../mocks/pages/review-chapter/reviewed.html">Open<span class="visually-hidden"> chapter 9</span></a></td></tr>
+              </tbody>
+            </table></div>
+          </section>
+        </div>
+        <div class="ds-example__caption"><span>pages/manage-book/default. Newest first; long answers truncate at 20rem; the third row shows hover.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="card card--flush" aria-labelledby="chapters-title"&gt;
+  &lt;h2 class="card__title" id="chapters-title"&gt;Chapters logged&lt;/h2&gt;
+  &lt;div class="table-wrap table-wrap--flush"&gt;
+    &lt;table class="table"&gt;
+      &lt;caption class="visually-hidden"&gt;Chapters Nia has logged for this book&lt;/caption&gt;
+      …
+      &lt;td class="truncate"&gt;The Witch’s sledge got stuck…&lt;/td&gt;
+    &lt;/table&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></details>
+      </div>
+
+      <h3>Activity feed</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <section class="card stack" style="width: 100%;" aria-labelledby="lt-feed-title">
+            <h3 class="card__title" id="lt-feed-title" style="margin: 0;">This week</h3>
+            <ul class="feed">
+              <li><span class="sticker" aria-hidden="true">📖</span><div class="feed__body">Nia logged Chapter 11 of The Lion, the Witch and the Wardrobe<div class="feed__meta">Today, 4:12 pm</div></div></li>
+              <li><span class="sticker" aria-hidden="true">📚</span><div class="feed__body">You added Because of Winn-Dixie<div class="feed__meta">Thu 15 Oct</div></div></li>
+              <li><span class="sticker" aria-hidden="true">🌟</span><div class="feed__body">You gave Chapter 9 a Star<div class="feed__meta">Wed 14 Oct</div></div></li>
+              <li><span class="sticker" aria-hidden="true">🏆</span><div class="feed__body">Nia finished Matilda<div class="feed__meta">Tue 13 Oct</div></div></li>
+            </ul>
+          </section>
+        </div>
+        <div class="ds-example__caption"><span>pages/review/default, the aside. Events only; nothing in the feed is a control.</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">State</th><th scope="col">Lists and grids</th><th scope="col">Table</th></tr></thead>
+        <tbody>
+          <tr><td>Loading</td><td>Skeleton rows or cards, same count as a typical page (three rows, two cards)</td><td>The section's skeleton; headers render</td></tr>
+          <tr><td>Empty</td><td>An <a href="empty-and-error-states.html">empty state</a> in place of the list</td><td>Not in the mocks; follow the empty-state formula inside the section rather than showing a table with no rows</td></tr>
+          <tr><td>Error</td><td>Error empty state with "Try again"</td><td>Same</td></tr>
+          <tr><td>Row hover</td><td>Linked chapter rows tint with <code>--color-bg-subtle</code></td><td>Rows tint with <code>--color-bg-subtle</code></td></tr>
+          <tr><td>Long</td><td>Accordion fold (chapters); one list (finished, queue)</td><td>Scrolls inside its wrap</td></tr>
+        </tbody>
+      </table></div>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Chapter row</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Done</th><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 2</span></span></a></td><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html" data-state="hover"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 2</span></span></a></td><td><a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html" data-state="focus"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 2</span></span></a></td></tr>
+          <tr><th scope="row">Next</th><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span></span></a></td><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html" data-state="hover"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span></span></a></td><td><a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html" data-state="focus"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span></span></a></td></tr>
+          <tr><th scope="row">Future</th><td><div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div></td><td colspan="2"><span class="text-caption">Not interactive</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="card card--flush">
+          <a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm</span></span><span class="chapter__status">Waiting for Dad</span></a>
+          <a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next</span></span></a>
+          <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="card card--flush">
+          <a class="chapter chapter--done" href="../../mocks/pages/chapter/default.html"><span class="chapter__num" aria-hidden="true">✓</span><span class="chapter__body"><span class="chapter__title">Chapter 11</span><span class="chapter__meta">Today, 4:12 pm</span></span><span class="chapter__status">Waiting for Dad</span></a>
+          <a class="chapter chapter--next" href="../../mocks/pages/log-chapter/default.html"><span class="chapter__num" aria-hidden="true">12</span><span class="chapter__body"><span class="chapter__title">Chapter 12</span><span class="chapter__meta">Up next</span></span></a>
+          <div class="chapter chapter--future"><span class="chapter__num" aria-hidden="true">13</span><span class="chapter__body"><span class="chapter__title">Chapter 13</span></span></div>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li><b>Book cards</b> fill <code>.grid--auto</code>: one column on phones, as many 18rem columns as fit above that.</li>
+        <li><b>Lists</b> keep one row per item at every width; the title and meta truncate or wrap inside <code>.list__body</code>, while the badge and button keep their size.</li>
+        <li><b>The table</b> scrolls sideways inside its wrap on phones rather than turning into cards; the "What happened" column truncates at 20rem. It is the only place in Shelfie that scrolls sideways.</li>
+        <li><b>The activity feed</b> sits in the right column (<code>.span-4</code>) from 1024px and moves under the queue below that.</li>
+        <li><b>Chapter rows</b> are at least 44px tall at every width; the status text stays on the right.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Lists are <code>&lt;ul&gt;</code>. The chapter list is a run of links and plain rows inside a card; each done or next row is one <code>&lt;a&gt;</code>, so a screen reader hears one link per chapter. The table is a native <code>&lt;table&gt;</code> with a visually hidden <code>&lt;caption&gt;</code> and <code>scope="col"</code> headers. The long-list fold is a native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves through chapter links, row buttons and table links in order; future chapters are skipped.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Opens the chapter, the log form or Manage book.</td></tr>
+        <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd> on the fold</td><td>Opens or closes "Chapters 11 to 80".</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>The ring draws around the whole chapter row. Opening the fold keeps focus on its summary.</p>
+      <h3>Labelling</h3>
+      <p>Chapter numbers and ticks are <code>aria-hidden</code>; the title says "Chapter 9" and the status says "Dad read it" or "Waiting for Dad" in words. Repeated "Manage" and "Open" links carry the item in visually hidden text or <code>aria-label</code>, so they make sense out of context. Covers and stickers are decorative.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Row meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Next row text on accent tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Next number on accent</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Done tick on success tint</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Future chapter on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Table header on sunken</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Row hover tints over <code>--duration-fast</code>; the fold's plus sign rotates over <code>--duration-base</code>. Reduced motion removes both.</p>
+      <h3>Touch</h3>
+      <p>Chapter rows and accordion summaries are at least 44px tall and full width. Row buttons are small (36px) and sit alone at the end of their row, away from other targets.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li><b>Chapters are numbered, not titled.</b> The meta line is the date read and the first line of her first answer.</li>
+        <li><b>Order says what matters</b>: chapters in reading order; books by status; queue, table, feed and finished books newest first.</li>
+        <li><b>Statuses are short</b>: "Reading", "Reward to give", "Not started", "Rewarded"; "To review", "Reviewed"; "Dad read it", "Waiting for Dad".</li>
+        <li><b>Feed lines are sentences with a subject</b>: "Nia logged Chapter 10", "You gave Chapter 9 a Star". Dad is "You" on his own pages.</li>
+        <li><b>Fold labels give the range and the count</b>: "Chapters 11 to 80 · 70 more".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="card card--flush" style="width: 100%;"><div class="table-wrap table-wrap--flush"><table class="table"><caption class="visually-hidden">Flush table example</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Read</th></tr></thead><tbody><tr><td>Chapter 11</td><td>Today, 4:12 pm</td></tr></tbody></table></div></div></div><figcaption>Use <code>.table-wrap--flush</code> inside a card.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card card--flush" style="width: 100%;"><div class="table-wrap" style="border: 0; border-radius: 0;"><table class="table"><caption class="visually-hidden">Reset table example</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Read</th></tr></thead><tbody><tr><td>Chapter 11</td><td>Today, 4:12 pm</td></tr></tbody></table></div></div></div><figcaption>Reset the wrap inline with <code>border: 0; border-radius: 0</code> (drift D9).</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><details class="accordion accordion--flush" style="width: 100%;"><summary>Chapters 11 to 80 <span class="text-caption">70 more</span></summary><div class="accordion__body">Chapters 11 to 80 appear here.</div></details></div><figcaption>Fold a long future into one <code>.accordion--flush</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="btn btn--sm">Previous</span><span class="text-caption">Page 1 of 4</span><span class="btn btn--sm">Next</span></div><figcaption>Paginate a list that will never pass 50 items. Shelfie has no pagination component.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li>Chapter list: <a href="../../mocks/pages/book/default.html">pages/book/default</a>, <a href="../../mocks/pages/book/edge.html">pages/book/edge</a> (80-chapter fold), <a href="../../mocks/pages/book/loading.html">pages/book/loading</a></li>
+        <li>Book cards and trophies: <a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a>, <a href="../../mocks/pages/shelf/long.html">pages/shelf/long</a></li>
+        <li>Book list: <a href="../../mocks/pages/books/default.html">pages/books/default</a>, <a href="../../mocks/pages/books/loading.html">pages/books/loading</a>, <a href="../../mocks/pages/books/empty.html">pages/books/empty</a></li>
+        <li>Table: <a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a></li>
+        <li>Queue and feed: <a href="../../mocks/pages/review/default.html">pages/review/default</a>, <a href="../../mocks/pages/review/long.html">pages/review/long</a></li>
+      </ul>
+      <p>The grown-up Books page is a list, not a table, in the mocks; the only table is Chapters logged on Manage book.</p>
+      <p>Drift fixed during extraction:</p>
+      <ul>
+        <li><b>D9</b>: the table wrap inside a card was reset inline and long cells capped with an inline <code>max-width: 20rem</code>; use <code>.table-wrap--flush</code> and <code>.table td.truncate</code>.</li>
+        <li><b>D10</b>: book/edge restyled <code>.accordion</code> inline as a flush divider; use <code>details.accordion.accordion--flush</code>.</li>
+        <li><b>D8</b>: list section headings set <code>font: var(--text-h4)</code> and padding inline; use <code>.card__title</code>, which pads itself inside <code>.card--flush</code>.</li>
+      </ul>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

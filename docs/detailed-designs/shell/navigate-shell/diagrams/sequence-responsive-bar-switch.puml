@@ -1,0 +1,40 @@
+@startuml
+title UML sequence behaviour — Switch the grown-up's bars at 768 px
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as user
+participant "Browser (Chromium)" as browser
+box "Frontend — Shelfie web (shelfie application)" #E0F2FE
+  participant "AppComponent" as app
+end box
+box "Frontend — Shelfie web (components library)" #E0F2FE
+  participant "sh-top-bar" as topBar
+  participant "sh-tab-bar" as tabBar
+end box
+
+user -> browser : Open Review at 360 px wide
+browser -> app : Render shell (session role = grown-up)
+app -> topBar : Render brand, avatar; links hidden below 48 rem
+app -> tabBar : Render Review (badge 2) / Books / Settings\nwith aria-current="page" on Review
+app -> app : main gets padding-bottom = tab bar height;\n16 px side gutter (L2-025)
+browser --> user : No horizontal scroll; targets >= 44 x 44 px (L2-025)
+user -> browser : Widen to 768 px
+browser -> browser : Media query (min-width: 48rem) matches
+browser -> tabBar : display: none
+browser -> topBar : nav[aria-label="Primary"] display: flex
+topBar --> user : Review (badge 2) / Books / Settings in the top bar;\naria-current="page" on Review
+user -> browser : Widen to 1280 px
+browser --> user : Same top bar; container max-width centres content;\nno horizontal scroll (L2-025)
+@enduml

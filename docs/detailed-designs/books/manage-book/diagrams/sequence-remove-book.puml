@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Remove a book
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (books library)" #E0F2FE
+  participant "ManageBookPage" as page
+  participant "DeleteBookDialog\n(sh-dialog)" as dialog
+  participant "BooksApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "books.router.ts\n+ requireRole('grown-up')" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "books.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : Press "Remove book"
+page -> dialog : Open with book; initial focus on "Keep the book"
+dialog --> grownUp : "Remove “title”?" with warning and two actions
+alt Keep the book or Escape
+  grownUp -> dialog : Cancel
+  dialog -> page : closed
+  page --> grownUp : Nothing deleted; focus returns to "Remove book" (L2-010)
+else Remove book and answers
+  grownUp -> dialog : Confirm
+  dialog -> dialog : Set busy; disable actions
+  dialog -> client : remove(id)
+  client -> router : DELETE /api/books/:id
+  router -> router : Require grown-up session (401 / 403)
+  router -> service : deleteBook(householdId, bookId)
+  service -> db : SELECT book WHERE id = ? AND household_id = ?
+  db --> service : book row (404 when none)
+  service -> db : BEGIN; DELETE answer (via chapter_log of book);\nDELETE chapter_log; DELETE question; DELETE reward; DELETE book; COMMIT
+  alt server failure
+    db --> service : error (transaction rolled back)
+    service --> router : throw
+    router --> client : 500 problem {requestId}
+    client --> dialog : ApiError
+    dialog --> grownUp : "The book wasn't removed … Nothing has changed"; book remains (L2-010)
+  else deleted
+    db --> service : ok
+    service --> router : void
+    router --> client : 204
+    client --> dialog : void
+    dialog -> page : closed
+    page -> toast : success(copy TO SUPPLY) (L2-010)
+    page --> grownUp : Navigate to /books; book gone from list and shelf (L2-010)
+  end
+end
+@enduml

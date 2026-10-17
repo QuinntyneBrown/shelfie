@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in with a PIN
+
+Container(web, "Shelfie web", "Angular", "SignInPage with sh-pin-keypad; AuthApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "POST /api/auth/pin; validates body with pinSignInSchema")
+  Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400")
+  Component(service, "auth.service.ts", "Service", "signInWithPin: lockout check, argon2id verify, session creation")
+  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over profile and session")
+  ComponentDb(db, "Shelfie database", "SQLite", "profile, session")
+}
+Rel(web, router, "POST /api/auth/pin", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "signInWithPin(householdId, profileId, pin)")
+Rel(service, repo, "findProfile, recordPinFailure, resetPinFailures, createSession")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

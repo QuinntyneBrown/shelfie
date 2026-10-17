@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View the shelf
+
+Container(web, "Shelfie web", "Angular", "ShelfPage with sh-book-card, sh-reward-card; ShelfApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "shelf.router.ts", "Express Router", "GET /api/shelf; requires a session of either role")
+  Component(authz, "requireRole()", "Middleware (authz.ts)", "401 without a session")
+  Component(service, "shelf.service.ts", "Service", "getShelf: groups reading / up next / finished, picks hero, attaches rewards and unseen feedback")
+  Component(chapters, "chapters.service.ts", "Service", "Computes the streak from chapter_log.read_on (reading-log/track-streak)")
+  Component(repo, "shelf.repo.ts", "Repository", "listBooksWithProgress, listRewards, listUnseenFeedback")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, reward")
+}
+Rel(web, router, "GET /api/shelf", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, service, "getShelf(householdId)")
+Rel(service, chapters, "streak for household")
+Rel(service, repo, "listBooksWithProgress, listRewards, listUnseenFeedback")
+Rel(repo, db, "Reads", "SQL")
+Rel(chapters, db, "Reads chapter_log.read_on", "SQL")
+@enduml

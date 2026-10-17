@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Authorize a route in the web application
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or grown-up" as person
+box "Frontend — Shelfie web (shelfie application and core library)" #E0F2FE
+  participant "Angular Router\n(app.routes.ts)" as routerFe
+  participant "authGuard" as authGuard
+  participant "grownUpGuard" as roleGuard
+  participant "SessionService" as sessionSvc
+  participant "GlobalErrorHandler" as handler
+  participant "Target page /\nerror pages" as pages
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "sessionMiddleware\n+ requireRole()" as api
+end box
+
+person -> routerFe : Open URL
+alt URL matches no route
+  routerFe -> pages : Render NotFoundPage
+  pages --> person : "We can't find that page" with home link (L2-005)
+else URL matches a protected route
+  routerFe -> authGuard : canActivate
+  authGuard -> sessionSvc : await restored; read session
+  alt no session
+    authGuard --> routerFe : UrlTree /sign-in
+    routerFe --> person : Sign-in page (L2-005)
+  else session present
+    authGuard --> routerFe : true
+    routerFe -> roleGuard : canActivate (grown-up-only routes)
+    roleGuard -> sessionSvc : read role
+    alt grown-up-only route and role is reader
+      roleGuard --> routerFe : UrlTree /forbidden
+      routerFe -> pages : Render ForbiddenPage
+      pages --> person : "This part is for grown-ups" with Back to my shelf and Switch reader (L2-005)
+    else route admitted
+      roleGuard --> routerFe : true
+      routerFe -> pages : Render target page
+      pages -> api : Load data (session cookie)
+      alt 500 with requestId, unhandled by the page
+        api --> pages : 500 problem {requestId}
+        pages -> handler : handleError(ApiError)
+        handler -> routerFe : Navigate /error?requestId=...&from=...
+        routerFe -> pages : Render ServerErrorPage
+        pages --> person : "Something went wrong" with code, Try again, home link; no stack (L2-005)
+      else 200
+        api --> pages : Data
+        pages --> person : Page renders
+      end
+    end
+  end
+end
+@enduml

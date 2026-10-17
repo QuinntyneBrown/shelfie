@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Authorize an API request and isolate the household
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or grown-up" as person
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "ApiClient" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "sessionMiddleware" as mw
+  participant "*.router.ts\n+ requireRole(role)" as router
+  participant "problemDetailsHandler" as errors
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "*.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+person -> client : Action needing GET /api/books/:id (example)
+client -> mw : Request with shelfie_session cookie
+mw -> db : SELECT session JOIN profile WHERE session.id = ?
+db --> mw : row or none
+mw -> router : req.session {householdId, role} or none
+alt no session
+  router -> errors : 401 problem type "no-session" or "session-expired" (L2-005)
+  errors --> client : 401 problem
+  client --> person : Clear session; navigate to /sign-in
+else reader on a grown-up endpoint
+  router -> errors : 403 problem type "grown-ups-only" (L2-005)
+  errors --> client : 403 problem
+  client --> person : Navigate to /forbidden
+else role admitted
+  router -> service : getBook(householdId, id)
+  service -> db : SELECT book WHERE id = ? AND household_id = ? (L2-006)
+  db --> service : row or none
+  alt no row (missing or another household's id)
+    service -> errors : throw NotFoundError
+    errors --> client : 404 problem type "not-found"; no data from the other household (L2-006)
+    client --> person : Not found page
+  else unexpected failure
+    service -> errors : throw Error
+    errors -> errors : Log with requestId; body without stack
+    errors --> client : 500 problem {title "Something went wrong", requestId} (L2-005)
+    client --> person : Something went wrong page with code
+  else row found
+    service --> router : Book
+    router --> client : 200 {book}
+    client --> person : Page renders
+  end
+end
+@enduml

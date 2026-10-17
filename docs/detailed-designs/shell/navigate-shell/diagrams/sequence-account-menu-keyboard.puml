@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Operate the account menu with the keyboard
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or Grown-up" as user
+box "Frontend — Shelfie web (shelfie application)" #E0F2FE
+  participant "AppComponent" as app
+end box
+box "Frontend — Shelfie web (components library)" #E0F2FE
+  participant "sh-top-bar\n(avatar button)" as avatar
+  participant "sh-menu" as menu
+end box
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "SessionService" as session
+end box
+
+user -> avatar : Tab to avatar button (focus-visible outline — L2-026)
+user -> avatar : Press Enter, Space or ArrowDown
+avatar -> menu : openMenu(focusFirst = true)
+menu -> menu : Set aria-expanded="true" on trigger;\nfocus first menuitem
+menu --> user : Menu shown: profile line, items
+user -> menu : ArrowDown / ArrowUp
+menu -> menu : Move focus to next / previous menuitem (wraps)
+alt Escape pressed
+  user -> menu : Escape
+  menu -> menu : close(returnFocus = true)
+  menu -> avatar : focus()
+  menu --> user : Focus back on avatar (L2-026)
+else Enter on an item
+  user -> menu : Enter on "Sign out"
+  menu -> app : select("sign-out")
+  menu -> menu : close(returnFocus = false)
+  app -> session : Hand off to manage-session (L2-003)
+  app --> user : Sign-in page
+else Enter on "Settings" (grown-up only)
+  user -> menu : Enter on "Settings"
+  menu -> app : select("settings")
+  app -> app : router.navigate(['/settings'])
+  app --> user : Settings page in main
+end
+@enduml

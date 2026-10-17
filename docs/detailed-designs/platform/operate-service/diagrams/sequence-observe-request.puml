@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — A request is observed from health check to error page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as actor
+box "Frontend — Shelfie web (shell and core libraries)" #E0F2FE
+  participant "ReviewPage /\nserver-error page" as page
+  participant "ApiClient" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "requestContext\n(logger.ts)" as context
+  participant "health.router.ts /\nreview.router.ts" as router
+  participant "problemDetailsHandler" as problem
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "review.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+  participant "stdout log (pino)" as log
+end box
+
+== Health check ==
+actor -> context : GET /api/health (uptime monitor or curl)
+context -> context : requestId = SHF-XXXX; startedAt = now
+context -> router : next()
+router -> db : SELECT 1
+alt database reachable
+  db --> router : 1
+  router --> actor : 200 {status: "ok"} (L2-032)
+else statement throws or file missing
+  db --> router : error
+  router --> actor : 503 {status: "unavailable"} (L2-032)
+end
+context -> log : {requestId, method, route: "/api/health", status, durationMs} (L2-032)
+
+== Unhandled error on a page request ==
+actor -> page : Open Review
+page -> client : get('/api/review')
+client -> context : GET /api/review
+context -> context : requestId = SHF-4F2A; startedAt = now
+context -> router : next()
+router -> service : getReview(householdId)
+service -> db : SELECT ... (prepared statement)
+db --> service : throws unexpected error
+service --> router : error propagates
+router -> problem : next(err)
+problem -> log : logger.error({requestId: "SHF-4F2A", err with stack}) (L2-032)
+problem --> client : 500 Problem {title: "Something went wrong", requestId: "SHF-4F2A"}\nno detail, stack, SQL or path
+context -> log : {requestId: "SHF-4F2A", route: "/api/review", status: 500, durationMs}
+client --> page : ApiError{status: 500, problem}
+page --> actor : "Something went wrong on our side ...\nIf it keeps happening, mention code SHF-4F2A." (L2-032)
+@enduml

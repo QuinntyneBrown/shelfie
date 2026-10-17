@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Edit household settings
+
+Person(grownUp, "Grown-up", "Edits the reader and grown-up profiles in Settings")
+Person(reader, "Reader", "Sees her new name, colour and PIN at her next sign-in")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(grownUp, shelfie, "Changes names, avatar colour, PIN, e-mail and password", "HTTPS")
+Rel(reader, shelfie, "Signs in with the PIN the grown-up set", "HTTPS")
+@enduml

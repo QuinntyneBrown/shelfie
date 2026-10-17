@@ -1,0 +1,96 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Navigate the shell
+
+class AppComponent {
+  +session: Signal<Session | null>
+  +variant: Signal<'reader' | 'grown-up' | 'none'>
+  +links: NavLink[]
+  +menuItems: Signal<MenuItem[]>
+  +streak: Signal<number | null>
+  +queueCount: Signal<number | null>
+  +onMenuSelect(id: string): void
+}
+
+class SessionService {
+  +session: Signal<Session | null>
+}
+
+class Session {
+  +householdId: string
+  +profileId: string
+  +role: 'reader' | 'grown-up'
+  +name: string
+  +color: string
+}
+
+class NavLink {
+  +label: string
+  +route: string
+  +icon: 'review' | 'books' | 'settings'
+}
+
+class MenuItem {
+  +id: 'settings' | 'switch-reader' | 'sign-out'
+  +label: string
+}
+
+class "sh-top-bar" as TopBar {
+  +brand: string
+  +variant: 'reader' | 'grown-up'
+  +name: string
+  +color: string
+  +initials: string
+  +streak: number | null
+  +links: NavLink[]
+  +queueCount: number | null
+}
+
+class "sh-tab-bar" as TabBar {
+  +links: NavLink[]
+  +queueCount: number | null
+}
+
+class "sh-menu" as Menu {
+  +items: MenuItem[]
+  +open: Signal<boolean>
+  +select: EventEmitter<string>
+  +openMenu(focusFirst: boolean): void
+  +close(returnFocus: boolean): void
+  +onKeydown(event: KeyboardEvent): void
+}
+
+class "sh-streak-badge" as StreakBadge {
+  +days: number
+}
+
+class "sh-dialog" as Dialog {
+  +heading: string
+  +open: boolean
+  +closed: EventEmitter<void>
+  -previouslyFocused: HTMLElement | null
+  +show(): void
+  +close(): void
+}
+
+AppComponent ..> SessionService : reads
+SessionService --> Session : holds
+AppComponent *-- TopBar : renders
+AppComponent *-- TabBar : renders (grown-up, < 768 px)
+AppComponent --> "*" NavLink : passes
+AppComponent --> "*" MenuItem : passes
+TopBar *-- Menu : opens from avatar
+TopBar *-- StreakBadge : renders (reader)
+Menu --> "*" MenuItem : lists
+Menu ..> AppComponent : select(id)
+Dialog ..> AppComponent : hosted by pages in main
+@enduml

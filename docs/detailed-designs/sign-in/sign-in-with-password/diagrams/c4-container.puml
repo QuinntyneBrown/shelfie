@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Sign in with a password
+
+Person(grownUp, "Grown-up", "Signs in with e-mail and password")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Sign-in page with profile picker and password step")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Lists profiles by device cookie, verifies the password, creates the session, sets the device cookie")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "profile, session and device tables")
+}
+Rel(grownUp, web, "Picks his profile and enters the password", "HTTPS")
+Rel(web, api, "GET /api/auth/profiles, POST /api/auth/password", "JSON/HTTPS")
+Rel(api, db, "Reads profile and device, inserts session and device", "SQL")
+@enduml

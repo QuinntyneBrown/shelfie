@@ -1,0 +1,92 @@
+@startuml
+title UML sequence behaviour — Log a chapter
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+box "Frontend — Shelfie web (log-chapter library)" #E0F2FE
+  participant "LogChapterPage" as page
+  participant "DraftStore" as drafts
+  participant "ChaptersApi" as client
+  participant "ToastService" as toasts
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "chapters.router.ts\n+ validate(logChapterSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "chapters.service.ts" as service
+  participant "questions.service.ts" as questions
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+reader -> page : Open "Log Chapter N"
+page -> client : form(bookId, n)
+client -> router : GET /api/books/:id/chapters/:n/form
+router -> service : getForm(householdId, bookId, n)
+service -> db : SELECT book WHERE id = ? AND household_id = ?
+db --> service : book row (404 when absent)
+service -> questions : activeQuestionsForBook(bookId)
+questions --> service : DEFAULT_QUESTIONS + custom questions in order
+service --> router : ChapterForm
+router --> client : 200 {book, chapterNumber, questions}
+client --> page : ChapterForm
+page -> drafts : load("draft:chapter:{bookId}:{n}")
+drafts --> page : ChapterDraft or null (restore — L2-011)
+page --> reader : Show read date, questions, "I'm done!"
+reader -> page : Pick Today / Yesterday / Another day; type answers (max 2000, counter — L2-011)
+page -> drafts : save(key, {readOn, answers}) every few seconds
+reader -> page : Press "I'm done!"
+alt answers[0] blank
+  page --> reader : Inline error "Question 1 needs an answer"; focus question 1 (L2-011)
+else answers[0] present
+  page -> client : log(bookId, n, {readOn, answers})
+  client -> router : POST /api/books/:id/chapters/:n {readOn, answers}
+  router -> router : Validate body (readOn ISO date, text <= 2000, answers[0] non-blank)
+  router -> service : logChapter(householdId, bookId, n, request)
+  alt readOn later than today in household.time_zone
+    service --> router : FutureDate
+    router --> client : 400 problem errors[readOn]
+    client --> page : ApiError
+    page --> reader : Inline error on the date (L2-011)
+  else chapter already logged
+    service -> db : INSERT chapter_log (UNIQUE book_id, chapter_number)
+    db --> service : constraint violation
+    service --> router : ChapterAlreadyLogged
+    router --> client : 409 problem type "chapter-already-logged"
+    client --> page : ApiError
+    page --> reader : Show "already logged" error with "Back to the book" (L2-011)
+  else database or server failure
+    service --> router : Error
+    router --> client : 500 problem {requestId}
+    client --> page : ApiError
+    page --> reader : Error toast; answers stay in the form and the draft
+  else saved
+    service -> db : BEGIN; INSERT chapter_log (read_on, logged_at, undo_until = logged_at + toast lifetime)
+    service -> db : INSERT answer x N (position, question_text snapshot, text); COMMIT
+    db --> service : chapter_log id, logged count
+    service --> router : LogChapterResult {chapterLogId, undoUntil, chaptersLogged, chapterCount, bookFinished}
+    router --> client : 201 LogChapterResult
+    client --> page : LogChapterResult
+    page -> drafts : clear(key)
+    page -> toasts : success("Chapter N logged", action Undo, lifetime = undo window)
+    alt bookFinished
+      page --> reader : Finished state — hand over to celebrate-finished-book (L2-011, L2-019)
+    else more chapters
+      page --> reader : Success state "Chapter N done!" with progress and next moves (L2-011)
+    end
+  end
+end
+@enduml

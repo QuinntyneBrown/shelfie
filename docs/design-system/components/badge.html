@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Badge — Shelfie design system</title>
+<meta name="description" content="Badges label a status in a word or two, such as Reading, Reward to give or Reviewed, plus a red count badge for chapters waiting.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Status</p>
+      <h1>Badge</h1>
+      <p class="ds-lead">A small pill that labels a status in one or two words: "Reading", "Reward to give", "Reviewed". The count form shows how many chapters are waiting for Dad.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;span&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a badge to tag a row or heading with its status so Dad can scan a list or table. A badge is never clickable. If the reader can choose it, it is a <a href="chip.html">chip</a>; if it explains something, it is an <a href="alert.html">alert</a> or <a href="inline-message.html">inline message</a>; Nia's reading streak has its own <a href="streak.html">streak</a> pill.</p>
+      <ul>
+        <li><b>Neutral</b> (default): nothing needs doing yet. "Not started", or a plain count next to a heading.</li>
+        <li><b>Info</b>: in progress. "Reading".</li>
+        <li><b>Warning</b>: waiting on Dad. "Reward to give", "To review".</li>
+        <li><b>Success</b>: done. "Rewarded", "Reviewed".</li>
+        <li><b>Count</b>: how many things wait for Dad, in the nav and the tab bar.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <span class="badge badge--warning">Reward to give</span>
+          <span class="ds-callout" style="left: 30%; top: 24%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 52%; top: 24%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 70%; top: 70%;" aria-hidden="true">3</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Dot</b><small>8px circle in <code>currentColor</code>, drawn by <code>::before</code>. A second cue besides the tint; hidden on count badges.</small></div></li>
+          <li><div><b>Label</b><small><code>--text-overline</code>: small, uppercase, wide tracking.</small></div></li>
+          <li><div><b>Pill</b><small><code>--radius-full</code>, 24px tall (<code>--target-min</code>), 8px side padding, status tint.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Pick by what happens next, not by how important the row is. Shelfie has no danger badge: nothing in a list is ever an error.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <span class="badge">Not started</span>
+          <span class="badge badge--info">Reading</span>
+          <span class="badge badge--warning">Reward to give</span>
+          <span class="badge badge--warning">To review</span>
+          <span class="badge badge--success">Rewarded</span>
+          <span class="badge badge--success">Reviewed</span>
+        </div>
+        <div class="ds-example__caption"><span>Every status label the mocks use, from Books and Manage a book.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="badge"&gt;Not started&lt;/span&gt;
+&lt;span class="badge badge--info"&gt;Reading&lt;/span&gt;
+&lt;span class="badge badge--warning"&gt;Reward to give&lt;/span&gt;
+&lt;span class="badge badge--success"&gt;Rewarded&lt;/span&gt;</code></pre></details>
+      </div>
+      <h3>Count</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <a class="nav-link" href="../../mocks/pages/review/default.html" aria-current="page">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+          <span class="cluster"><b>Waiting for you</b><span class="badge badge--count" aria-label="14 waiting">14</span></span>
+          <span class="cluster"><b>Finished</b><span class="badge">2</span></span>
+        </div>
+        <div class="ds-example__caption"><span>Red count for things Dad should act on; a neutral badge for a plain tally ("Finished 2" on Nia's shelf).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;a class="nav-link" href="…" aria-current="page"&gt;Review
+  &lt;span class="badge badge--count" aria-label="2 chapters to review"&gt;2&lt;/span&gt;&lt;/a&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size: 24px tall. A count badge is at least 24px wide so a single digit makes a circle.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Badges are not interactive, so there is no hover, focus, active or disabled state. When the status changes the badge is replaced: "To review" becomes "Reviewed" once Dad sends feedback. When a count reaches zero the count badge is removed, not shown as "0".</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">On surface</th><th scope="col">On sunken</th><th scope="col">In a nav link</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Neutral</th><td><span class="badge">Not started</span></td><td><div style="background: var(--color-bg-surface-sunken); padding: var(--space-2);"><span class="badge">Not started</span></div></td><td><span class="nav-link">Finished <span class="badge">2</span></span></td></tr>
+          <tr><th scope="row">Info</th><td><span class="badge badge--info">Reading</span></td><td><div style="background: var(--color-bg-surface-sunken); padding: var(--space-2);"><span class="badge badge--info">Reading</span></div></td><td>Not used</td></tr>
+          <tr><th scope="row">Warning</th><td><span class="badge badge--warning">To review</span></td><td><div style="background: var(--color-bg-surface-sunken); padding: var(--space-2);"><span class="badge badge--warning">To review</span></div></td><td>Not used</td></tr>
+          <tr><th scope="row">Success</th><td><span class="badge badge--success">Reviewed</span></td><td><div style="background: var(--color-bg-surface-sunken); padding: var(--space-2);"><span class="badge badge--success">Reviewed</span></div></td><td>Not used</td></tr>
+          <tr><th scope="row">Count</th><td><span class="badge badge--count" aria-label="2 chapters to review">2</span></td><td><div style="background: var(--color-bg-surface-sunken); padding: var(--space-2);"><span class="badge badge--count" aria-label="14 waiting">14</span></div></td><td><a class="nav-link" href="../../mocks/pages/review/default.html" data-state="hover">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="cluster"><span class="badge">Not started</span><span class="badge badge--info">Reading</span><span class="badge badge--warning">Reward to give</span><span class="badge badge--success">Rewarded</span><span class="badge badge--count" aria-label="2 chapters to review">2</span></div></div>
+        <div data-theme="dark"><div class="cluster"><span class="badge">Not started</span><span class="badge badge--info">Reading</span><span class="badge badge--warning">Reward to give</span><span class="badge badge--success">Rewarded</span><span class="badge badge--count" aria-label="2 chapters to review">2</span></div></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Badges never wrap (<code>white-space: nowrap</code>) and never truncate; keep labels to two or three words.</li>
+        <li>In a list row the badge sits before the action and the title wraps first. At 360px a row with "Reward to give" and a Manage button still fits.</li>
+        <li>On the phone tab bar the count badge is pinned to the top right of the icon.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Each variant reads a status pair: <code>--color-{info,success,warning}-bg</code> for the tint and <code>--color-{status}-fg</code> for the label and dot. Neutral uses <code>--color-bg-subtle</code> and <code>--color-fg-muted</code>. Count uses <code>--color-danger-solid</code> with <code>--color-fg-on-danger</code>. In dark mode the tints darken and the labels lighten, keeping every pair above 4.5:1.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A plain <code>&lt;span&gt;</code> with text. No role: the status is read as part of the row. Where a count is updated without a page load, the number is announced by the page's polite live region, not by the badge.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Skips the badge; inside a nav link it is read as part of the link.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Never focusable on its own.</p>
+      <h3>Labelling</h3>
+      <p>The visible word is the label; colour and dot are extra cues (1.4.1). A count badge needs context, so it carries <code>aria-label</code> ("2 chapters to review"), and the nav link reads "Review, 2 chapters to review". The uppercase is CSS only; write the label in sentence case in the HTML so screen readers do not spell it out.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Neutral</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Info</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Warning</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Success</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Count</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-danger|--color-danger-solid" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Neutral</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Info</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Warning</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Success</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div><div class="ds-pair"><span>Count</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-danger|--color-danger-solid" data-min="4.5"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>None. A badge that changes value does not pulse or bounce.</p>
+      <h3>Touch</h3>
+      <p>Not a target. A badge inside a link or tab bar item adds to that target; it never needs its own.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>One to three words, written in sentence case ("Reward to give"); the style uppercases it.</li>
+        <li>Say the state, not an instruction: "To review", not "Review now".</li>
+        <li>Use the same word for the same state on every page: "Reviewed" in the table, never "Done" elsewhere.</li>
+        <li>Counts are numerals ("2", "14"), never words.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="badge badge--warning">Reward to give</span></div><figcaption>Name the status in words; the colour backs it up.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="badge badge--warning" aria-label="Reward to give">!</span></div><figcaption>A symbol or colour alone; sighted readers have to guess.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><a class="nav-link" href="../../mocks/pages/review/default.html">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a></div><figcaption>Give a count badge an <code>aria-label</code> that says what is counted.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><button class="badge badge--info" type="button">Reading</button></div><figcaption>A badge styled as a button; it has no hover, focus or target size. Use a chip or button.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Neutral background</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Neutral label</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Info background</td><td><code>--color-info-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-info-bg" data-swatch></i><span data-token="--color-info-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-info-bg" data-swatch></i><span data-token="--color-info-bg"></span></span></td></tr>
+          <tr><td>Info label</td><td><code>--color-info-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-info-fg" data-swatch></i><span data-token="--color-info-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-info-fg" data-swatch></i><span data-token="--color-info-fg"></span></span></td></tr>
+          <tr><td>Warning background</td><td><code>--color-warning-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td></tr>
+          <tr><td>Warning label</td><td><code>--color-warning-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td></tr>
+          <tr><td>Success background</td><td><code>--color-success-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td></tr>
+          <tr><td>Success label</td><td><code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr>
+          <tr><td>Count background</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
+          <tr><td>Count label</td><td><code>--color-fg-on-danger</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-danger" data-swatch></i><span data-token="--color-fg-on-danger"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-danger" data-swatch></i><span data-token="--color-fg-on-danger"></span></span></td></tr>
+          <tr><td>Height / min width</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
+          <tr><td>Side padding</td><td><code>--space-2</code> (count: <code>--space-1</code>)</td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-1"></span></td></tr>
+          <tr><td>Dot</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Label font</td><td><code>--text-overline</code>, <code>--letter-spacing-wide</code></td><td colspan="2"><span data-token="--text-overline"></span></td></tr>
+          <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;span class="badge badge--success"&gt;Reviewed&lt;/span&gt;
+&lt;span class="badge badge--count" aria-label="2 chapters to review"&gt;2&lt;/span&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.badge</code></td><td>Neutral pill with a dot.</td></tr>
+        <tr><td><code>.badge--info</code> <code>.badge--warning</code> <code>.badge--success</code></td><td>Status tint and label colour.</td></tr>
+        <tr><td><code>.badge--count</code></td><td>Solid red, no dot, tabular numerals, at least 24px wide.</td></tr>
+        <tr><td><code>aria-label</code></td><td>Required on <code>.badge--count</code>: what is being counted.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/books/default.html">pages/books/default</a> (neutral, info, warning and success badges)</li>
+        <li><a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a> ("To review" and "Reviewed" in the table)</li>
+        <li><a href="../../mocks/pages/review/long.html">pages/review/long</a> (count badge in a heading)</li>
+        <li><a href="../../mocks/pages/review/default.html">pages/review/default</a> (count badge in the nav link and tab bar)</li>
+        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (neutral tally next to "Finished")</li>
+      </ul>
+      <p>Drift fixed during extraction: D4, the badge was 22px tall with a 6px dot; it is now 24px (<code>--target-min</code>) with an 8px dot.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Notify with toasts and banners
+
+Person(user, "Reader or Grown-up", "Hovers, focuses, dismisses, presses the action")
+Container_Boundary(web, "Shelfie web") {
+  Component(page, "Feature page or dialog", "feature libraries", "Calls show() after an action completes or a condition begins")
+  Component(toastSvc, "ToastService", "core library", "Signal queue of toasts; 8 s timers; pause and resume")
+  Component(bannerSvc, "BannerService", "core library", "Signal queue of banners; show and clear")
+  Component(app, "AppComponent", "shelfie application", "Hosts the banner slot under the top bar and the toast stack at the bottom edge")
+  Component(stack, "sh-toast-stack", "components library", "role=status live region; newest at the edge; +N more above three")
+  Component(toast, "sh-toast", "components library", "Severity icon, title, message, action, Dismiss")
+  Component(banner, "sh-banner", "components library", "role=status, or role=alert for danger; pushes content down")
+}
+Rel(page, toastSvc, "show(options) / dismiss(id)")
+Rel(page, bannerSvc, "show(options) / clear(id)")
+Rel(app, stack, "Renders once")
+Rel(stack, toastSvc, "Reads toasts(); pause / resume / dismiss")
+Rel(stack, toast, "Renders one per toast")
+Rel(app, bannerSvc, "Reads banners()")
+Rel(app, banner, "Renders one per banner")
+Rel(user, toast, "Hover, focus, action, dismiss")
+Rel(user, banner, "Action, dismiss")
+@enduml

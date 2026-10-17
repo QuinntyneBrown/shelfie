@@ -1,0 +1,97 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Notify with toasts and banners
+
+enum Severity {
+  info
+  success
+  warning
+  danger
+}
+
+class ToastAction {
+  +label: string
+  +run(): void
+}
+
+class Toast {
+  +id: string
+  +severity: Severity
+  +title: string
+  +message: string | null
+  +action: ToastAction | null
+  +dismissible: boolean
+  +shownAt: number
+}
+
+class Banner {
+  +id: string
+  +severity: Severity
+  +title: string
+  +message: string | null
+  +action: ToastAction | null
+  +dismissible: boolean
+}
+
+class ToastService {
+  +toasts: Signal<Toast[]>
+  -timers: Map<string, number>
+  +show(options: ToastOptions): string
+  +dismiss(id: string): void
+  +pause(id: string): void
+  +resume(id: string): void
+}
+
+class BannerService {
+  +banners: Signal<Banner[]>
+  +show(options: BannerOptions): string
+  +clear(id: string): void
+}
+
+class "sh-toast-stack" as ToastStack {
+  +toasts: Signal<Toast[]>
+  +expanded: Signal<boolean>
+  +visible(): Toast[]
+  +collapsedCount(): number
+}
+
+class "sh-toast" as ToastView {
+  +toast: Toast
+  +dismiss: EventEmitter<void>
+  +action: EventEmitter<void>
+  +pause: EventEmitter<void>
+  +resume: EventEmitter<void>
+}
+
+class "sh-banner" as BannerView {
+  +banner: Banner
+  +dismiss: EventEmitter<void>
+  +action: EventEmitter<void>
+  +role(): 'status' | 'alert'
+}
+
+class AppComponent {
+  +banners: Signal<Banner[]>
+}
+
+ToastService --> "*" Toast : holds
+BannerService --> "*" Banner : holds
+Toast --> Severity : has
+Banner --> Severity : has
+Toast o-- ToastAction : optional
+Banner o-- ToastAction : optional
+ToastStack ..> ToastService : reads / pause / resume / dismiss
+ToastStack *-- "0..*" ToastView : renders
+AppComponent *-- ToastStack : renders once
+AppComponent ..> BannerService : reads banners()
+AppComponent *-- "0..*" BannerView : renders in banner slot
+@enduml

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empty and error states — Shelfie design system</title>
+<meta name="description" content="How Shelfie fills a space that has nothing in it yet, a space whose content failed to load, and a whole page that cannot be shown, with copy formulas for each.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern · Feedback</p>
+      <h1>Empty and error states</h1>
+      <p class="ds-lead">An empty state is an invitation; an error state is an apology with a way forward. Both keep the page around them, say one thing, and offer one main action.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Three situations, three compositions, all built from the <a href="../components/empty-state.html">empty state</a> and <a href="../components/error-page.html">error page</a> components:</p>
+      <ul>
+        <li><b>Empty</b>: the request worked and there is nothing yet. Nia's shelf before her first book, Dad's book list before anything is added, the review queue when he is caught up. Accent icon, an encouraging title, one primary action.</li>
+        <li><b>Error in place</b> (<code>.empty--error</code>): one region failed to load. It replaces only that region; the page header, breadcrumb and navigation stay. Danger icon, "[thing] didn’t load", "Try again" plus a way back.</li>
+        <li><b>Error page</b>: the whole route cannot be shown: not found, grown-ups only, server error, offline. A large sticker, the title as the page's <code>&lt;h1&gt;</code>, one way home. The shell stays so navigation still works.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Situation</th><th scope="col">Use</th><th scope="col">Not</th></tr></thead>
+        <tbody>
+          <tr><td>A list has no items yet</td><td>Empty state inside the list's place</td><td>An empty card or a table with no rows</td></tr>
+          <tr><td>Everything is done (no chapters to review)</td><td>Empty state with a "caught up" title</td><td>An error tone; nothing went wrong</td></tr>
+          <tr><td>A region's request failed</td><td><code>.empty.empty--error</code> in that region</td><td>A toast; the hole in the page needs explaining where it is</td></tr>
+          <tr><td>Sending a form failed</td><td>Inline danger alert in the form (see <a href="forms.html">forms</a>)</td><td>An error empty state; the form and its values must stay</td></tr>
+          <tr><td>The address does not exist</td><td>Not found page</td><td>Redirecting silently to the shelf</td></tr>
+          <tr><td>Nia opens a grown-up page</td><td>Grown-ups only page</td><td>Showing Dad's page with controls disabled</td></tr>
+          <tr><td>The server broke</td><td>Server error page with a reference code</td><td>Raw error text or a stack trace</td></tr>
+          <tr><td>No connection and nothing cached</td><td>Offline page under the offline banner</td><td>An endless skeleton</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>Icon or sticker, title, one sentence, actions. The text column is capped at 36 characters wide so it reads as one thought.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="page-header" style="width: 100%; margin: 0;"><div><h3 style="font: var(--text-h1);">Hi Nia 👋</h3><p class="subtitle">No books yet</p></div><a class="btn" href="../../mocks/pages/add-book/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a book</a></div>
+          <div class="empty" style="width: 100%;">
+            <div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg></div>
+            <h3 class="empty__title">Your shelf is empty</h3>
+            <p class="empty__text">Add the book you’re reading right now and you can log your first chapter today.</p>
+            <div class="empty__actions"><a class="btn btn--primary btn--lg" href="../../mocks/pages/add-book/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add my first book</a></div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/shelf/empty: the page header stays; the empty state takes the place of the hero and the lists.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="empty"&gt;
+  &lt;div class="empty__icon"&gt;&lt;svg class="icon icon--lg" aria-hidden="true"&gt;…&lt;/svg&gt;&lt;/div&gt;
+  &lt;h2 class="empty__title"&gt;Your shelf is empty&lt;/h2&gt;
+  &lt;p class="empty__text"&gt;Add the book you’re reading right now and you can log your first chapter today.&lt;/p&gt;
+  &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary btn--lg" href="/books/new"&gt;Add my first book&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <nav aria-label="Breadcrumb (example)" style="width: 100%;"><ol class="breadcrumb"><li><a href="../../mocks/pages/shelf/default.html">My shelf</a></li><li aria-current="page">The Lion, the Witch and the Wardrobe</li></ol></nav>
+          <div class="empty empty--error" style="width: 100%;">
+            <div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div>
+            <h3 class="empty__title">The chapters didn’t load</h3>
+            <p class="empty__text">We couldn’t fetch your chapters for this book. Your answers are safe on the server.</p>
+            <div class="empty__actions"><a class="btn btn--primary" href="#structure"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>Try again</a><a class="btn" href="../../mocks/pages/shelf/default.html">Back to my shelf</a></div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/book/error: error in place, with the breadcrumb still above it.</span></div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="empty" style="width: 100%;">
+            <span class="sticker sticker--xl" aria-hidden="true">🔍</span>
+            <h3 class="empty__title" style="font: var(--text-h2);">We can’t find that page</h3>
+            <p class="empty__text">The link might be old, or the book might have been removed.</p>
+            <div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/shelf/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>Back to my shelf</a></div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>pages/not-found/default. On the real page the title is the <code>&lt;h1&gt;</code>.</span></div>
+      </div>
+
+      <h3>Copy formulas</h3>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Empty</th><th scope="col">Error in place</th><th scope="col">Error page</th></tr></thead>
+        <tbody>
+          <tr><td>Title</td><td>The state, in the reader's words: "Your shelf is empty", "Nothing to review"</td><td>"[The thing] didn’t load": "Your shelf didn’t load", "The review queue didn’t load"</td><td>What happened, said kindly: "We can’t find that page", "This part is for grown-ups"</td></tr>
+          <tr><td>Sentence</td><td>What to do next and what it gets you: "…and you can log your first chapter today."</td><td>Cause in plain words, then what is safe: "Shelfie couldn’t reach the server. Your books and answers are safe; try again in a moment."</td><td>Likely reason, no blame: "The link might be old, or the book might have been removed."</td></tr>
+          <tr><td>Primary action</td><td>The verb that fills it: "Add my first book", "Add a book", "See her books"</td><td>"Try again"</td><td>The way home: "Back to my shelf", "Go to Review"</td></tr>
+          <tr><td>Second action</td><td>None</td><td>The way back up: "Back to the book", "Back to my shelf"</td><td>Only when it helps: "Switch reader"</td></tr>
+          <tr><td>Extra</td><td>–</td><td>–</td><td>Server error adds a reference code: "mention code <code>SHF-4F2A</code>"</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Every empty and error state in the mocks, with the copy it uses.</p>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Mock</th><th scope="col">Kind</th><th scope="col">Title</th><th scope="col">Actions</th></tr></thead>
+        <tbody>
+          <tr><td><a href="../../mocks/pages/shelf/empty.html">shelf/empty</a></td><td>Empty</td><td>Your shelf is empty</td><td>Add my first book</td></tr>
+          <tr><td><a href="../../mocks/pages/books/empty.html">books/empty</a></td><td>Empty</td><td>No books on Nia’s shelf</td><td>Add a book</td></tr>
+          <tr><td><a href="../../mocks/pages/review/empty.html">review/empty</a></td><td>Empty (caught up)</td><td>Nothing to review</td><td>See her books</td></tr>
+          <tr><td><a href="../../mocks/pages/shelf/error.html">shelf/error</a></td><td>Error in place</td><td>Your shelf didn’t load</td><td>Try again</td></tr>
+          <tr><td><a href="../../mocks/pages/books/error.html">books/error</a></td><td>Error in place</td><td>The books didn’t load</td><td>Try again</td></tr>
+          <tr><td><a href="../../mocks/pages/book/error.html">book/error</a></td><td>Error in place</td><td>The chapters didn’t load</td><td>Try again · Back to my shelf</td></tr>
+          <tr><td><a href="../../mocks/pages/chapter/error.html">chapter/error</a></td><td>Error in place</td><td>Your answers didn’t load</td><td>Try again · Back to the book</td></tr>
+          <tr><td><a href="../../mocks/pages/log-chapter/error.html">log-chapter/error</a></td><td>Error in place</td><td>The questions didn’t load</td><td>Try again · Back to the book</td></tr>
+          <tr><td><a href="../../mocks/pages/review/error.html">review/error</a></td><td>Error in place</td><td>The review queue didn’t load</td><td>Try again</td></tr>
+          <tr><td><a href="../../mocks/pages/settings/error.html">settings/error</a></td><td>Error in place</td><td>Settings didn’t load</td><td>Try again</td></tr>
+          <tr><td><a href="../../mocks/pages/not-found/default.html">not-found</a></td><td>Error page</td><td>We can’t find that page</td><td>Back to my shelf</td></tr>
+          <tr><td><a href="../../mocks/pages/forbidden/default.html">forbidden</a></td><td>Error page</td><td>This part is for grown-ups</td><td>Back to my shelf · Switch reader</td></tr>
+          <tr><td><a href="../../mocks/pages/server-error/default.html">server-error</a></td><td>Error page</td><td>Something went wrong on our side</td><td>Try again · Go to Review</td></tr>
+          <tr><td><a href="../../mocks/pages/offline/default.html">offline</a></td><td>Error page + banner</td><td>You’re offline</td><td>Try again</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="stack">
+          <div class="empty" style="padding: var(--space-6);"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div><p class="empty__title">Nothing to review</p><p class="empty__text">New chapters show up here the moment she finishes them.</p></div>
+          <div class="empty empty--error" style="padding: var(--space-6);"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><p class="empty__title">The books didn’t load</p><div class="empty__actions"><button class="btn btn--primary" type="button">Try again</button></div></div>
+        </div></div>
+        <div data-theme="dark"><div class="stack">
+          <div class="empty" style="padding: var(--space-6);"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div><p class="empty__title">Nothing to review</p><p class="empty__text">New chapters show up here the moment she finishes them.</p></div>
+          <div class="empty empty--error" style="padding: var(--space-6);"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><p class="empty__title">The books didn’t load</p><div class="empty__actions"><button class="btn btn--primary" type="button">Try again</button></div></div>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The block is centred with its text capped at 36 characters, so it looks the same on a phone and in the middle of a wide desktop page.</li>
+        <li>Actions wrap and stay centred; on a 360px phone two actions stack.</li>
+        <li>Error pages keep the shell: Nia's top bar on reader routes, Dad's top bar and bottom tab bar on grown-up routes. The offline page also keeps the offline banner under the top bar.</li>
+        <li>Error pages add top space (<code>--space-16</code>) so the sticker sits in the upper third of the screen rather than under the top bar.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Plain content: a heading, a paragraph and links or buttons. In-place states use an <code>&lt;h2&gt;</code> under the page's <code>&lt;h1&gt;</code>; error pages make the title the <code>&lt;h1&gt;</code> and update the document title to match. Icons and stickers are <code>aria-hidden</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Reaches the primary action, then the second action.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows the action. "Try again" re-requests the region without a page reload and returns to the skeleton.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>When a region fails after the page has loaded, focus stays where it was. After "Try again" focus stays on the region's container until the content or the error returns. Error pages start at the top like any page; the skip link leads to the title.</p>
+      <h3>Labelling</h3>
+      <p>Action labels make sense alone: "Back to my shelf", not "Go back". The reference code is real text, so it can be read out and copied.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Empty text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Empty icon on accent tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error icon on danger tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None. Empty and error states appear without animation, so a failure never looks like a celebration.</p>
+      <h3>Touch</h3>
+      <p>Actions are full buttons (44px, or 52px for Nia's "Add my first book") with 12px between them.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li><b>Never blame the reader.</b> "Nothing you did caused this and nothing was lost."</li>
+        <li><b>Say what is safe</b> whenever data could seem lost: "Your answers are safe on the server."</li>
+        <li><b>Name Shelfie, not "the system"</b>: "Shelfie couldn’t reach the server."</li>
+        <li><b>Speak to whoever is reading.</b> Nia's error: "Your shelf didn’t load". Dad's: "The books didn’t load". Forbidden speaks to Nia about Dad: "Ask him to sign in if he needs them."</li>
+        <li><b>No error codes for Nia</b>; only the grown-up server error page shows a reference code.</li>
+        <li>See <a href="content-and-tone.html">content and tone</a> for the two voices.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="empty" style="padding: var(--space-4);"><p class="empty__title">Nothing to review</p><p class="empty__text">You’ve read everything Nia has logged.</p></div></div><figcaption>Treat "all done" as good news, in the neutral empty style.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="empty empty--error" style="padding: var(--space-4);"><div class="empty__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><p class="empty__title">No chapters found</p></div></div><figcaption>Use the error style for an empty queue. Nothing failed.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="empty empty--error" style="padding: var(--space-4);"><p class="empty__title">Your shelf didn’t load</p><div class="empty__actions"><button class="btn btn--primary" type="button">Try again</button></div></div></div><figcaption>Replace only the failed region and offer "Try again".</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="empty" style="padding: var(--space-4);"><p class="empty__title">Your shelf is empty</p></div></div><figcaption>Show the empty state while data is still loading or after a failure; Nia would think her books were gone.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from the fourteen mocks listed under <a href="#states">States</a>, chiefly <a href="../../mocks/pages/shelf/empty.html">pages/shelf/empty</a>, <a href="../../mocks/pages/books/empty.html">pages/books/empty</a>, <a href="../../mocks/pages/book/error.html">pages/book/error</a> and <a href="../../mocks/pages/server-error/default.html">pages/server-error/default</a>.</p>
+      <p>Drift fixed during extraction:</p>
+      <ul>
+        <li><b>D13</b>: icon, avatar and sticker sizes were raw values. <code>.empty__icon</code> is <code>--size-avatar-xl</code>; error-page stickers use <code>.sticker--xl</code>, one and a half times that.</li>
+        <li>Error pages in the mocks set the title size and top padding inline (<code>font: var(--text-h2)</code>, <code>padding-top: var(--space-16)</code>). Both are token values and are kept as the documented error-page layout; see <a href="../components/error-page.html">error page</a>.</li>
+      </ul>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

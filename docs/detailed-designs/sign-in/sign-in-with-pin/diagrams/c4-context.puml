@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign in with a PIN
+
+Person(reader, "Reader", "Child who logs chapters; signs in with a 4-digit PIN")
+Person(grownUp, "Grown-up", "Sets the reader's PIN in Settings")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Signs in with a PIN and opens her shelf", "HTTPS")
+Rel(grownUp, shelfie, "Sets the PIN", "HTTPS")
+@enduml

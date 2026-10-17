@@ -1,0 +1,33 @@
+# Estimate — Operate the service
+
+## Basis
+
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, tests, and review fixes, and include the one-off workspace and pipeline setup that the mocks' budget table counts as "Platform setup". They exclude the requirements and this design. The security middleware is costed in the sibling `harden-api` feature; the `server-error` page that shows the request id is costed in the shell's `navigate-shell` feature, and `DraftStore` in `log-chapter`. The nightly scheduler marked `<TO SUPPLY>` is assumed to be a single cron entry on a host that already has cron; the backup retention is assumed to be 30 days; the Lighthouse total-blocking-time threshold marked `<TO SUPPLY>` is assumed to be Lighthouse's default. [Detailed design](../../detailed-designs/platform/operate-service/README.md).
+
+## Full design
+
+| Work item | Hours |
+|-----------|------:|
+| Angular workspace `apps/web`: `shelfie` application, `core`, `components` and six feature libraries, lazy `loadChildren` routes, ESLint and Prettier, `angular.json` bundle budgets | 4 |
+| `apps/api` scaffold: Express 5 and TypeScript build, `db.ts` with pragmas (WAL, synchronous=NORMAL, foreign_keys, busy_timeout) and migration runner, vitest and supertest harness with a temporary database | 3 |
+| `logger.ts`: `pino`, `requestContext` with `SHF-XXXX` id, `X-Request-Id`, one request line on finish; unhandled-error logging in `problemDetailsHandler`; `ApiClient` carries `problem.requestId` | 2 |
+| `health.router.ts`: `GET /api/health` with 200 and 503 | 1 |
+| `backup.ts`: `BackupJob` with `VACUUM INTO`, integrity check, pruning; cron entry; `docs/runbook.md` restore steps | 2 |
+| Index migrations, `seed-perf.ts` (100 books of 80 chapters) and p95 read test | 2 |
+| `e2e/` Playwright setup: Chromium-only config, web and API start-up, base page object and fixtures | 2 |
+| `.github/workflows/ci.yml`: lint, unit, api, build, e2e and lighthouse jobs; `lighthouserc.json` with LCP and script-weight assertions | 4 |
+| API tests: health 200 and 503, request line fields, 500 body carries request id and no stack, restart test for a committed chapter | 2 |
+| **Total** | **22** |
+
+## Minimal scope
+
+The workspace, API scaffold with WAL, health endpoint, request logging with the request id, the cron-driven `VACUUM INTO` backup with a short restore note, and a pipeline running lint, unit, API and Playwright jobs. This still satisfies `L2-031` and `L2-032` in full and `L2-030` criterion 3 through the `angular.json` budget alone. It defers the Lighthouse CI job (criteria 1 and 4 of `L2-030` are unchecked) and the perf seed and p95 test (criterion 2 is unchecked); the indexes remain. Total: 17 hours.
+
+## Partial descoping
+
+| Descope | What is lost | Hours saved |
+|---------|--------------|------------:|
+| Drop the Lighthouse CI job; keep the `angular.json` bundle budget | LCP and input-response budgets are not checked automatically | 2 |
+| Drop `seed-perf.ts` and the p95 test; keep the indexes | Read latency with 100 books of 80 chapters is unmeasured | 1 |
+| Drop integrity check and pruning from `BackupJob`; copy only | A corrupt copy is not detected; old copies accumulate | 1 |
+| Drop the restart test; rely on WAL configuration | Durability of a committed chapter is unverified | 1 |

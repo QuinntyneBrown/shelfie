@@ -1,0 +1,100 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Reset a forgotten password
+
+class ForgotPasswordPage {
+  +email: FormControl<string>
+  +state: Signal<'idle' | 'invalid' | 'submitting' | 'success' | 'error'>
+  +submit(): Promise<void>
+  +sendAgain(): Promise<void>
+}
+
+class ResetPasswordPage {
+  +token: string
+  +emailForDisplay: string | null
+  +password: FormControl<string>
+  +confirm: FormControl<string>
+  +state: Signal<'idle' | 'invalid' | 'submitting' | 'success' | 'error'>
+  +fieldErrors: Signal<Record<string, string>>
+  +submit(): Promise<void>
+}
+
+class AuthApi {
+  +forgotPassword(email: string): Promise<void>
+  +resetPassword(token: string, password: string): Promise<Session>
+}
+
+class ForgotPasswordRequest {
+  +email: string
+}
+
+class ResetPasswordRequest {
+  +token: string
+  +password: string
+  +confirm: string
+}
+
+class PasswordReset {
+  +tokenHash: string
+  +profileId: string
+  +expiresAt: Date
+  +usedAt: Date | null
+}
+
+class Profile {
+  +id: string
+  +householdId: string
+  +email: string | null
+  +passwordHash: string | null
+}
+
+class Session {
+  +id: string
+  +profileId: string
+  +createdAt: Date
+  +expiresAt: Date
+}
+
+class AuthService {
+  +requestPasswordReset(email: string): void
+  +resetPassword(token: string, password: string, deviceId: string | null): SignInResult
+  -hashToken(token: string): string
+}
+
+class MailTransport {
+  +sendMail(to: string, subject: string, text: string): Promise<void>
+}
+
+class AuthRepo {
+  +findGrownUpByEmail(email: string): Profile | undefined
+  +createPasswordReset(tokenHash: string, profileId: string, expiresAt: Date): void
+  +findPasswordResetByHash(tokenHash: string): PasswordReset | undefined
+  +markPasswordResetUsed(tokenHash: string, usedAt: Date): void
+  +updatePasswordHash(profileId: string, passwordHash: string): void
+  +deleteSessionsForProfile(profileId: string): number
+  +createSession(profileId: string, expiresAt: Date): Session
+}
+
+ForgotPasswordPage ..> AuthApi : calls
+ResetPasswordPage ..> AuthApi : calls
+AuthApi ..> ForgotPasswordRequest : sends
+AuthApi ..> ResetPasswordRequest : sends
+AuthService ..> ForgotPasswordRequest : receives
+AuthService ..> ResetPasswordRequest : receives
+AuthService --> AuthRepo : uses
+AuthService --> MailTransport : sends link through
+AuthRepo --> PasswordReset : creates / consumes
+AuthRepo --> Profile : reads / updates
+AuthRepo --> Session : deletes / creates
+Profile "1" --> "*" PasswordReset : owns
+Profile "1" --> "*" Session : owns
+@enduml

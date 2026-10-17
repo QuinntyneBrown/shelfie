@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View chapter answers
+
+Person(reader, "Reader", "Opens a logged chapter from the book page")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ChapterPage: read-only answers, pending or reviewed state")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Serves the chapter with answers and review; records feedback as seen")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "chapter_log, answer and book tables")
+}
+Rel(reader, web, "Opens the chapter page", "HTTPS")
+Rel(web, api, "GET /api/chapter-logs/:id, POST /api/chapter-logs/:id/seen", "JSON/HTTPS")
+Rel(api, db, "Reads the log, answers and review; sets feedback_seen_at", "SQL")
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Harden the API
+
+Person(reader, "Reader", "Signs in with a PIN")
+Person(grownUp, "Grown-up", "Signs in with e-mail and password")
+System_Ext(proxy, "Reverse proxy", "TLS termination (<TO SUPPLY>)")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Renders stored text through escaping interpolation; ApiClient sends X-Requested-With: Shelfie with credentials")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "helmet headers, 16 kB JSON limit, sessionMiddleware, csrfGuard, validate(), rate limit, problemDetailsHandler")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "session table; argon2id hashes in profile; ON DELETE CASCADE from book")
+}
+Rel(reader, proxy, "Uses", "HTTPS")
+Rel(grownUp, proxy, "Uses", "HTTPS")
+Rel(proxy, web, "Serves static files", "HTTP")
+Rel(proxy, api, "Forwards /api", "HTTP")
+Rel(web, api, "Calls with cookie shelfie_session and X-Requested-With: Shelfie", "JSON/HTTPS")
+Rel(api, db, "Prepared statements only", "SQL")
+@enduml

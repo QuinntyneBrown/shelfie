@@ -1,0 +1,143 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Log a chapter
+
+class LogChapterPage {
+  +form: Signal<ChapterForm | null>
+  +state: Signal<'loading' | 'default' | 'error' | 'invalid' | 'submitting' | 'success' | 'finished'>
+  +readOn: Signal<string>
+  +answers: Signal<string[]>
+  +result: Signal<LogChapterResult | null>
+  +load(): Promise<void>
+  +saveDraft(): void
+  +submit(): Promise<void>
+  +undo(): Promise<void>
+}
+
+class "sh-segmented" as Segmented {
+  +options: SegmentOption[]
+  +value: string
+  +change: EventEmitter<string>
+}
+
+class "sh-question-field" as QuestionField {
+  +position: number
+  +question: string
+  +required: boolean
+  +error: string | null
+  +maxLength: number = 2000
+  +valueChange: EventEmitter<string>
+}
+
+class "sh-textarea" as Textarea {
+  +maxLength: number
+  +value: string
+  +counter: boolean
+}
+
+class DraftStore {
+  +save(key: string, draft: ChapterDraft): void
+  +load(key: string): ChapterDraft | null
+  +clear(key: string): void
+}
+
+class ChapterDraft {
+  +readOn: string
+  +answers: string[]
+  +savedAt: string
+}
+
+class ChaptersApi {
+  +form(bookId: string, n: number): Promise<ChapterForm>
+  +log(bookId: string, n: number, request: LogChapterRequest): Promise<LogChapterResult>
+  +undo(chapterLogId: string): Promise<void>
+}
+
+class ChapterForm {
+  +book: BookSummary
+  +chapterNumber: number
+  +questions: FormQuestion[]
+}
+
+class FormQuestion {
+  +position: number
+  +text: string
+  +required: boolean
+}
+
+class LogChapterRequest {
+  +readOn: string
+  +answers: AnswerInput[]
+}
+
+class LogChapterResult {
+  +chapterLogId: string
+  +undoUntil: string
+  +chaptersLogged: number
+  +chapterCount: number
+  +bookFinished: boolean
+}
+
+class ChaptersService {
+  +getForm(householdId: string, bookId: string, n: number): ChapterForm
+  +logChapter(householdId: string, bookId: string, n: number, request: LogChapterRequest): LogChapterResult
+  +undoLog(householdId: string, chapterLogId: string): void
+}
+
+class QuestionsService {
+  +DEFAULT_QUESTIONS: string[]
+  +activeQuestionsForBook(bookId: string): Question[]
+}
+
+class ChaptersRepo {
+  +findBookInHousehold(householdId: string, bookId: string): Book | undefined
+  +countLogs(bookId: string): number
+  +insertLogWithAnswers(log: ChapterLog, answers: Answer[]): ChapterLog
+  +findLog(id: string): ChapterLog | undefined
+  +deleteLog(id: string): void
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: Date
+  +undoUntil: Date
+  +reviewedAt: Date | null
+  +feedbackSeenAt: Date | null
+}
+
+class Answer {
+  +id: string
+  +chapterLogId: string
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+LogChapterPage *-- Segmented : renders
+LogChapterPage *-- "1..*" QuestionField : renders
+QuestionField *-- Textarea : wraps
+LogChapterPage ..> DraftStore : saves / restores
+DraftStore ..> ChapterDraft : stores
+LogChapterPage ..> ChaptersApi : calls
+ChaptersApi ..> ChapterForm : returns
+ChaptersApi ..> LogChapterRequest : sends
+ChaptersApi ..> LogChapterResult : returns
+ChapterForm *-- "1..*" FormQuestion
+ChaptersService ..> LogChapterRequest : receives
+ChaptersService --> QuestionsService : reads questions
+ChaptersService --> ChaptersRepo : uses
+ChaptersRepo --> ChapterLog : inserts / deletes
+ChapterLog "1" *-- "*" Answer : snapshots
+@enduml

@@ -1,0 +1,68 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Celebrate a finished book
+
+class LogChapterPage {
+  +result: Signal<LogChapterResult | null>
+  +state: Signal<'success' | 'finished' | ...>
+  +submit(): Promise<void>
+}
+
+class BookPage {
+  +book: Signal<BookDetail | null>
+  +finished: Signal<boolean>
+}
+
+class "sh-celebration" as Celebration {
+  +variant: 'chapter' | 'book'
+  +durationMs: number = 2500
+  +reducedMotion: boolean
+  -pieces: ConfettiPiece[]
+}
+
+class LogChapterResult {
+  +chapterLogId: string
+  +chaptersLogged: number
+  +chapterCount: number
+  +bookFinished: boolean
+}
+
+class ChaptersService {
+  +logChapter(householdId: string, bookId: string, n: number, request: LogChapterRequest): LogChapterResult
+  +undoLog(householdId: string, chapterLogId: string): void
+}
+
+class ChaptersRepo {
+  +countLogs(bookId: string): number
+  +setFinishedAt(bookId: string, at: Date | null): void
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +chapterCount: number
+  +finishedAt: Date | null
+}
+
+class ReviewService {
+  +finishedUnrewarded(householdId: string): Book[]
+}
+
+LogChapterPage *-- Celebration : renders when bookFinished
+BookPage *-- Celebration : renders static finished hero
+LogChapterPage ..> LogChapterResult : reads bookFinished
+ChaptersService ..> LogChapterResult : returns
+ChaptersService --> ChaptersRepo : uses
+ChaptersRepo --> Book : sets finishedAt
+ReviewService --> Book : reads finishedAt
+@enduml

@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swatch picker — Shelfie design system</title>
+<meta name="description" content="Round colour swatches and a sticker grid for making a book cover or picking a reader colour. Native radio groups in both themes.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Swatch picker</h1>
+      <p class="ds-lead">A row of colour dots or a grid of stickers where exactly one is picked. Nia uses it to make a cover for a new book; Dad uses it to pick her colour in Settings.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;input type="radio"&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a swatch picker when the choice is visual and small: one colour out of seven, one sticker out of a dozen. Each option is a real radio button, so the group behaves like any other radio group. Use a <a href="radio-group.html">radio group</a> when the options are words, and the <a href="sticker-picker.html">sticker picker</a> when Dad picks a reward sticker for a chapter.</p>
+      <ul>
+        <li><b>Colour swatches</b> (<code>.swatches</code>) pick a cover colour on Add a book and the reader's colour in Settings. The colour comes from the <code>--cover</code> custom property on each <code>.swatch</code>.</li>
+        <li><b>Sticker grid</b> (<code>.emoji-grid</code>) picks the sticker that sits on the cover. Same <code>.swatch</code> labels, laid out as square tiles.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="swatches" role="radiogroup" aria-label="Cover colour (anatomy)">
+            <label class="swatch" style="--cover: var(--color-cover-sage);"><input type="radio" name="sp-anatomy" value="sage"><span class="visually-hidden">Sage</span></label>
+            <label class="swatch" style="--cover: var(--color-cover-sun);"><input type="radio" name="sp-anatomy" value="sun" checked><span class="visually-hidden">Sun</span></label>
+            <label class="swatch" style="--cover: var(--color-cover-sky);"><input type="radio" name="sp-anatomy" value="sky"><span class="visually-hidden">Sky</span></label>
+          </div>
+          <span class="ds-callout" style="left: 18%; top: 18%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 47%; top: 18%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 52%; top: 70%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 76%; top: 70%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Group</b><small><code>.swatches</code> (or <code>.emoji-grid</code>) with <code>role="radiogroup"</code>, named by the field label through <code>aria-labelledby</code>.</small></div></li>
+          <li><div><b>Swatch</b><small><code>label.swatch</code>, a 44px round target. It sets <code>--cover</code> to one of the seven <code>--color-cover-*</code> tokens.</small></div></li>
+          <li><div><b>Checked mark</b><small>A ✓ drawn in <code>--color-fg-on-cover</code>, plus a <code>--color-fg-default</code> ring inside a surface-coloured gap.</small></div></li>
+          <li><div><b>Hidden name</b><small><code>.visually-hidden</code> text ("Sun") so the colour has a name, not just a hue.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Colour swatches</h3>
+      <p>All seven cover colours on Add a book. Settings uses the same component with five of them for Nia's colour.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="field"><span class="field__label" id="sp-var-colour-label">Colour</span><div class="swatches" role="radiogroup" aria-labelledby="sp-var-colour-label"><label class="swatch" style="--cover: var(--color-cover-sage);"><input type="radio" name="sp-var-colour" value="sage"><span class="visually-hidden">Sage</span></label><label class="swatch" style="--cover: var(--color-cover-rose);"><input type="radio" name="sp-var-colour" value="rose"><span class="visually-hidden">Rose</span></label><label class="swatch" style="--cover: var(--color-cover-sky);"><input type="radio" name="sp-var-colour" value="sky"><span class="visually-hidden">Sky</span></label><label class="swatch" style="--cover: var(--color-cover-sun);"><input type="radio" name="sp-var-colour" value="sun" checked><span class="visually-hidden">Sun</span></label><label class="swatch" style="--cover: var(--color-cover-lilac);"><input type="radio" name="sp-var-colour" value="lilac"><span class="visually-hidden">Lilac</span></label><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-var-colour" value="mint"><span class="visually-hidden">Mint</span></label><label class="swatch" style="--cover: var(--color-cover-peach);"><input type="radio" name="sp-var-colour" value="peach"><span class="visually-hidden">Peach</span></label></div></div>
+          <span class="cover cover--sun" aria-hidden="true">🐕</span>
+        </div>
+        <div class="ds-example__caption"><span>Because of Winn-Dixie gets a sun cover. The preview cover beside the picker updates as she picks.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field"&gt;
+  &lt;span class="field__label" id="cover-colour-label"&gt;Colour&lt;/span&gt;
+  &lt;div class="swatches" role="radiogroup" aria-labelledby="cover-colour-label"&gt;
+    &lt;label class="swatch" style="--cover: var(--color-cover-sage);"&gt;
+      &lt;input type="radio" name="cover" value="sage"&gt;&lt;span class="visually-hidden"&gt;Sage&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;label class="swatch" style="--cover: var(--color-cover-sun);"&gt;
+      &lt;input type="radio" name="cover" value="sun" checked&gt;&lt;span class="visually-hidden"&gt;Sun&lt;/span&gt;
+    &lt;/label&gt;
+    …
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+      <h3>Sticker grid</h3>
+      <p>The sticker that goes on the cover. Tiles fill the row (<code>auto-fill</code>, at least 48px each), so the grid reflows from four columns on a phone to twelve on a desktop.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="field"><span class="field__label" id="sp-var-sticker-label">Sticker</span><div class="emoji-grid" role="radiogroup" aria-labelledby="sp-var-sticker-label"><label class="swatch"><input type="radio" name="sp-var-sticker" value="🦁"><span aria-hidden="true">🦁</span><span class="visually-hidden">Lion</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🐕" checked><span aria-hidden="true">🐕</span><span class="visually-hidden">Dog</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="📚"><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🕷️"><span aria-hidden="true">🕷️</span><span class="visually-hidden">Spider</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🐰"><span aria-hidden="true">🐰</span><span class="visually-hidden">Rabbit</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🧙"><span aria-hidden="true">🧙</span><span class="visually-hidden">Wizard</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🚀"><span aria-hidden="true">🚀</span><span class="visually-hidden">Rocket</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🐉"><span aria-hidden="true">🐉</span><span class="visually-hidden">Dragon</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🌳"><span aria-hidden="true">🌳</span><span class="visually-hidden">Tree</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🐘"><span aria-hidden="true">🐘</span><span class="visually-hidden">Elephant</span></label><label class="swatch"><input type="radio" name="sp-var-sticker" value="🍫"><span aria-hidden="true">🍫</span><span class="visually-hidden">Chocolate</span></label></div></div>
+        </div>
+        <div class="ds-example__caption"><span>The emoji is <code>aria-hidden</code>; the hidden word ("Dog") is the name.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="emoji-grid" role="radiogroup" aria-labelledby="sticker-label"&gt;
+  &lt;label class="swatch"&gt;
+    &lt;input type="radio" name="sticker" value="🐕" checked&gt;
+    &lt;span aria-hidden="true"&gt;🐕&lt;/span&gt;&lt;span class="visually-hidden"&gt;Dog&lt;/span&gt;
+  &lt;/label&gt;
+  …
+&lt;/div&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size each. A colour swatch is a 44px circle (<code>--target-comfortable</code>) with 8px between dots (<code>--space-2</code>). A sticker tile is square, at least 48px (<code>--space-12</code>) and grows to share the row; the emoji is <code>--font-size-2xl</code>.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="swatches" role="radiogroup" aria-label="Size reference, colour"><label class="swatch" style="--cover: var(--color-cover-rose);"><input type="radio" name="sp-size-colour" value="rose" checked><span class="visually-hidden">Rose</span></label></div>
+          <div class="emoji-grid" role="radiogroup" aria-label="Size reference, sticker" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-size-sticker" value="📚" checked><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label></div>
+        </div>
+        <div class="ds-example__caption"><span>Swatch: <code>--target-comfortable</code> (44px). Tile: min <code>--space-12</code> (48px).</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> on the input; real pages get them from <code>:hover</code>, <code>:focus-visible</code>, <code>:checked</code> and <code>:disabled</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Checked</th><th scope="col">Disabled</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Colour</th>
+            <td><span class="swatches"><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-st-c1" value="mint"><span class="visually-hidden">Mint, default</span></label></span></td>
+            <td><span class="swatches"><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-st-c2" value="mint" data-state="hover"><span class="visually-hidden">Mint, hover</span></label></span></td>
+            <td><span class="swatches"><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-st-c3" value="mint" data-state="focus"><span class="visually-hidden">Mint, focus</span></label></span></td>
+            <td><span class="swatches"><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-st-c4" value="mint" checked><span class="visually-hidden">Mint, checked</span></label></span></td>
+            <td><span class="swatches"><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-st-c5" value="mint" checked disabled><span class="visually-hidden">Mint, disabled</span></label></span></td></tr>
+          <tr><th scope="row">Sticker</th>
+            <td><span class="emoji-grid" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-st-s1" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot, default</span></label></span></td>
+            <td><span class="emoji-grid" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-st-s2" value="🤖" data-state="hover"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot, hover</span></label></span></td>
+            <td><span class="emoji-grid" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-st-s3" value="🤖" data-state="focus"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot, focus</span></label></span></td>
+            <td><span class="emoji-grid" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-st-s4" value="🤖" checked><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot, checked</span></label></span></td>
+            <td><span class="emoji-grid" style="width: var(--space-12);"><label class="swatch"><input type="radio" name="sp-st-s5" value="🤖" checked disabled><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot, disabled</span></label></span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;">
+          <div class="swatches" role="radiogroup" aria-label="Colour, light theme"><label class="swatch" style="--cover: var(--color-cover-sage);"><input type="radio" name="sp-th-l" value="sage"><span class="visually-hidden">Sage</span></label><label class="swatch" style="--cover: var(--color-cover-rose);"><input type="radio" name="sp-th-l" value="rose" checked><span class="visually-hidden">Rose</span></label><label class="swatch" style="--cover: var(--color-cover-sky);"><input type="radio" name="sp-th-l" value="sky"><span class="visually-hidden">Sky</span></label><label class="swatch" style="--cover: var(--color-cover-sun);"><input type="radio" name="sp-th-l" value="sun"><span class="visually-hidden">Sun</span></label><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-th-l" value="mint"><span class="visually-hidden">Mint</span></label></div>
+          <div class="emoji-grid" role="radiogroup" aria-label="Sticker, light theme"><label class="swatch"><input type="radio" name="sp-th-ls" value="🦁" checked><span aria-hidden="true">🦁</span><span class="visually-hidden">Lion</span></label><label class="swatch"><input type="radio" name="sp-th-ls" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot</span></label><label class="swatch"><input type="radio" name="sp-th-ls" value="🐕"><span aria-hidden="true">🐕</span><span class="visually-hidden">Dog</span></label><label class="swatch"><input type="radio" name="sp-th-ls" value="📚"><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;">
+          <div class="swatches" role="radiogroup" aria-label="Colour, dark theme"><label class="swatch" style="--cover: var(--color-cover-sage);"><input type="radio" name="sp-th-d" value="sage"><span class="visually-hidden">Sage</span></label><label class="swatch" style="--cover: var(--color-cover-rose);"><input type="radio" name="sp-th-d" value="rose" checked><span class="visually-hidden">Rose</span></label><label class="swatch" style="--cover: var(--color-cover-sky);"><input type="radio" name="sp-th-d" value="sky"><span class="visually-hidden">Sky</span></label><label class="swatch" style="--cover: var(--color-cover-sun);"><input type="radio" name="sp-th-d" value="sun"><span class="visually-hidden">Sun</span></label><label class="swatch" style="--cover: var(--color-cover-mint);"><input type="radio" name="sp-th-d" value="mint"><span class="visually-hidden">Mint</span></label></div>
+          <div class="emoji-grid" role="radiogroup" aria-label="Sticker, dark theme"><label class="swatch"><input type="radio" name="sp-th-ds" value="🦁" checked><span aria-hidden="true">🦁</span><span class="visually-hidden">Lion</span></label><label class="swatch"><input type="radio" name="sp-th-ds" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot</span></label><label class="swatch"><input type="radio" name="sp-th-ds" value="🐕"><span aria-hidden="true">🐕</span><span class="visually-hidden">Dog</span></label><label class="swatch"><input type="radio" name="sp-th-ds" value="📚"><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label></div>
+        </div></div>
+      </div>
+      <ul>
+        <li><b>Checked</b> draws a ✓ and a dark ring with a surface-coloured gap, so the pick is shown by shape as well as colour. In the sticker grid the tile tints to <code>--color-accent-subtle</code> with an accent border.</li>
+        <li><b>Disabled</b> is used while the form is saving (Add a book, submitting): every input gets <code>disabled</code> and the pick stays visible.</li>
+        <li><b>Invalid</b> does not apply: both pickers always have a default pick (the mocks pre-check sun and the dog for Because of Winn-Dixie, rose for Nia), so the group can never be empty.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Colour swatches wrap onto a second row when the field is narrower than seven dots (about 360px with gaps); they never shrink below 44px.</li>
+        <li>The sticker grid uses <code>repeat(auto-fill, minmax(--space-12, 1fr))</code>: four or five tiles a row on a 360px phone, twelve on a desktop card. Tiles stay square (<code>aspect-ratio: 1</code>).</li>
+        <li>On Add a book the picker sits in the form column; the cover preview moves below it until 1024px, then sits beside it in a <code>.span-4</code> column (see <a href="layout.html">layout primitives</a>).</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Each swatch reads one component token, <code>--cover</code>, set to a semantic <code>--color-cover-*</code> token. The cover palette is shared with <a href="cover.html">book covers</a> and <a href="avatar.html">avatars</a>, so the colour Nia picks is the colour she sees on her shelf. In the dark theme the cover colours deepen and <code>--color-fg-on-cover</code> stays dark-on-pastel or flips with them, keeping the ✓ above 4.5:1.</p>
+      <pre><code>/* A new cover colour is one token plus one swatch; the component CSS does not change. */
+&lt;label class="swatch" style="--cover: var(--color-cover-peach);"&gt;…&lt;/label&gt;</code></pre>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Native radio buttons inside an element with <code>role="radiogroup"</code>, following the WAI-ARIA APG <a href="https://www.w3.org/WAI/ARIA/apg/patterns/radio/">Radio Group</a> pattern. The browser supplies the roving focus and arrow-key behaviour because every option shares one <code>name</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus into the group (to the checked option) and out of it. The group is one tab stop.</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>↓</kbd> / <kbd>←</kbd> <kbd>↑</kbd></td><td>Moves to and checks the next or previous option, wrapping at the ends. The cover preview updates.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Checks the focused option if it is not already checked.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>The shared ring (<code>--focus-ring-width</code> <code>--color-focus-ring</code>, <code>--focus-ring-offset</code>) draws around the circle or tile on <code>:focus-visible</code>. It sits outside the checked ring, so focus and checked never look the same.</p>
+      <h3>Labelling</h3>
+      <p>The group is named by the visible field label ("Colour", "Sticker") through <code>aria-labelledby</code>. Each option has a <code>.visually-hidden</code> name: the colour word ("Sage") or the sticker word ("Dog"). The emoji itself is <code>aria-hidden="true"</code> so screen readers do not read "dog face" in one place and "Dog" in another.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Check mark on sun cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Check mark on sage cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Sticker tile border on surface</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Checked tile border on its tint</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-accent-subtle" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+      </div>
+      <p>Pastel cover fills are decorative and are not required to reach 3:1 against the card; the checked ring (<code>--color-fg-default</code>) and the ✓ carry the state.</p>
+      <h3>Motion</h3>
+      <p>Only the border colour transitions, over <code>--duration-fast</code>. Reduced motion zeroes the duration in the tokens.</p>
+      <h3>Touch</h3>
+      <p>Swatches are 44×44px with 8px gaps; sticker tiles are at least 48×48px. Both clear the 24px minimum and the 44px comfortable target. The whole label is the hit area.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>The field label is one plain noun: "Colour", "Sticker". The fieldset legend above them says what they make: "Make a cover".</li>
+        <li>Hidden names are one everyday word a 9-year-old would use: "Sun", "Lilac", "Dog", "Dragon". No codes, no hex values.</li>
+        <li>Keep the sticker set to about a dozen so the grid fits two rows on a phone.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="swatches" role="radiogroup" aria-label="Do example"><label class="swatch" style="--cover: var(--color-cover-lilac);"><input type="radio" name="sp-do1" value="lilac" checked><span class="visually-hidden">Lilac</span></label><label class="swatch" style="--cover: var(--color-cover-peach);"><input type="radio" name="sp-do1" value="peach"><span class="visually-hidden">Peach</span></label></div></div><figcaption>Give every swatch a hidden colour word, so a screen reader says "Lilac, radio button, checked".</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="cover cover--sm cover--lilac" aria-hidden="true"></span><span class="cover cover--sm cover--peach" aria-hidden="true"></span></div><figcaption>Clickable colour tiles with no input and no name: not focusable, not announced, and the pick is lost on submit.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><code>&lt;label class="swatch" style="--cover: var(--color-cover-sun);"&gt;</code></div><figcaption>Set the colour once, through <code>--cover</code> with a cover token.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;label class="swatch cover--sun" style="--cover: …"&gt;</code></div><figcaption>The Add a book mock set the colour twice (a <code>.cover--*</code> class and the inline token). One source only; <code>.cover--*</code> belongs to book covers.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Sage swatch</td><td><code>--color-cover-sage</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sage" data-swatch></i><span data-token="--color-cover-sage"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sage" data-swatch></i><span data-token="--color-cover-sage"></span></span></td></tr>
+          <tr><td>Rose swatch</td><td><code>--color-cover-rose</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-rose" data-swatch></i><span data-token="--color-cover-rose"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-rose" data-swatch></i><span data-token="--color-cover-rose"></span></span></td></tr>
+          <tr><td>Sky swatch</td><td><code>--color-cover-sky</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sky" data-swatch></i><span data-token="--color-cover-sky"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sky" data-swatch></i><span data-token="--color-cover-sky"></span></span></td></tr>
+          <tr><td>Sun swatch</td><td><code>--color-cover-sun</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td></tr>
+          <tr><td>Lilac swatch</td><td><code>--color-cover-lilac</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-lilac" data-swatch></i><span data-token="--color-cover-lilac"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-lilac" data-swatch></i><span data-token="--color-cover-lilac"></span></span></td></tr>
+          <tr><td>Mint swatch</td><td><code>--color-cover-mint</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-mint" data-swatch></i><span data-token="--color-cover-mint"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-mint" data-swatch></i><span data-token="--color-cover-mint"></span></span></td></tr>
+          <tr><td>Peach swatch</td><td><code>--color-cover-peach</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-peach" data-swatch></i><span data-token="--color-cover-peach"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-peach" data-swatch></i><span data-token="--color-cover-peach"></span></span></td></tr>
+          <tr><td>Check mark</td><td><code>--color-fg-on-cover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-cover" data-swatch></i><span data-token="--color-fg-on-cover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-cover" data-swatch></i><span data-token="--color-fg-on-cover"></span></span></td></tr>
+          <tr><td>Checked ring</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Hover ring, tile border</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
+          <tr><td>Checked tile background / border</td><td><code>--color-accent-subtle</code> / <code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Swatch size</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>Tile minimum / gap</td><td><code>--space-12</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-12"></span> / <span data-token="--space-2"></span></td></tr>
+          <tr><td>Ring width</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
+          <tr><td>Tile radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Transition</td><td><code>--duration-fast</code>, <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> <span data-token="--ease-standard"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;fieldset class="card stack"&gt;
+  &lt;legend&gt;Make a cover&lt;/legend&gt;
+  &lt;div class="field"&gt;
+    &lt;span class="field__label" id="cover-colour-label"&gt;Colour&lt;/span&gt;
+    &lt;div class="swatches" role="radiogroup" aria-labelledby="cover-colour-label"&gt;
+      &lt;label class="swatch" style="--cover: var(--color-cover-sun);"&gt;
+        &lt;input type="radio" name="cover" value="sun" checked&gt;&lt;span class="visually-hidden"&gt;Sun&lt;/span&gt;
+      &lt;/label&gt; …
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="field"&gt;
+    &lt;span class="field__label" id="sticker-label"&gt;Sticker&lt;/span&gt;
+    &lt;div class="emoji-grid" role="radiogroup" aria-labelledby="sticker-label"&gt;
+      &lt;label class="swatch"&gt;&lt;input type="radio" name="sticker" value="🐕" checked&gt;&lt;span aria-hidden="true"&gt;🐕&lt;/span&gt;&lt;span class="visually-hidden"&gt;Dog&lt;/span&gt;&lt;/label&gt; …
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/fieldset&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.swatches</code></td><td>Wrapping row of round colour swatches, 8px apart.</td></tr>
+        <tr><td><code>.emoji-grid</code></td><td>Auto-fill grid that turns each <code>.swatch</code> into a square sticker tile.</td></tr>
+        <tr><td><code>.swatch</code></td><td>The label: 44px target. Wraps one radio and its hidden name.</td></tr>
+        <tr><td><code>--cover</code></td><td>Fill colour of a colour swatch; always a <code>--color-cover-*</code> token.</td></tr>
+        <tr><td><code>role="radiogroup"</code> + <code>aria-labelledby</code></td><td>Names the group with the field label.</td></tr>
+        <tr><td><code>checked</code> / <code>disabled</code></td><td>Native radio states.</td></tr>
+        <tr><td><code>data-state="hover|focus|checked"</code></td><td>Documentation only: forces a state on the input in static pages.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/add-book/default.html">pages/add-book/default</a> (cover colour and sticker grid, cover preview)</li>
+        <li><a href="../../mocks/pages/add-book/submitting.html">pages/add-book/submitting</a> (every option disabled while saving)</li>
+        <li><a href="../../mocks/pages/add-book/invalid.html">pages/add-book/invalid</a> and <a href="../../mocks/pages/add-book/error.html">error</a> (picker keeps its pick when other fields fail)</li>
+        <li><a href="../../mocks/pages/settings/default.html">pages/settings/default</a> (Nia's colour, five swatches)</li>
+      </ul>
+      <p>Drift fixed during extraction:</p>
+      <ul>
+        <li><b>D5</b>: Add a book placed the form and preview with <code>style="grid-column: span 8"</code> and a <code>max-width: 63.99rem</code> <code>!important</code> patch; now <code>.span-8</code> and <code>.span-4</code>, mobile first.</li>
+        <li><b>D12</b>: the 2px swatch rings and 1px tile borders were raw values; now <code>--border-width-thick</code> and <code>--border-width-hairline</code>.</li>
+        <li>Colour set twice on Add a book (<code>.cover--*</code> class plus inline <code>--cover</code>); the system documents the inline token only (see Do and don't).</li>
+      </ul>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

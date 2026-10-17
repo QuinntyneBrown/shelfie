@@ -1,0 +1,132 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View a book
+
+class BookPage {
+  +state: Signal<'loading' | 'ready' | 'error'>
+  +book: Signal<BookResponse | null>
+  +nextChapter: Signal<number | null>
+  +load(): Promise<void>
+  +retry(): void
+}
+
+class "sh-chapter-row" as ChapterRow {
+  +chapter: ChapterSummary
+  +variant: 'logged' | 'next' | 'future'
+  +open: EventEmitter<number>
+}
+
+class "sh-cover" as Cover {
+  +color: CoverColor
+  +sticker: Sticker
+  +size: 'sm' | 'md' | 'lg'
+}
+
+class "sh-progress" as Progress {
+  +value: number
+  +max: number
+  +label: string
+}
+
+class ShelfApi {
+  +book(id: string): Promise<BookResponse>
+}
+
+class BookResponse {
+  +id: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: CoverColor
+  +sticker: Sticker
+  +loggedCount: number
+  +finishedAt: string | null
+  +reward: RewardSummary | null
+  +questions: CustomQuestion[]
+  +chapters: ChapterSummary[]
+}
+
+class ChapterSummary {
+  +number: number
+  +state: 'logged' | 'next' | 'future'
+  +log: ChapterLogSummary | null
+}
+
+class ChapterLogSummary {
+  +id: string
+  +readOn: string
+  +loggedAt: string
+  +firstLine: string
+  +review: 'waiting' | 'reviewed'
+  +sticker: string | null
+}
+
+class RewardSummary {
+  +text: string
+  +givenAt: string
+}
+
+class BooksService {
+  +getBook(householdId: string, bookId: string): BookResponse
+}
+
+class BooksRepo {
+  +findBook(householdId: string, bookId: string): Book | undefined
+  +listChapterLogsWithFirstAnswer(bookId: string): ChapterLogRow[]
+  +findReward(bookId: string): Reward | undefined
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: string
+  +sticker: string
+  +finishedAt: Date | null
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+  +readOn: Date
+  +loggedAt: Date
+  +reviewedAt: Date | null
+  +sticker: string | null
+}
+
+class Answer {
+  +id: string
+  +chapterLogId: string
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+BookPage *-- ChapterRow : renders 1..N
+BookPage *-- Cover : header
+BookPage *-- Progress : header
+BookPage ..> ShelfApi : calls
+ShelfApi ..> BookResponse : returns
+BookResponse "1" --> "*" ChapterSummary : chapters
+ChapterSummary --> "0..1" ChapterLogSummary : log
+BookResponse --> "0..1" RewardSummary : reward
+BooksService ..> BookResponse : composes
+BooksService --> BooksRepo : uses
+BooksRepo --> Book : reads
+BooksRepo --> ChapterLog : reads
+BooksRepo --> Answer : reads position 1
+Book "1" --> "*" ChapterLog : has
+ChapterLog "1" --> "*" Answer : has
+@enduml

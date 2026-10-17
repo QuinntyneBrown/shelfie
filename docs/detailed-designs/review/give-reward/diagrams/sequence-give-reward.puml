@@ -1,0 +1,80 @@
+@startuml
+title UML sequence behaviour — Give a reward
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (review library)" #E0F2FE
+  participant "ReviewPage" as page
+  participant "GiveRewardDialog\n(sh-dialog)" as dialog
+  participant "ReviewApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "rewards.router.ts\n+ requireRole('grown_up')\n+ validate(giveRewardSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "rewards.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : Press "Give a reward" on a finished book
+page -> dialog : open(book)
+dialog --> grownUp : Bottom sheet under 640 px; focus in the reward field;\nfour quick picks and free text (L2-017)
+alt cancel
+  grownUp -> dialog : Escape, Not now or Close
+  dialog -> page : closed
+  page --> grownUp : Focus returns to "Give a reward"
+else submit
+  grownUp -> dialog : Tap a quick pick or type up to 100 chars; optional note
+  grownUp -> dialog : Press "Give the reward"
+  alt reward text empty
+    dialog --> grownUp : Inline error "Tell Nia what the reward is."; nothing sent (L2-017)
+  else text present
+    dialog -> dialog : Busy state; disable controls
+    dialog -> client : giveReward(bookId, {text, note})
+    client -> router : POST /api/books/:id/reward
+    router -> router : Check role; validate text 1..100
+    router -> service : giveReward(householdId, bookId, text, note, now)
+    service -> db : SELECT book WHERE id = ? AND household_id = ?
+    db --> service : book or none
+    alt book missing or other household
+      service --> router : NotFound
+      router --> client : 404 problem
+    else finished_at is NULL
+      service --> router : BookNotFinished
+      router --> client : 400 problem type "book-not-finished"
+    else reward already exists
+      service -> db : SELECT reward WHERE book_id = ?
+      db --> service : existing row
+      service --> router : RewardExists
+      router --> client : 409 problem type "reward-exists" (L2-017)
+    else finished and unrewarded
+      service -> db : INSERT reward (book_id UNIQUE, text, note, given_at)
+      db --> service : reward row (constraint violation → 409)
+      service --> router : Reward
+      router --> client : 201 Reward
+    end
+    alt failure response
+      client --> dialog : ApiError
+      dialog --> grownUp : "The reward wasn't saved"; text and note kept (L2-017)
+    else 201
+      client --> dialog : Reward
+      dialog -> page : given(reward); close
+      page --> grownUp : Finished card removed; success toast;\nreward appears on shelf, book and Manage book (L2-017)
+    end
+  end
+end
+@enduml

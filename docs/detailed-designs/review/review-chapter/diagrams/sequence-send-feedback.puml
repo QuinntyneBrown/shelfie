@@ -1,0 +1,85 @@
+@startuml
+title UML sequence behaviour — Send feedback
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (review library)" #E0F2FE
+  participant "ReviewChapterPage" as page
+  participant "sh-sticker-picker" as picker
+  participant "ReviewApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "review.router.ts\n+ requireRole('grown_up')\n+ validate(feedbackSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "review.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : Open a queued chapter
+page -> client : chapterLog(id)
+client -> router : GET /api/chapter-logs/:id (reading-log endpoint)
+router --> client : 200 ChapterLogDetail
+client --> page : ChapterLogDetail
+alt feedback already present
+  page --> grownUp : Reviewed state: sticker, note, sent and seen times, read-only (L2-015)
+else pending
+  page --> grownUp : Answers, six stickers, note field, Send to Nia (L2-015)
+  grownUp -> picker : Pick a sticker (optional note up to 300 chars)
+  picker -> page : value
+  grownUp -> page : Press Send to Nia
+  alt no sticker chosen
+    page -> picker : error "Pick one so Nia knows you read it."
+    page --> grownUp : Invalid state; nothing sent (L2-015)
+  else sticker chosen
+    page -> page : Submitting state; disable controls
+    page -> client : sendFeedback(id, {sticker, note})
+    client -> router : POST /api/chapter-logs/:id/feedback
+    router -> router : Check role; validate sticker enum, note max 300
+    router -> service : sendFeedback(householdId, id, sticker, note, now)
+    service -> db : SELECT chapter_log JOIN book WHERE id = ? AND household_id = ?
+    db --> service : row or none
+    alt row missing or other household
+      service --> router : NotFound
+      router --> client : 404 problem
+      client --> page : ApiError
+      page --> grownUp : Error state with Back to Review
+    else reviewed_at already set
+      service --> router : AlreadyReviewed
+      router --> client : 409 problem type "already-reviewed"
+      client --> page : ApiError
+      page -> page : Reload; show reviewed state read-only (L2-015)
+    else pending
+      service -> db : UPDATE chapter_log SET reviewed_at = ?, sticker = ?, note = ?\nWHERE id = ? AND reviewed_at IS NULL
+      db --> service : 1 row changed (0 rows → 409)
+      service -> db : SELECT newest pending chapter_log; COUNT pending
+      db --> service : next item, count
+      service --> router : FeedbackResult {chapterLog, next, queueCount}
+      alt server failure
+        router --> client : 500 problem {requestId}
+        client --> page : ApiError
+        page --> grownUp : Error shown; sticker and note kept
+      else saved
+        router --> client : 200 FeedbackResult
+        client -> client : queueCount.set(result.queueCount)
+        client --> page : FeedbackResult
+        page --> grownUp : "Sent to Nia"; Review Chapter N (next) or Back to Review (L2-015)
+      end
+    end
+  end
+end
+@enduml

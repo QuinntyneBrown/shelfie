@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Add a book
+
+Container(web, "Shelfie web", "Angular", "AddBookPage with sh-color-picker, sh-sticker-picker, sh-cover preview; ShelfApi.addBook")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "books.router.ts", "Express Router", "POST /api/books; requires a session of either role")
+  Component(validate, "validate(createBookSchema)", "Middleware (zod)", "Title 1-120, author up to 120, chapterCount 1-200, colour and sticker names; 400 with errors[]")
+  Component(service, "books.service.ts", "Service", "createBook: sets added_by_profile_id from the session")
+  Component(repo, "books.repo.ts", "Repository", "insertBook")
+  ComponentDb(db, "Shelfie database", "SQLite", "book")
+}
+Rel(web, router, "POST /api/books", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "createBook(householdId, profileId, body)")
+Rel(service, repo, "insertBook")
+Rel(repo, db, "Inserts", "SQL")
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Work offline
+
+Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "chapters.router.ts: POST /api/books/:id/chapters/:n")
+Container_Boundary(web, "Shelfie web") {
+  Component(sw, "Angular service worker", "@angular/service-worker, ngsw-config.json", "Prefetches the app shell; freshness cache of GET /api/shelf")
+  Component(queue, "OfflineQueue", "core library", "online signal from navigator.onLine and online/offline events; pending signal; enqueue; replay")
+  Component(apiClient, "ApiClient", "core library", "fetch wrapper; maps no-response to ApiError status 0")
+  Component(bannerSvc, "BannerService", "core library (notify)", "Persistent offline banner")
+  Component(toastSvc, "ToastService", "core library (notify)", "Offline warning; per-chapter success; Back online")
+  Component(logPage, "LogChapterPage", "log-chapter library", "Enqueues instead of posting when offline")
+  Component(bookPage, "BookPage", "shelf library", "Marks pending chapters will send")
+  Component(offlinePage, "OfflinePage", "shelfie application", "Shown when an uncached page is opened offline")
+  ComponentDb(idb, "pending-chapter-logs", "IndexedDB object store", "PendingChapterLog records in id order")
+}
+Rel(sw, api, "GET /api/shelf (network first, cache on failure)", "HTTPS")
+Rel(logPage, queue, "enqueue(log) when online() is false or status 0")
+Rel(bookPage, queue, "isPending(bookId, n)")
+Rel(queue, idb, "add / getAll / delete", "IndexedDB")
+Rel(queue, bannerSvc, "show / clear offline banner")
+Rel(queue, toastSvc, "show per-chapter and Back online toasts")
+Rel(queue, apiClient, "post chapters in order on replay")
+Rel(apiClient, api, "POST /api/books/:id/chapters/:n", "JSON/HTTPS")
+Rel(offlinePage, queue, "Reads online()")
+@enduml

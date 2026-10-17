@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Reset a forgotten password
+
+Person(grownUp, "Grown-up", "Forgot his password; requests a reset link and chooses a new password")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(mail, "E-mail provider", "Delivers the reset link")
+
+Rel(grownUp, shelfie, "Requests a reset link and sets a new password", "HTTPS")
+Rel(shelfie, mail, "Sends the reset link", "SMTP")
+Rel(mail, grownUp, "Delivers the e-mail")
+@enduml

@@ -1,0 +1,91 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View chapter answers
+
+class ChapterPage {
+  +chapter: Signal<ChapterView | null>
+  +state: Signal<'loading' | 'pending' | 'reviewed' | 'error'>
+  +load(): Promise<void>
+  +retry(): Promise<void>
+}
+
+class ChaptersApi {
+  +chapter(chapterLogId: string): Promise<ChapterView>
+  +markSeen(chapterLogId: string): Promise<void>
+}
+
+class ChapterView {
+  +id: string
+  +book: BookSummary
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: string
+  +answers: AnswerView[]
+  +review: ReviewView | null
+  +feedbackSeenAt: string | null
+  +nextChapterLogId: string | null
+}
+
+class AnswerView {
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+class ReviewView {
+  +sticker: string
+  +note: string | null
+  +reviewedAt: string
+}
+
+class ChaptersService {
+  +getChapter(householdId: string, chapterLogId: string): ChapterView
+  +markFeedbackSeen(householdId: string, chapterLogId: string): void
+}
+
+class ChaptersRepo {
+  +findLogInHousehold(householdId: string, id: string): ChapterLog | undefined
+  +findAnswers(chapterLogId: string): Answer[]
+  +findNextLog(bookId: string, chapterNumber: number): string | null
+  +setFeedbackSeen(id: string, at: Date): void
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+  +readOn: string
+  +loggedAt: Date
+  +reviewedAt: Date | null
+  +sticker: string | null
+  +note: string | null
+  +feedbackSeenAt: Date | null
+}
+
+class Answer {
+  +id: string
+  +chapterLogId: string
+  +position: number
+  +questionText: string
+  +text: string
+}
+
+ChapterPage ..> ChaptersApi : calls
+ChaptersApi ..> ChapterView : returns
+ChapterView *-- "1..*" AnswerView
+ChapterView o-- "0..1" ReviewView
+ChaptersService ..> ChapterView : builds
+ChaptersService --> ChaptersRepo : uses
+ChaptersRepo --> ChapterLog : reads / updates
+ChaptersRepo --> Answer : reads
+ChapterLog "1" *-- "*" Answer
+@enduml

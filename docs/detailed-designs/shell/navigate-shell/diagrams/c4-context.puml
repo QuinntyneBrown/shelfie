@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Navigate the shell
+
+Person(reader, "Reader", "Sees brand, streak badge and avatar; one place to be")
+Person(grownUp, "Grown-up", "Moves between Review, Books and Settings")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Opens her shelf and the account menu", "HTTPS")
+Rel(grownUp, shelfie, "Navigates with top-bar links or the bottom tab bar", "HTTPS")
+@enduml

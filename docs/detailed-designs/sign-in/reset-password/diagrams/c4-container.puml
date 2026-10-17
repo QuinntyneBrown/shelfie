@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Reset a forgotten password
+
+Person(grownUp, "Grown-up", "Requests a reset link; opens it; chooses a new password")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Forgot password and Reset password pages")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Issues hashed single-use tokens, sends the link, replaces the password, ends all sessions")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "password_reset, profile, session and device tables")
+}
+System_Ext(mail, "E-mail provider", "SMTP")
+Rel(grownUp, web, "Enters e-mail; later enters the new password twice", "HTTPS")
+Rel(web, api, "POST /api/auth/forgot-password, POST /api/auth/reset-password", "JSON/HTTPS")
+Rel(api, db, "Writes token hash, updates password_hash, deletes and inserts sessions", "SQL")
+Rel(api, mail, "Sends the reset link", "SMTP")
+@enduml

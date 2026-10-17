@@ -1,0 +1,135 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage and remove a book
+
+class BooksPage {
+  +state: Signal<'loading' | 'ready' | 'empty' | 'error'>
+  +books: Signal<BookListItem[]>
+  +load(): Promise<void>
+  +statusOf(book: BookListItem): BookStatus
+}
+
+class ManageBookPage {
+  +book: Signal<BookResponse | null>
+  +form: FormGroup<UpdateBookForm>
+  +state: Signal<'loading' | 'ready' | 'error' | 'invalid' | 'submitting' | 'success'>
+  +save(): Promise<void>
+  +openRemove(trigger: HTMLElement): void
+}
+
+class DeleteBookDialog {
+  +book: BookResponse
+  +state: Signal<'idle' | 'busy' | 'failed'>
+  +confirm(): Promise<void>
+  +cancel(): void
+}
+
+class "sh-dialog" as Dialog {
+  +open: boolean
+  +initialFocus: HTMLElement
+  +closed: EventEmitter<void>
+}
+
+class BooksApi {
+  +list(): Promise<BookListItem[]>
+  +get(id: string): Promise<BookResponse>
+  +update(id: string, patch: UpdateBookRequest): Promise<BookResponse>
+  +remove(id: string): Promise<void>
+}
+
+class BookListItem {
+  +id: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: CoverColor
+  +sticker: Sticker
+  +loggedCount: number
+  +finishedAt: string | null
+  +reward: RewardSummary | null
+}
+
+enum BookStatus {
+  reading
+  not_started
+  reward_to_give
+  rewarded
+}
+
+class UpdateBookRequest {
+  +title?: string
+  +author?: string | null
+  +chapterCount?: number
+}
+
+class BooksService {
+  +listBooks(householdId: string): BookListItem[]
+  +updateBook(householdId: string, bookId: string, patch: UpdateBookRequest): BookResponse
+  +deleteBook(householdId: string, bookId: string): void
+}
+
+class BooksRepo {
+  +listBooksWithProgress(householdId: string): BookListItem[]
+  +findBook(householdId: string, bookId: string): Book | undefined
+  +countChapterLogs(bookId: string): number
+  +updateBook(bookId: string, patch: UpdateBookRequest): void
+  +deleteBookCascade(bookId: string): void
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: string
+  +sticker: string
+  +finishedAt: Date | null
+}
+
+class ChapterLog {
+  +id: string
+  +bookId: string
+  +chapterNumber: number
+}
+
+class Answer {
+  +id: string
+  +chapterLogId: string
+}
+
+class Question {
+  +id: string
+  +bookId: string
+}
+
+class Reward {
+  +id: string
+  +bookId: string
+}
+
+BooksPage ..> BooksApi : list
+BooksPage --> BookStatus : derives
+ManageBookPage ..> BooksApi : get, update
+ManageBookPage ..> DeleteBookDialog : opens
+DeleteBookDialog *-- Dialog : built on
+DeleteBookDialog ..> BooksApi : remove
+BooksApi ..> BookListItem : returns
+BooksApi ..> UpdateBookRequest : sends
+BooksService ..> UpdateBookRequest : receives
+BooksService --> BooksRepo : uses
+BooksRepo --> Book : reads / updates / deletes
+Book "1" *-- "*" ChapterLog : cascades
+ChapterLog "1" *-- "*" Answer : cascades
+Book "1" *-- "*" Question : cascades
+Book "1" *-- "0..1" Reward : cascades
+@enduml

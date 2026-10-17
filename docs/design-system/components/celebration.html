@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Celebration — Shelfie design system</title>
+<meta name="description" content="The confetti card shown when Nia logs a chapter or finishes a book, and when Dad sends feedback. Variants, confetti, reduced motion, both themes and accessibility.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Celebration</h1>
+      <p class="ds-lead">The moment that makes reading feel like a win: a big sticker, a cheer, how far she has come, and a little confetti. It replaces the form after Nia sends a chapter, and gets bigger when she finishes a book.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Respects reduced motion</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a celebration as the success state of the two big moments in Shelfie, and nowhere else, so it stays special.</p>
+      <ul>
+        <li><b>Chapter logged</b> (Nia): 🎉, "Chapter 12 done!", progress, confetti.</li>
+        <li><b>Book finished</b> (Nia): the book's cover, 🏆, "You finished the whole book!", more confetti, on a warm <code>.card--warning</code> tint.</li>
+        <li><b>Feedback sent</b> (Dad): the sticker he gave, "Sent to Nia", and the next chapter to review. No confetti; it is a quiet confirmation.</li>
+      </ul>
+      <p>For small successes (saved settings, a toast after Undo) use a <a href="toast.html">toast</a> or a success <a href="alert.html">alert</a>. The finished-book card on the book page is a <a href="card.html">card</a> with <code>.card--warning</code>, not a celebration.</p>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="celebrate card" style="width: 100%;">
+            <div class="confetti" aria-hidden="true"><span style="--x: 8%; --d: 0s; --c: var(--color-cover-rose);"></span><span style="--x: 20%; --d: 0.6s; --c: var(--color-cover-sun);"></span><span style="--x: 33%; --d: 1.1s; --c: var(--color-cover-sky);"></span><span style="--x: 47%; --d: 0.2s; --c: var(--color-cover-mint);"></span><span style="--x: 58%; --d: 0.9s; --c: var(--color-cover-lilac);"></span><span style="--x: 70%; --d: 1.4s; --c: var(--color-cover-peach);"></span><span style="--x: 83%; --d: 0.4s; --c: var(--color-cover-sage);"></span><span style="--x: 93%; --d: 1.0s; --c: var(--color-cover-rose);"></span></div>
+            <span class="sticker sticker--xl" aria-hidden="true">🎉</span>
+            <h2>Chapter 12 done!</h2>
+            <p class="text-muted">That’s 12 of 17. Only 5 chapters to go — Dad will read your answers soon.</p>
+            <div class="progress-row" style="width: 100%;"><div class="progress progress--lg" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="17" aria-label="12 of 17 chapters read"><div class="progress__bar" style="--value: 71%;"></div></div><span class="progress-row__label">12 of 17</span></div>
+            <div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/shelf/default.html">Back to my shelf</a></div>
+          </div>
+          <span class="ds-callout" style="left: 10%; top: 8%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 60%; top: 16%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 70%; top: 38%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 84%; top: 52%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 90%; top: 66%;" aria-hidden="true">5</span>
+          <span class="ds-callout" style="left: 76%; top: 84%;" aria-hidden="true">6</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Confetti</b><small><code>.confetti</code> layer of 8–14 <code>&lt;span&gt;</code>s; each sets <code>--x</code> (left), <code>--d</code> (delay) and <code>--c</code> (a cover colour). Decorative.</small></div></li>
+          <li><div><b>Sticker</b><small><code>.sticker--xl</code>, 96px: 🎉, 🏆, or the sticker Dad gave.</small></div></li>
+          <li><div><b>Heading</b><small>The page <code>&lt;h1&gt;</code>: the cheer.</small></div></li>
+          <li><div><b>Message</b><small>Muted paragraph, 36ch max: how far, and what happens next.</small></div></li>
+          <li><div><b>Progress (chapter only)</b><small>Large <a href="progress.html">progress</a> row.</small></div></li>
+          <li><div><b>Actions</b><small>One large primary ("Back to my shelf") and one secondary.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Examples use <code>&lt;h2&gt;</code>; in the product the heading is the page's <code>&lt;h1&gt;</code>.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="celebrate card card--warning">
+            <div class="confetti" aria-hidden="true"><span style="--x: 5%; --d: 0s; --c: var(--color-cover-rose);"></span><span style="--x: 14%; --d: 0.5s; --c: var(--color-cover-sun);"></span><span style="--x: 24%; --d: 1.2s; --c: var(--color-cover-sky);"></span><span style="--x: 35%; --d: 0.3s; --c: var(--color-cover-mint);"></span><span style="--x: 45%; --d: 0.8s; --c: var(--color-cover-lilac);"></span><span style="--x: 55%; --d: 1.5s; --c: var(--color-cover-peach);"></span><span style="--x: 66%; --d: 0.1s; --c: var(--color-cover-sage);"></span><span style="--x: 77%; --d: 1.0s; --c: var(--color-cover-rose);"></span><span style="--x: 88%; --d: 0.7s; --c: var(--color-cover-sun);"></span><span style="--x: 96%; --d: 1.9s; --c: var(--color-cover-sky);"></span><span style="--x: 30%; --d: 2.2s; --c: var(--color-cover-mint);"></span><span style="--x: 60%; --d: 2.4s; --c: var(--color-cover-lilac);"></span><span style="--x: 10%; --d: 2.6s; --c: var(--color-cover-peach);"></span><span style="--x: 80%; --d: 2.8s; --c: var(--color-cover-sage);"></span></div>
+            <span class="cover cover--rose cover--xl" aria-hidden="true">📚</span>
+            <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
+            <h2>You finished the whole book!</h2>
+            <p class="text-muted">All 21 chapters of Matilda. Dad will pick your reward — watch your shelf.</p>
+            <div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/shelf/default.html">Back to my shelf</a><a class="btn" href="../../mocks/pages/add-book/default.html">Add my next book</a></div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>Book finished: Matilda, 21 of 21. Warm tint from <code>.card--warning</code>.</span></div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="celebrate card">
+            <span class="sticker sticker--xl" aria-hidden="true">🌟</span>
+            <h2>Sent to Nia</h2>
+            <p class="text-muted">She’ll see your Star and note the next time she opens Shelfie. One more chapter is waiting.</p>
+            <div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/review-chapter/default.html">Review Chapter 10 <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></a><a class="btn" href="../../mocks/pages/review/default.html">Back to Review</a></div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>Feedback sent (Dad): no confetti, the next chapter is the primary action.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="celebrate card card--warning"&gt;
+  &lt;div class="confetti" aria-hidden="true"&gt;
+    &lt;span style="--x: 5%; --d: 0s; --c: var(--color-cover-rose);"&gt;&lt;/span&gt;
+    …
+  &lt;/div&gt;
+  &lt;span class="cover cover--rose cover--xl" aria-hidden="true"&gt;📚&lt;/span&gt;
+  &lt;span class="sticker sticker--xl" aria-hidden="true"&gt;🏆&lt;/span&gt;
+  &lt;h1&gt;You finished the whole book!&lt;/h1&gt;
+  &lt;p class="text-muted"&gt;All 21 chapters of Matilda. Dad will pick your reward — watch your shelf.&lt;/p&gt;
+  &lt;div class="cluster" style="justify-content: center;"&gt;…&lt;/div&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="One size only"><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: a full-width card with 48px top and bottom padding. The finished-book variant is taller only because it adds the cover.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The card is the success state of a page. Inside it, the confetti plays and stops; the buttons have their usual states.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Confetti playing</th><td><div class="celebrate card" style="padding: var(--space-6);"><div class="confetti" aria-hidden="true"><span style="--x: 15%; --d: 0s; --c: var(--color-cover-sun);"></span><span style="--x: 40%; --d: 0.4s; --c: var(--color-cover-sky);"></span><span style="--x: 65%; --d: 0.8s; --c: var(--color-cover-mint);"></span><span style="--x: 85%; --d: 0.2s; --c: var(--color-cover-lilac);"></span></div><span class="sticker sticker--xl" aria-hidden="true">🎉</span><h3>Chapter 12 done!</h3></div></td></tr>
+          <tr><th scope="row">Settled / reduced motion</th><td><div class="celebrate card" style="padding: var(--space-6);"><span class="sticker sticker--xl" aria-hidden="true">🎉</span><h3>Chapter 12 done!</h3></div></td></tr>
+          <tr><th scope="row">Primary focus</th><td><div class="celebrate card" style="padding: var(--space-6);"><h3>Chapter 12 done!</h3><div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/shelf/default.html" data-state="focus">Back to my shelf</a><a class="btn" href="../../mocks/pages/log-chapter/default.html">I read Chapter 13 too</a></div></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="celebrate card card--warning" style="padding: var(--space-6);"><span class="sticker sticker--xl" aria-hidden="true">🏆</span><h3>You finished the whole book!</h3><p class="text-muted">All 21 chapters of Matilda.</p></div></div>
+        <div data-theme="dark"><div class="celebrate card card--warning" style="padding: var(--space-6);"><span class="sticker sticker--xl" aria-hidden="true">🏆</span><h3>You finished the whole book!</h3><p class="text-muted">All 21 chapters of Matilda.</p></div></div>
+      </div>
+      <ul>
+        <li><b>Playing</b>: each piece falls once over 2.5 s (5 × <code>--duration-deliberate</code>), staggered by its <code>--d</code>. The fall runs once (<code>animation-fill-mode: both</code>), so pieces wait unseen until their delay and rest off-screen afterwards, matching the mock’s “runs 2.5 s then stops”. The app may remove the <code>.confetti</code> layer once the last piece lands.</li>
+        <li><b>Reduced motion</b>: the confetti layer is hidden entirely; the sticker, heading and message carry the moment.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The card is full width in the page container; content is centred and the message stops at 36ch.</li>
+        <li>Confetti positions are percentages, so pieces spread across any width and are clipped to the card.</li>
+        <li>Actions wrap onto two centred rows on phones; the primary stays first.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The card reads <code>--color-bg-surface</code>; the finished variant adds <code>.card--warning</code>, a gradient from <code>--color-warning-bg</code> into the surface. Confetti colours are the seven <code>--color-cover-*</code> tokens, which have light and dark values, passed in through <code>--c</code>.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A page state, not a dialog. The heading is the page <code>&lt;h1&gt;</code>; the confetti, cover and sticker are <code>aria-hidden</code>. The heading is announced through a live region when the form is replaced, as the log-chapter mock specifies.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Primary action, then the secondary.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows the link ("Back to my shelf", "I read Chapter 13 too").</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>After "I’m done!", focus moves to the celebration heading (<code>tabindex="-1"</code>) so keyboard and screen-reader users start at the cheer, with the actions next.</p>
+      <h3>Labelling</h3>
+      <p>The message says the progress in words ("That’s 12 of 17"); the progress bar has its own <code>aria-label</code>. Emoji are hidden, so nothing important is said only by 🎉 or 🏆.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Heading on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Message on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Primary action</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Sticker on rose cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div>
+      </div>
+      <p>The warm tint fades into the surface by 70% across the card; the heading and message sit in the lighter part. Confetti is decoration and exempt.</p>
+      <h3>Motion</h3>
+      <p>Confetti is the only big motion in Shelfie. It is short, falls downward, never flashes, and is removed under <code>prefers-reduced-motion</code>. No other part of the card animates.</p>
+      <h3>Touch</h3>
+      <p>The primary action is a 48px button; the secondary is 40px, 12px away. The confetti layer ignores pointer events.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Heading: short and excited, about her: "Chapter 12 done!", "You finished the whole book!"</li>
+        <li>Message: how far, then what happens next: "That’s 12 of 17. Only 5 chapters to go — Dad will read your answers soon."</li>
+        <li>Finished book: name the book and promise the reward: "All 21 chapters of Matilda. Dad will pick your reward — watch your shelf."</li>
+        <li>Dad's version is calm and points to the next job: "Sent to Nia", "Review Chapter 10".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="celebrate card card--warning" style="padding: var(--space-6);"><span class="sticker sticker--xl" aria-hidden="true">🏆</span><h3>You finished the whole book!</h3></div></div><figcaption>Tint the finished-book card with <code>.card--warning</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="celebrate card" style="padding: var(--space-6); background: linear-gradient(160deg, var(--color-warning-bg), var(--color-bg-surface) 60%);"><span class="sticker sticker--xl" aria-hidden="true">🏆</span><h3>You finished the whole book!</h3></div></div><figcaption>Paint the tint with an inline <code>linear-gradient</code>, as the finished mocks did.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="celebrate card" style="padding: var(--space-6);"><span class="sticker sticker--xl" aria-hidden="true">🌟</span><h3>Sent to Nia</h3></div></div><figcaption>Keep Dad's confirmation calm: no confetti.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="celebrate card" style="padding: var(--space-6);"><div class="confetti" aria-hidden="true"><span style="--x: 20%; --d: 0s;"></span><span style="--x: 50%; --d: 0.3s;"></span><span style="--x: 80%; --d: 0.6s;"></span></div><span class="sticker sticker--xl" aria-hidden="true">🎉</span><h3>Settings saved</h3></div></div><figcaption>Celebrate small things; confetti everywhere stops meaning anything.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Card</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Finished tint</td><td><code>--color-warning-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td></tr>
+          <tr><td>Message</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Confetti (examples)</td><td><code>--color-cover-rose</code>, <code>--color-cover-sun</code>, <code>--color-cover-sky</code>…</td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td></tr>
+          <tr><td>Confetti default</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Confetti piece</td><td><code>--space-2</code> × <code>--space-3</code>, <code>--radius-xs</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span> / <span data-token="--radius-xs"></span></td></tr>
+          <tr><td>Fall duration</td><td><code>--duration-deliberate</code> × 5</td><td colspan="2"><span data-token="--duration-deliberate"></span></td></tr>
+          <tr><td>Padding</td><td><code>--space-12</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--space-12"></span> / <span data-token="--space-6"></span></td></tr>
+          <tr><td>Sticker</td><td><code>--size-avatar-xl</code> × 1.5</td><td colspan="2"><span data-token="--size-avatar-xl"></span></td></tr>
+          <tr><td>Cover</td><td><code>--size-cover-xl</code></td><td colspan="2"><span data-token="--size-cover-xl"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="celebrate card"&gt;
+  &lt;div class="confetti" aria-hidden="true"&gt;
+    &lt;span style="--x: 8%; --d: 0s; --c: var(--color-cover-rose);"&gt;&lt;/span&gt;
+    &lt;span style="--x: 20%; --d: 0.6s; --c: var(--color-cover-sun);"&gt;&lt;/span&gt;
+    …
+  &lt;/div&gt;
+  &lt;span class="sticker sticker--xl" aria-hidden="true"&gt;🎉&lt;/span&gt;
+  &lt;h1 tabindex="-1"&gt;Chapter 12 done!&lt;/h1&gt;
+  &lt;p class="text-muted"&gt;That’s 12 of 17. Only 5 chapters to go — Dad will read your answers soon.&lt;/p&gt;
+  &lt;div class="progress-row"&gt;…&lt;/div&gt;
+  &lt;div class="cluster" style="justify-content: center;"&gt;
+    &lt;a class="btn btn--primary btn--lg" href="/shelf"&gt;Back to my shelf&lt;/a&gt;
+    &lt;a class="btn" href="/log"&gt;I read Chapter 13 too&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / property</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.celebrate</code></td><td>Centred column, 48 × 24px padding; use with <code>.card</code>.</td></tr>
+        <tr><td><code>.card--warning</code></td><td>Warm tint for a finished book.</td></tr>
+        <tr><td><code>.confetti</code></td><td>Clipped, pointer-transparent layer; hidden under reduced motion.</td></tr>
+        <tr><td><code>--x</code> / <code>--d</code> / <code>--c</code></td><td>Per piece: left position, delay, colour (defaults 50%, 0s, accent).</td></tr>
+        <tr><td><code>.sticker--xl</code></td><td>96px sticker.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/log-chapter/success.html">pages/log-chapter/success</a> (Chapter 12 done, confetti 2.5 s)</li>
+        <li><a href="../../mocks/pages/log-chapter/finished.html">pages/log-chapter/finished</a> (Matilda finished)</li>
+        <li><a href="../../mocks/pages/review-chapter/success.html">pages/review-chapter/success</a> (Sent to Nia)</li>
+        <li><a href="../../mocks/pages/book/finished.html">pages/book/finished</a> (the finished-book card on the book page)</li>
+      </ul>
+      <p>Drift fixed during extraction: D7, the inline <code>linear-gradient</code> tints on log-chapter/finished and book/finished become <code>.card--warning</code>; D4, confetti pieces snapped from 9.6 × 14.4px to 8 × 12px.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

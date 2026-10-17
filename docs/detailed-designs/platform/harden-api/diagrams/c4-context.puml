@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Harden the API
+
+Person(reader, "Reader", "Child who logs chapters; signs in with a 4-digit PIN")
+Person(grownUp, "Grown-up", "Parent who reviews answers; signs in with e-mail and password")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(proxy, "Reverse proxy", "Terminates TLS and forwards HTTPS traffic to Shelfie (<TO SUPPLY>)")
+
+Rel(reader, proxy, "Uses Shelfie over", "HTTPS")
+Rel(grownUp, proxy, "Uses Shelfie over", "HTTPS")
+Rel(proxy, shelfie, "Forwards requests to", "HTTP on loopback")
+@enduml

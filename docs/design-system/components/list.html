@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>List — Shelfie design system</title>
+<meta name="description" content="Lists show a short run of things with the same shape: books, chapters waiting for review, questions. Rows with a leading cover, a title, a meta line and one action.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>List</h1>
+      <p class="ds-lead">A list stacks rows that share one shape: a leading cover or number, a title, a short meta line and at most one or two actions. It is how Dad sees the review queue, every book and the questions for a book.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;ul&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a list when each row is one thing with a name and a line of context, and the reader scans down to pick one. Use a <a href="table.html">table</a> when people compare the same columns across rows (chapter, date, review status). Use an <a href="feed.html">activity feed</a> for things that happened, newest first. Use <a href="book-card.html">book cards</a> on Nia's shelf, where each book deserves a bigger tile.</p>
+      <ul>
+        <li><b>Review queue</b>: chapters waiting for Dad, each with a Review button.</li>
+        <li><b>Books</b>: every book with a status <a href="badge.html">badge</a> and a Manage button.</li>
+        <li><b>Questions</b>: the questions Nia answers for a book, with icon-only Edit and Remove buttons.</li>
+      </ul>
+      <p>A list usually sits flush inside a card (<code>.card.card--flush</code>) so the row dividers run edge to edge.</p>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="card card--flush" style="width: 100%;"><ul class="list">
+            <li class="list__item">
+              <span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span>
+              <div class="list__body"><div class="list__title">Chapter 11 · The Lion, the Witch and the Wardrobe</div><div class="list__meta">Nia read it today, 4:12 pm</div></div>
+              <a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a>
+            </li>
+          </ul></div>
+          <span class="ds-callout" style="left: 12%; top: 22%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 32%; top: 22%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 32%; top: 74%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 84%; top: 22%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 6%; top: 74%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Leading cover or number</b><small>A small <a href="cover.html">cover</a> (<code>.cover--sm</code>, 44px) or a question number. Decorative, <code>aria-hidden</code>.</small></div></li>
+          <li><div><b>Title</b><small><code>.list__title</code>, <code>--text-label</code>. The thing's name.</small></div></li>
+          <li><div><b>Meta</b><small><code>.list__meta</code>, <code>--text-body-sm</code> in <code>--color-fg-muted</code>. One line of context.</small></div></li>
+          <li><div><b>Trailing badge and action</b><small>Optional status badge, then a small button or link.</small></div></li>
+          <li><div><b>Row</b><small><code>.list__item</code>: flex row, 12 × 16px padding, 12px gap, hairline divider except on the last row.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>There is one list. What changes is what sits at either end of the row; pick the leading element by what the row is about.</p>
+      <h3>Book rows with a status badge</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="card card--flush"><ul class="list">
+            <li class="list__item">
+              <span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span>
+              <div class="list__body"><div class="list__title">The Lion, the Witch and the Wardrobe</div><div class="list__meta">C. S. Lewis · 11 of 17 chapters</div></div>
+              <span class="badge badge--info">Reading</span>
+              <a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage</a>
+            </li>
+            <li class="list__item">
+              <span class="cover cover--rose cover--sm" aria-hidden="true">📚</span>
+              <div class="list__body"><div class="list__title">Matilda</div><div class="list__meta">Roald Dahl · finished Tue 13 Oct</div></div>
+              <span class="badge badge--warning">Reward to give</span>
+              <a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage</a>
+            </li>
+            <li class="list__item">
+              <span class="cover cover--sun cover--sm" aria-hidden="true">🐕</span>
+              <div class="list__body"><div class="list__title">Because of Winn-Dixie</div><div class="list__meta">Kate DiCamillo · 0 of 26 chapters</div></div>
+              <span class="badge">Not started</span>
+              <a class="btn btn--sm" href="../../mocks/pages/manage-book/default.html">Manage</a>
+            </li>
+          </ul></div>
+        </div>
+        <div class="ds-example__caption"><span>From the Books page. The badge carries the status in words, never colour alone.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="card card--flush"&gt;&lt;ul class="list"&gt;
+  &lt;li class="list__item"&gt;
+    &lt;span class="cover cover--sage cover--sm" aria-hidden="true"&gt;🦁&lt;/span&gt;
+    &lt;div class="list__body"&gt;
+      &lt;div class="list__title"&gt;The Lion, the Witch and the Wardrobe&lt;/div&gt;
+      &lt;div class="list__meta"&gt;C. S. Lewis · 11 of 17 chapters&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;span class="badge badge--info"&gt;Reading&lt;/span&gt;
+    &lt;a class="btn btn--sm" href="…"&gt;Manage&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</code></pre></details>
+      </div>
+      <h3>Numbered rows with icon-only actions</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <ul class="list">
+            <li class="list__item"><span class="qa__num" style="font: var(--text-label);">1.</span><div class="list__body"><div class="list__title">What happened in this chapter?</div><div class="list__meta">Default question</div></div>
+              <a class="btn btn--sm btn--ghost btn--icon" href="../../mocks/dialogs/edit-question/default.html" aria-label="Edit question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a></li>
+            <li class="list__item"><span class="qa__num" style="font: var(--text-label);">4.</span><div class="list__body"><div class="list__title">Where did the children go in this chapter?</div><div class="list__meta">Added by you · Wed 7 Oct</div></div>
+              <a class="btn btn--sm btn--ghost btn--icon" href="../../mocks/dialogs/edit-question/default.html" aria-label="Edit question 4"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a>
+              <button class="btn btn--sm btn--ghost btn--icon" type="button" aria-label="Remove question 4"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></li>
+          </ul>
+        </div>
+        <div class="ds-example__caption"><span>From Manage a book. Each icon-only button names its row: "Edit question 4", not "Edit".</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size. Row height follows its content: a 44px small cover plus 12px padding top and bottom gives a 68px row, comfortably above the 44px touch target. Do not shrink the padding to fit more rows; a long list scrolls.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The row itself is not interactive, so it has no hover, focus, active or disabled state; those belong to the button or link inside it (see <a href="button.html">button</a>). The list's own states are about its content.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Default</th><td><ul class="list"><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10 · The Lion, the Witch and the Wardrobe</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm" href="../../mocks/pages/review-chapter/default.html">Review</a></li></ul></td></tr>
+          <tr><th scope="row">Truncated</th><td><div style="max-width: 18rem;"><ul class="list"><li class="list__item"><span class="cover cover--mint cover--sm" aria-hidden="true">🤖</span><div class="list__body"><div class="list__title truncate" title="The Wild Robot">The Wild Robot</div><div class="list__meta truncate" title="Peter Brown · 3 of 80 chapters">Peter Brown · 3 of 80 chapters</div></div><span class="badge badge--info">Reading</span></li></ul></div></td></tr>
+          <tr><th scope="row">Loading</th><td><div class="list__item" aria-hidden="true"><span class="skeleton cover cover--sm"></span><div class="list__body"><span class="skeleton skeleton--title"></span><span class="skeleton skeleton--text"></span></div></div></td></tr>
+          <tr><th scope="row">Empty</th><td><div class="empty"><h3 class="empty__title" style="margin: var(--space-0);">Nothing to review</h3><p class="empty__text">You’ve read everything Nia has logged. New chapters show up here the moment she finishes them.</p></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="card card--flush"><ul class="list"><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 11</div><div class="list__meta">Nia read it today, 4:12 pm</div></div><a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a></li><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm" href="../../mocks/pages/review-chapter/default.html">Review</a></li></ul></div></div>
+        <div data-theme="dark"><div class="card card--flush"><ul class="list"><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 11</div><div class="list__meta">Nia read it today, 4:12 pm</div></div><a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a></li><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm" href="../../mocks/pages/review-chapter/default.html">Review</a></li></ul></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b> shows two or three skeleton rows of the same shape inside the card, with <code>aria-busy="true"</code> and an <code>aria-label</code> such as "Loading review queue" on the container (see <a href="skeleton.html">skeleton</a>).</li>
+        <li><b>Empty</b> replaces the whole card with an <a href="empty-state.html">empty state</a> that says why and offers the next step.</li>
+        <li><b>Long</b> lists (14 chapters after a week away) stay one list, newest first, with a <code>.badge--count</code> next to the heading. No pagination below 50 rows.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The row is a single flex line at every width. <code>.list__body</code> has <code>min-width: 0</code> so the title wraps (or truncates) instead of pushing the action off screen.</li>
+        <li>At 360px a row with a cover, a badge and a button still fits: titles wrap to two lines. Add <code>.truncate</code> to the title only when the full text is available elsewhere (a <code>title</code> attribute or the page it links to).</li>
+        <li>Trailing actions never wrap under the body; if two buttons do not fit, make them icon-only with <code>aria-label</code>.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The list reads <code>--color-border-default</code> for dividers, <code>--color-fg-default</code> for titles and <code>--color-fg-muted</code> for meta. It has no background of its own, so it takes the card's surface in both themes. Covers keep their pastel and dark sticker in dark mode; see <a href="cover.html">book cover</a>.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A native <code>&lt;ul&gt;</code> of <code>&lt;li&gt;</code>, so screen readers announce "list, 5 items". No ARIA role. Loading placeholders use <code>&lt;div class="list__item"&gt;</code> inside an <code>aria-busy</code> container, not list items, so nothing is announced until the real rows arrive.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves between the actions in each row, in reading order. Rows themselves are not focus stops.</td></tr>
+        <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd></td><td>Activates the focused link or button.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Only the actions take focus, with the shared ring. A row never gets <code>tabindex</code>.</p>
+      <h3>Labelling</h3>
+      <p>Wrap the list in a <code>&lt;section aria-labelledby&gt;</code> pointing at its heading ("Waiting for you"). Repeated actions name their row: visible text "Review" is fine when the row title sits just before it in reading order; icon-only buttons need "Edit question 4". The cover is <code>aria-hidden</code> because the title already names the book.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Title on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Meta on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sage cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Title on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Meta on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sage cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div></div></div></div>
+      <p>Row dividers use <code>--color-border-default</code>; they are decorative grouping, so 1.4.11 does not apply.</p>
+      <h3>Motion</h3>
+      <p>None. Skeleton rows shimmer on <code>--duration-loop</code> and stop under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Small buttons (32px) sit at the row's end with 12px between neighbours; the row is at least 68px tall, so a thumb cannot hit the wrong row.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Title first, the thing's real name: "Chapter 11 · The Lion, the Witch and the Wardrobe", "Matilda".</li>
+        <li>Meta is one line of the most useful context, joined with " · ": author and progress ("C. S. Lewis · 11 of 17 chapters"), or who and when ("Nia read it today, 4:12 pm").</li>
+        <li>Relative dates for this week ("today", "yesterday"), short dates after that ("Tue 13 Oct").</li>
+        <li>Newest first wherever time matters; the most urgent row gets the only primary button.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><ul class="list"><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 11</div><div class="list__meta">Nia read it today, 4:12 pm</div></div><a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a></li><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm" href="../../mocks/pages/review-chapter/default.html">Review</a></li></ul></div><figcaption>Give only the newest row the primary button; the rest are secondary.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><ul class="list"><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 11</div><div class="list__meta">Nia read it today, 4:12 pm</div></div><a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a></li><li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm btn--primary" href="../../mocks/pages/review-chapter/default.html">Review</a></li></ul></div><figcaption>A primary button on every row: nothing stands out any more.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><ul class="list"><li class="list__item"><div class="list__body"><div class="list__title">Where did the children go in this chapter?</div></div><button class="btn btn--sm btn--ghost btn--icon" type="button" aria-label="Remove question 4"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></li></ul></div><figcaption>Icon-only row actions name the row they act on.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><ul class="list"><li class="list__item"><div class="list__body"><div class="list__title">Where did the children go in this chapter?</div></div><button class="btn btn--sm btn--ghost btn--icon" type="button" aria-label="Remove"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></li></ul></div><figcaption>Four buttons all called "Remove": a screen reader's button list cannot tell them apart.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Title</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Meta</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Row padding</td><td><code>--space-3</code> × <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+          <tr><td>Title font</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+          <tr><td>Meta font</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Divider width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+          <tr><td>Leading cover</td><td><code>--size-cover-sm</code></td><td colspan="2"><span data-token="--size-cover-sm"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;section class="card card--flush" aria-labelledby="waiting"&gt;
+  &lt;h2 class="card__title" id="waiting"&gt;Waiting for you&lt;/h2&gt;
+  &lt;ul class="list"&gt;
+    &lt;li class="list__item"&gt;
+      &lt;span class="cover cover--sage cover--sm" aria-hidden="true"&gt;🦁&lt;/span&gt;
+      &lt;div class="list__body"&gt;
+        &lt;div class="list__title"&gt;Chapter 11 · The Lion, the Witch and the Wardrobe&lt;/div&gt;
+        &lt;div class="list__meta"&gt;Nia read it today, 4:12 pm&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;a class="btn btn--sm btn--primary" href="…"&gt;Review&lt;/a&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/section&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.list</code></td><td>On a <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code>: removes bullets and spacing, stacks rows.</td></tr>
+        <tr><td><code>.list__item</code></td><td>One row: flex, padding, divider (none on the last row).</td></tr>
+        <tr><td><code>.list__body</code></td><td>The flexible middle; <code>min-width: 0</code> lets text wrap or truncate.</td></tr>
+        <tr><td><code>.list__title</code> / <code>.list__meta</code></td><td>Name and one line of context.</td></tr>
+        <tr><td><code>.truncate</code></td><td>One line with an ellipsis; pair with a <code>title</code> attribute.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/review/default.html">pages/review/default</a> (review queue)</li>
+        <li><a href="../../mocks/pages/review/long.html">pages/review/long</a> (14 rows, count badge in the heading)</li>
+        <li><a href="../../mocks/pages/review/loading.html">pages/review/loading</a> (skeleton rows)</li>
+        <li><a href="../../mocks/pages/review/empty.html">pages/review/empty</a> (empty state)</li>
+        <li><a href="../../mocks/pages/books/default.html">pages/books/default</a> (book rows with badges)</li>
+        <li><a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a> (numbered question rows)</li>
+      </ul>
+      <p>Drift fixed during extraction: D8, list headings inside flush cards set their font and padding inline; they now use <code>.card__title</code>, which <code>.card--flush</code> pads. D13, the small cover in each row uses <code>--size-cover-sm</code> instead of a raw size.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

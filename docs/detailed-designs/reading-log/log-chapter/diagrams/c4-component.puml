@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Log a chapter
+
+Container(web, "Shelfie web", "Angular", "LogChapterPage with sh-segmented and sh-question-field; DraftStore; ChaptersApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "chapters.router.ts", "Express Router", "GET .../chapters/:n/form, POST .../chapters/:n, DELETE /chapter-logs/:id")
+  Component(validate, "validate()", "Middleware (zod)", "Applies logChapterSchema; malformed bodies get 400 with errors[]")
+  Component(service, "chapters.service.ts", "Service", "getForm, logChapter (future-date check, transaction, undo_until), undoLog")
+  Component(questions, "questions.service.ts", "Service", "DEFAULT_QUESTIONS and the book's active custom questions")
+  Component(repo, "chapters.repo.ts", "Repository", "Parameterised SQL over chapter_log, answer and book")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, question, chapter_log, answer")
+}
+Rel(web, router, "Form, log and undo requests", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "getForm, logChapter, undoLog")
+Rel(service, questions, "activeQuestionsForBook(bookId)")
+Rel(service, repo, "findBookInHousehold, insertLogWithAnswers, findLog, deleteLog")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

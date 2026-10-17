@@ -1,0 +1,105 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Operate the service
+
+class Logger <<logger.ts>> {
+  +logger: pino.Logger
+  +requestContext(req, res, next): void
+  -newRequestId(): string
+  -requestLine(ctx: RequestContext, status: number): void
+}
+
+class RequestContext {
+  +requestId: string
+  +route: string
+  +startedAt: number
+}
+
+class RequestLine {
+  +time: string
+  +level: string
+  +requestId: string
+  +method: string
+  +route: string
+  +status: number
+  +durationMs: number
+}
+
+class HealthRouter <<health.router.ts>> {
+  +get(path: "/api/health"): void
+  -probe(): 'ok' | 'unavailable'
+}
+
+class HealthResponse {
+  +status: 'ok' | 'unavailable'
+}
+
+class Db <<db.ts>> {
+  +connection: Database
+  +open(path: string): Database
+  +migrate(dir: string): void
+  -pragmas: journal_mode=WAL, synchronous=NORMAL, foreign_keys=ON, busy_timeout=5000
+}
+
+class BackupJob <<backup.ts>> {
+  +run(now: Date): BackupResult
+  -backupDir: string
+  -retentionDays: number
+  -targetPath(now: Date): string
+  -verify(path: string): boolean
+  -prune(now: Date): number
+}
+
+class BackupResult {
+  +path: string
+  +bytes: number
+  +verified: boolean
+  +pruned: number
+}
+
+class ProblemDetailsHandler <<errors.ts>> {
+  +problemDetailsHandler(err, req, res, next): void
+}
+
+class Problem {
+  +type: string
+  +title: string
+  +status: number
+  +detail: string | null
+  +requestId: string
+  +errors: FieldError[] | null
+}
+
+class ApiClient <<core library>> {
+  +get(path: string): Promise<T>
+  +post(path: string, body: unknown): Promise<T>
+  -toApiError(response: Response): ApiError
+}
+
+class ApiError {
+  +status: number
+  +problem: Problem
+}
+
+Logger --> RequestContext : creates per request
+Logger --> RequestLine : writes on finish
+HealthRouter ..> Db : SELECT 1
+HealthRouter --> HealthResponse : answers
+BackupJob ..> Db : VACUUM INTO, integrity_check
+BackupJob --> BackupResult : returns
+BackupJob ..> Logger : logs result
+ProblemDetailsHandler ..> RequestContext : reads requestId
+ProblemDetailsHandler --> Problem : produces
+ProblemDetailsHandler ..> Logger : logs unhandled error
+ApiClient --> ApiError : throws
+ApiError *-- Problem : carries
+@enduml

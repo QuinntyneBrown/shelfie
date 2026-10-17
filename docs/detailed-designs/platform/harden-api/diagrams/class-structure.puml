@@ -1,0 +1,108 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Harden the API
+
+class App <<app.ts>> {
+  +createApp(): Express
+  -order: requestContext, helmet, json(16kb), sessionMiddleware, csrfGuard, routers, problemDetailsHandler
+}
+
+class SessionMiddleware <<session.ts>> {
+  +sessionMiddleware(req, res, next): void
+  +issueSession(res: Response, profileId: string): Session
+  +revokeSession(res: Response, sessionId: string): void
+  -cookieName: "shelfie_session"
+  -cookieOptions: HttpOnly, Secure, SameSite=Strict, Path=/, Max-Age
+}
+
+class Session {
+  +id: string
+  +profileId: string
+  +householdId: string
+  +role: 'reader' | 'grown_up'
+  +createdAt: Date
+  +expiresAt: Date
+}
+
+class CsrfGuard <<csrf.ts>> {
+  +csrfGuard(req, res, next): void
+  -isStateChanging(method: string): boolean
+  -isCrossSite(headers: IncomingHttpHeaders): boolean
+  -hasShelfieHeader(headers: IncomingHttpHeaders): boolean
+}
+
+class RateLimit <<rateLimit.ts>> {
+  +passwordSignInLimiter: RequestHandler
+  -windowMs: 600000
+  -limit: 10
+  -keyGenerator(req): string
+}
+
+class Validate <<validate.ts>> {
+  +validate(schema: ZodSchema): RequestHandler
+}
+
+class Authz <<authz.ts>> {
+  +requireRole(role: 'reader' | 'grown_up' | 'any'): RequestHandler
+}
+
+class Hashing <<hashing.ts>> {
+  +hashSecret(plain: string): Promise<string>
+  +verifySecret(hash: string, plain: string): Promise<boolean>
+}
+
+class HttpError {
+  +status: number
+  +type: string
+  +title: string
+  +detail: string | null
+  +errors: FieldError[] | null
+}
+
+class Problem {
+  +type: string
+  +title: string
+  +status: number
+  +detail: string | null
+  +requestId: string
+  +errors: FieldError[] | null
+}
+
+class FieldError {
+  +field: string
+  +message: string
+}
+
+class ProblemDetailsHandler <<errors.ts>> {
+  +problemDetailsHandler(err, req, res, next): void
+  -toProblem(err: unknown, requestId: string): Problem
+}
+
+class Logger <<logger.ts>> {
+  +logger: pino.Logger
+  -redactPaths: cookie, authorization, password, currentPassword, newPassword, pin, token, text, answers
+}
+
+App *-- SessionMiddleware : applies
+App *-- CsrfGuard : applies
+App *-- ProblemDetailsHandler : applies last
+SessionMiddleware --> Session : loads / creates / deletes
+Validate ..> HttpError : throws 400
+Authz ..> HttpError : throws 401 / 403
+CsrfGuard ..> HttpError : throws 403
+RateLimit ..> HttpError : answers 429
+ProblemDetailsHandler ..> HttpError : maps
+ProblemDetailsHandler --> Problem : produces
+ProblemDetailsHandler ..> Logger : logs full error
+Problem *-- FieldError : errors[]
+HttpError *-- FieldError : errors[]
+@enduml

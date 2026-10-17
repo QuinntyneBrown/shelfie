@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Choose appearance
+
+Person(grownUp, "Grown-up", "Chooses match device, light or dark in Settings")
+Person(reader, "Reader", "Sees the household theme on every device")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(grownUp, shelfie, "Saves the household appearance", "HTTPS")
+Rel(reader, shelfie, "Signs in and sees the saved theme", "HTTPS")
+@enduml

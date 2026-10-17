@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage questions
+
+Container(web, "Shelfie web", "Angular", "EditQuestionDialog on sh-dialog with sh-textarea; BooksApi question methods")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "questions.router.ts", "Express Router", "POST /api/books/:id/questions, PATCH /api/questions/:id, DELETE /api/questions/:id")
+  Component(authz, "requireRole('grown-up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(validate, "validate(questionSchema)", "Middleware (zod)", "text 1-200; 400 with errors[]")
+  Component(service, "questions.service.ts", "Service", "DEFAULT_QUESTIONS; addQuestion, updateQuestion, removeQuestion (soft), questionsForBook")
+  Component(repo, "questions.repo.ts", "Repository", "insert, findWithBook, updateText, markRemoved, listActive")
+  Component(chapters, "chapters.service.ts", "Service", "Log form composes defaults + active custom questions; answers snapshot question_text (reading-log/log-chapter)")
+  ComponentDb(db, "Shelfie database", "SQLite", "question, answer")
+}
+Rel(web, router, "POST, PATCH, DELETE", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, validate, "Applies to POST and PATCH")
+Rel(router, service, "addQuestion, updateQuestion, removeQuestion")
+Rel(service, repo, "insert, findWithBook, updateText, markRemoved, listActive")
+Rel(chapters, service, "questionsForBook(bookId)")
+Rel(repo, db, "Reads and writes question", "SQL")
+Rel(chapters, db, "Writes answer.question_text", "SQL")
+@enduml

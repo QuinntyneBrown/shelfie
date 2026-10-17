@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Table — Shelfie design system</title>
+<meta name="description" content="Tables let Dad compare the same facts across rows, such as every chapter Nia logged with its date, first answer and review status.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>Table</h1>
+      <p class="ds-lead">A table lines up the same few facts for every row so they can be compared down a column. Shelfie uses one: the chapters Nia has logged for a book, on Manage a book.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;table&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a table when the reader compares one column across many rows: which chapters still need review, when each was read. If each row is a single thing with a name and a line of context, use a <a href="list.html">list</a> instead; it reads better on a phone. Nia never sees a table; tables are for the grown-up's pages only.</p>
+      <ul>
+        <li><b>Framed</b> (<code>.table-wrap</code>): a table on its own on the page, with a border and rounded corners.</li>
+        <li><b>Flush</b> (<code>.table-wrap--flush</code>): a table inside a <code>.card--flush</code>; the card supplies the frame.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="table-wrap" style="width: 100%;"><table class="table"><caption class="visually-hidden">Anatomy example: one logged chapter</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Read</th><th scope="col">Review</th></tr></thead><tbody><tr><td>Chapter 11</td><td>Today, 4:12 pm</td><td><span class="badge badge--warning">To review</span></td></tr></tbody></table></div>
+          <span class="ds-callout" style="left: 8%; top: 20%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 8%; top: 58%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 70%; top: 58%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 94%; top: 8%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Header cell</b><small><code>&lt;th scope="col"&gt;</code> on <code>--color-bg-surface-sunken</code>, <code>--text-label</code> in muted ink, sticky to the top of the wrapper.</small></div></li>
+          <li><div><b>Body cell</b><small><code>--text-body-sm</code>, 12 × 16px padding, hairline divider below.</small></div></li>
+          <li><div><b>Status cell</b><small>A <a href="badge.html">badge</a> or a link; never colour alone.</small></div></li>
+          <li><div><b>Wrapper</b><small><code>.table-wrap</code> scrolls sideways when the table is wider than the screen; border and <code>--radius-lg</code> unless flush.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Pick the wrapper by where the table sits. Inside a flush card use <code>--flush</code> so there are not two frames.</p>
+      <h3>Flush, inside a card</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <section class="card card--flush" aria-labelledby="tbl-variants-flush-title">
+            <h3 class="card__title" id="tbl-variants-flush-title" style="margin-top: var(--space-0);">Chapters logged</h3>
+            <div class="table-wrap table-wrap--flush" style="margin-top: var(--space-3);"><table class="table"><caption class="visually-hidden">Chapters Nia has logged for The Lion, the Witch and the Wardrobe</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Read</th><th scope="col">What happened</th><th scope="col">Review</th><th scope="col"><span class="visually-hidden">Open</span></th></tr></thead><tbody>
+              <tr><td>Chapter 11</td><td>Today, 4:12 pm</td><td class="truncate">The Witch’s sledge got stuck because the snow was melting.</td><td><span class="badge badge--warning">To review</span></td><td><a href="../../mocks/pages/review-chapter/default.html">Open<span class="visually-hidden"> chapter 11</span></a></td></tr>
+              <tr><td>Chapter 10</td><td>Yesterday</td><td class="truncate">Father Christmas came and gave everyone presents.</td><td><span class="badge badge--warning">To review</span></td><td><a href="../../mocks/pages/review-chapter/default.html">Open<span class="visually-hidden"> chapter 10</span></a></td></tr>
+              <tr><td>Chapter 9</td><td>Tue 13 Oct</td><td class="truncate">Edmund got to the Witch’s house and it was really scary.</td><td><span class="badge badge--success">Reviewed</span></td><td><a href="../../mocks/pages/review-chapter/reviewed.html">Open<span class="visually-hidden"> chapter 9</span></a></td></tr>
+            </tbody></table></div>
+          </section>
+        </div>
+        <div class="ds-example__caption"><span>From Manage a book. The "What happened" cell truncates at 20rem; the full answer is one tap away.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="card card--flush" aria-labelledby="chapters-title"&gt;
+  &lt;h2 class="card__title" id="chapters-title"&gt;Chapters logged&lt;/h2&gt;
+  &lt;div class="table-wrap table-wrap--flush"&gt;
+    &lt;table class="table"&gt;
+      &lt;caption class="visually-hidden"&gt;Chapters Nia has logged for this book&lt;/caption&gt;
+      &lt;thead&gt;&lt;tr&gt;&lt;th scope="col"&gt;Chapter&lt;/th&gt;…&lt;/tr&gt;&lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;Chapter 11&lt;/td&gt;&lt;td&gt;Today, 4:12 pm&lt;/td&gt;
+          &lt;td class="truncate"&gt;The Witch’s sledge got stuck…&lt;/td&gt;
+          &lt;td&gt;&lt;span class="badge badge--warning"&gt;To review&lt;/span&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;a href="…"&gt;Open&lt;span class="visually-hidden"&gt; chapter 11&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></details>
+      </div>
+      <h3>Framed, on the page</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="table-wrap"><table class="table"><caption class="visually-hidden">Chapters Nia has logged for The Wild Robot</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Read</th><th scope="col">Review</th></tr></thead><tbody>
+            <tr><td>Chapter 3</td><td>Wed 14 Oct</td><td><span class="badge badge--success">Reviewed</span></td></tr>
+            <tr><td>Chapter 2</td><td>Mon 12 Oct</td><td><span class="badge badge--success">Reviewed</span></td></tr>
+          </tbody></table></div>
+        </div>
+        <div class="ds-example__caption"><span>The wrapper draws the border and radius; the header row sits on the sunken surface.</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size: <code>--text-body-sm</code> with 12 × 16px cell padding. There is no dense or roomy variant; Shelfie's tables are short.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Rows highlight on hover so the eye can follow a row across; the link in the last cell takes focus. Forced here with <code>data-state</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Default</th><td><table class="table"><caption class="visually-hidden">Default row</caption><tbody><tr><td>Chapter 8</td><td>Fri 9 Oct</td><td><span class="badge badge--success">Reviewed</span></td><td><a href="../../mocks/pages/review-chapter/reviewed.html">Open<span class="visually-hidden"> chapter 8</span></a></td></tr></tbody></table></td></tr>
+          <tr><th scope="row">Row hover</th><td><table class="table"><caption class="visually-hidden">Hovered row</caption><tbody><tr data-state="hover"><td>Chapter 8</td><td>Fri 9 Oct</td><td><span class="badge badge--success">Reviewed</span></td><td><a href="../../mocks/pages/review-chapter/reviewed.html" data-state="hover">Open<span class="visually-hidden"> chapter 8</span></a></td></tr></tbody></table></td></tr>
+          <tr><th scope="row">Link focus</th><td><table class="table"><caption class="visually-hidden">Row with a focused link</caption><tbody><tr><td>Chapter 8</td><td>Fri 9 Oct</td><td><span class="badge badge--success">Reviewed</span></td><td><a href="../../mocks/pages/review-chapter/reviewed.html" data-state="focus">Open<span class="visually-hidden"> chapter 8</span></a></td></tr></tbody></table></td></tr>
+          <tr><th scope="row">Truncated cell</th><td><table class="table"><caption class="visually-hidden">Row with a truncated cell</caption><tbody><tr><td>Chapter 4</td><td class="truncate" style="max-width: 10rem;" title="The White Witch gave Edmund Turkish Delight.">The White Witch gave Edmund Turkish Delight.</td></tr></tbody></table></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="table-wrap"><table class="table"><caption class="visually-hidden">Light theme sample</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Review</th></tr></thead><tbody><tr><td>Chapter 11</td><td><span class="badge badge--warning">To review</span></td></tr><tr data-state="hover"><td>Chapter 9</td><td><span class="badge badge--success">Reviewed</span></td></tr></tbody></table></div></div>
+        <div data-theme="dark"><div class="table-wrap"><table class="table"><caption class="visually-hidden">Dark theme sample</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Review</th></tr></thead><tbody><tr><td>Chapter 11</td><td><span class="badge badge--warning">To review</span></td></tr><tr data-state="hover"><td>Chapter 9</td><td><span class="badge badge--success">Reviewed</span></td></tr></tbody></table></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b>: the card shows <a href="skeleton.html">skeleton</a> lines while the page loads (<a href="../../mocks/pages/manage-book/loading.html">manage-book/loading</a>); the table is never drawn with blank rows.</li>
+        <li><b>Empty</b>: no mock shows a book with no logged chapters, so there is no empty table state. Leave the card out rather than draw a header with no rows.</li>
+        <li>Rows are not selectable and the table does not sort; chapters are always newest first.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The table never squeezes. Below its natural width, <code>.table-wrap</code> scrolls sideways inside the card; the page itself never scrolls sideways.</li>
+        <li><code>td.truncate</code> caps long text at 20rem with an ellipsis so one long answer cannot make every row wide.</li>
+        <li>Header cells do not wrap (<code>white-space: nowrap</code>) and stay stuck to the top of the wrapper when it scrolls vertically.</li>
+        <li>On phones, keep the table to four or five short columns; anything longer belongs in a list.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Reads <code>--color-bg-surface</code> (wrapper), <code>--color-bg-surface-sunken</code> (header), <code>--color-bg-subtle</code> (row hover), <code>--color-border-default</code> (dividers) and the muted and default ink. In dark mode the sunken header is darker than the surface, so the header still reads as a separate band.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A native <code>&lt;table&gt;</code> with <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code> and <code>&lt;th scope="col"&gt;</code>. It is a static table, not the APG grid pattern: no arrow-key navigation, no <code>role="grid"</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves between the links in the table, row by row.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Opens the focused chapter.</td></tr>
+        <tr><td>Screen reader table keys</td><td>Move by cell; each cell is announced with its column header.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Only links take focus, with the shared ring. A scrolling <code>.table-wrap</code> is reachable because the links inside it are; when a table has no links, give the wrapper <code>tabindex="0"</code>, <code>role="region"</code> and an <code>aria-label</code> so keyboard users can scroll it.</p>
+      <h3>Labelling</h3>
+      <p>Every table has a <code>&lt;caption&gt;</code>; it may be visually hidden when a visible heading says the same. An empty header cell above links still has a visually hidden label ("Open"), and each "Open" link adds the chapter in hidden text so the link list reads "Open chapter 11".</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Header text on sunken</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div><div class="ds-pair"><span>Body text on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Text on hovered row</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Link on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-surface" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Header text on sunken</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div><div class="ds-pair"><span>Body text on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Text on hovered row</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Link on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-surface" data-min="4.5"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>None. Row hover is an instant colour change.</p>
+      <h3>Touch</h3>
+      <p>"Open" links sit in a cell with 12px vertical padding, giving a row of about 48px. Hover highlighting is a pointer nicety only; nothing depends on it.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Column headers are one or two words in sentence case: "Chapter", "Read", "What happened", "Review".</li>
+        <li>Dates match the rest of the app: "Today, 4:12 pm", "Yesterday", "Tue 13 Oct".</li>
+        <li>Status is a badge with a word ("To review", "Reviewed"), never a coloured dot alone.</li>
+        <li>The caption says what the rows are and whose they are: "Chapters Nia has logged for this book".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="card card--flush"><div class="table-wrap table-wrap--flush"><table class="table"><caption class="visually-hidden">Do example</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Review</th></tr></thead><tbody><tr><td>Chapter 11</td><td><span class="badge badge--warning">To review</span></td></tr></tbody></table></div></div></div><figcaption>Inside a flush card, use <code>.table-wrap--flush</code>; the card is the frame.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="card card--flush"><div class="table-wrap"><table class="table"><caption class="visually-hidden">Don't example</caption><thead><tr><th scope="col">Chapter</th><th scope="col">Review</th></tr></thead><tbody><tr><td>Chapter 11</td><td><span class="badge badge--warning">To review</span></td></tr></tbody></table></div></div></div><figcaption>A framed wrapper inside a card draws a second border, and the mocks then reset it inline.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><table class="table"><caption class="visually-hidden">Do example 2</caption><tbody><tr><td>Chapter 4</td><td class="truncate">The White Witch gave Edmund Turkish Delight.</td></tr></tbody></table></div><figcaption>Use <code>td.truncate</code>; the 20rem cap lives in the stylesheet.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><table class="table"><caption class="visually-hidden">Don't example 2</caption><tbody><tr><td>Chapter 4</td><td>Open</td></tr></tbody></table></div><figcaption>Twelve links all called "Open" with no hidden chapter number, under a blank header cell.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Wrapper background</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Header background</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
+          <tr><td>Header text</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Row hover</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Divider and frame</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Cell padding</td><td><code>--space-3</code> × <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Body font / header font</td><td><code>--text-body-sm</code> / <code>--text-label</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--text-label"></span></td></tr>
+          <tr><td>Frame radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+          <tr><td>Divider width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="table-wrap"&gt;
+  &lt;table class="table"&gt;
+    &lt;caption class="visually-hidden"&gt;Chapters Nia has logged for this book&lt;/caption&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th scope="col"&gt;Chapter&lt;/th&gt;&lt;th scope="col"&gt;Read&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Chapter 11&lt;/td&gt;&lt;td&gt;Today, 4:12 pm&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.table-wrap</code></td><td>Scroll container with border, radius and surface.</td></tr>
+        <tr><td><code>.table-wrap--flush</code></td><td>No border or radius; for a table inside <code>.card--flush</code>.</td></tr>
+        <tr><td><code>.table</code></td><td>Full width, collapsed borders, cell padding, sunken sticky header, row hover.</td></tr>
+        <tr><td><code>th scope="col"</code></td><td>Column header; required on every header cell.</td></tr>
+        <tr><td><code>caption</code></td><td>The table's name; add <code>.visually-hidden</code> when a heading shows it.</td></tr>
+        <tr><td><code>td.truncate</code></td><td>One line, ellipsis, max 20rem.</td></tr>
+        <tr><td><code>tr[data-state="hover"]</code></td><td>Documentation only: forces the row hover.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a> (Chapters logged table inside a flush card)</li>
+        <li><a href="../../mocks/pages/manage-book/rewarded.html">pages/manage-book/rewarded</a> (every row reviewed)</li>
+        <li><a href="../../mocks/dialogs/delete-book/default.html">dialogs/delete-book/default</a> (the same table behind the dialog)</li>
+      </ul>
+      <p>Drift fixed during extraction: D9, the wrapper inside the card was reset inline with <code>style="border: 0; border-radius: 0"</code> and the long cell carried <code>style="max-width: 20rem"</code> on every row; these are now <code>.table-wrap--flush</code> and <code>.table td.truncate</code>. D8, the card heading's inline font and padding is now <code>.card__title</code>. D12, borders use <code>--border-width-hairline</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

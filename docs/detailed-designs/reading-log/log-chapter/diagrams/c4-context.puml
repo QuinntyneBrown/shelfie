@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Log a chapter
+
+Person(reader, "Reader", "Child who reads a chapter, logs it and answers the questions")
+Person(grownUp, "Grown-up", "Reads the logged answers in Review")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Logs a chapter with the read date and her answers", "HTTPS")
+Rel(grownUp, shelfie, "Reviews logged chapters", "HTTPS")
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Add a book
+
+Person(reader, "Reader", "Adds a book")
+Person(grownUp, "Grown-up", "Adds a book")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "AddBookPage with colour and sticker pickers and live preview")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Validates and inserts the book")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "book table")
+}
+Rel(reader, web, "Fills the form", "HTTPS")
+Rel(grownUp, web, "Fills the form", "HTTPS")
+Rel(web, api, "POST /api/books", "JSON/HTTPS")
+Rel(api, db, "Inserts book", "SQL")
+@enduml

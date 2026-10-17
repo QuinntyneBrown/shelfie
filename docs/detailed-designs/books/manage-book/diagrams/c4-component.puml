@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage and remove a book
+
+Container(web, "Shelfie web", "Angular", "BooksPage, ManageBookPage, DeleteBookDialog on sh-dialog; BooksApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "books.router.ts", "Express Router", "GET /api/books, PATCH /api/books/:id, DELETE /api/books/:id")
+  Component(authz, "requireRole('grown-up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(validate, "validate(updateBookSchema)", "Middleware (zod)", "Title 1-120, author up to 120, chapterCount 1-200; 400 with errors[]")
+  Component(service, "books.service.ts", "Service", "listBooks; updateBook with chapter-count floor; deleteBook")
+  Component(repo, "books.repo.ts", "Repository", "listBooksWithProgress, countChapterLogs, updateBook, deleteBookCascade (transaction)")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, answer, question, reward")
+}
+Rel(web, router, "GET, PATCH, DELETE", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, validate, "Applies to PATCH")
+Rel(router, service, "listBooks, updateBook, deleteBook")
+Rel(service, repo, "listBooksWithProgress, countChapterLogs, updateBook, deleteBookCascade")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

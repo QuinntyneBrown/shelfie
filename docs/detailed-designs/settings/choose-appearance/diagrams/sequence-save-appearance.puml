@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Save the appearance
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (settings library)" #E0F2FE
+  participant "SettingsPage" as page
+  participant "SettingsApi" as client
+  participant "ThemeService" as theme
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "settings.router.ts\n+ validate(settingsPatchSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "settings.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : Pick Match the device, Always light or Always dark
+grownUp -> page : Tap Save settings
+page -> client : save(patch with theme)
+client -> router : PATCH /api/settings {reader, grownUp, theme}
+router -> router : Require grown-up role; validate theme in device|light|dark
+router -> service : updateSettings(householdId, profileId, patch)
+service -> db : UPDATE household SET theme = ? WHERE id = ?\n(in the same transaction as the profile rows)
+alt database failure
+  db --> service : error
+  service --> router : throws
+  router --> client : 500 problem {requestId}
+  client --> page : ApiError
+  page --> grownUp : Show danger banner; keep the chosen setting
+else committed
+  db --> service : ok
+  service --> router : SettingsView
+  router --> client : 200 {reader, grownUp, theme}
+  client --> page : SettingsView
+  page -> theme : apply(view.theme) (L2-022)
+  theme --> page : data-theme updated on the html element
+  page --> grownUp : Show "Saved" banner in the new theme
+end
+note over db : The next GET /api/auth/session or sign-in on any device\nreturns the saved theme for both profiles (L2-022)
+@enduml

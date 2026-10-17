@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu — Shelfie design system</title>
+<meta name="description" content="The account menu under the avatar: switch reader, settings and sign out. An APG menu button with a static demo in both themes.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Actions</p>
+      <h1>Menu</h1>
+      <p class="ds-lead">The account menu opens from the avatar in the top bar. It says who is signed in and offers the few things you do to the account: switch reader, open settings, sign out.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">APG Menu Button</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+<section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Shelfie has one menu: the account menu. A <code>button.avatar</code> in the top bar opens a <code>.menu</code> list anchored under it. Each item is a link because each one goes somewhere (Settings, or back to the profile picker).</p>
+      <ul>
+        <li>Use it for two to four account actions that do not belong on any one page.</li>
+        <li>Do not use it for the main areas of the app: Dad's Review, Books and Settings live in the top bar and <a href="tab-bar.html">tab bar</a>; Nia has only her shelf.</li>
+        <li>Do not use it to pick a value; that is a <a href="radio-group.html">radio group</a>.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="stack" style="align-items: flex-end; gap: 0;">
+            <button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="true" aria-controls="menu-anatomy">MB</button>
+            <ul class="menu menu--static" role="menu" id="menu-anatomy" aria-label="Account menu for Dad" style="min-width: 14rem;">
+              <li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Marcus Bell</div><div class="text-caption">marcus@example.com · grown-up</div></li>
+              <li role="none" class="menu__divider" aria-hidden="true"></li>
+              <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></li>
+            </ul>
+          </div>
+          <span class="ds-callout" style="right: 2%; top: 2%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 18%; top: 22%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 18%; top: 50%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 18%; top: 72%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Trigger</b><small><code>button.avatar</code> with <code>aria-haspopup="menu"</code> and <code>aria-expanded</code>; 32px in the top bar.</small></div></li>
+          <li><div><b>Identity header</b><small>Who is signed in. Not an item: <code>role="none"</code>, never focused.</small></div></li>
+          <li><div><b>Divider</b><small><code>.menu__divider</code>, <code>aria-hidden="true"</code>; separates the header and puts Sign out on its own.</small></div></li>
+          <li><div><b>Item</b><small><code>.menu__item</code>: icon plus label, 36px tall, full width.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>The menu changes with who is signed in. Items that do not apply are left out, not disabled.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <ul class="menu menu--static" role="menu" aria-label="Account menu for Nia" style="min-width: 14rem;">
+            <li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Nia</div><div class="text-caption">Reader · 🔥 5-day streak</div></li>
+            <li role="none" class="menu__divider" aria-hidden="true"></li>
+            <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-5-6.7"/></svg>Switch reader</a></li>
+            <li role="none" class="menu__divider" aria-hidden="true"></li>
+            <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg>Sign out</a></li>
+          </ul>
+          <ul class="menu menu--static" role="menu" aria-label="Account menu for Dad" style="min-width: 14rem;">
+            <li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Marcus Bell</div><div class="text-caption">marcus@example.com · grown-up</div></li>
+            <li role="none" class="menu__divider" aria-hidden="true"></li>
+            <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></li>
+            <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-5-6.7"/></svg>Switch reader</a></li>
+            <li role="none" class="menu__divider" aria-hidden="true"></li>
+            <li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg>Sign out</a></li>
+          </ul>
+        </div>
+        <div class="ds-example__caption"><span>Nia's menu (reader) and Dad's menu (grown-up), which adds Settings. Shown with <code>.menu--static</code> so they render in flow.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="menu" role="menu" id="account-menu" aria-label="Account menu for Nia"&gt;
+  &lt;li role="none" style="padding: var(--space-2) var(--space-3);"&gt;
+    &lt;div style="font: var(--text-label);"&gt;Nia&lt;/div&gt;&lt;div class="text-caption"&gt;Reader · 🔥 5-day streak&lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li role="none" class="menu__divider" aria-hidden="true"&gt;&lt;/li&gt;
+  &lt;li role="none"&gt;&lt;a class="menu__item" role="menuitem" href="/sign-in"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Switch reader&lt;/a&gt;&lt;/li&gt;
+  &lt;li role="none" class="menu__divider" aria-hidden="true"&gt;&lt;/li&gt;
+  &lt;li role="none"&gt;&lt;a class="menu__item" role="menuitem" href="/sign-out"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Sign out&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="The menu has one size. The trigger is always .avatar--sm (32px) in the top bar."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">The menu has one size. The trigger is always <code>.avatar--sm</code> (32px) in the top bar.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Hover and focus are forced with <code>data-state</code>; the expanded trigger uses the real <code>aria-expanded="true"</code>.</p>
+      <h3>Trigger</h3>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Trigger</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Expanded</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Reader</th><td><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false">N</button></td><td><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false" data-state="hover">N</button></td><td><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false" data-state="focus">N</button></td><td><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="true">N</button></td></tr>
+          <tr><th scope="row">Grown-up</th><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" data-state="hover">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" data-state="focus">MB</button></td><td><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="true">MB</button></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Item</h3>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Item</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Link item</th>
+            <td><ul class="menu menu--static" role="menu" aria-label="Default item"><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/settings/default.html">Settings</a></li></ul></td>
+            <td><ul class="menu menu--static" role="menu" aria-label="Hovered item"><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/settings/default.html" data-state="hover">Settings</a></li></ul></td>
+            <td><ul class="menu menu--static" role="menu" aria-label="Focused item"><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/settings/default.html" data-state="focus">Settings</a></li></ul></td></tr>
+        </tbody>
+      </table></div>
+      <p>No item is ever disabled: Nia's menu simply has no Settings. <code>.menu__item[aria-disabled="true"]</code> exists in the CSS but is not used.</p>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><ul class="menu menu--static" role="menu" aria-label="Account menu for Nia, light" style="min-width: 14rem;"><li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Nia</div><div class="text-caption">Reader · 🔥 5-day streak</div></li><li role="none" class="menu__divider" aria-hidden="true"></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html" data-state="hover">Switch reader</a></li><li role="none" class="menu__divider" aria-hidden="true"></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html">Sign out</a></li></ul></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><ul class="menu menu--static" role="menu" aria-label="Account menu for Nia, dark" style="min-width: 14rem;"><li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Nia</div><div class="text-caption">Reader · 🔥 5-day streak</div></li><li role="none" class="menu__divider" aria-hidden="true"></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html" data-state="hover">Switch reader</a></li><li role="none" class="menu__divider" aria-hidden="true"></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html">Sign out</a></li></ul></div></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The menu is the same at every width: a 14rem panel below the avatar, right edge on <code>--layout-margin</code>. At 360px it takes about two thirds of the width and never needs to become a bottom sheet.</li>
+        <li>It sits on <code>--z-dropdown</code>, below dialogs and toasts and above the sticky top bar.</li>
+        <li>Long e-mail addresses in the header wrap; items never wrap because their labels are one or two words.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The panel reads <code>--color-bg-surface-raised</code>, <code>--color-border-default</code> and <code>--shadow-3</code>; items read <code>--color-fg-default</code> and <code>--color-bg-subtle</code> for hover and focus. In dark the raised surface is lighter than the page, so elevation shows without relying on the shadow. The trigger's hover ring is <code>--color-border-strong</code>.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>WAI-ARIA APG <b>Menu Button</b> pattern. The trigger is a native <code>&lt;button&gt;</code> with <code>aria-haspopup="menu"</code>, <code>aria-expanded</code> and <code>aria-controls</code> pointing at the menu. The list is <code>role="menu"</code>, each <code>&lt;li&gt;</code> is <code>role="none"</code> and each link is <code>role="menuitem"</code>. Focus inside the menu is roving: only the current item has <code>tabindex="0"</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Enter</kbd>, <kbd>Space</kbd>, <kbd>↓</kbd> on the trigger</td><td>Opens the menu and focuses the first item.</td></tr>
+        <tr><td><kbd>↑</kbd> on the trigger</td><td>Opens the menu and focuses the last item (Sign out).</td></tr>
+        <tr><td><kbd>↓</kbd> / <kbd>↑</kbd></td><td>Moves to the next or previous item, wrapping at the ends. The header and dividers are skipped.</td></tr>
+        <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>Moves to the first or last item.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows the focused item and closes the menu.</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Closes the menu and returns focus to the avatar.</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>Closes the menu and moves focus to the next element after the trigger.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>The trigger shows the shared focus ring. Items show focus with the <code>--color-bg-subtle</code> hover fill plus the shared focus ring drawn inside the item (a fill alone is too faint against the raised panel), and the menu moves real DOM focus (not <code>aria-activedescendant</code>). A click outside closes the menu without moving focus.</p>
+      <h3>Labelling</h3>
+      <p>The trigger's <code>aria-label</code> names whose menu it is ("Account menu for Nia"), because the visible "N" says little. The menu repeats it with <code>aria-label</code>. The identity header is plain text inside <code>role="none"</code>, so it is not announced as an item; icons are <code>aria-hidden</code>.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Item label on menu</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Item label, hover and focus</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Header caption on menu</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Initials on rose avatar</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Initials on sky avatar</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sky" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring on top bar</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on a menu item</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface-raised" data-min="3"></span></div>
+      </div>
+      <h3>Motion</h3>
+      <p>The panel scales in from the top right over <code>--duration-fast</code> with <code>--ease-enter</code>. Reduced motion zeroes the duration, so it simply appears.</p>
+      <h3>Touch</h3>
+      <p>Items are 36px tall and span the panel's full width, well over the 24px minimum. The 32px avatar trigger is the only target in its corner of the top bar.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>The header names the person and one useful fact: "Reader · 🔥 5-day streak", "marcus@example.com · grown-up".</li>
+        <li>Items are short: "Settings", "Switch reader", "Sign out". One icon each, from the shared icon set.</li>
+        <li>Sign out is always last, after a divider, so it is not hit by accident.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false">N</button></div><figcaption>Use <code>button.avatar</code>: the system resets the button and adds a hover ring.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">N</button></div><figcaption>Resetting the avatar button inline, as 58 mocks did (D6). It drifts, and it has no hover feedback.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="menu menu--static" role="menu" aria-label="Nia's menu, items left out"><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html">Switch reader</a></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html">Sign out</a></li></ul></div><figcaption>Leave out what does not apply: Nia's menu has no Settings.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="menu menu--static" role="menu" aria-label="Nia's menu, item disabled"><li role="none"><a class="menu__item" role="menuitem" aria-disabled="true" href="../../mocks/pages/settings/default.html">Settings</a></li><li role="none"><a class="menu__item" role="menuitem" href="../../mocks/pages/sign-in/default.html">Sign out</a></li></ul></div><figcaption>A greyed-out Settings item tells a nine-year-old about a door she cannot open.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Panel background</td><td><code>--color-bg-surface-raised</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td></tr>
+          <tr><td>Panel border and divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Item label</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Item hover and focus</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Header caption</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Trigger hover ring</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
+          <tr><td>Shadow</td><td><code>--shadow-3</code></td><td><span data-token="--shadow-3"></span></td><td><span data-theme="dark" data-token="--shadow-3"></span></td></tr>
+          <tr><td>Item height</td><td><code>--control-height-sm</code></td><td><span data-token="--control-height-sm"></span></td><td><span data-theme="dark" data-token="--control-height-sm"></span></td></tr>
+          <tr><td>Panel / item radius</td><td><code>--radius-md</code> / <code>--radius-sm</code></td><td><span data-token="--radius-md"></span> / <span data-token="--radius-sm"></span></td><td><span data-theme="dark"><span data-token="--radius-md"></span> / <span data-token="--radius-sm"></span></span></td></tr>
+          <tr><td>Layer</td><td><code>--z-dropdown</code></td><td><span data-token="--z-dropdown"></span></td><td><span data-theme="dark" data-token="--z-dropdown"></span></td></tr>
+          <tr><td>Enter motion</td><td><code>--duration-fast</code>, <code>--ease-enter</code></td><td><span data-token="--duration-fast"></span></td><td><span data-theme="dark" data-token="--duration-fast"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia"
+        aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu"&gt;N&lt;/button&gt;
+&lt;ul class="menu" role="menu" id="account-menu" aria-label="Account menu for Nia" hidden&gt;…&lt;/ul&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>button.avatar</code></td><td>Trigger: resets the button, adds the hover ring.</td></tr>
+        <tr><td><code>aria-haspopup="menu"</code>, <code>aria-expanded</code>, <code>aria-controls</code></td><td>Menu button semantics on the trigger.</td></tr>
+        <tr><td><code>.menu</code> + <code>role="menu"</code></td><td>Floating panel, absolutely positioned, scales in.</td></tr>
+        <tr><td><code>.menu__item</code> + <code>role="menuitem"</code></td><td>One action; a link or a button.</td></tr>
+        <tr><td><code>.menu__divider</code></td><td>Hairline separator; <code>role="none" aria-hidden="true"</code>.</td></tr>
+        <tr><td><code>.menu--static</code></td><td>Documentation only: renders the menu in flow.</td></tr>
+        <tr><td><code>data-state="hover|focus"</code></td><td>Documentation only: forces a state in static pages.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/dialogs/account-menu/default.html">dialogs/account-menu/default</a> (Nia's menu)</li>
+        <li><a href="../../mocks/dialogs/account-menu/parent.html">dialogs/account-menu/parent</a> (Dad's menu with Settings)</li>
+        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (the closed avatar trigger in the top bar)</li>
+      </ul>
+      <p>Drift fixed during extraction: D6, the avatar trigger was reset inline with <code>style="border: 0; cursor: pointer;"</code> in 58 mocks and is now the <code>button.avatar</code> rule with a hover ring. Still inline in the mocks and here: the identity header's padding and label font, which have no class.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

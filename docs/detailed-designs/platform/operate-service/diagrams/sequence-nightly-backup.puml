@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Nightly backup
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Nightly scheduler\n(cron or systemd timer)" as scheduler
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "backup.ts\nBackupJob.run(now)" as job
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  participant "db.ts\n(read-only connection)" as dbmod
+  database "Shelfie database (SQLite)" as db
+  participant "Backup directory" as dir
+  participant "stdout log (pino)" as log
+end box
+
+scheduler -> job : node dist/backup.js (time of night TO SUPPLY)
+job -> dbmod : open(livePath, {readonly: true})
+dbmod --> job : connection
+job -> job : target = backupDir/shelfie-YYYY-MM-DD.sqlite
+job -> db : VACUUM INTO target (L2-031)
+alt copy succeeds
+  db --> job : ok
+  job -> dir : open target read-only
+  job -> dir : PRAGMA integrity_check
+  dir --> job : ok
+  job -> dir : delete copies older than retention (TO SUPPLY; 30 days assumed)
+  dir --> job : pruned count
+  job -> log : {event: "backup", path, bytes, verified: true, pruned}
+  job --> scheduler : exit 0
+else copy or integrity check fails
+  db --> job : error
+  job -> dir : remove partial target file
+  job -> log : logger.error({event: "backup", err})
+  job --> scheduler : exit 1 (previous backups untouched)
+end
+note over job
+  Restore (docs/runbook.md, TO SUPPLY): stop the API,
+  move the live file and its -wal/-shm aside, copy the dated
+  backup to the live path, start the API, check GET /api/health
+end note
+@enduml

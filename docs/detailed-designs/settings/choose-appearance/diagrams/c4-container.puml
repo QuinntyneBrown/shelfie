@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Choose appearance
+
+Person(grownUp, "Grown-up", "Chooses the appearance")
+Person(reader, "Reader", "Sees the theme at sign-in")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ThemeService sets data-theme on the html element from the session; Appearance section of SettingsPage")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Returns theme in every session payload; stores it through PATCH /api/settings")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "household.theme")
+}
+Rel(grownUp, web, "Picks a setting and saves", "HTTPS")
+Rel(reader, web, "Signs in", "HTTPS")
+Rel(web, api, "PATCH /api/settings; GET /api/auth/session; POST /api/auth/pin; POST /api/auth/password", "JSON/HTTPS")
+Rel(api, db, "Reads and updates household.theme", "SQL")
+@enduml

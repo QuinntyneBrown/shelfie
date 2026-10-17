@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Celebrate a finished book
+
+Person(reader, "Reader", "Logs the last chapter and sees the celebration")
+Person(grownUp, "Grown-up", "Sees the finished book in Review and gives a reward")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Logs the last chapter of a book", "HTTPS")
+Rel(grownUp, shelfie, "Gives a reward for the finished book", "HTTPS")
+@enduml

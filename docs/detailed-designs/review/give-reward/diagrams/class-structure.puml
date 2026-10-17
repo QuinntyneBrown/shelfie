@@ -1,0 +1,98 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Give a reward
+
+class ReviewPage {
+  +finishedUnrewarded: Signal<FinishedBook[]>
+  +openGiveReward(book: FinishedBook): void
+  +onGiven(reward: Reward): void
+}
+
+class GiveRewardDialog {
+  +book: FinishedBook
+  +text: Signal<string>
+  +note: Signal<string>
+  +state: Signal<'default' | 'invalid' | 'busy' | 'failed'>
+  +given: EventEmitter<Reward>
+  +pick(quickPick: string): void
+  +submit(): Promise<void>
+  +cancel(): void
+}
+
+class "sh-dialog" as Dialog {
+  +open: boolean
+  +titleId: string
+  +closed: EventEmitter<void>
+}
+
+class QuickPick {
+  +label: string
+}
+
+class ReviewApi {
+  +giveReward(bookId: string, body: GiveRewardRequest): Promise<Reward>
+}
+
+class GiveRewardRequest {
+  +text: string
+  +note: string | undefined
+}
+
+class Reward {
+  +id: string
+  +bookId: string
+  +text: string
+  +note: string | null
+  +givenAt: Date
+}
+
+class FinishedBook {
+  +bookId: string
+  +title: string
+  +coverColor: string
+  +coverSticker: string
+  +chapterCount: number
+  +finishedAt: Date
+  +daysToFinish: number
+}
+
+class RewardsService {
+  +giveReward(householdId: string, bookId: string, text: string, note: string | null, now: Date): Reward
+}
+
+class RewardsRepo {
+  +findBookForHousehold(bookId: string, householdId: string): Book | undefined
+  +findRewardByBook(bookId: string): Reward | undefined
+  +insertReward(bookId: string, text: string, note: string | null, now: Date): Reward
+}
+
+class Book {
+  +id: string
+  +householdId: string
+  +title: string
+  +chapterCount: number
+  +finishedAt: Date | null
+}
+
+ReviewPage ..> GiveRewardDialog : opens
+GiveRewardDialog *-- Dialog : renders in
+GiveRewardDialog --> "4" QuickPick : offers
+GiveRewardDialog ..> ReviewApi : calls
+GiveRewardDialog --> FinishedBook : shows
+ReviewApi ..> GiveRewardRequest : sends
+ReviewApi ..> Reward : returns
+RewardsService ..> GiveRewardRequest : receives
+RewardsService --> RewardsRepo : uses
+RewardsRepo --> Book : reads
+RewardsRepo --> Reward : creates
+Book "1" --> "0..1" Reward : has
+@enduml

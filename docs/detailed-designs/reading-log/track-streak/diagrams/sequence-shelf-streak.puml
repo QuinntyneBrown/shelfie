@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Streak during a shelf load
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+box "Frontend — Shelfie web (shelf library)" #E0F2FE
+  participant "ShelfPage" as page
+  participant "sh-streak-badge" as badge
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "shelf.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "shelf.service.ts" as shelf
+  participant "streak.service.ts" as streak
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+reader -> page : Open the shelf
+page -> client : shelf()
+client -> router : GET /api/shelf
+router -> shelf : getShelf(householdId)
+shelf -> streak : streakFor(householdId, now)
+streak -> db : SELECT time_zone FROM household WHERE id = ?
+db --> streak : time_zone
+streak -> streak : today = todayIn(time_zone, now) (L2-020)
+streak -> db : SELECT DISTINCT read_on FROM chapter_log JOIN book\nWHERE book.household_id = ? ORDER BY read_on DESC
+db --> streak : read_on days
+alt today in days
+  streak -> streak : start = today; count back while each previous day is present
+else yesterday in days
+  streak -> streak : start = yesterday; count back (streak keeps its value — L2-020)
+else neither
+  streak -> streak : streak = 0 (L2-020)
+end
+streak --> shelf : streak: number
+shelf --> router : ShelfView {reading, upNext, finished, streak}
+router --> client : 200 ShelfView
+client --> page : ShelfView
+page -> badge : days = streak
+badge --> reader : Flame + "N days" in the top bar (L2-020)
+page --> reader : Hero line "N-day streak · books on the go · rewards"
+@enduml

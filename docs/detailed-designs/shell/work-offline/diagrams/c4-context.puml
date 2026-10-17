@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Work offline
+
+Person(reader, "Reader", "Logs chapters on a device that loses and regains its connection")
+Person(grownUp, "Grown-up", "Sees replayed chapters in Review once they arrive")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Reads her cached shelf; logs chapters that queue until online", "HTTPS")
+Rel(grownUp, shelfie, "Reviews chapters sent by the replay", "HTTPS")
+@enduml

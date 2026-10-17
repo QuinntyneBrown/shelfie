@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spacing — Shelfie design system</title>
+<meta name="description" content="Shelfie spacing: the 4px scale, inside versus between rules and padding by component.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Foundation · Spacing</p>
+      <h1>Spacing</h1>
+      <p class="ds-lead">One 4px scale for every gap and padding, with a simple rule: space inside a group is smaller than the space between groups.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Foundation</span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#scale">The 4px scale</a></li><li><a href="#inside-between">Inside and between</a></li><li><a href="#component-padding">Padding by component</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Every gap, padding and margin in Shelfie comes from one scale on a 4px base, written in <code>rem</code> so it grows with the user's font size. The scale skips steps on purpose (no 28px, no 36px) so neighbouring choices are clearly different.</p>
+      <ul>
+        <li>Use <code>--space-*</code> for padding, gaps and margins; never type a pixel value.</li>
+        <li><b>Inside is smaller than between:</b> the space inside a group is always less than the space separating groups.</li>
+        <li>Spacing never changes with the viewport except page margins and grid gutters, which are <a href="layout.html">layout tokens</a>.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="scale"><h2><a href="#scale">The 4px scale</a></h2>
+      <div class="ds-scale"><div class="ds-scale__row"><code>--space-0</code><span data-token="--space-0"></span><span class="ds-scale__bar" style="--size: var(--space-0);"></span></div><div class="ds-scale__row"><code>--space-0-5</code><span data-token="--space-0-5"></span><span class="ds-scale__bar" style="--size: var(--space-0-5);"></span></div><div class="ds-scale__row"><code>--space-1</code><span data-token="--space-1"></span><span class="ds-scale__bar" style="--size: var(--space-1);"></span></div><div class="ds-scale__row"><code>--space-2</code><span data-token="--space-2"></span><span class="ds-scale__bar" style="--size: var(--space-2);"></span></div><div class="ds-scale__row"><code>--space-3</code><span data-token="--space-3"></span><span class="ds-scale__bar" style="--size: var(--space-3);"></span></div><div class="ds-scale__row"><code>--space-4</code><span data-token="--space-4"></span><span class="ds-scale__bar" style="--size: var(--space-4);"></span></div><div class="ds-scale__row"><code>--space-5</code><span data-token="--space-5"></span><span class="ds-scale__bar" style="--size: var(--space-5);"></span></div><div class="ds-scale__row"><code>--space-6</code><span data-token="--space-6"></span><span class="ds-scale__bar" style="--size: var(--space-6);"></span></div><div class="ds-scale__row"><code>--space-8</code><span data-token="--space-8"></span><span class="ds-scale__bar" style="--size: var(--space-8);"></span></div><div class="ds-scale__row"><code>--space-10</code><span data-token="--space-10"></span><span class="ds-scale__bar" style="--size: var(--space-10);"></span></div><div class="ds-scale__row"><code>--space-12</code><span data-token="--space-12"></span><span class="ds-scale__bar" style="--size: var(--space-12);"></span></div><div class="ds-scale__row"><code>--space-16</code><span data-token="--space-16"></span><span class="ds-scale__bar" style="--size: var(--space-16);"></span></div><div class="ds-scale__row"><code>--space-20</code><span data-token="--space-20"></span><span class="ds-scale__bar" style="--size: var(--space-20);"></span></div><div class="ds-scale__row"><code>--space-24</code><span data-token="--space-24"></span><span class="ds-scale__bar" style="--size: var(--space-24);"></span></div></div>
+      <p><code>--space-0-5</code> (2px) is only for hairline nudges: an icon's optical alignment, the gap inside a tab-bar label and the lift on a hovered sticker.</p>
+    </section>
+
+    <section class="ds-section" id="inside-between"><h2><a href="#inside-between">Inside and between</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <div class="stack" style="width: 100%;">
+          <article class="card book-card">
+            <span class="cover cover--sage" aria-hidden="true">🦁</span>
+            <div class="book-card__body">
+              <h3 class="book-card__title">The Lion, the Witch and the Wardrobe</h3>
+              <span class="book-card__author">C. S. Lewis</span>
+              <div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="11" aria-valuemin="0" aria-valuemax="17" aria-label="11 of 17 chapters read"><div class="progress__bar" style="--value: 65%;"></div></div><span class="progress-row__label">11 of 17</span></div>
+              <div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 12</a></div>
+            </div>
+          </article>
+          <article class="card book-card">
+            <span class="cover cover--mint" aria-hidden="true">🤖</span>
+            <div class="book-card__body">
+              <h3 class="book-card__title">The Wild Robot</h3>
+              <span class="book-card__author">Peter Brown</span>
+              <div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80" aria-label="3 of 80 chapters read"><div class="progress__bar" style="--value: 4%;"></div></div><span class="progress-row__label">3 of 80</span></div>
+              <div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 4</a></div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="ds-example__caption"><span>Inside a card: 24px padding (<code>--space-6</code>), 16px from cover to text (<code>--space-4</code>), 8px between title, author, progress and actions (<code>--space-2</code>). Between cards: the 16px stack gap (<code>--space-4</code>).</span></div></div>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Relationship</th><th scope="col">Space</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><td>Icon to its label</td><td><code>--space-1</code> to <code>--space-2</code></td><td>"🔥 5 days" streak pill; icon and text in a button</td></tr>
+          <tr><td>Label to its field, field to its help</td><td><code>--space-1</code></td><td>"Number of chapters" above its input</td></tr>
+          <tr><td>Items in a row (cluster)</td><td><code>--space-3</code></td><td>Primary and ghost buttons in the hero</td></tr>
+          <tr><td>Stacked fields, cards in a column</td><td><code>--space-4</code></td><td><code>.stack</code> default gap</td></tr>
+          <tr><td>Card padding; gap between hero cover and body</td><td><code>--space-6</code></td><td><code>.card</code>, <code>.hero</code></td></tr>
+          <tr><td>Between page sections</td><td><code>--space-8</code></td><td><code>.section</code> on the shelf ("On the go", "Up next", "Finished")</td></tr>
+          <tr><td>Around empty, error and celebration blocks</td><td><code>--space-12</code></td><td>"Your shelf is empty", "You finished the whole book!"</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="component-padding"><h2><a href="#component-padding">Padding by component</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Component</th><th scope="col">Padding</th><th scope="col">Inner gap</th></tr></thead>
+        <tbody>
+          <tr><td>Button sm / md / lg</td><td>0 × <code>--space-3</code> / <code>--space-4</code> / <code>--space-6</code></td><td><code>--space-2</code> icon to label</td></tr>
+          <tr><td>Text field and textarea</td><td><code>--space-2</code> × <code>--space-3</code></td><td>—</td></tr>
+          <tr><td>Card</td><td><code>--space-6</code>; <code>.card--flush</code> 0 with a <code>--space-4</code> title</td><td>Content decides</td></tr>
+          <tr><td>Hero</td><td><code>--space-6</code></td><td><code>--space-6</code> cover to body, <code>--space-3</code> inside body</td></tr>
+          <tr><td>Dialog</td><td><code>--space-6</code> sides; <code>--space-4</code> between header, body and footer</td><td><code>--space-3</code> between footer buttons</td></tr>
+          <tr><td>Alert, banner, toast</td><td><code>--space-4</code></td><td><code>--space-3</code> icon to body</td></tr>
+          <tr><td>List item, chapter row, table cell</td><td><code>--space-3</code> × <code>--space-4</code></td><td><code>--space-3</code></td></tr>
+          <tr><td>Menu</td><td><code>--space-1</code> around; items 0 × <code>--space-3</code></td><td><code>--space-3</code> icon to label</td></tr>
+          <tr><td>Chip, badge, streak</td><td>0 × <code>--space-3</code> (badge <code>--space-2</code>)</td><td><code>--space-1</code></td></tr>
+          <tr><td>Empty state, celebration</td><td><code>--space-12</code> × <code>--space-6</code></td><td><code>--space-3</code> / <code>--space-4</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
+      <ul>
+        <li>Reach for the layout primitives first: <code>.stack</code> (vertical, <code>--space-4</code>), <code>.cluster</code> (wrapping row, <code>--space-3</code>), <code>.grid</code> (the column grid). Override their gap with a token when a group needs to be tighter.</li>
+        <li>Use <code>gap</code> on the parent rather than margins on children; it collapses cleanly when an item is missing.</li>
+        <li>Do not add a step between steps. If 16px feels too loose and 12px too tight, the group is wrong, not the scale.</li>
+        <li>Inline <code>style</code> in a page may only nudge layout with a token (<code>style="gap: var(--space-6);"</code>), never a raw length.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><caption class="visually-hidden">Spacing tokens</caption>
+        <thead><tr><th scope="col">Role</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>&nbsp;</td><td><code>--space-0</code></td><td colspan="2"><span data-token="--space-0"></span></td></tr>
+          <tr><td>Hairline gaps</td><td><code>--space-0-5</code></td><td colspan="2"><span data-token="--space-0-5"></span></td></tr>
+          <tr><td>Icon-to-label</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
+          <tr><td>Inside chips, between inline items</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Compact padding</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+          <tr><td>Default padding, stack gap</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
+          <tr><td>&nbsp;</td><td><code>--space-5</code></td><td colspan="2"><span data-token="--space-5"></span></td></tr>
+          <tr><td>Card padding, section gap (mobile)</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
+          <tr><td>Section gap</td><td><code>--space-8</code></td><td colspan="2"><span data-token="--space-8"></span></td></tr>
+          <tr><td>&nbsp;</td><td><code>--space-10</code></td><td colspan="2"><span data-token="--space-10"></span></td></tr>
+          <tr><td>Page section spacing</td><td><code>--space-12</code></td><td colspan="2"><span data-token="--space-12"></span></td></tr>
+          <tr><td>Hero spacing</td><td><code>--space-16</code></td><td colspan="2"><span data-token="--space-16"></span></td></tr>
+          <tr><td>&nbsp;</td><td><code>--space-20</code></td><td colspan="2"><span data-token="--space-20"></span></td></tr>
+          <tr><td>&nbsp;</td><td><code>--space-24</code></td><td colspan="2"><span data-token="--space-24"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

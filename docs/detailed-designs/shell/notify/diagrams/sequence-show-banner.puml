@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Show a persistent banner
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or Grown-up" as user
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "Caller\n(OfflineQueue, ReviewPage, ...)" as caller
+  participant "BannerService" as svc
+end box
+box "Frontend — Shelfie web (shelfie application)" #E0F2FE
+  participant "AppComponent\n(banner slot)" as app
+end box
+box "Frontend — Shelfie web (components library)" #E0F2FE
+  participant "sh-banner" as banner
+end box
+
+caller -> svc : show({severity: warning, title: "No internet connection",\nmessage: "Showing what we saved earlier...", dismissible: false})
+svc -> svc : Append Banner to banners(); no timer (L2-023)
+svc --> caller : id
+app -> svc : Read banners()
+app -> banner : Render under the top bar; content pushed down
+banner -> banner : role = status (warning) or alert (danger)
+banner --> user : Banner announced
+user -> app : Navigate to another page
+app --> user : Banner still shown (condition persists — L2-023)
+alt Condition clears
+  caller -> svc : clear(id)
+  svc -> svc : Remove from banners()
+  app --> user : Banner gone
+else Dismissible banner closed by the person
+  user -> banner : Press "Dismiss"
+  banner -> app : dismiss
+  app -> svc : clear(id) (L2-023)
+  app --> user : Banner gone
+else Action pressed
+  user -> banner : Press "Try now"
+  banner -> app : action
+  app -> caller : action.run()
+end
+@enduml

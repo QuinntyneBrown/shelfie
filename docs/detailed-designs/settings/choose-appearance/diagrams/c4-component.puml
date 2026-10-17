@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Choose appearance
+
+Container_Boundary(web, "Shelfie web") {
+  Component(page, "SettingsPage", "Angular page (settings library)", "Appearance radio group; sends theme in SettingsPatch; applies on save")
+  Component(settingsApi, "SettingsApi", "Angular service (settings library)", "PATCH /api/settings")
+  Component(authApi, "AuthApi", "Angular service (sign-in library)", "Sign-in and session calls returning theme")
+  Component(session, "SessionService", "Angular service (core library)", "Holds Session including theme; drives ThemeService")
+  Component(theme, "ThemeService", "Angular service (core library)", "Sets data-theme on the html element; follows prefers-color-scheme for device")
+  Component(tokens, "tokens.css", "Stylesheet (components library)", "Light and dark token values keyed on data-theme")
+}
+Container_Boundary(api, "Shelfie API") {
+  Component(authService, "auth.service.ts", "Service", "Joins household.theme into the session payload")
+  Component(settingsService, "settings.service.ts", "Service", "updateSettings writes household.theme")
+  Component(repo, "settings.repo.ts", "Repository", "updateTheme, findHouseholdSettings")
+  ComponentDb(db, "Shelfie database", "SQLite", "household")
+}
+Rel(page, settingsApi, "save(patch) with theme")
+Rel(page, theme, "apply(theme) after a successful save")
+Rel(authApi, session, "set(session) with theme")
+Rel(session, theme, "apply(session.theme)")
+Rel(theme, tokens, "Selects values through data-theme")
+Rel(settingsApi, settingsService, "PATCH /api/settings", "JSON/HTTPS")
+Rel(authApi, authService, "GET /api/auth/session, POST /api/auth/pin, POST /api/auth/password", "JSON/HTTPS")
+Rel(settingsService, repo, "updateTheme(householdId, theme)")
+Rel(authService, db, "Reads household.theme", "SQL")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

@@ -60,3 +60,32 @@ Run frontend tests in Chromium only. Do not configure or run Firefox, WebKit, or
 ### Never write architecture tests
 
 Never add a test that asserts the shape of the codebase rather than its behavior: no structure, layout, or naming tests; no banned-API scans; no tests that parse specifications. Those constraints belong to the compiler, the formatter, and review. A test suite exists to prove behavior.
+
+## Folder structure (MANDATORY)
+
+```
+shelfie/
+├── docs/
+│   ├── specs/              # L1.md, L2.md
+│   ├── mocks/
+│   ├── design-system/
+│   ├── detailed-designs/   # {subsystem}/{feature}/
+│   └── estimates/
+├── apps/
+│   ├── web/                # Angular workspace
+│   │   └── projects/
+│   │       ├── components/ # library: ALL reusable UI components (sh-*)
+│   │       ├── core/       # library: auth, session, API client, toasts
+│   │       ├── <feature>/  # one library per area: sign-in, shelf, books,
+│   │       │               #   log-chapter, review, settings
+│   │       └── shelfie/    # application: shell, routing, composition only
+│   └── api/                # Node backend
+├── e2e/
+│   ├── pages/              # Playwright page objects, one per screen
+│   └── tests/              # acceptance tests with "Traces to: L2-xxx" header
+└── .github/ .agents/ .claude/
+```
+
+*   **Components project:** every UI component lives in the `components` library. Feature libraries and the application compose it and do not define reusable components of their own.
+*   **Dependencies point one way:** `shelfie` (application) → feature libraries → `components` and `core`. `components` depends on no other project.
+*   **The application is thin:** it holds the shell, routes and bootstrapping only. Features live in libraries.

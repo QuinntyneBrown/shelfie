@@ -1,0 +1,69 @@
+@startuml
+title UML sequence behaviour — Go offline and log a chapter
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+participant "Browser (Chromium)" as browser
+box "Frontend — Shelfie web (service worker)" #E0F2FE
+  participant "Angular service worker\n(ngsw)" as sw
+end box
+box "Frontend — Shelfie web (shelf and log-chapter libraries)" #E0F2FE
+  participant "ShelfPage" as shelf
+  participant "LogChapterPage" as logPage
+  participant "BookPage" as bookPage
+end box
+box "Frontend — Shelfie web (core library)" #E0F2FE
+  participant "OfflineQueue" as queue
+  participant "BannerService /\nToastService" as notify
+end box
+box "Frontend — Shelfie web (browser storage)" #E0F2FE
+  database "IndexedDB\nshelfie-offline" as idb
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "chapters.router.ts" as api
+end box
+
+browser -> queue : offline event
+queue -> queue : online.set(false)
+queue -> notify : BannerService.show(warning "No internet connection") (L2-024)
+notify --> reader : Banner under the top bar
+reader -> shelf : Open shelf
+shelf -> sw : GET /api/shelf
+sw -> api : Network first (freshness)
+api --> sw : No response
+sw --> shelf : Last cached /api/shelf response (L2-024)
+shelf --> reader : Shelf readable
+reader -> logPage : Log Chapter 12; answer questions; "I'm done!"
+logPage -> queue : online()
+queue --> logPage : false
+logPage -> queue : enqueue({bookId, chapterNumber: 12, body, queuedAt})
+queue -> idb : add(pending-chapter-logs, record)
+idb --> queue : id
+queue -> queue : pending.set([...])
+queue --> logPage : resolved
+logPage -> notify : ToastService.show(warning "You're offline — We saved Chapter 12 on this device...")
+logPage -> logPage : DraftStore.clear(); navigate to book page
+reader -> bookPage : Book page
+bookPage -> queue : isPending(bookId, 12)
+queue --> bookPage : true
+bookPage --> reader : Chapter 12 row marked "will send" (L2-024)
+opt Navigation to a page with no cached data
+  reader -> browser : Open Review (grown-up) or Settings
+  browser -> sw : GET /api/review
+  sw --> browser : ApiError status 0 (not cached)
+  browser -> browser : online() is false: navigate to /offline
+  browser --> reader : Offline page with "Try again" (L2-024)
+end
+@enduml

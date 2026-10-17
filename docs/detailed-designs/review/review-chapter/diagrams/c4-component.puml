@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Review a chapter
+
+Container(web, "Shelfie web", "Angular", "ReviewChapterPage + sh-sticker-picker; ReviewApi; ShelfPage + sh-banner")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "review.router.ts", "Express Router", "POST /api/chapter-logs/:id/feedback; validates with feedbackSchema")
+  Component(authz, "requireRole('grown_up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400")
+  Component(service, "review.service.ts", "Service", "sendFeedback: household check, 409 when reviewed, mark reviewed, next item")
+  Component(repo, "review.repo.ts", "Repository", "findChapterLogForHousehold, markReviewed, pendingChapterLogs")
+  Component(shelfService, "shelf.service.ts", "Service (shelf module)", "GET /api/shelf adds unseenFeedback")
+  Component(shelfRepo, "shelf.repo.ts", "Repository (shelf module)", "chapter_log WHERE reviewed_at IS NOT NULL AND feedback_seen_at IS NULL")
+  ComponentDb(db, "Shelfie database", "SQLite", "chapter_log, answer, book")
+}
+Rel(web, router, "POST /api/chapter-logs/:id/feedback", "JSON/HTTPS")
+Rel(web, shelfService, "GET /api/shelf (via shelf.router.ts)", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, validate, "Applies")
+Rel(router, service, "sendFeedback(householdId, id, sticker, note)")
+Rel(service, repo, "find, markReviewed, pendingChapterLogs")
+Rel(shelfService, shelfRepo, "unseenFeedback(householdId)")
+Rel(repo, db, "Reads and writes", "SQL")
+Rel(shelfRepo, db, "Reads", "SQL")
+@enduml

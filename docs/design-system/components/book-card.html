@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book card — Shelfie design system</title>
+<meta name="description" content="The book card pairs a cover with a title, author, progress and the next thing to do. It is how books appear on Nia's shelf and at the top of book pages.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Book card</h1>
+      <p class="ds-lead">A cover beside the book's title, author, how far Nia has got, and one button for what to do next: "Log Chapter 12". It is the building block of her shelf.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;article&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a book card wherever one book is the subject: each book on the shelf, the header of a book page, the header of Log a chapter, and the book being rewarded or removed in a dialog. For many books in a compact column, use a <a href="list.html">list</a> row with a small cover; for a finished book on the trophy shelf, use a <a href="trophy.html">trophy</a>.</p>
+      <ul>
+        <li><b>Shelf card</b>: inside a <code>.card</code>, with progress and one action.</li>
+        <li><b>Page header</b>: no card, large cover, the title is the page's <code>&lt;h1&gt;</code>.</li>
+        <li><b>Compact</b>: small cover, title and one line, no action. Used in dialogs and the "finished" card on Review.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <article class="card book-card" style="width: 100%;">
+            <span class="cover cover--sage" aria-hidden="true">🦁</span>
+            <div class="book-card__body">
+              <h3 class="book-card__title" style="margin: var(--space-0);">The Lion, the Witch and the Wardrobe</h3>
+              <span class="book-card__author">C. S. Lewis</span>
+              <div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="11" aria-valuemin="0" aria-valuemax="17" aria-label="11 of 17 chapters read"><div class="progress__bar" style="--value: 65%;"></div></div><span class="progress-row__label">11 of 17</span></div>
+              <div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 12</a></div>
+            </div>
+          </article>
+          <span class="ds-callout" style="left: 10%; top: 16%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 34%; top: 16%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 34%; top: 42%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 80%; top: 56%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 34%; top: 82%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Cover</b><small>A <a href="cover.html">book cover</a>; medium on the shelf, large in a page header, small in compact cards. Decorative.</small></div></li>
+          <li><div><b>Title</b><small><code>.book-card__title</code>: <code>--text-h4</code>, balanced wrapping. A heading at the right level for its page.</small></div></li>
+          <li><div><b>Author and context</b><small><code>.book-card__author</code>: <code>--text-body-sm</code>, muted. Author, plus a note such as "Dad added this on Thursday".</small></div></li>
+          <li><div><b>Progress row (optional)</b><small>A <a href="progress.html">progress</a> bar with "11 of 17"; only for books being read.</small></div></li>
+          <li><div><b>Actions (optional)</b><small><code>.book-card__actions</code>: one small button, 8px above.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Shelf cards</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <div class="grid grid--auto">
+            <article class="card book-card">
+              <span class="cover cover--mint" aria-hidden="true">🤖</span>
+              <div class="book-card__body">
+                <h3 class="book-card__title" style="margin: var(--space-0);">The Wild Robot</h3>
+                <span class="book-card__author">Peter Brown</span>
+                <div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80" aria-label="3 of 80 chapters read"><div class="progress__bar" style="--value: 4%;"></div></div><span class="progress-row__label">3 of 80</span></div>
+                <div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 4</a></div>
+              </div>
+            </article>
+            <article class="card book-card">
+              <span class="cover cover--sun" aria-hidden="true">🐕</span>
+              <div class="book-card__body">
+                <h3 class="book-card__title" style="margin: var(--space-0);">Because of Winn-Dixie</h3>
+                <span class="book-card__author">Kate DiCamillo · Dad added this on Thursday</span>
+                <div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Start with Chapter 1</a></div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>"On the go" with progress, and "Up next" without. Cards sit in <code>.grid--auto</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;article class="card book-card"&gt;
+  &lt;span class="cover cover--mint" aria-hidden="true"&gt;🤖&lt;/span&gt;
+  &lt;div class="book-card__body"&gt;
+    &lt;h3 class="book-card__title"&gt;The Wild Robot&lt;/h3&gt;
+    &lt;span class="book-card__author"&gt;Peter Brown&lt;/span&gt;
+    &lt;div class="progress-row"&gt;
+      &lt;div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80"
+           aria-label="3 of 80 chapters read"&gt;&lt;div class="progress__bar" style="--value: 4%;"&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;span class="progress-row__label"&gt;3 of 80&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="book-card__actions"&gt;&lt;a class="btn btn--sm" href="…"&gt;Log Chapter 4&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</code></pre></details>
+      </div>
+      <h3>Page header</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="book-card">
+            <span class="cover cover--sage cover--lg" aria-hidden="true">🦁</span>
+            <div class="book-card__body">
+              <p class="book-card__title" style="font: var(--text-h2);">The Lion, the Witch and the Wardrobe</p>
+              <span class="book-card__author">C. S. Lewis</span>
+              <div class="progress-row"><div class="progress progress--lg" role="progressbar" aria-valuenow="11" aria-valuemin="0" aria-valuemax="17" aria-label="11 of 17 chapters read"><div class="progress__bar" style="--value: 65%;"></div></div><span class="progress-row__label">11 of 17 chapters</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>The book page header. In the product the title is the page's <code>&lt;h1&gt;</code> at <code>--text-h2</code>; shown here as a paragraph because this page has its own <code>&lt;h1&gt;</code>.</span></div>
+      </div>
+      <h3>Compact</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="book-card"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title" style="font: var(--text-label);">Matilda · 21 chapters in 24 days</span><span class="book-card__author">Finished Tue 13 Oct</span></div></div>
+        </div>
+        <div class="ds-example__caption"><span>From Give a reward: small cover, label-sized title, no actions.</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>The card's size follows its cover: small (44px) for compact, medium (80px) on the shelf and on Log a chapter, large (120px) in book page headers. The body always fills the rest of the row.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The card itself is not a link, so it has no hover or focus; its button does (see <a href="button.html">button</a>). Its states describe the book.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Reading</th><td><div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><span class="book-card__title">The Lion, the Witch and the Wardrobe</span><span class="book-card__author">C. S. Lewis</span><div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="11" aria-valuemin="0" aria-valuemax="17" aria-label="11 of 17 chapters read"><div class="progress__bar" style="--value: 65%;"></div></div><span class="progress-row__label">11 of 17</span></div><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html" data-state="focus">Log Chapter 12</a></div></div></div></td></tr>
+          <tr><th scope="row">Not started</th><td><div class="book-card"><span class="cover cover--sun" aria-hidden="true">🐕</span><div class="book-card__body"><span class="book-card__title">Because of Winn-Dixie</span><span class="book-card__author">Kate DiCamillo · Dad added this on Thursday</span><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Start with Chapter 1</a></div></div></div></td></tr>
+          <tr><th scope="row">Finished</th><td><div class="book-card"><span class="cover cover--rose cover--lg" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda</span><span class="book-card__author">Roald Dahl</span><div class="progress-row"><div class="progress progress--lg progress--complete" role="progressbar" aria-valuenow="21" aria-valuemin="0" aria-valuemax="21" aria-label="21 of 21 chapters read"><div class="progress__bar" style="--value: 100%;"></div></div><span class="progress-row__label">21 of 21 · finished!</span></div></div></div></td></tr>
+          <tr><th scope="row">Loading</th><td><div class="book-card" aria-hidden="true"><span class="cover skeleton"></span><div class="book-card__body"><span class="skeleton skeleton--title"></span><span class="skeleton skeleton--text"></span><span class="skeleton skeleton--text"></span></div></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><article class="card book-card"><span class="cover cover--mint" aria-hidden="true">🤖</span><div class="book-card__body"><span class="book-card__title">The Wild Robot</span><span class="book-card__author">Peter Brown</span><div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80" aria-label="3 of 80 chapters read"><div class="progress__bar" style="--value: 4%;"></div></div><span class="progress-row__label">3 of 80</span></div><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 4</a></div></div></article></div>
+        <div data-theme="dark"><article class="card book-card"><span class="cover cover--mint" aria-hidden="true">🤖</span><div class="book-card__body"><span class="book-card__title">The Wild Robot</span><span class="book-card__author">Peter Brown</span><div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80" aria-label="3 of 80 chapters read"><div class="progress__bar" style="--value: 4%;"></div></div><span class="progress-row__label">3 of 80</span></div><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 4</a></div></div></article></div>
+      </div>
+      <ul>
+        <li><b>Finished</b> says "21 of 21 · finished!", drops the action and switches the bar to <code>.progress--complete</code> (green fill; the mock still shows the accent fill). The book page adds a celebration card with a 🏆 sticker below.</li>
+        <li><b>Loading</b>: a skeleton cover beside skeleton lines, inside an <code>aria-busy</code> container.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Cover and body stay side by side at every width; the title wraps (balanced) rather than the layout stacking.</li>
+        <li>Shelf cards sit in <code>.grid--auto</code>: one column on phones, two or more once each card can be 18rem wide.</li>
+        <li>Actions wrap below each other if they do not fit; on the shelf there is only one.</li>
+        <li>In a page header the primary "I read Chapter 12" button sits beside the card from 768px and drops below it on phones (<code>.page-header</code> wraps).</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The book card adds no colours of its own: title in <code>--color-fg-default</code>, author in <code>--color-fg-muted</code>, plus whatever the card, cover and progress bar read. It themes through those components.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>On the shelf, an <code>&lt;article&gt;</code> per book with a heading for the title, so screen-reader users can jump book to book. In a page header the title is the <code>&lt;h1&gt;</code>. The cover is <code>aria-hidden</code>; the progress bar is <code>role="progressbar"</code> with <code>aria-valuenow/min/max</code> and an <code>aria-label</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves to the card's button; the card itself is not a stop.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows the button's link (log the next chapter).</td></tr>
+        <tr><td>Screen reader heading keys</td><td>Jump from book title to book title.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Only the action takes focus, with the shared ring. Do not wrap the whole card in a link: it would make one huge focus target and repeat the title, author and progress in its name.</p>
+      <h3>Labelling</h3>
+      <p>The button names the chapter ("Log Chapter 12"), so it makes sense out of context. The progress bar's label says the same as its visible text ("11 of 17 chapters read").</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Title on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Author on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Progress fill on track</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-subtle-hover" data-min="3"></span></div><div class="ds-pair"><span>Finished fill on track</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-subtle-hover" data-min="3"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Title on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Author on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Progress fill on track</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-subtle-hover" data-min="3"></span></div><div class="ds-pair"><span>Finished fill on track</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-subtle-hover" data-min="3"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>The progress bar's width transitions over <code>--duration-slow</code> when it changes; zeroed under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>The small button is 32px tall and the only target in the card, so there is nothing to mis-tap next to it.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Title exactly as on the book; no truncation on the shelf.</li>
+        <li>Author line: author first, then one short note joined with " · " ("Kate DiCamillo · Dad added this on Thursday").</li>
+        <li>Progress label: "11 of 17" in cards, "11 of 17 chapters" in headers where there is room.</li>
+        <li>The action names the very next chapter: "Log Chapter 12", "Start with Chapter 1".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><span class="book-card__title">The Lion, the Witch and the Wardrobe</span><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 12</a></div></div></div></div><figcaption>Name the next chapter in the action.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><span class="book-card__title">The Lion, the Witch and the Wardrobe</span><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Go</a></div></div></div></div><figcaption>A vague "Go"; out of context, a screen reader hears three identical buttons.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda is finished!</span></div></div></div><figcaption>Put a finished book's celebration in <code>.card--warning</code> or <code>.card--success</code>.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="book-card" style="background: var(--color-warning-bg);"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda is finished!</span></div></div></div><figcaption>Tinting the card with an inline gradient or background, as the Review mock did.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Title</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Author</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Cover to body gap</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
+          <tr><td>Body gap</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Actions offset</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Title font</td><td><code>--text-h4</code></td><td colspan="2"><span data-token="--text-h4"></span></td></tr>
+          <tr><td>Author font</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Card padding</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="grid grid--auto"&gt;
+  &lt;article class="card book-card"&gt;
+    &lt;span class="cover cover--sage" aria-hidden="true"&gt;🦁&lt;/span&gt;
+    &lt;div class="book-card__body"&gt;
+      &lt;h3 class="book-card__title"&gt;The Lion, the Witch and the Wardrobe&lt;/h3&gt;
+      &lt;span class="book-card__author"&gt;C. S. Lewis&lt;/span&gt;
+      &lt;div class="progress-row"&gt;…&lt;/div&gt;
+      &lt;div class="book-card__actions"&gt;&lt;a class="btn btn--sm" href="…"&gt;Log Chapter 12&lt;/a&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/div&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.book-card</code></td><td>Cover and body in a top-aligned row, 16px apart. Add <code>.card</code> for the shelf tile.</td></tr>
+        <tr><td><code>.book-card__body</code></td><td>Flexible column, 8px gap, <code>min-width: 0</code>.</td></tr>
+        <tr><td><code>.book-card__title</code></td><td><code>--text-h4</code>, balanced wrap. Use on a heading.</td></tr>
+        <tr><td><code>.book-card__author</code></td><td>Muted small text.</td></tr>
+        <tr><td><code>.book-card__actions</code></td><td>Wrapping row of small buttons.</td></tr>
+        <tr><td><code>.progress-row</code></td><td>Progress bar and its label; see <a href="progress.html">progress</a>.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> ("On the go" and "Up next" cards)</li>
+        <li><a href="../../mocks/pages/shelf/loading.html">pages/shelf/loading</a> (skeleton cards)</li>
+        <li><a href="../../mocks/pages/book/default.html">pages/book/default</a> and <a href="../../mocks/pages/book/finished.html">pages/book/finished</a> (page header)</li>
+        <li><a href="../../mocks/pages/log-chapter/default.html">pages/log-chapter/default</a> (medium cover header)</li>
+        <li><a href="../../mocks/dialogs/give-reward/default.html">dialogs/give-reward/default</a> and <a href="../../mocks/pages/review/default.html">pages/review/default</a> (compact)</li>
+      </ul>
+      <p>Drift fixed during extraction: D7, the "Matilda is finished!" card on Review was tinted with an inline <code>linear-gradient</code>; it is now <code>.card--warning</code>. D8, compact titles set their font inline; headings inside cards use <code>.card__title</code>. D13, cover sizes are tokens.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

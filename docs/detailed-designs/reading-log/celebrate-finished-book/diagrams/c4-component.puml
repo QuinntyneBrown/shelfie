@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Celebrate a finished book
+
+Container(web, "Shelfie web", "Angular", "LogChapterPage, BookPage, sh-celebration")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "chapters.router.ts", "Express Router", "POST /books/:id/chapters/:n")
+  Component(service, "chapters.service.ts", "Service", "logChapter: after insert, count logs; when count = chapter_count set finished_at")
+  Component(repo, "chapters.repo.ts", "Repository", "countLogs, setFinishedAt")
+  Component(review, "review.service.ts", "Service", "Lists books with finished_at and no reward (reference)")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log")
+}
+Rel(web, router, "POST the last chapter log", "JSON/HTTPS")
+Rel(router, service, "logChapter")
+Rel(service, repo, "countLogs(bookId), setFinishedAt(bookId, now)")
+Rel(repo, db, "Reads and writes", "SQL")
+Rel(review, db, "Reads book.finished_at", "SQL")
+@enduml

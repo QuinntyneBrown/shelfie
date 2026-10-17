@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Authorize access
+
+Person(reader, "Reader", "May open her shelf, books and chapters; never grown-up areas")
+Person(grownUp, "Grown-up", "May open Review, Books, Manage book and Settings")
+System(shelfie, "Shelfie", "Reading log and comprehension questions; one household per sign-in, isolated from every other")
+
+Rel(reader, shelfie, "Opens reader pages; refused from grown-up pages and other households", "HTTPS")
+Rel(grownUp, shelfie, "Opens grown-up pages; refused from other households", "HTTPS")
+@enduml

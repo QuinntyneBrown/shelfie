@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour — View a book
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+box "Frontend — Shelfie web (shelf library)" #E0F2FE
+  participant "BookPage" as page
+  participant "sh-chapter-row" as row
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "books.router.ts\n+ requireRole(reader | grown-up)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "books.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+reader -> page : Open /book/:id from a shelf card
+page -> page : Show loading state
+page -> client : book(id)
+client -> router : GET /api/books/:id
+router -> router : Require session (401 without one)
+router -> service : getBook(householdId, bookId)
+service -> db : SELECT book WHERE id = ? AND household_id = ?
+db --> service : book row or none
+alt book not in this household
+  service --> router : NotFound
+  router --> client : 404 problem
+  client --> page : ApiError(404)
+  page --> reader : Not found page (sign-in/authorize-access)
+else server failure
+  router --> client : 500 problem {requestId}
+  client --> page : ApiError
+  page --> reader : "The chapters didn't load" with Try again and Back to my shelf
+  reader -> page : Try again
+  page -> client : book(id)
+else book found
+  service -> db : SELECT chapter_log JOIN answer (position = 1)\nWHERE book_id = ?
+  db --> service : logs with first answer text
+  service -> db : SELECT reward WHERE book_id = ?
+  db --> service : reward or none
+  service -> service : Compose chapters 1..chapterCount:\nlogged (readOn, firstLine, review, sticker) / next / future (L2-008)
+  service --> router : BookResponse
+  router --> client : 200 BookResponse
+  client --> page : BookResponse
+  page -> page : Render header with primary "I read Chapter N"\nvisible without scrolling at XS (L2-008)
+  page -> row : Render each chapter with state and review status (L2-008)
+  opt book finished
+    page -> page : Replace action with trophy card: reward text\nor "Dad is picking your reward" (L2-008)
+  end
+  page --> reader : Book shown
+  reader -> row : Tap logged row
+  row --> reader : Open sent answers (reading-log/view-chapter-answers)
+  reader -> row : Tap next row or primary action
+  row --> reader : Open log form (reading-log/log-chapter)
+end
+@enduml

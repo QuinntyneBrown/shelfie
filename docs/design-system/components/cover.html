@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book cover — Shelfie design system</title>
+<meta name="description" content="Book covers are pastel tiles with a sticker, chosen when a book is added. Seven colours, four sizes and a loading skeleton.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/pin-entry.html">PIN entry</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/profile-tile.html">Profile tile</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Book cover</h1>
+      <p class="ds-lead">Every book gets a made-up cover: a pastel tile in a 2:3 book shape with one big sticker. Nia picks both when a book is added, so The Lion, the Witch and the Wardrobe is always the sage tile with the lion.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Decorative <code>&lt;span&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Covers are made, not fetched: there are no uploads and no online lookup. The cover gives each book a face a child can find at a glance, and it appears wherever the book does: the shelf, the book page, lists, the review queue, dialogs and the finished-book celebration. People get an <a href="avatar.html">avatar</a>, not a cover; rewards get a <a href="sticker.html">sticker</a>.</p>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <span class="cover cover--sage cover--lg" aria-hidden="true">🦁</span>
+          <span class="ds-callout" style="left: 50%; top: 40%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 41%; top: 18%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 60%; top: 78%;" aria-hidden="true">3</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Sticker</b><small>One emoji, 40% of the tile's width, centred.</small></div></li>
+          <li><div><b>Spine shadow</b><small>A 4px inset on the left edge in 10% <code>--color-fg-on-cover</code>, so the tile reads as a book.</small></div></li>
+          <li><div><b>Tile</b><small>2:3 aspect ratio, width from <code>--size-cover-*</code>, a cover colour, <code>--shadow-1</code>, radius growing with size.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Seven colours, all pastel, all with dark ink. The colour has no meaning beyond "this book"; never use it for status.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <span class="cover cover--sage" aria-hidden="true">🦁</span>
+          <span class="cover cover--rose" aria-hidden="true">📚</span>
+          <span class="cover cover--sky" aria-hidden="true">🕷️</span>
+          <span class="cover cover--sun" aria-hidden="true">🐕</span>
+          <span class="cover cover--lilac" aria-hidden="true">🐉</span>
+          <span class="cover cover--mint" aria-hidden="true">🤖</span>
+          <span class="cover cover--peach" aria-hidden="true">🚀</span>
+        </div>
+        <div class="ds-example__caption"><span>Sage, rose, sky, sun, lilac, mint, peach. The first five are the books in the catalog; lilac and peach are shown with stickers from the Add a book picker.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="cover cover--sage" aria-hidden="true"&gt;🦁&lt;/span&gt;
+&lt;span class="cover cover--rose" aria-hidden="true"&gt;📚&lt;/span&gt;
+&lt;span class="cover cover--sky" aria-hidden="true"&gt;🕷️&lt;/span&gt;
+&lt;span class="cover cover--sun" aria-hidden="true"&gt;🐕&lt;/span&gt;
+&lt;span class="cover cover--lilac" aria-hidden="true"&gt;🐉&lt;/span&gt;
+&lt;span class="cover cover--mint" aria-hidden="true"&gt;🤖&lt;/span&gt;
+&lt;span class="cover cover--peach" aria-hidden="true"&gt;🚀&lt;/span&gt;</code></pre></details>
+      </div>
+      <p>On Add a book, the swatch picker sets the same colours through the <code>--cover</code> property (<code>style="--cover: var(--color-cover-mint)"</code>); a saved book always uses the modifier class.</p>
+    </section>
+
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>Pick the size by how much the book is the subject of the screen.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas" style="align-items: flex-end;">
+          <span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span>
+          <span class="cover cover--sage" aria-hidden="true">🦁</span>
+          <span class="cover cover--sage cover--lg" aria-hidden="true">🦁</span>
+          <span class="cover cover--sage cover--xl" aria-hidden="true">🦁</span>
+        </div>
+        <div class="ds-example__caption"><span>Small · 44px (lists, tables, dialogs) · medium · 80px (book cards, log-a-chapter header) · large · 120px (book page, shelf hero) · extra large · 160px (finished-book celebration, Add a book preview).</span></div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>A cover is not interactive: no hover, focus, active or disabled state. Its link or button lives on the card or row around it. The only other state is loading.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Size</th><th scope="col">Default</th><th scope="col">Loading</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Small</th><td><span class="cover cover--mint cover--sm" aria-hidden="true">🤖</span></td><td><span class="cover cover--sm skeleton" aria-hidden="true"></span></td></tr>
+          <tr><th scope="row">Medium</th><td><span class="cover cover--mint" aria-hidden="true">🤖</span></td><td><span class="cover skeleton" aria-hidden="true"></span></td></tr>
+          <tr><th scope="row">Large</th><td><span class="cover cover--mint cover--lg" aria-hidden="true">🤖</span></td><td><span class="cover cover--lg skeleton" aria-hidden="true"></span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="cluster"><span class="cover cover--sage" aria-hidden="true">🦁</span><span class="cover cover--rose" aria-hidden="true">📚</span><span class="cover cover--sky" aria-hidden="true">🕷️</span><span class="cover cover--sun" aria-hidden="true">🐕</span><span class="cover cover--lilac" aria-hidden="true">🐉</span><span class="cover cover--mint" aria-hidden="true">🤖</span><span class="cover cover--peach" aria-hidden="true">🚀</span><span class="cover skeleton" aria-hidden="true"></span></div></div>
+        <div data-theme="dark"><div class="cluster"><span class="cover cover--sage" aria-hidden="true">🦁</span><span class="cover cover--rose" aria-hidden="true">📚</span><span class="cover cover--sky" aria-hidden="true">🕷️</span><span class="cover cover--sun" aria-hidden="true">🐕</span><span class="cover cover--lilac" aria-hidden="true">🐉</span><span class="cover cover--mint" aria-hidden="true">🤖</span><span class="cover cover--peach" aria-hidden="true">🚀</span><span class="cover skeleton" aria-hidden="true"></span></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b>: <code>.cover.skeleton</code> keeps the tile's size and shape, drops the shadow and shimmers. Use it with skeleton text beside it, inside an <code>aria-busy</code> container.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Sizes are fixed tokens, not fluid. The book page uses the large cover at every width; the title beside it wraps.</li>
+        <li>The cover never shrinks in a flex row (<code>flex: none</code>).</li>
+        <li>In the shelf hero the cover sits beside the text when there is room and above it on narrow phones, because the hero wraps.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Cover colours (<code>--color-cover-*</code>) and their ink (<code>--color-fg-on-cover</code>) stay the same in both themes, so a book looks the same day and night. The component reads one property, <code>--cover</code>, which each modifier sets; to add an eighth colour, add a <code>--color-cover-*</code> token and its contrast pair, then a <code>.cover--{name}</code> modifier.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A decorative <code>&lt;span aria-hidden="true"&gt;</code>. The book's title is always printed next to it, so the cover adds nothing for a screen reader. It is not an <code>&lt;img&gt;</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Skips the cover; focus goes to the card's or row's link.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>Never focusable.</p>
+      <h3>Labelling</h3>
+      <p>None: <code>aria-hidden</code>. If a cover ever appears without its title beside it, it needs <code>role="img"</code> and an <code>aria-label</code> with the title; no mock does this.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Sticker on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on rose</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sky</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sky" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Sticker on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on rose</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sky</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sky" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Sticker on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div></div></div></div>
+      <p>Emoji draw in their own colours; the ink pair matters when a platform falls back to a monochrome glyph.</p>
+      <h3>Motion</h3>
+      <p>Only the skeleton shimmer, on <code>--duration-loop</code>; it stops under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Not a target on its own. The surrounding card or row is.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>One emoji per cover, chosen to match the book: 🦁 for the lion, 🤖 for the robot, 🐕 for Winn-Dixie.</li>
+        <li>No text on the cover. The title is always next to it.</li>
+        <li>Keep a book's colour and sticker the same everywhere it appears.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><span>Matilda</span></div><figcaption>Hide the cover from screen readers and print the title beside it.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="cover cover--rose cover--sm" role="img" aria-label="Books emoji on rose">📚</span><span>Matilda</span></div><figcaption>Describing the cover next to the title makes screen readers say the book twice, and badly.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="cover cover--mint cover--sm" aria-hidden="true">🤖</span><span class="badge badge--info">Reading</span></div><figcaption>Show status with a badge next to the cover.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="cover cover--sun cover--sm" aria-hidden="true">⚠️</span><span>Because of Winn-Dixie</span></div><figcaption>Changing the cover's colour or sticker to signal status; the cover is the book's face, not a flag.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Sage</td><td><code>--color-cover-sage</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sage" data-swatch></i><span data-token="--color-cover-sage"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sage" data-swatch></i><span data-token="--color-cover-sage"></span></span></td></tr>
+          <tr><td>Rose</td><td><code>--color-cover-rose</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-rose" data-swatch></i><span data-token="--color-cover-rose"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-rose" data-swatch></i><span data-token="--color-cover-rose"></span></span></td></tr>
+          <tr><td>Sky</td><td><code>--color-cover-sky</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sky" data-swatch></i><span data-token="--color-cover-sky"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sky" data-swatch></i><span data-token="--color-cover-sky"></span></span></td></tr>
+          <tr><td>Sun</td><td><code>--color-cover-sun</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td></tr>
+          <tr><td>Lilac</td><td><code>--color-cover-lilac</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-lilac" data-swatch></i><span data-token="--color-cover-lilac"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-lilac" data-swatch></i><span data-token="--color-cover-lilac"></span></span></td></tr>
+          <tr><td>Mint</td><td><code>--color-cover-mint</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-mint" data-swatch></i><span data-token="--color-cover-mint"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-mint" data-swatch></i><span data-token="--color-cover-mint"></span></span></td></tr>
+          <tr><td>Peach</td><td><code>--color-cover-peach</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-peach" data-swatch></i><span data-token="--color-cover-peach"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-peach" data-swatch></i><span data-token="--color-cover-peach"></span></span></td></tr>
+          <tr><td>Ink and spine</td><td><code>--color-fg-on-cover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-cover" data-swatch></i><span data-token="--color-fg-on-cover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-cover" data-swatch></i><span data-token="--color-fg-on-cover"></span></span></td></tr>
+          <tr><td>Width sm / md / lg / xl</td><td><code>--size-cover-sm/md/lg/xl</code></td><td colspan="2"><span data-token="--size-cover-sm"></span> / <span data-token="--size-cover-md"></span> / <span data-token="--size-cover-lg"></span> / <span data-token="--size-cover-xl"></span></td></tr>
+          <tr><td>Radius sm / md / lg and xl</td><td><code>--radius-sm</code> / <code>--radius-md</code> / <code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-sm"></span> / <span data-token="--radius-md"></span> / <span data-token="--radius-lg"></span></td></tr>
+          <tr><td>Shadow</td><td><code>--shadow-1</code></td><td colspan="2"><span data-token="--shadow-1"></span></td></tr>
+          <tr><td>Spine width</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;span class="cover cover--sage cover--lg" aria-hidden="true"&gt;🦁&lt;/span&gt;
+
+&lt;!-- Loading --&gt;
+&lt;span class="cover cover--lg skeleton" aria-hidden="true"&gt;&lt;/span&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / property</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.cover</code></td><td>80px-wide 2:3 tile, sage by default, centred sticker at 40% of the width.</td></tr>
+        <tr><td><code>.cover--sm</code> <code>.cover--lg</code> <code>.cover--xl</code></td><td>44, 120 or 160px wide; omit for 80px.</td></tr>
+        <tr><td><code>.cover--sage</code> … <code>.cover--peach</code></td><td>Sets <code>--cover</code> to one of the seven colours.</td></tr>
+        <tr><td><code>--cover</code></td><td>The tile colour; set inline only in the Add a book preview.</td></tr>
+        <tr><td><code>.cover.skeleton</code></td><td>Loading tile: shimmer, no shadow, no sticker.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (large hero cover, medium card covers, small trophy covers)</li>
+        <li><a href="../../mocks/pages/book/default.html">pages/book/default</a> (large cover in the page header)</li>
+        <li><a href="../../mocks/pages/books/default.html">pages/books/default</a> (small covers, five colours)</li>
+        <li><a href="../../mocks/pages/add-book/default.html">pages/add-book/default</a> (extra-large preview, <code>--cover</code> swatches)</li>
+        <li><a href="../../mocks/pages/log-chapter/finished.html">pages/log-chapter/finished</a> (extra-large cover in the celebration)</li>
+        <li><a href="../../mocks/pages/book/loading.html">pages/book/loading</a> and <a href="../../mocks/pages/review/loading.html">pages/review/loading</a> (skeleton covers)</li>
+      </ul>
+      <p>Drift fixed during extraction: D13, the cover sizes were raw pixel values; they are now <code>--size-cover-sm/md/lg/xl</code>, and the small cover's sticker went from a fixed 20px to 40% of the tile (17.6px) so every size keeps the same proportion.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-17</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Harden the API
+
+Container(web, "Shelfie web", "Angular", "ApiClient: credentials include, X-Requested-With: Shelfie")
+Container_Boundary(api, "Shelfie API") {
+  Component(app, "app.ts", "Express app", "createApp(): fixes the middleware order; Cache-Control: no-store under /api")
+  Component(helmet, "helmet", "Middleware", "CSP, X-Content-Type-Options, frame-ancestors, HSTS")
+  Component(json, "express.json", "Middleware", "JSON body, 16 kB limit, 413 problem when exceeded")
+  Component(session, "session.ts", "Middleware and helpers", "sessionMiddleware reads shelfie_session; issueSession rotates the id; revokeSession")
+  Component(csrf, "csrf.ts", "Middleware", "csrfGuard: rejects cross-site or header-less state-changing requests with 403")
+  Component(rate, "rateLimit.ts", "Middleware", "passwordSignInLimiter: 10 per 10 minutes per IP on POST /api/auth/password")
+  Component(validate, "validate.ts", "Middleware factory", "validate(schema): zod parse; 400 problem with errors[]")
+  Component(authz, "authz.ts", "Middleware factory", "requireRole(role): 401 without session, 403 with wrong role")
+  Component(routers, "modules/*/*.router.ts", "Express Routers", "Mounted under /api; call services and repos")
+  Component(repos, "modules/*/*.repo.ts", "Repositories", "better-sqlite3 prepared statements with placeholders")
+  Component(hashing, "hashing.ts", "Helper", "hashSecret / verifySecret with argon2id")
+  Component(errors, "errors.ts", "Error handler", "Problem type; problemDetailsHandler: RFC 9457 body, no stack, SQL or path")
+  Component(logger, "logger.ts", "pino logger", "Redacts cookie, password, pin, token, text and answers; never logs bodies")
+  ComponentDb(db, "Shelfie database", "SQLite", "session, profile, book and child tables with ON DELETE CASCADE")
+}
+Rel(web, app, "JSON/HTTPS requests")
+Rel(app, helmet, "1. applies")
+Rel(app, json, "2. applies")
+Rel(app, session, "3. applies")
+Rel(app, csrf, "4. applies")
+Rel(app, routers, "5. mounts under /api")
+Rel(app, errors, "6. applies last")
+Rel(routers, rate, "POST /api/auth/password applies")
+Rel(routers, validate, "Applies per endpoint")
+Rel(routers, authz, "Applies per endpoint")
+Rel(routers, hashing, "Hash and verify passwords and PINs")
+Rel(routers, repos, "Call through services")
+Rel(repos, db, "Parameterised SQL")
+Rel(session, db, "SELECT, INSERT, DELETE session")
+Rel(errors, logger, "Logs the full error with requestId")
+@enduml

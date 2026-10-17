@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Load the review queue
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up" as grownUp
+box "Frontend — Shelfie web (review library)" #E0F2FE
+  participant "ReviewPage" as page
+  participant "ReviewApi" as client
+  participant "sh-tab-bar / sh-top-bar\n(via AppComponent)" as bars
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "review.router.ts\n+ requireRole('grown_up')" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "review.service.ts" as service
+  participant "chapters module\nstreak function" as streak
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+grownUp -> page : Open Review
+page -> page : Show sh-skeleton placeholders
+page -> client : load()
+client -> router : GET /api/review
+router -> router : Check session role is grown_up (401 / 403)
+router -> service : overview(householdId, now)
+service -> db : SELECT pending chapter_log JOIN book\nWHERE reviewed_at IS NULL ORDER BY logged_at DESC
+db --> service : queue rows
+service -> db : SELECT finished book LEFT JOIN reward\nWHERE finished_at IS NOT NULL AND reward IS NULL
+db --> service : finished books without reward
+service -> db : COUNT chapter_log this week;\nactivity UNION ALL newest first
+db --> service : week count, activity rows
+service -> streak : streak(householdId, now)
+streak --> service : streak days
+service --> router : ReviewOverview
+alt server failure
+  router --> client : 500 problem {requestId}
+  client --> page : ApiError
+  page --> grownUp : sh-error-state "The review queue didn't load" + Try again (L2-014)
+else queue and finished list empty
+  router --> client : 200 ReviewOverview
+  client -> client : queueCount.set(0)
+  client --> page : ReviewOverview
+  page --> grownUp : sh-empty-state "Nothing to review" (L2-014)
+else chapters waiting
+  router --> client : 200 ReviewOverview
+  client -> client : queueCount.set(queue.length)
+  client --> page : ReviewOverview
+  page --> grownUp : Queue newest first, primary Review on the newest,\nfinished books, this-week panel, activity (L2-014)
+end
+bars -> client : read queueCount()
+client --> bars : count for the Review badge
+@enduml

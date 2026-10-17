@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a book
+
+Container(web, "Shelfie web", "Angular", "BookPage with sh-chapter-row; ShelfApi.book(id)")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "books.router.ts", "Express Router", "GET /api/books/:id; requires a session of either role")
+  Component(authz, "requireRole()", "Middleware (authz.ts)", "401 without a session")
+  Component(service, "books.service.ts", "Service", "getBook: 404 outside the household; composes chapters 1..N with state, first line, review status")
+  Component(repo, "books.repo.ts", "Repository", "findBook, listChapterLogsWithFirstAnswer, findReward")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, answer, reward")
+}
+Rel(web, router, "GET /api/books/:id", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, service, "getBook(householdId, bookId)")
+Rel(service, repo, "findBook, listChapterLogsWithFirstAnswer, findReward")
+Rel(repo, db, "Reads", "SQL")
+@enduml

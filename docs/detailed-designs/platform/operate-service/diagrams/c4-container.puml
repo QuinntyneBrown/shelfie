@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Operate the service
+
+Person(grownUp, "Grown-up", "Operates the service")
+System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer (<TO SUPPLY>)")
+System_Ext(ci, "GitHub Actions", "lint, unit, api, build, e2e, lighthouse jobs")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Lazy route per feature library; initial bundle at most 300 kB gzipped; server-error page shows the request id")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "requestContext, pino log line per request, GET /api/health, problemDetailsHandler with requestId")
+  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "WAL, synchronous=NORMAL; indexes on chapter_log and book")
+  Container(backup, "Backup job", "Node.js script", "VACUUM INTO a dated file; integrity check; prunes old copies")
+}
+Rel(grownUp, web, "Uses", "HTTPS")
+Rel(grownUp, api, "Polls GET /api/health; searches stdout log by requestId")
+Rel(web, api, "Calls; receives Problem.requestId on errors", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+Rel(scheduler, backup, "Runs nightly")
+Rel(backup, db, "VACUUM INTO shelfie-YYYY-MM-DD.sqlite", "SQL")
+Rel(ci, web, "Builds with angular.json budgets; Lighthouse CI LCP budgets")
+Rel(ci, api, "Runs API tests including p95 read test")
+@enduml

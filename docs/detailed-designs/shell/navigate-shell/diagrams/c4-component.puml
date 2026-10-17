@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Navigate the shell
+
+Person(user, "Reader or Grown-up", "Navigates by touch, mouse or keyboard")
+Container_Boundary(web, "Shelfie web") {
+  Component(app, "AppComponent", "shelfie application", "Skip link, top bar, banner slot, main landmark, tab bar, toast stack; picks reader or grown-up shell")
+  Component(router, "Angular Router", "@angular/router", "Renders the active page into main and marks the active link")
+  Component(session, "SessionService", "core library", "Signal holding role, name and colour")
+  Component(topBar, "sh-top-bar", "components library", "Brand, streak badge, primary links from 768 px, queue badge, avatar button")
+  Component(tabBar, "sh-tab-bar", "components library", "Bottom tab bar below 768 px: Review / Books / Settings")
+  Component(menu, "sh-menu", "components library", "WAI-ARIA menu button: open, arrow keys, Escape with focus return")
+  Component(dialog, "sh-dialog", "components library", "Native dialog; bottom sheet under 640 px; focus trap and return")
+  Component(notify, "sh-banner, sh-toast-stack", "components library (notify)", "Banner slot under the top bar; toast stack at the bottom edge")
+}
+Rel(user, app, "Uses", "Chromium")
+Rel(app, session, "Reads session()")
+Rel(app, router, "Hosts router-outlet in main")
+Rel(app, topBar, "Renders with streak, links, queueCount")
+Rel(app, tabBar, "Renders for grown-up below 768 px")
+Rel(topBar, menu, "Opens from the avatar button")
+Rel(menu, app, "select(id)")
+Rel(app, notify, "Renders slots")
+Rel(router, dialog, "Pages open dialogs through")
+@enduml
