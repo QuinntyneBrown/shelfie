@@ -29,6 +29,7 @@ export class SignInPage {
   protected readonly lockedUntil = signal<number | null>(null);
   protected readonly credentialsWrong = signal(false);
   protected readonly submitting = signal(false);
+  protected readonly unreachable = signal(false);
   private readonly keypad = viewChild(PinKeypad);
   private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
 
@@ -49,13 +50,18 @@ export class SignInPage {
     if (this.emailError() || this.passwordError()) return;
 
     this.credentialsWrong.set(false);
+    this.unreachable.set(false);
     this.submitting.set(true);
     try {
       this.session.current.set(await this.api.signInWithPassword(email, this.password()));
     } catch (e) {
-      if (!(e instanceof ApiError) || e.type !== 'credentials-invalid') throw e;
-      this.credentialsWrong.set(true);
-      setTimeout(() => this.summary()?.nativeElement.focus());
+      if (e instanceof ApiError && e.type === 'credentials-invalid') {
+        this.credentialsWrong.set(true);
+        setTimeout(() => this.summary()?.nativeElement.focus());
+        return;
+      }
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.unreachable.set(true);
       return;
     } finally {
       this.submitting.set(false);

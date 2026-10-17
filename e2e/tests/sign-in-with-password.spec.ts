@@ -61,3 +61,16 @@ test('Given a sign-in is in flight, when Dad submits again, then no second reque
   await expect(page).toHaveURL(/\/review$/);
   expect(signIn.passwordRequestCount()).toBe(1);
 });
+
+test('Given the server cannot be reached, when Dad signs in, then he is told so and can try again', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.breakPasswordRequests();
+  await signIn.signInWithPassword(DAD.email, DAD.password);
+
+  await expect(signIn.failureSummary()).toContainText('Shelfie isn’t reachable right now');
+  await signIn.repairPasswordRequests();
+  await signIn.tryAgain();
+
+  await expect(page).toHaveURL(/\/review$/);
+});

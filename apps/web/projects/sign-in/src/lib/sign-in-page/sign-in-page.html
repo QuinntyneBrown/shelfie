@@ -30,6 +30,18 @@
             </div>
           </div>
         }
+        @if (unreachable()) {
+          <div class="alert alert--danger form-left" role="alert">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+            <div class="alert__body">
+              <div class="alert__title">Shelfie isn’t reachable right now</div>
+              <div>Your password wasn’t checked because the server didn’t answer. Check your connection and try again.</div>
+              <div class="alert__actions">
+                <button class="btn btn--sm" type="button" (click)="submitPassword()">Try again</button>
+              </div>
+            </div>
+          </div>
+        }
         <form class="stack form-left" (submit)="$event.preventDefault(); submitPassword()" novalidate>
           <sh-text-field label="Email" type="email" autocomplete="username" [error]="emailError()" [(value)]="email" />
           <sh-text-field label="Password" type="password" autocomplete="current-password" [error]="passwordError()" [(value)]="password" />

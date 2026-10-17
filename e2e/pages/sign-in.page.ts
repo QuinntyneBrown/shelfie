@@ -49,6 +49,18 @@ export class SignInPage {
     return release;
   }
 
+  async breakPasswordRequests() {
+    await this.page.route('**/api/auth/password', (route) => route.abort());
+  }
+
+  async repairPasswordRequests() {
+    await this.page.unroute('**/api/auth/password');
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
   async pressSignIn() {
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }
