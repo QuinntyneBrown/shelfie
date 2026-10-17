@@ -2,7 +2,8 @@
 # Sent to the VM by deploy.yml through `az vm run-command invoke`, prefixed with RELEASE_SHA and
 # STORAGE_ACCOUNT exports. Downloads the release tarball with the VM's managed identity, unpacks it
 # and hands over to the release's own deploy.sh. Prints DEPLOY_OK last so the workflow can tell
-# success from failure in the run-command output.
+# success from failure in the run-command output. run-command starts scripts with sh, so re-exec in bash.
+if [ -z "${BASH_VERSION:-}" ]; then exec bash "$0" "$@"; fi
 set -euo pipefail
 : "${RELEASE_SHA:?}" "${STORAGE_ACCOUNT:?}"
 release=/opt/shelfie/releases/$RELEASE_SHA
