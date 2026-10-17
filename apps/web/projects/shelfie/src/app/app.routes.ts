@@ -20,4 +20,5 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('log-chapter').then((m) => m.LogChapterPage),
   },
+  { path: '**', loadComponent: () => import('sign-in').then((m) => m.NotFoundPage) },
 ];

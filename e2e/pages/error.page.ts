@@ -8,6 +8,10 @@ export class ErrorPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  homeLink(name: 'Back to my shelf' | 'Go to Review') {
+    return this.page.getByRole('link', { name });
+  }
+
   async backToShelf() {
     await this.page.getByRole('link', { name: 'Back to my shelf' }).click();
   }
