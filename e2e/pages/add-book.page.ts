@@ -31,6 +31,14 @@ export class AddBookPage {
     if (book.sticker) await this.page.getByRole('radio', { name: book.sticker, exact: true }).check({ force: true });
   }
 
+  preview() {
+    return this.page.getByRole('complementary', { name: 'Cover preview' });
+  }
+
+  previewCover() {
+    return this.preview().locator('.cover');
+  }
+
   async submit() {
     await this.page.getByRole('button', { name: 'Add to my shelf' }).click();
   }

@@ -21,3 +21,18 @@ test('Given Nia is on her shelf, when she adds a book from the Add a book button
   await expect(shelf.cover('Up next', 'The Hobbit')).toHaveText('🐉');
   await expect(shelf.cover('Up next', 'The Hobbit')).toHaveClass(/cover--peach/);
 });
+
+test('Given the form is opened, when Nia types and picks, then the preview follows from its placeholders', async ({ page }) => {
+  await signInAsNia(page);
+  const add = new AddBookPage(page);
+  await add.open();
+
+  await expect(add.preview()).toContainText('Untitled book');
+  await expect(add.preview()).toContainText('Unknown author');
+  await add.fill({ title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapters: 26, colour: 'Sun', sticker: 'Dog' });
+
+  await expect(add.preview()).toContainText('Because of Winn-Dixie');
+  await expect(add.preview()).toContainText('Kate DiCamillo · 26 chapters');
+  await expect(add.previewCover()).toHaveText('🐕');
+  await expect(add.previewCover()).toHaveClass(/cover--sun/);
+});
