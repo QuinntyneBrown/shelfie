@@ -69,6 +69,11 @@
             </span>
           </div>
         </div>
+        <div>
+          <button class="btn btn--primary" type="button" (click)="rewarding.set(book)">
+            Give a reward
+          </button>
+        </div>
       </section>
     }
 
@@ -86,5 +91,11 @@
         }
       </ul>
     </section>
+    <sh-give-reward-dialog
+      [book]="rewarding()"
+      [readerName]="overview.readerName"
+      (given)="rewarded($event)"
+      (closed)="rewarding.set(null)"
+    />
   }
 </div>

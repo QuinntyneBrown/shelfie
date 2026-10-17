@@ -72,6 +72,10 @@ export class ReviewApi {
     return this.api.post<FeedbackResult>(`/chapter-logs/${id}/feedback`, body);
   }
 
+  giveReward(bookId: string, body: { text: string; note: string }) {
+    return this.api.post<{ bookId: string; text: string }>(`/books/${bookId}/reward`, body);
+  }
+
   load() {
     return this.api.get<ReviewOverview>('/review');
   }

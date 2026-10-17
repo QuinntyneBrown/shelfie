@@ -31,6 +31,46 @@ export class ReviewPage {
     return this.page.getByRole('region', { name: `${title} is finished!` });
   }
 
+  async openGiveReward(title: string) {
+    await this.rewardCard(title).getByRole('button', { name: 'Give a reward' }).click();
+  }
+
+  rewardDialog() {
+    return this.page.getByRole('dialog', { name: /is finished!/ });
+  }
+
+  rewardField() {
+    return this.rewardDialog().getByRole('textbox', { name: 'The reward' });
+  }
+
+  quickPick(text: string) {
+    return this.rewardDialog().getByRole('group', { name: 'Quick picks' }).getByRole('button', { name: text });
+  }
+
+  async giveReward() {
+    await this.rewardDialog().getByRole('button', { name: 'Give the reward' }).click();
+  }
+
+  private rewardPosts = 0;
+
+  watchRewardPosts() {
+    this.page.on('request', (request) => {
+      if (request.url().endsWith('/reward')) this.rewardPosts++;
+    });
+  }
+
+  rewardPostCount() {
+    return this.rewardPosts;
+  }
+
+  async breakRewards() {
+    await this.page.route('**/reward', (route) => route.abort());
+  }
+
+  postRewardViaApi(bookId: string, data: unknown) {
+    return this.page.request.post(`/api/books/${bookId}/reward`, { data });
+  }
+
   caughtUp() {
     return this.page.getByRole('heading', { name: 'All caught up' });
   }

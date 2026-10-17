@@ -34,6 +34,7 @@ export interface BookDetail {
   sticker: string;
   loggedCount: number;
   readerName: string;
+  reward: { text: string; givenOn: string } | null;
   defaultQuestions: string[];
   questions: CustomQuestion[];
   chapters: ChapterSummary[];

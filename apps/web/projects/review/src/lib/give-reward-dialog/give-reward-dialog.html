@@ -1,0 +1,64 @@
+<sh-dialog
+  [heading]="(book()?.title ?? '') + ' is finished! 🏆'"
+  [open]="book() !== null"
+  (closed)="closed.emit()"
+>
+  @if (book(); as book) {
+    <form id="reward-form" class="stack" (submit)="$event.preventDefault(); give()" novalidate>
+      <p class="text-muted">Pick a reward and {{ readerName() }} will see it on her shelf.</p>
+      @if (failed()) {
+        <sh-banner
+          severity="danger"
+          title="The reward wasn’t saved"
+          message="Shelfie couldn’t reach the server. What you typed is still here."
+        />
+      }
+      <div class="book-card">
+        <sh-cover [color]="book.coverColor" [sticker]="book.coverSticker" size="sm" />
+        <div class="book-card__body">
+          <strong>{{ book.title }} · {{ book.chapterCount }} chapters</strong>
+          <span class="book-card__author"
+            >Finished {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}</span
+          >
+        </div>
+      </div>
+      <sh-text-field
+        label="The reward"
+        [help]="readerName() + ' sees this on her shelf next to the book.'"
+        [error]="error()"
+        [autofocus]="true"
+        [(value)]="text"
+      />
+      <div class="cluster" role="group" aria-label="Quick picks">
+        @for (pick of quickPicks; track pick) {
+          <button
+            class="chip"
+            type="button"
+            [attr.aria-pressed]="text() === pick"
+            (click)="text.set(pick)"
+          >
+            {{ pick }}
+          </button>
+        }
+      </div>
+      <sh-textarea
+        [label]="'A note for ' + readerName() + ' (optional)'"
+        [rows]="2"
+        [maxlength]="300"
+        [(value)]="note"
+      />
+    </form>
+  }
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" (click)="closed.emit()">Not now</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="reward-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      Give the reward
+    </button>
+  </div>
+</sh-dialog>

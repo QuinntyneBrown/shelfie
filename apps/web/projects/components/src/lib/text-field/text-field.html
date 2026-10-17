@@ -10,6 +10,7 @@
     [attr.autocomplete]="autocomplete()"
     [attr.inputmode]="inputmode()"
     [attr.maxlength]="maxlength()"
+    [attr.autofocus]="autofocus() ? '' : null"
     [value]="value()"
     [attr.aria-invalid]="error() ? true : null"
     [attr.aria-describedby]="describedBy()"

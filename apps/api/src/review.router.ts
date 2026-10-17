@@ -4,6 +4,17 @@ import { z } from 'zod';
 import { Problem } from './problem.ts';
 import { requireRole } from './authz.ts';
 import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
+import { giveReward } from './rewards.service.ts';
+
+const giveRewardSchema = z.object({
+  text: z.string().trim().min(1).max(100),
+  note: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((note) => note || null),
+});
 
 const feedbackSchema = z.object({
   sticker: z.enum(FEEDBACK_STICKERS),
@@ -30,6 +41,18 @@ export function reviewRouter(db: DatabaseSync) {
     if (!body.success) return res.status(400).json({ type: 'validation' });
     try {
       res.json(sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
+  });
+
+  router.post('/books/:id/reward', requireSession(db), requireRole('grown_up'), (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    const body = giveRewardSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json({ type: 'validation' });
+    try {
+      res.status(201).json(giveReward(db, householdId, String(req.params['id']), body.data.text, body.data.note));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });

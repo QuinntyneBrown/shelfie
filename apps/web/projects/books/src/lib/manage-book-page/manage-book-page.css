@@ -21,3 +21,6 @@
   padding: 0;
   margin: 0;
 }
+.rewarded {
+  background: linear-gradient(135deg, var(--color-warning-bg), var(--color-bg-surface) 70%);
+}

@@ -2,8 +2,9 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
-import { ShellStatusService } from 'core';
-import { ActivityItem, QueueItem, ReviewApi, ReviewOverview } from '../review-api';
+import { ShellStatusService, ToastService } from 'core';
+import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
+import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -16,13 +17,15 @@ const LONG_QUEUE = 10;
 
 @Component({
   selector: 'sh-review-page',
-  imports: [ActivityLine, Cover, DatePipe, EmptyState, RouterLink],
+  imports: [ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewPage {
+  private readonly toasts = inject(ToastService);
   protected readonly overview = signal<ReviewOverview | null>(null);
+  protected readonly rewarding = signal<FinishedBook | null>(null);
   protected readonly summary = computed(() => {
     const overview = this.overview();
     if (!overview) return '';
@@ -40,6 +43,18 @@ export class ReviewPage {
         this.overview.set(overview);
         status.queueCount.set(overview.queue.length);
       });
+  }
+
+  protected rewarded(book: FinishedBook) {
+    this.rewarding.set(null);
+    this.overview.update(
+      (o) =>
+        o && {
+          ...o,
+          finishedUnrewarded: o.finishedUnrewarded.filter((b) => b.bookId !== book.bookId),
+        },
+    );
+    this.toasts.show({ title: 'Reward given!' });
   }
 
   /** Recent activity in plain words; a book's title is left out when it repeats the line above. */

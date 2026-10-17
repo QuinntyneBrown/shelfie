@@ -16,6 +16,8 @@ export class TextField {
   readonly error = input<string | null>(null);
   readonly inputmode = input<string | null>(null);
   readonly maxlength = input<number | null>(null);
+  /** Takes focus when it appears, e.g. as the first field of a dialog. */
+  readonly autofocus = input(false);
   readonly value = model('');
 
   private readonly id = `sh-text-field-${nextId++}`;

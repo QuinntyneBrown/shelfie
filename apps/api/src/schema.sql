@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS chapter_log (
 CREATE TABLE IF NOT EXISTS reward (
   book_id TEXT PRIMARY KEY REFERENCES book(id),
   text TEXT NOT NULL,
+  note TEXT,
   given_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS answer (

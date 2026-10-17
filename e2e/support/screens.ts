@@ -128,4 +128,13 @@ export const screens: Screen[] = [
       await page.getByRole('button', { name: 'Send to Nia' }).waitFor();
     },
   },
+  {
+    name: 'give a reward dialog',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.getByRole('button', { name: 'Give a reward' }).click();
+      // Measure the dialog at rest, not part-way through its opening animation.
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
+    },
+  },
 ];

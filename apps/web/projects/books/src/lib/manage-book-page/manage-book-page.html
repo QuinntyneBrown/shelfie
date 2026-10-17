@@ -17,6 +17,13 @@
       </div>
     </div>
 
+    @if (book.reward; as reward) {
+      <section class="card stack rewarded" aria-labelledby="rewarded-title">
+        <h2 id="rewarded-title" class="section-title">🏆 Rewarded: {{ reward.text }}</h2>
+        <p class="text-muted">Reward given {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>
+      </section>
+    }
+
     <section class="card stack" aria-labelledby="questions-title">
       <h2 id="questions-title" class="section-title">
         Questions {{ book.readerName }} answers for every chapter
