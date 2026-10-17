@@ -19,7 +19,11 @@
             [max]="book.chapterCount"
             [label]="book.loggedCount + ' of ' + book.chapterCount + ' chapters read'"
           />
-          @if (next(); as next) {
+          @if (book.finishedAt) {
+            <span class="finished-label"
+              >{{ book.loggedCount }} of {{ book.chapterCount }} · finished!</span
+            >
+          } @else if (next(); as next) {
             <a
               class="btn btn--primary btn--lg"
               [routerLink]="['/books', book.id, 'chapters', next.number, 'log']"
@@ -30,6 +34,20 @@
         </div>
       </div>
     </div>
+    @if (book.finishedAt) {
+      <section class="card stack trophy-card" aria-label="Reward">
+        <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
+        @if (book.reward; as reward) {
+          <h2>{{ reward.text }}</h2>
+          <p class="text-muted">Given on {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>
+        } @else {
+          <p>
+            {{ book.grownUpName }} is picking your reward. It will show up here and on your shelf.
+          </p>
+          <a class="btn btn--primary" routerLink="/shelf">Back to my shelf</a>
+        }
+      </section>
+    }
     <section aria-labelledby="chapters">
       <h2 id="chapters" class="group-title">Chapters</h2>
       <div class="card card--flush">

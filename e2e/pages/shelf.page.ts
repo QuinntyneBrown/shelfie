@@ -19,6 +19,10 @@ export class ShelfPage {
     await this.book(group, title).getByRole('link', { name: title, exact: true }).click();
   }
 
+  async openFinishedBook(title: string) {
+    await this.finishedBook(title).getByRole('link', { name: title }).click();
+  }
+
   async addBook() {
     await this.page.getByRole('link', { name: 'Add a book' }).click();
   }

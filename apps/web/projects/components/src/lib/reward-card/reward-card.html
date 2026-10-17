@@ -1,7 +1,9 @@
 <div class="trophy">
   <sh-cover [color]="coverColor()" [sticker]="sticker()" size="sm" />
   <div class="trophy__body">
-    <div class="trophy__title truncate" [title]="title()">{{ title() }}</div>
+    <div class="trophy__title truncate" [title]="title()">
+      <a [routerLink]="link()">{{ title() }}</a>
+    </div>
     <div class="trophy__reward">{{ note() }}</div>
   </div>
   <span class="sticker" aria-hidden="true">🏆</span>

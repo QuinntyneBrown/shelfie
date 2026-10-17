@@ -19,6 +19,10 @@ export class BookPage {
     await this.chapterRow(number).click();
   }
 
+  trophy() {
+    return this.page.getByRole('region', { name: 'Reward' });
+  }
+
   primaryAction(chapter: number) {
     return this.page.getByRole('link', { name: `I read Chapter ${chapter}` });
   }
