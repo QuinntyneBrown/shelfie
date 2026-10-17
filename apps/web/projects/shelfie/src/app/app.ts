@@ -1,7 +1,8 @@
-import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MenuItem, NavLink, TabBar } from 'components';
+import { ReviewApi } from 'review';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
 import { SessionService, ShellStatusService, ToastService } from 'core';
@@ -21,12 +22,21 @@ export class App {
   protected readonly navLinks = computed<NavLink[]>(() =>
     this.session()?.role === 'grown_up'
       ? [
-          { label: 'Review', route: '/review', icon: 'review' },
+          {
+            label: 'Review',
+            route: '/review',
+            icon: 'review',
+            badge: this.queueBadge(),
+          },
           { label: 'Books', route: '/books', icon: 'books' },
           { label: 'Settings', route: '/settings', icon: 'settings' },
         ]
       : [],
   );
+  private readonly queueBadge = computed(() => {
+    const count = this.status.queueCount() ?? 0;
+    return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
+  });
   protected readonly menuItems = computed<MenuItem[]>(() => [
     ...(this.session()?.role === 'grown_up' ? [{ id: 'settings', label: 'Settings' }] : []),
     { id: 'switch-reader', label: 'Switch reader' },
@@ -54,6 +64,12 @@ export class App {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
   constructor() {
+    // The grown-up's Review badge is kept fresh from every page, not only from Review itself.
+    const reviews = inject(ReviewApi);
+    effect(() => {
+      if (this.session()?.role !== 'grown_up') return;
+      reviews.load().then((overview) => this.status.queueCount.set(overview.queue.length));
+    });
     // After moving to another page keyboard focus would be lost, so put it on the new page's content.
     // The first navigation is the page load itself, where the skip link must stay the first Tab stop.
     this.router.events
@@ -73,6 +89,7 @@ export class App {
     }
     await this.sessionService.signOut();
     this.status.streak.set(null);
+    this.status.queueCount.set(null);
     await this.router.navigateByUrl('/sign-in');
   }
 

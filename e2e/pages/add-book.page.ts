@@ -20,7 +20,7 @@ export class AddBookPage {
   }
 
   chaptersField() {
-    return this.page.getByLabel('Chapters');
+    return this.page.getByRole('spinbutton', { name: 'Chapters' });
   }
 
   async fill(book: { title: string; author?: string; chapters: number; colour?: string; sticker?: string }) {

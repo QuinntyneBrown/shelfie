@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { streakFor } from './streak.ts';
 
 export interface QueueItem {
   chapterLogId: string;
@@ -24,6 +25,7 @@ export interface ReviewOverview {
   today: string;
   queue: QueueItem[];
   finishedUnrewarded: FinishedBook[];
+  thisWeek: { chapters: number; streak: number };
 }
 
 export function pendingChapterLogs(db: DatabaseSync, householdId: string): QueueItem[] {
@@ -50,8 +52,14 @@ export function overview(db: DatabaseSync, householdId: string, now = new Date()
         ORDER BY b.finished_at DESC`,
     )
     .all(householdId) as unknown as (Omit<FinishedBook, 'finishedOn'> & { finished_at: string })[];
+  const weekStart = new Date(`${dayOf(now)}T00:00:00Z`);
+  weekStart.setUTCDate(weekStart.getUTCDate() - 6);
+  const { chapters } = db
+    .prepare('SELECT COUNT(*) AS chapters FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ? AND c.read_on >= ?')
+    .get(householdId, weekStart.toISOString().slice(0, 10)) as { chapters: number };
   return {
     readerName: reader.name,
+    thisWeek: { chapters, streak: streakFor(db, householdId, now) },
     today: dayOf(now),
     queue: pendingChapterLogs(db, householdId),
     finishedUnrewarded: finished.map(({ finished_at, ...book }) => ({ ...book, finishedOn: dayOf(new Date(finished_at)) })),

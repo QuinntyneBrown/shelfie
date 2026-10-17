@@ -8,13 +8,14 @@
   @if (links().length) {
     <nav class="topbar__nav" aria-label="Primary">
       @for (link of links(); track link.route) {
-        <a
-          class="nav-link"
-          [routerLink]="link.route"
-          routerLinkActive
-          ariaCurrentWhenActive="page"
-          >{{ link.label }}</a
-        >
+        <a class="nav-link" [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page"
+          >{{ link.label }}
+          @if (link.badge?.count) {
+            <span class="badge badge--count" [attr.aria-label]="link.badge!.label">{{
+              link.badge!.count
+            }}</span>
+          }
+        </a>
       }
     </nav>
   }

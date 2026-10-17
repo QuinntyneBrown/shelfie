@@ -86,6 +86,10 @@ export class ShellPage {
     return this.page.getByRole('banner').getByLabel(/-day reading streak$/);
   }
 
+  queueBadge(where: 'top' | 'tab') {
+    return (where === 'top' ? this.topNav() : this.tabBar()).getByLabel(/chapters? to review$/);
+  }
+
   menu() {
     return this.page.getByRole('menu');
   }

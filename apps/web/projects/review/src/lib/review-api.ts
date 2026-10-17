@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
 
 export interface QueueItem {
@@ -25,6 +25,7 @@ export interface ReviewOverview {
   today: string;
   queue: QueueItem[];
   finishedUnrewarded: FinishedBook[];
+  thisWeek: { chapters: number; streak: number };
 }
 
 @Injectable({ providedIn: 'root' })

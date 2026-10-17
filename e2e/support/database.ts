@@ -86,3 +86,13 @@ export function setReadingDays(daysAgo: number[]) {
     db.close();
   }
 }
+
+/** Marks every chapter Nia has logged as reviewed by Dad. */
+export function reviewEverything() {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.exec("UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'star' WHERE reviewed_at IS NULL");
+  } finally {
+    db.close();
+  }
+}

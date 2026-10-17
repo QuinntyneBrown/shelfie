@@ -5,6 +5,11 @@
         <path [attr.d]="paths[link.icon]" />
       </svg>
       {{ link.label }}
+      @if (link.badge?.count) {
+        <span class="badge badge--count" [attr.aria-label]="link.badge!.label">{{
+          link.badge!.count
+        }}</span>
+      }
     </a>
   }
 </nav>

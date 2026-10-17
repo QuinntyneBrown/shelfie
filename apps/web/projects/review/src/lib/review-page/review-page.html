@@ -8,29 +8,52 @@
     </div>
   </div>
   @if (overview(); as overview) {
-    <section class="card card--flush" aria-labelledby="waiting">
-      <h2 id="waiting" class="section-title">Waiting for you</h2>
-      <ul class="list">
-        @for (item of overview.queue; track item.chapterLogId; let first = $first) {
-          <li class="list__item">
-            <sh-cover [color]="item.coverColor" [sticker]="item.coverSticker" size="sm" />
-            <div class="list__body">
-              <div class="list__title">Chapter {{ item.chapterNumber }} · {{ item.bookTitle }}</div>
-              <div class="list__meta">
-                {{ overview.readerName }} read it
-                {{ relativeDay(overview, item) ?? (item.readOn | date: 'EEE d MMM' : 'UTC') }}
-              </div>
-            </div>
-            <a
-              class="btn btn--sm"
-              [class.btn--primary]="first"
-              [routerLink]="['/review/chapters', item.chapterLogId]"
-              >Review</a
-            >
-          </li>
-        }
-      </ul>
+    <section class="card stack" aria-labelledby="this-week">
+      <h2 id="this-week" class="section-title">This week</h2>
+      <div class="cluster stats">
+        <div class="stat">
+          <span class="stat__label">Chapters</span>
+          <strong class="stat__value">{{ overview.thisWeek.chapters }}</strong>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Streak</span>
+          <strong class="stat__value">🔥 {{ overview.thisWeek.streak }}</strong>
+        </div>
+      </div>
     </section>
+
+    @if (overview.queue.length === 0) {
+      <sh-empty-state
+        title="All caught up"
+        [text]="'Nothing is waiting. ' + overview.readerName + '’s next chapter will show up here.'"
+      />
+    } @else {
+      <section class="card card--flush" aria-labelledby="waiting">
+        <h2 id="waiting" class="section-title">Waiting for you</h2>
+        <ul class="list">
+          @for (item of overview.queue; track item.chapterLogId; let first = $first) {
+            <li class="list__item">
+              <sh-cover [color]="item.coverColor" [sticker]="item.coverSticker" size="sm" />
+              <div class="list__body">
+                <div class="list__title">
+                  Chapter {{ item.chapterNumber }} · {{ item.bookTitle }}
+                </div>
+                <div class="list__meta">
+                  {{ overview.readerName }} read it
+                  {{ relativeDay(overview, item) ?? (item.readOn | date: 'EEE d MMM' : 'UTC') }}
+                </div>
+              </div>
+              <a
+                class="btn btn--sm"
+                [class.btn--primary]="first"
+                [routerLink]="['/review/chapters', item.chapterLogId]"
+                >Review</a
+              >
+            </li>
+          }
+        </ul>
+      </section>
+    }
 
     @for (book of overview.finishedUnrewarded; track book.bookId) {
       <section class="card stack reward-card" [attr.aria-labelledby]="'finished-' + book.bookId">

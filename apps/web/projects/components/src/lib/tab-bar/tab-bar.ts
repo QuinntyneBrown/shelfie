@@ -5,6 +5,8 @@ export interface NavLink {
   label: string;
   route: string;
   icon: 'review' | 'books' | 'settings';
+  /** A count badge, e.g. chapters waiting, with its spoken label. */
+  badge?: { count: number; label: string };
 }
 
 /** The grown-up's navigation on phones, fixed to the bottom edge; hidden from 768px where the top bar takes over. */

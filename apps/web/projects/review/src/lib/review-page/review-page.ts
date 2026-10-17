@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Cover } from 'components';
+import { Cover, EmptyState } from 'components';
+import { ShellStatusService } from 'core';
 import { QueueItem, ReviewApi, ReviewOverview } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -12,7 +13,7 @@ const addDays = (isoDay: string, days: number) => {
 
 @Component({
   selector: 'sh-review-page',
-  imports: [Cover, DatePipe, RouterLink],
+  imports: [Cover, DatePipe, EmptyState, RouterLink],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,9 +29,13 @@ export class ReviewPage {
   });
 
   constructor() {
+    const status = inject(ShellStatusService);
     inject(ReviewApi)
       .load()
-      .then((overview) => this.overview.set(overview));
+      .then((overview) => {
+        this.overview.set(overview);
+        status.queueCount.set(overview.queue.length);
+      });
   }
 
   /** "today", "yesterday", or null for an older day the template formats. */
