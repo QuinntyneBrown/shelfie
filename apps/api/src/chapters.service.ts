@@ -103,10 +103,13 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
 
 export function undoLog(db: DatabaseSync, householdId: string, chapterLogId: string) {
   const log = db
-    .prepare('SELECT c.id, c.book_id, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
-    .get(chapterLogId, householdId) as { id: string; book_id: string; undo_until: string } | undefined;
+    .prepare('SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId) as { id: string; book_id: string; chapter_number: number; undo_until: string } | undefined;
   if (!log) throw new Problem(404, 'not-found');
   if (log.undo_until < new Date().toISOString()) throw new Problem(409, 'undo-expired');
+  // Only the newest chapter of a book can be undone, so the logged chapters never have a gap.
+  const { latest } = db.prepare('SELECT MAX(chapter_number) AS latest FROM chapter_log WHERE book_id = ?').get(log.book_id) as { latest: number };
+  if (log.chapter_number !== latest) throw new Problem(409, 'undo-not-latest');
   db.prepare('DELETE FROM chapter_log WHERE id = ?').run(log.id);
   db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(log.book_id);
 }

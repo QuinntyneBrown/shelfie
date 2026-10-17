@@ -303,3 +303,15 @@ test('Given she has just finished a book, when she presses Undo, then the book g
   await expect(shelf.book('On the go', 'The BFG').getByRole('progressbar', { name: '2 of 3 chapters read' })).toBeVisible();
   await expect(shelf.finishedBook('The BFG')).toBeHidden();
 });
+
+test('Given Nia logged chapters 12 and 13 just now, when an undo of chapter 12 is sent, then it is refused so no gap opens', async ({ page }) => {
+  await signInAsNia(page);
+  const log = new LogChapterPage(page);
+  const twelve = await log.postLog('b-lion', 12, { readOn: householdDay(), answers });
+  await log.postLog('b-lion', 13, { readOn: householdDay(), answers });
+
+  const undo = await log.undoViaApi((await twelve.json()).chapterLogId);
+
+  expect([undo.status(), (await undo.json()).type]).toEqual([409, 'undo-not-latest']);
+  expect(readOnOf('b-lion', 12)).toBeDefined();
+});
