@@ -95,6 +95,7 @@ shelfie/
 ├── e2e/
 │   ├── pages/              # Playwright page objects, one per screen
 │   └── tests/              # acceptance tests with "Traces to: L2-xxx" header
+├── infra/                  # Azure Bicep, cloud-init, host files, bootstrap (see docs/runbook.md)
 └── .github/ .agents/ .claude/
 ```
 
@@ -105,9 +106,7 @@ shelfie/
 
 ## Deferred work
 
-Not built until Shelfie moves from local use to Azure. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete.
+Not built yet. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete. Hosting, TLS, deployment and the nightly backup schedule are built (`infra/`, `docs/runbook.md`).
 
-*   TLS termination, reverse proxy and the hosting target itself (Azure).
-*   Scheduling of the nightly SQLite backup and off-host copies (the backup job and the restore runbook are built).
-*   Uptime monitoring and log shipping beyond stdout.
+*   Uptime monitoring and log shipping beyond journald on the VM.
 *   The production e-mail provider for password-reset links (Mailpit locally).

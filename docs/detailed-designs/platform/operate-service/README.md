@@ -26,12 +26,12 @@ The slice has four parts: observability middleware and the health module, durabi
 - **`RequestContext`** — type `{ requestId: string; route: string; startedAt: number }` attached to the request by `requestContext`.
 - **`platform/errors.ts`** — `problemDetailsHandler` (described in `harden-api`) reads `req.context.requestId`, writes it into `Problem.requestId`, and for an unhandled error calls `logger.error({ requestId, err })` with the full error and stack before answering 500 with `title: "Something went wrong"` and no detail (`L2-032`).
 - **`ApiClient`** (`core` library) — maps a non-2xx response to `ApiError{ status, problem }`. The shell's `server-error` page (feature `navigate-shell`) reads `problem.requestId` and renders the mock's copy: "If it keeps happening, mention code SHF-4F2A." The code is the only server detail a user ever sees (`L2-032`).
-- **`modules/health/health.router.ts`** — `GET /api/health` runs `SELECT 1` through `db.ts` and answers `200 { status: "ok" }`; when the statement throws or the database file is missing it answers `503 { status: "unavailable" }`. The route needs no session and is not rate limited. An uptime monitor that polls it is deferred (AGENTS.md, Deferred work) (`L2-032`).
+- **`modules/health/health.router.ts`** — `GET /api/health` runs `SELECT 1` through `db.ts` and answers `200 { status: "ok" }`; when the statement throws or the database file is missing it answers `503 { status: "unavailable" }`. The route needs no session and is not rate limited. `deploy.sh` polls it after every release and rolls back when it does not answer 200; an uptime monitor that polls it from outside is deferred (AGENTS.md, Deferred work) (`L2-032`).
 
 ### Durability and backup
 
 - **`platform/db.ts`** — opens the single database file with `better-sqlite3`, sets `PRAGMA journal_mode = WAL`, `PRAGMA synchronous = NORMAL`, `PRAGMA foreign_keys = ON` and `PRAGMA busy_timeout = 5000`, and applies `migrations/*.sql` in file-name order inside one transaction each, recording them in a `migration` table. `POST /api/books/:id/chapters/:n` (feature `log-chapter`) inserts the `chapter_log` row and its `answer` rows in one `db.transaction()`; the API answers 201 only after the transaction returns, so the answers are on disk in the WAL before the success response leaves the server and survive a restart (`L2-031`). Criterion 2 of `L2-031`, keeping typed answers in the form and the draft after a failed submission, is realised by `DraftStore` in the `log-chapter` feature.
-- **`platform/backup.ts`** — `BackupJob.run(now)` opens the database read-only, executes `VACUUM INTO ?` with the path `<backupDir>/shelfie-YYYY-MM-DD.sqlite`, verifies the copy with `PRAGMA integrity_check`, and deletes copies older than the retention period of 30 days. `apps/api/src/backup.ts` is the entry point a nightly scheduler runs; the scheduler and the time of night are deferred with the hosting decision (AGENTS.md, Deferred work); locally the job runs by hand. The backup directory location is decided with the hosting.
+- **`platform/backup.ts`** — `BackupJob.run(now)` opens the database read-only, executes `VACUUM INTO ?` with the path `<backupDir>/shelfie-YYYY-MM-DD.sqlite`, verifies the copy with `PRAGMA integrity_check`, and deletes copies older than the retention period of 30 days. `apps/api/src/backup.ts` is the entry point; on the VM `/etc/cron.d/shelfie-backup` runs it at 08:15 UTC through `infra/host/backup.sh`, which then uploads the dated file to the `backups` blob container with the VM's managed identity. The backup directory is `/var/lib/shelfie/backups` (`SHELFIE_BACKUP_DIR`); locally the job runs by hand.
 - **`docs/runbook.md`** — documents restore: stop the API, move the live file and its `-wal` and `-shm` siblings aside, copy the dated backup to the live path, start the API, check `GET /api/health`. The runbook is written as part of this slice (`L2-031`).
 
 ### Performance
@@ -47,7 +47,14 @@ The slice has four parts: observability middleware and the health module, durabi
 - **`e2e/`** — Playwright project with Chromium only: `playwright.config.ts` (one project, `baseURL` of the built web app served with the API behind it), `pages/` holding one page object per screen, `tests/` holding acceptance tests each headed `// Traces to: L2-xxx`. Tests state intent and page objects own selectors.
 - **`.github/workflows/ci.yml`** — on every push and pull request, jobs run in this order: `lint` (ESLint and Prettier for both apps), `unit` (Angular unit tests), `api` (vitest API tests including the p95 read test), `build` (Angular production build enforcing the `angular.json` budgets), `e2e` (starts the API and the built web app, runs Playwright in Chromium, uploads the HTML report on failure), `lighthouse` (Lighthouse CI against the built app, asserting the LCP and bundle budgets). A failing budget fails the pipeline (`L2-030`).
 
-The hosting target (Azure), process manager and log destination beyond stdout are deferred (AGENTS.md, Deferred work).
+### Deployment
+
+- **Host** — one Ubuntu 24.04 VM (`Standard_B2ats_v2`, Canada Central) described in `infra/main.bicep` with `infra/cloud-init.yaml`, created once by `infra/bootstrap.sh`. SQLite needs a real disk with file locks, which rules out App Service and container platforms whose file systems are network shares. Caddy terminates TLS for `shelfie.kids` with a Let's Encrypt certificate, serves the Angular build from `/opt/shelfie/current/web` with an `index.html` fallback, and proxies `/api/*` to the API on `127.0.0.1:3000`. systemd keeps the API running as the unprivileged `shelfie` user with `/etc/shelfie/env` as its configuration; stdout goes to journald.
+- **`.github/workflows/deploy.yml`** — on every push to `main`, reuses `ci.yml`, builds the web app, assembles a release tarball (API source, production `node_modules`, web build, `infra/host`), signs in to Azure with OpenID Connect (no stored credentials), uploads the tarball to the `releases` blob container and runs `infra/host/fetch-release.sh` on the VM through `az vm run-command`. That script downloads the tarball with the VM's managed identity, unpacks it to `/opt/shelfie/releases/<sha>` and calls the release's `deploy.sh`, which installs the host files, switches the `current` symlink, restarts the API, waits for `GET /api/health`, rolls back to the previous release on failure, reloads Caddy and keeps the last three releases. The job ends by checking `https://shelfie.kids/api/health`.
+- **Branch protection** — a ruleset on `main` requires a pull request and the CI checks (`typecheck`, `api`, `build`, `e2e`) and blocks force pushes and deletion, so nothing reaches production without passing CI.
+- **`docs/runbook.md`** — set-up, DNS, deploy, rollback, logs, backups, restore, settings and cost.
+
+Uptime monitoring and log shipping beyond journald are deferred (AGENTS.md, Deferred work).
 
 ## Requirements
 
@@ -63,7 +70,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 ### System context
 
-The grown-up both uses Shelfie and operates it; GitHub Actions builds and checks every change, and a nightly scheduler on the host runs the backup.
+The grown-up both uses Shelfie and operates it; GitHub Actions builds, checks and deploys every change to `main`, and cron on the VM runs the nightly backup.
 
 ![C4 system context for operating the service](diagrams/c4-context.png)
 

@@ -78,6 +78,10 @@ Frontend acceptance tests are written with Playwright and run in Chromium only.
 npm test
 ```
 
+### Deployment
+
+Every merge to `main` deploys to `https://shelfie.kids` through GitHub Actions. The production shape, first-time set-up, rollback and restore steps are in [docs/runbook.md](docs/runbook.md).
+
 ## Project structure
 
 ```text
@@ -85,6 +89,7 @@ shelfie/
 ├── apps/
 │   ├── web/          # Angular frontend
 │   └── api/          # Node.js backend
+├── infra/            # Azure infrastructure and host files
 ├── docs/
 │   ├── specs/            # L1 and L2 requirements with acceptance criteria
 │   ├── mocks/            # Static HTML mocks for every screen and state
@@ -122,6 +127,7 @@ See [AGENTS.md](AGENTS.md) for the full working agreement, including the build b
 | `docs/design-system/` | Design tokens and component library |
 | `docs/detailed-designs/` | Architecture and feature designs |
 | `docs/estimates/` | Effort, progress and roadmap |
+| [docs/runbook.md](docs/runbook.md) | Running Shelfie in production |
 | [CHANGELOG.md](CHANGELOG.md) | Notable changes per release |
 
 ## Contributing
