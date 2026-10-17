@@ -24,3 +24,49 @@ test('Given a chapter waiting, when Dad picks a sticker, adds a note and sends, 
   await chapter.reviewNext(10);
   await expect(chapter.heading()).toHaveText('Chapter 10');
 });
+
+test('Given no sticker is picked, when Dad presses Send, then he is asked to pick one and nothing is sent', async ({ page }) => {
+  await signInAsDad(page);
+  await new ReviewPage(page).review(11);
+  const chapter = new ReviewChapterPage(page);
+  chapter.watchSends();
+  await chapter.noteField().fill('Nice.');
+  await chapter.send();
+
+  await expect(chapter.stickerError()).toBeVisible();
+  await expect(page.getByRole('alert')).toContainText('One more thing');
+  expect(chapter.sendCount()).toBe(0);
+});
+
+test('Given a note longer than 300 characters, when Dad keeps typing, then it stops at 300', async ({ page }) => {
+  await signInAsDad(page);
+  await new ReviewPage(page).review(11);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.noteField().fill('n'.repeat(290));
+  await chapter.noteField().pressSequentially('x'.repeat(20));
+
+  expect((await chapter.noteField().inputValue()).length).toBe(300);
+});
+
+test('Given a chapter Dad already reviewed, when he opens it, then his feedback shows read-only and it cannot be sent again', async ({ page }) => {
+  await signInAsDad(page);
+  await page.goto('/review/chapters/b-lion-c9');
+  const chapter = new ReviewChapterPage(page);
+
+  await expect(chapter.sentFeedback()).toContainText('You gave a Star');
+  await expect(chapter.sentFeedback()).toContainText('Lovely work!');
+  await expect(chapter.stickers()).toHaveCount(0);
+  const again = await chapter.sendViaApi('b-lion-c9', { sticker: 'rocket' });
+  expect([again.status(), (await again.json()).type]).toEqual([409, 'already-reviewed']);
+});
+
+test('Given a request that skips the page, when Nia sends feedback or Dad targets another family’s chapter, then the API refuses it', async ({ page }) => {
+  await signInAsNia(page);
+  const chapter = new ReviewChapterPage(page);
+  expect((await chapter.sendViaApi('b-lion-c11', { sticker: 'star' })).status()).toBe(403);
+
+  await page.context().clearCookies();
+  await signInAsDad(page);
+  expect((await chapter.sendViaApi('b-other-c1', { sticker: 'star' })).status()).toBe(404);
+  expect((await chapter.sendViaApi('b-lion-c11', { sticker: 'glitter' })).status()).toBe(400);
+});
