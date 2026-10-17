@@ -10,3 +10,6 @@
 .topbar .avatar {
   --avatar-size: var(--target-comfortable);
 }
+.choice {
+  min-height: var(--target-comfortable);
+}

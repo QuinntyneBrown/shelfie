@@ -6,7 +6,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { GlobalErrorHandler, SessionService, sessionExpiredInterceptor } from 'core';
+import { GlobalErrorHandler, SessionService, ThemeService, sessionExpiredInterceptor } from 'core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 
@@ -16,6 +16,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch(), withInterceptors([sessionExpiredInterceptor])),
-    provideAppInitializer(() => inject(SessionService).restore()),
+    provideAppInitializer(() => {
+      inject(ThemeService);
+      return inject(SessionService).restore();
+    }),
   ],
 };

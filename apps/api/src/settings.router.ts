@@ -8,6 +8,7 @@ import { getSettings, updateSettings } from './settings.service.ts';
 
 const name = z.string().trim().min(1).max(40);
 const settingsPatchSchema = z.object({
+  theme: z.enum(['device', 'light', 'dark']).optional(),
   reader: z.object({
     name,
     color: z.enum(['rose', 'sky', 'sun', 'mint', 'lilac']),

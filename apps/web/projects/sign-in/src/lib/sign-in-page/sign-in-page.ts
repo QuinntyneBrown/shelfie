@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button, PinKeypad, ProfileCard, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { ApiError, SessionService, ThemeService } from 'core';
 import { AuthApi, ProfileSummary } from '../auth-api';
 
 @Component({
@@ -26,6 +26,7 @@ export class SignInPage {
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly themes = inject(ThemeService);
 
   protected readonly profiles = signal<ProfileSummary[]>([]);
   private readonly loaded = signal(false);

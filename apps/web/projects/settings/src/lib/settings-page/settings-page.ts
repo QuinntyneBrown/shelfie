@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Banner, Button, ColorPicker, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
-import { SettingsApi } from '../settings-api';
+import { SettingsApi, Theme } from '../settings-api';
 
 const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
 
@@ -37,6 +37,7 @@ export class SettingsPage {
       this.confirmError(),
     ].filter((p): p is string => p !== null),
   );
+  protected readonly theme = signal<Theme>('device');
   protected readonly readerName = signal('');
   protected readonly readerColor = signal('rose');
   protected readonly pin = signal('');
@@ -48,6 +49,7 @@ export class SettingsPage {
 
   constructor() {
     this.api.get().then((view) => {
+      this.theme.set(view.theme);
       this.readerName.set(view.reader.name);
       this.readerColor.set(view.reader.color);
       this.grownUpName.set(view.grownUp.name);
@@ -87,6 +89,7 @@ export class SettingsPage {
     this.failure.set(null);
     try {
       const view = await this.api.save({
+        theme: this.theme(),
         reader: {
           name: this.readerName(),
           color: this.readerColor(),
@@ -99,7 +102,7 @@ export class SettingsPage {
           ...(this.currentPassword() ? { currentPassword: this.currentPassword() } : {}),
         },
       });
-      this.session.update(view.grownUp.name);
+      this.session.update({ name: view.grownUp.name, theme: view.theme });
       this.pin.set('');
       this.newPassword.set('');
       this.confirmPassword.set('');

@@ -5,6 +5,7 @@ import { hashSecret, verifySecret } from './secret.ts';
 export interface SettingsView {
   reader: { name: string; color: string };
   grownUp: { name: string; email: string };
+  theme: string;
 }
 
 export function getSettings(db: DatabaseSync, householdId: string): SettingsView {
@@ -16,10 +17,12 @@ export function getSettings(db: DatabaseSync, householdId: string): SettingsView
     };
   const reader = profile('reader');
   const grownUp = profile('grown_up');
-  return { reader: { name: reader.name, color: reader.color }, grownUp: { name: grownUp.name, email: grownUp.email } };
+  const { theme } = db.prepare('SELECT theme FROM household WHERE id = ?').get(householdId) as { theme: string };
+  return { reader: { name: reader.name, color: reader.color }, grownUp: { name: grownUp.name, email: grownUp.email }, theme };
 }
 
 export interface SettingsPatch {
+  theme?: string;
   reader: { name: string; color: string; pin?: string };
   grownUp: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
@@ -47,6 +50,7 @@ export function updateSettings(db: DatabaseSync, householdId: string, profileId:
     if (patch.grownUp.newPassword) {
       db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(patch.grownUp.newPassword), profileId);
     }
+    if (patch.theme) db.prepare('UPDATE household SET theme = ? WHERE id = ?').run(patch.theme, householdId);
     if (patch.reader.pin) {
       db.prepare("UPDATE profile SET pin_hash = ?, pin_failed_count = 0, pin_locked_until = NULL WHERE household_id = ? AND role = 'reader'").run(
         hashSecret(patch.reader.pin),

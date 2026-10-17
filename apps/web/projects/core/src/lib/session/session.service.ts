@@ -7,6 +7,7 @@ export interface Session {
   role: 'reader' | 'grown_up';
   color: string;
   email: string | null;
+  theme: 'device' | 'light' | 'dark';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -16,9 +17,9 @@ export class SessionService {
   /** Set when the API reports the session ran out, so sign-in can say why. */
   readonly expired = signal(false);
 
-  /** Shows a changed display name straight away, without another sign-in. */
-  update(name: string) {
-    this.current.update((session) => (session ? { ...session, name } : session));
+  /** Shows changed details straight away, without another sign-in. */
+  update(changes: Partial<Pick<Session, 'name' | 'theme'>>) {
+    this.current.update((session) => (session ? { ...session, ...changes } : session));
   }
 
   /** Ends the session on the server and forgets it here. */

@@ -92,6 +92,10 @@ export class SettingsPage {
     await this.page.unroute('**/api/settings');
   }
 
+  async chooseAppearance(label: 'Match the device' | 'Always light' | 'Always dark') {
+    await this.page.getByRole('radio', { name: label }).check();
+  }
+
   async save() {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }

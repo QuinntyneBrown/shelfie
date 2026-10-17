@@ -30,7 +30,8 @@ export class ShellPage {
     return this.page.evaluate(() =>
       [...document.querySelectorAll<HTMLElement>('button, a.btn, [role=menuitem], input, textarea, select, .chip')]
         .filter((el) => el.offsetParent !== null)
-        .map((el) => ({ el, box: el.getBoundingClientRect() }))
+        // A radio or checkbox is hit through its label, so that is the target to measure.
+        .map((el) => ({ el, box: (el.matches('input[type=radio], input[type=checkbox]') ? (el.closest('label') ?? el) : el).getBoundingClientRect() }))
         .filter(({ box }) => box.width < 44 || box.height < 44)
         .map(({ el, box }) => `${el.tagName.toLowerCase()}.${el.className} "${(el.textContent ?? '').trim().slice(0, 20)}" ${Math.round(box.width)}x${Math.round(box.height)}`),
     );
@@ -60,6 +61,15 @@ export class ShellPage {
         }),
       );
     });
+  }
+
+  /** The theme the page is drawn in: light or dark. */
+  async theme() {
+    return this.page.locator('html').getAttribute('data-theme');
+  }
+
+  async preferDarkDevice(dark: boolean) {
+    await this.page.emulateMedia({ colorScheme: dark ? 'dark' : 'light' });
   }
 
   menu() {

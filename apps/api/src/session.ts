@@ -10,6 +10,7 @@ export interface RequestSession {
   name: string;
   color: string;
   email: string | null;
+  theme: string;
   householdId: string;
   role: 'reader' | 'grown_up';
 }
@@ -21,7 +22,7 @@ export function requireSession(db: DatabaseSync) {
     const row = id
       ? (db
           .prepare(
-            'SELECT p.id AS profileId, p.name AS name, p.color AS color, p.email AS email, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ?',
+            'SELECT p.id AS profileId, p.name AS name, p.color AS color, p.email AS email, h.theme AS theme, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = ?',
           )
           .get(id) as (RequestSession & { expiresAt: string }) | undefined)
       : undefined;

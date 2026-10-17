@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS household (
   id TEXT PRIMARY KEY,
-  time_zone TEXT NOT NULL DEFAULT 'UTC'
+  time_zone TEXT NOT NULL DEFAULT 'UTC',
+  theme TEXT NOT NULL DEFAULT 'device' CHECK (theme IN ('device','light','dark'))
 );
 CREATE TABLE IF NOT EXISTS profile (
   id TEXT PRIMARY KEY,

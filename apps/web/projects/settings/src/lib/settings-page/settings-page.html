@@ -79,6 +79,44 @@
           [(value)]="currentPassword"
         />
       </section>
+      <fieldset class="card stack" aria-describedby="theme-help">
+        <legend class="section-title">Appearance</legend>
+        <p class="field__help" id="theme-help">Applies on every device for both of you.</p>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="device"
+            [checked]="theme() === 'device'"
+            (change)="theme.set('device')"
+          />
+          <span class="choice__text"
+            >Match the device<small
+              >Light in the day, dark at night if the device does that</small
+            ></span
+          >
+        </label>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="light"
+            [checked]="theme() === 'light'"
+            (change)="theme.set('light')"
+          />
+          <span class="choice__text">Always light</span>
+        </label>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="dark"
+            [checked]="theme() === 'dark'"
+            (change)="theme.set('dark')"
+          />
+          <span class="choice__text">Always dark</span>
+        </label>
+      </fieldset>
       <div class="form-actions">
         <sh-button [busy]="saving()">Save settings</sh-button>
       </div>

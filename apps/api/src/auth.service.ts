@@ -12,6 +12,7 @@ export interface ProfileSummary {
   role: 'reader' | 'grown_up';
   color: string;
   email: string | null;
+  theme: string;
 }
 
 export interface Session {
@@ -21,6 +22,7 @@ export interface Session {
   role: 'reader' | 'grown_up';
   color: string;
   email: string | null;
+  theme: string;
 }
 
 export type PinResult = { session: Session } | { triesLeft: number } | { lockedUntil: string };
@@ -41,12 +43,15 @@ function createSession(
     now.toISOString(),
     expires.toISOString(),
   );
-  return { id, profileId: profile.id, name: profile.name, role: profile.role, color: profile.color, email: profile.email };
+  const { theme } = db
+    .prepare('SELECT h.theme AS theme FROM household h JOIN profile p ON p.household_id = h.id WHERE p.id = ?')
+    .get(profile.id) as { theme: string };
+  return { id, profileId: profile.id, name: profile.name, role: profile.role, color: profile.color, email: profile.email, theme };
 }
 
 export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
   return db
-    .prepare('SELECT id, name, role, color, email FROM profile WHERE household_id = ? ORDER BY role DESC')
+    .prepare('SELECT p.id, p.name, p.role, p.color, p.email, h.theme FROM profile p JOIN household h ON h.id = p.household_id WHERE p.household_id = ? ORDER BY p.role DESC')
     .all(householdId) as unknown as ProfileSummary[];
 }
 

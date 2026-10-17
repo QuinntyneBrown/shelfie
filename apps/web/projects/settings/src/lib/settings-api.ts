@@ -1,12 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
 
+export type Theme = 'device' | 'light' | 'dark';
+
 export interface SettingsPatch {
+  theme: Theme;
   reader: { name: string; color: string; pin?: string };
   grownUp: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
 export interface SettingsView {
+  theme: Theme;
   reader: { name: string; color: string };
   grownUp: { name: string; email: string };
 }
