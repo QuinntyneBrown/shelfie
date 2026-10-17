@@ -47,3 +47,16 @@ test('Given Nia is signed in, then she has no grown-up navigation and Books is f
   await expect(new ErrorPage(page).heading()).toHaveText('This part is for grown-ups');
   await expect(new ShellPage(page).topNav()).toBeHidden();
 });
+
+test.describe('with no books', () => {
+  test.use({ shelf: 'empty' });
+
+  test('Given no books, when Dad opens Books, then an empty state offers Add a book', async ({ page }) => {
+    await signInAsDad(page);
+    const books = new BooksPage(page);
+    await books.open();
+
+    await expect(books.emptyState()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Add a book' })).toHaveCount(2);
+  });
+});

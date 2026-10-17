@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Cover } from 'components';
-import { BookListItem, BooksApi } from '../books-api';
+import { Cover, EmptyState } from 'components';
+import { BookList, BooksApi, BookListItem } from '../books-api';
 
 type Status = 'rewarded' | 'reward-to-give' | 'not-started' | 'reading';
 
@@ -15,18 +15,18 @@ const STATUS_LABELS: Record<Status, string> = {
 
 @Component({
   selector: 'sh-books-page',
-  imports: [Cover, DatePipe, RouterLink],
+  imports: [Cover, DatePipe, EmptyState, RouterLink],
   templateUrl: './books-page.html',
   styleUrl: './books-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BooksPage {
-  protected readonly books = signal<BookListItem[] | null>(null);
+  protected readonly list = signal<BookList | null>(null);
 
   constructor() {
     inject(BooksApi)
       .list()
-      .then((books) => this.books.set(books));
+      .then((list) => this.list.set(list));
   }
 
   protected status(book: BookListItem) {

@@ -99,7 +99,13 @@ export interface BookListItem {
   reward: { text: string } | null;
 }
 
-export function listBooks(db: DatabaseSync, householdId: string): BookListItem[] {
+export interface BookList {
+  readerName: string;
+  books: BookListItem[];
+}
+
+export function listBooks(db: DatabaseSync, householdId: string): BookList {
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
   const rows = db
@@ -120,7 +126,7 @@ export function listBooks(db: DatabaseSync, householdId: string): BookListItem[]
     logged_count: number;
     reward_text: string | null;
   }[];
-  return rows.map((r) => ({
+  const books = rows.map((r) => ({
     id: r.id,
     title: r.title,
     author: r.author,
@@ -131,4 +137,5 @@ export function listBooks(db: DatabaseSync, householdId: string): BookListItem[]
     finishedOn: r.finished_at ? dayFormat.format(new Date(r.finished_at)) : null,
     reward: r.reward_text ? { text: r.reward_text } : null,
   }));
+  return { readerName: reader.name, books };
 }

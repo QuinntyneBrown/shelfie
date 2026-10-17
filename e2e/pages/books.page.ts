@@ -24,6 +24,10 @@ export class BooksPage {
     return this.page.getByRole('link', { name: 'Add a book' }).first();
   }
 
+  emptyState() {
+    return this.page.getByRole('heading', { name: 'No books on Nia’s shelf' });
+  }
+
   /** Asks the API for the list, as a client that skips the page would. */
   getViaApi() {
     return this.page.request.get('/api/books');

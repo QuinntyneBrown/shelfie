@@ -3,28 +3,37 @@
     <h1>Books</h1>
     <a class="btn" routerLink="/add-book">Add a book</a>
   </div>
-  @if (books(); as books) {
-    <ul class="list card card--flush">
-      @for (book of books; track book.id) {
-        <li class="list__item">
-          <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="sm" />
-          <div class="list__body">
-            <div class="list__title">{{ book.title }}</div>
-            <div class="list__meta">
-              @if (book.finishedOn) {
-                finished {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}
-                @if (book.reward) {
-                  · {{ book.reward.text }}
+  @if (list(); as list) {
+    @if (list.books.length === 0) {
+      <sh-empty-state
+        [title]="'No books on ' + list.readerName + '’s shelf'"
+        text="Add the book she is reading now and she can log her first chapter today."
+      >
+        <a class="btn btn--primary" routerLink="/add-book">Add a book</a>
+      </sh-empty-state>
+    } @else {
+      <ul class="list card card--flush">
+        @for (book of list.books; track book.id) {
+          <li class="list__item">
+            <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="sm" />
+            <div class="list__body">
+              <div class="list__title">{{ book.title }}</div>
+              <div class="list__meta">
+                @if (book.finishedOn) {
+                  finished {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}
+                  @if (book.reward) {
+                    · {{ book.reward.text }}
+                  }
+                } @else {
+                  {{ book.author }} · {{ book.loggedCount }} of {{ book.chapterCount }} chapters
                 }
-              } @else {
-                {{ book.author }} · {{ book.loggedCount }} of {{ book.chapterCount }} chapters
-              }
+              </div>
             </div>
-          </div>
-          <span class="badge">{{ status(book) }}</span>
-          <a class="btn btn--sm" [routerLink]="['/manage-book', book.id]">Manage</a>
-        </li>
-      }
-    </ul>
+            <span class="badge">{{ status(book) }}</span>
+            <a class="btn btn--sm" [routerLink]="['/manage-book', book.id]">Manage</a>
+          </li>
+        }
+      </ul>
+    }
   }
 </div>

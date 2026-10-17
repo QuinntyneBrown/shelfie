@@ -13,11 +13,16 @@ export interface BookListItem {
   reward: { text: string } | null;
 }
 
+export interface BookList {
+  readerName: string;
+  books: BookListItem[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class BooksApi {
   private readonly api = inject(ApiClient);
 
   list() {
-    return this.api.get<BookListItem[]>('/books');
+    return this.api.get<BookList>('/books');
   }
 }

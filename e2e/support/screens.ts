@@ -3,6 +3,7 @@ import { signInAsDad, signInAsNia } from './signed-in';
 import { rememberDevice } from './remember-device';
 import { ErrorPage } from '../pages/error.page';
 import { AddBookPage } from '../pages/add-book.page';
+import { BooksPage } from '../pages/books.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
@@ -93,6 +94,14 @@ export const screens: Screen[] = [
       const add = new AddBookPage(page);
       await add.open();
       await add.titleField().waitFor();
+    },
+  },
+  {
+    name: 'books list',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/books');
+      await new BooksPage(page).heading().waitFor();
     },
   },
 ];
