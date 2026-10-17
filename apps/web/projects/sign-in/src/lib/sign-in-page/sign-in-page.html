@@ -6,7 +6,7 @@
         <span class="avatar avatar--lg centred-item" [class]="'avatar--' + profile.color" aria-hidden="true">{{ profile.name.charAt(0) }}</span>
         <h1>Hi {{ profile.name }}!</h1>
         <p class="text-muted centred-item">Tap your 4-digit PIN.</p>
-        <sh-pin-keypad [name]="profile.name" (complete)="submit($event)" (switchReader)="chosen.set(null)" />
+        <sh-pin-keypad [name]="profile.name" [error]="pinError()" (complete)="submit($event)" (switchReader)="chosen.set(null); pinError.set(null)" />
       } @else {
         <h1>Who’s reading today?</h1>
         <p class="text-muted centred-item">Pick your name to open your shelf.</p>

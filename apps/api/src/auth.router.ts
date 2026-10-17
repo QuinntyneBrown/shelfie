@@ -20,10 +20,10 @@ export function authRouter(db: DatabaseSync) {
     if (!body.success) return res.status(400).json({ type: 'validation' });
     if (!householdId) return res.status(401).json({ type: 'no-device' });
 
-    const session = signInWithPin(db, householdId, body.data.profileId, body.data.pin);
-    if (!session) return res.status(401).json({ type: 'pin-invalid' });
+    const result = signInWithPin(db, householdId, body.data.profileId, body.data.pin);
+    if ('triesLeft' in result) return res.status(401).json({ type: 'pin-invalid', triesLeft: result.triesLeft });
 
-    const { id, ...summary } = session;
+    const { id, ...summary } = result.session;
     res.cookie('shelfie_session', id, { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
     res.json(summary);
   });

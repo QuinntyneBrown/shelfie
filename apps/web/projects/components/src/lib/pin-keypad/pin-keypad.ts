@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
 })
 export class PinKeypad {
   readonly name = input.required<string>();
+  readonly error = input<string | null>(null);
   readonly complete = output<string>();
   readonly switchReader = output<void>();
 
@@ -20,6 +21,10 @@ export class PinKeypad {
     const next = this.digits() + digit;
     this.digits.set(next);
     if (next.length === 4) this.complete.emit(next);
+  }
+
+  clear() {
+    this.digits.set('');
   }
 
   protected remove() {

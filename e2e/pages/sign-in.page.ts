@@ -15,4 +15,12 @@ export class SignInPage {
     const keypad = this.page.getByRole('group', { name: 'PIN keypad' });
     for (const digit of pin) await keypad.getByRole('button', { name: digit, exact: true }).click();
   }
+
+  pinError() {
+    return this.page.getByText(/That PIN didn’t match/);
+  }
+
+  digitsEntered(count: number) {
+    return this.page.getByRole('status', { name: `${count} of 4 digits entered` });
+  }
 }

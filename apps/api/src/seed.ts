@@ -9,6 +9,7 @@ export const SEED = {
 };
 
 const db = openDb(process.env.SHELFIE_DB ?? 'shelfie.db');
+db.exec('DELETE FROM session');
 db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
 const profile = db.prepare(
   'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, pin_hash) VALUES (?, ?, ?, ?, ?, ?)',

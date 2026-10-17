@@ -1,8 +1,11 @@
-<div class="pin-dots" role="status" [attr.aria-label]="digits().length + ' of 4 digits entered'">
+<div class="pin-dots" role="status" [attr.aria-label]="digits().length + ' of 4 digits entered'" [attr.aria-invalid]="error() ? true : null" [attr.aria-describedby]="error() ? 'pin-error' : null">
   @for (slot of slots; track slot) {
     <span [attr.data-filled]="slot < digits().length ? '' : null"></span>
   }
 </div>
+@if (error(); as message) {
+  <p class="field__error" id="pin-error">{{ message }}</p>
+}
 <div class="pinpad" role="group" aria-label="PIN keypad">
   @for (key of keys; track key) {
     <button class="btn" type="button" (click)="add(key)">{{ key }}</button>

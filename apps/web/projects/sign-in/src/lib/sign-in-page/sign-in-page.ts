@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { PinKeypad, ProfileCard } from 'components';
-import { SessionService } from 'core';
+import { ApiError, SessionService } from 'core';
 import { AuthApi, ProfileSummary } from '../auth-api';
 
 @Component({
@@ -18,6 +18,8 @@ export class SignInPage {
 
   protected readonly readers = signal<ProfileSummary[]>([]);
   protected readonly chosen = signal<ProfileSummary | null>(null);
+  protected readonly pinError = signal<string | null>(null);
+  private readonly keypad = viewChild(PinKeypad);
 
   constructor() {
     this.api.profiles().then((profiles) => this.readers.set(profiles.filter((p) => p.role === 'reader')));
@@ -26,7 +28,16 @@ export class SignInPage {
   protected async submit(pin: string) {
     const profile = this.chosen();
     if (!profile) return;
-    this.session.current.set(await this.api.signInWithPin(profile.id, pin));
+    this.pinError.set(null);
+    try {
+      this.session.current.set(await this.api.signInWithPin(profile.id, pin));
+    } catch (e) {
+      if (!(e instanceof ApiError) || e.type !== 'pin-invalid') throw e;
+      const left = Number(e.body['triesLeft']);
+      this.pinError.set(`That PIN didn’t match. ${left} ${left === 1 ? 'try' : 'tries'} left.`);
+      this.keypad()?.clear();
+      return;
+    }
     await this.router.navigateByUrl('/shelf');
   }
 }
