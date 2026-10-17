@@ -1,4 +1,19 @@
 <div class="field">
   <label class="field__label" [for]="inputId()"><span class="qa__num">{{ number() }}.</span> {{ label() }}</label>
-  <textarea class="textarea" [id]="inputId()" rows="3" [value]="value()" (input)="edit($event)"></textarea>
+  <textarea
+    class="textarea"
+    [id]="inputId()"
+    rows="3"
+    [attr.maxlength]="maxlength()"
+    [value]="value()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="error() ? inputId() + '-error' : null"
+    (input)="edit($event)"
+  ></textarea>
+  @if (error(); as message) {
+    <div class="field__error" [id]="inputId() + '-error'">{{ message }}</div>
+  }
+  @if (showCounter()) {
+    <div class="field__hint" aria-live="polite">{{ charactersLeft() }} {{ charactersLeft() === 1 ? 'character' : 'characters' }} left</div>
+  }
 </div>

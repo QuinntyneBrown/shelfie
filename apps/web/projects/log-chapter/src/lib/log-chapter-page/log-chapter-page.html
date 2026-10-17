@@ -27,11 +27,20 @@
         </div>
       </div>
       <form class="stack" (submit)="$event.preventDefault(); submit()" novalidate>
+        @if (questionOneMissing()) {
+          <div class="alert alert--danger form-summary" role="alert" tabindex="-1">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+            <div class="alert__body">
+              <div class="alert__title">One more thing</div>
+              <ul class="summary-list"><li><a href="#q1" (click)="$event.preventDefault(); focusFirstQuestion()">Question 1 needs an answer</a></li></ul>
+            </div>
+          </div>
+        }
         <fieldset class="card stack">
           <legend class="legend">Tell {{ form.grownUpName }} about it</legend>
           <p class="text-muted hint">A sentence or two for each one is perfect. Spelling doesn’t matter.</p>
           @for (question of form.questions; track question.position; let i = $index) {
-            <sh-question-field [number]="question.position" [label]="question.text" [value]="answers()[i]" (valueChange)="setAnswer(i, $event)" />
+            <sh-question-field [number]="question.position" [label]="question.text" [value]="answers()[i]" [error]="i === 0 && questionOneMissing() ? 'Write a sentence or two about what happened. There are no wrong answers!' : null" (valueChange)="setAnswer(i, $event)" />
           }
         </fieldset>
         <div class="form-actions">

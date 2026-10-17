@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Cover, Progress, QuestionField } from 'components';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
@@ -23,6 +23,8 @@ export class LogChapterPage {
   protected readonly answers = signal<string[]>([]);
   protected readonly result = signal<LogResult | null>(null);
   protected readonly submitting = signal(false);
+  protected readonly questionOneMissing = signal(false);
+  private readonly fields = viewChildren(QuestionField);
   protected readonly chaptersToGo = computed(() => {
     const result = this.result();
     return result ? result.chapterCount - result.chaptersLogged : 0;
@@ -33,6 +35,7 @@ export class LogChapterPage {
       const [id, n] = [this.id(), Number(this.n())];
       this.form.set(null);
       this.result.set(null);
+      this.questionOneMissing.set(false);
       this.api.form(id, n).then((form) => {
         this.form.set(form);
         this.answers.set(form.questions.map(() => ''));
@@ -40,13 +43,23 @@ export class LogChapterPage {
     });
   }
 
+  protected focusFirstQuestion() {
+    this.fields()[0]?.focus();
+  }
+
   protected setAnswer(index: number, text: string) {
+    if (index === 0 && text.trim()) this.questionOneMissing.set(false);
     this.answers.update((answers) => answers.map((a, i) => (i === index ? text : a)));
   }
 
   protected async submit() {
     const form = this.form();
     if (!form || this.submitting()) return;
+    if (!this.answers()[0].trim()) {
+      this.questionOneMissing.set(true);
+      setTimeout(() => this.focusFirstQuestion());
+      return;
+    }
     this.submitting.set(true);
     try {
       this.result.set(

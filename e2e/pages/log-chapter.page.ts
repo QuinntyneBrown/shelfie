@@ -7,6 +7,31 @@ export class LogChapterPage {
     await this.page.getByLabel(new RegExp(`^${position}\\.`)).fill(text);
   }
 
+  answerBox(position: number) {
+    return this.page.getByLabel(new RegExp(`^${position}\\.`));
+  }
+
+  async typeMore(position: number, text: string) {
+    await this.answerBox(position).pressSequentially(text);
+  }
+
+  async answerLength(position: number) {
+    return (await this.answerBox(position).inputValue()).length;
+  }
+
+  charactersLeft() {
+    return this.page.getByText(/characters? left/);
+  }
+
+  summary() {
+    return this.page.getByRole('alert');
+  }
+
+  /** Posts a log straight to the API, as a client that skips the form would. */
+  postLog(bookId: string, chapter: number, data: unknown) {
+    return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { data });
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

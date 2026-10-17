@@ -7,7 +7,12 @@ import { requireSession, type RequestSession } from './session.ts';
 const params = z.object({ id: z.string(), n: z.coerce.number().int().min(1) });
 const logChapterSchema = z.object({
   readOn: z.iso.date(),
-  answers: z.array(z.object({ position: z.number().int(), text: z.string() })),
+  answers: z
+    .array(z.object({ position: z.number().int(), text: z.string().max(2000) }))
+    .refine((answers) => answers.some((a) => a.position === 1 && a.text.trim() !== ''), {
+      path: ['0', 'text'],
+      message: 'Question 1 needs an answer',
+    }),
 });
 
 export function chaptersRouter(db: DatabaseSync) {
@@ -34,7 +39,9 @@ export function chaptersRouter(db: DatabaseSync) {
     const p = params.safeParse(req.params);
     if (!p.success) return res.status(404).json({ type: 'not-found' });
     const body = logChapterSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json({ type: 'validation' });
+    if (!body.success) {
+      return res.status(400).json({ type: 'validation', errors: body.error.issues.map((i) => ({ path: ['answers', ...i.path].join('.'), message: i.message })) });
+    }
     reply(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
   });
 
