@@ -13,7 +13,7 @@ This project uses GitHub Issues to track bugs and feature requests. Please searc
 
 - [README](README.md) for an overview and getting started.
 - [CONTRIBUTING](CONTRIBUTING.md) for the development and pull request process.
-- [AGENTS.md](AGENTS.md) for the working agreement, build budget and engineering rules.
+- [AGENTS.md](AGENTS.md) for the working agreement and engineering rules.
 - `docs/` for requirements, mocks, design system, detailed designs and estimates.
 
 ## Support policy

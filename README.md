@@ -112,16 +112,16 @@ Shelfie is built documentation first and test first.
 1. **Requirements** are written in `docs/specs/` before any code.
 2. **Mocks** for every page, dialog and state are written in `docs/mocks/` before any frontend code.
 3. **Design system** tokens and components are extracted from the mocks into `docs/design-system/`.
-4. **Detailed designs** and **estimates** are produced for each feature. The overall estimate must stay within the 45-day build budget.
+4. **Detailed designs** and **estimates** are produced for each feature.
 5. **Implementation** proceeds in small slices using acceptance test-driven development. Each slice starts with a failing Playwright test, then the production code that makes it pass.
 
-See [AGENTS.md](AGENTS.md) for the full working agreement, including the build budget and scope rules.
+See [AGENTS.md](AGENTS.md) for the full working agreement, including the scope rules.
 
 ## Documentation
 
 | Document | Purpose |
 | --- | --- |
-| [AGENTS.md](AGENTS.md) | Goals, tech stack, build budget and engineering rules |
+| [AGENTS.md](AGENTS.md) | Goals, tech stack and engineering rules |
 | `docs/specs/` | Requirements and acceptance criteria |
 | `docs/mocks/` | HTML mocks for every screen and state |
 | `docs/design-system/` | Design tokens and component library |
