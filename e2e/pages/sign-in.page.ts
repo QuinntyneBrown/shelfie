@@ -1,7 +1,29 @@
 import type { Page } from '@playwright/test';
 
 export class SignInPage {
-  constructor(private readonly page: Page) {}
+  private passwordRequests = 0;
+
+  constructor(private readonly page: Page) {
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/auth/password')) this.passwordRequests++;
+    });
+  }
+
+  passwordRequestCount() {
+    return this.passwordRequests;
+  }
+
+  emailField() {
+    return this.page.getByLabel('Email');
+  }
+
+  passwordField() {
+    return this.page.getByLabel('Password');
+  }
+
+  async pressSignIn() {
+    await this.page.getByRole('button', { name: 'Sign in' }).click();
+  }
 
   async open() {
     await this.page.goto('/sign-in');

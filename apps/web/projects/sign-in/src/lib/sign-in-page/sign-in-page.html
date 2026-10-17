@@ -22,8 +22,8 @@
         <h1>Welcome back</h1>
         <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
         <form class="stack form-left" (submit)="$event.preventDefault(); submitPassword()" novalidate>
-          <sh-text-field label="Email" type="email" autocomplete="username" [(value)]="email" />
-          <sh-text-field label="Password" type="password" autocomplete="current-password" [(value)]="password" />
+          <sh-text-field label="Email" type="email" autocomplete="username" [error]="emailError()" [(value)]="email" />
+          <sh-text-field label="Password" type="password" autocomplete="current-password" [error]="passwordError()" [(value)]="password" />
           <sh-button [large]="true" [block]="true">Sign in</sh-button>
         </form>
       } @else {

@@ -20,6 +20,8 @@ export class SignInPage {
   private readonly loaded = signal(false);
   protected readonly email = signal('');
   protected readonly password = signal('');
+  protected readonly emailError = signal<string | null>(null);
+  protected readonly passwordError = signal<string | null>(null);
   // With no device cookie there are no profiles to pick from, so the grown-up types his e-mail.
   protected readonly passwordStep = computed(() => this.loaded() && this.readers().length === 0);
   protected readonly chosen = signal<ProfileSummary | null>(null);
@@ -37,7 +39,12 @@ export class SignInPage {
   }
 
   protected async submitPassword() {
-    this.session.current.set(await this.api.signInWithPassword(this.email(), this.password()));
+    const email = this.email().trim();
+    this.emailError.set(!email ? 'Enter your e-mail' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid e-mail' : null);
+    this.passwordError.set(this.password() ? null : 'Enter your password');
+    if (this.emailError() || this.passwordError()) return;
+
+    this.session.current.set(await this.api.signInWithPassword(email, this.password()));
     await this.router.navigateByUrl('/review');
   }
 
