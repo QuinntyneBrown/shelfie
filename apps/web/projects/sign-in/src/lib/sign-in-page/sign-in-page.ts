@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button, PinKeypad, ProfileCard, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
@@ -27,7 +27,9 @@ export class SignInPage {
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly lockedUntil = signal<number | null>(null);
+  protected readonly credentialsWrong = signal(false);
   private readonly keypad = viewChild(PinKeypad);
+  private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
 
   constructor() {
     this.api
@@ -44,7 +46,15 @@ export class SignInPage {
     this.passwordError.set(this.password() ? null : 'Enter your password');
     if (this.emailError() || this.passwordError()) return;
 
-    this.session.current.set(await this.api.signInWithPassword(email, this.password()));
+    this.credentialsWrong.set(false);
+    try {
+      this.session.current.set(await this.api.signInWithPassword(email, this.password()));
+    } catch (e) {
+      if (!(e instanceof ApiError) || e.type !== 'credentials-invalid') throw e;
+      this.credentialsWrong.set(true);
+      setTimeout(() => this.summary()?.nativeElement.focus());
+      return;
+    }
     await this.router.navigateByUrl('/review');
   }
 

@@ -32,3 +32,17 @@ test('Given the e-mail is malformed, when Dad presses Sign in, then the e-mail f
   await expect(signIn.passwordField()).not.toHaveAttribute('aria-invalid', 'true');
   expect(signIn.passwordRequestCount()).toBe(0);
 });
+
+test('Given wrong credentials, when Dad signs in, then one generic error shows whichever of e-mail or password was wrong', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.signInWithPassword(DAD.email, 'not-the-password');
+  await expect(signIn.failureSummary()).toContainText('E-mail or password is wrong');
+  await expect(signIn.failureSummary()).toBeFocused();
+  await expect(signIn.passwordField()).toHaveValue('not-the-password');
+
+  await signIn.signInWithPassword('nobody@example.com', DAD.password);
+  await expect(signIn.failureSummary()).toContainText('E-mail or password is wrong');
+  await expect(page).toHaveURL(/\/sign-in$/);
+});

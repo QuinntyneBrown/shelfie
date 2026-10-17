@@ -21,6 +21,10 @@ export class SignInPage {
     return this.page.getByLabel('Password');
   }
 
+  failureSummary() {
+    return this.page.getByRole('alert');
+  }
+
   async pressSignIn() {
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }

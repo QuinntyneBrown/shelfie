@@ -21,6 +21,15 @@
       } @else if (passwordStep()) {
         <h1>Welcome back</h1>
         <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
+        @if (credentialsWrong()) {
+          <div #summary class="alert alert--danger form-summary form-left" role="alert" tabindex="-1">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+            <div class="alert__body">
+              <div class="alert__title">We couldn’t sign you in</div>
+              <ul class="summary-list"><li>E-mail or password is wrong</li></ul>
+            </div>
+          </div>
+        }
         <form class="stack form-left" (submit)="$event.preventDefault(); submitPassword()" novalidate>
           <sh-text-field label="Email" type="email" autocomplete="username" [error]="emailError()" [(value)]="email" />
           <sh-text-field label="Password" type="password" autocomplete="current-password" [error]="passwordError()" [(value)]="password" />
