@@ -20,6 +20,21 @@ export class ShellPage {
     return this.page.getByRole('button', { name: `Account menu for ${name}` });
   }
 
+  async scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  }
+
+  /** Controls a finger could miss: anything interactive smaller than 44 × 44 CSS px. */
+  async undersizedControls() {
+    return this.page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>('button, a.btn, [role=menuitem], input, textarea, select, .chip')]
+        .filter((el) => el.offsetParent !== null)
+        .map((el) => ({ el, box: el.getBoundingClientRect() }))
+        .filter(({ box }) => box.width < 44 || box.height < 44)
+        .map(({ el, box }) => `${el.tagName.toLowerCase()}.${el.className} "${(el.textContent ?? '').trim().slice(0, 20)}" ${Math.round(box.width)}x${Math.round(box.height)}`),
+    );
+  }
+
   menu() {
     return this.page.getByRole('menu');
   }

@@ -3,6 +3,7 @@ import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
 import { SignInPage } from '../pages/sign-in.page';
+import { screens } from '../support/screens';
 
 test('Given Nia is signed in, when her shelf shows, then the top bar has the brand and her account menu', async ({ page }) => {
   await signInAsNia(page);
@@ -118,3 +119,16 @@ test('Given Dad is signed in, when he opens his account menu, then it shows his 
   await expect(shell.menu()).toContainText('dad@example.com');
   await expect(shell.menuItem('Sign out')).toBeVisible();
 });
+
+for (const width of [360, 768, 1280]) {
+  for (const screen of screens) {
+    test(`Given a ${width}px screen, when ${screen.name} shows, then nothing scrolls sideways and every control is at least 44 by 44`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await screen.open(page);
+      const shell = new ShellPage(page);
+
+      expect(await shell.scrollsSideways()).toBe(false);
+      expect(await shell.undersizedControls()).toEqual([]);
+    });
+  }
+}
