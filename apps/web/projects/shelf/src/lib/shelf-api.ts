@@ -51,6 +51,7 @@ export interface FinishedBook {
 }
 
 export interface ShelfResponse {
+  streak: number;
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];

@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { streakFor } from './streak.ts';
 
 export interface ShelfBook {
   id: string;
@@ -23,6 +24,7 @@ export interface FinishedBook {
 }
 
 export interface ShelfResponse {
+  streak: number;
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];
@@ -75,6 +77,7 @@ export function getShelf(db: DatabaseSync, householdId: string): ShelfResponse {
   const newestFirst = (a: string, b: string) => b.localeCompare(a);
 
   return {
+    streak: streakFor(db, householdId),
     grownUpName: grownUp.name,
     reading: rows
       .filter((r) => !r.finished_at && r.logged_count > 0)

@@ -3,6 +3,10 @@ import type { Page } from '@playwright/test';
 export class ShelfPage {
   constructor(private readonly page: Page) {}
 
+  summary() {
+    return this.page.getByText(/day streak/);
+  }
+
   greeting() {
     return this.page.getByRole('heading', { level: 1 });
   }

@@ -4,7 +4,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MenuItem, NavLink, TabBar } from 'components';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
-import { SessionService, ToastService } from 'core';
+import { SessionService, ShellStatusService, ToastService } from 'core';
 
 const MAX_VISIBLE_TOASTS = 3;
 
@@ -38,6 +38,7 @@ export class App {
     return s.role === 'reader' ? `${s.name} · Reader` : `${s.name} · ${s.email} · grown-up`;
   });
   protected readonly toasts = inject(ToastService);
+  protected readonly status = inject(ShellStatusService);
   protected readonly showAllToasts = signal(false);
   /** The newest toasts; older ones collapse into a "+N more" line so the stack never covers the page. */
   protected readonly visibleToasts = computed(() => {
@@ -71,6 +72,7 @@ export class App {
       return;
     }
     await this.sessionService.signOut();
+    this.status.streak.set(null);
     await this.router.navigateByUrl('/sign-in');
   }
 

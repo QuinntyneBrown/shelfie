@@ -21,3 +21,4 @@ export * from './lib/chapter-row/chapter-row';
 export * from './lib/tab-bar/tab-bar';
 export * from './lib/dialog/dialog';
 export * from './lib/textarea/textarea';
+export * from './lib/streak-badge/streak-badge';

@@ -1,0 +1,3 @@
+:host { display: inline-flex; }
+/* No highlight on the flame at 0; the text keeps full contrast. */
+.streak--cold .icon { color: var(--color-fg-muted); }

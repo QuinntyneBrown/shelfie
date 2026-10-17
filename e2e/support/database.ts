@@ -72,3 +72,17 @@ export function questionsAnswered(bookId: string, chapter: number): string[] {
     db.close();
   }
 }
+
+/** Rewrites when Nia's logged chapters were read so that they fall on exactly these days ago. */
+export function setReadingDays(daysAgo: number[]) {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.exec("UPDATE chapter_log SET read_on = '2000-01-01' WHERE book_id IN (SELECT id FROM book WHERE household_id = 'h1')");
+    const ids = db
+      .prepare("SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = 'h1' ORDER BY c.id")
+      .all() as { id: string }[];
+    daysAgo.forEach((ago, i) => db.prepare('UPDATE chapter_log SET read_on = ? WHERE id = ?').run(householdDay(-ago), ids[i].id));
+  } finally {
+    db.close();
+  }
+}

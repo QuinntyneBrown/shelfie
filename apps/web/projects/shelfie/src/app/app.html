@@ -5,6 +5,7 @@
     [color]="current.color"
     [home]="home()"
     [links]="navLinks()"
+    [streak]="current.role === 'reader' ? status.streak() : null"
     [menuHeader]="menuHeader()"
     [menuItems]="menuItems()"
     (menuSelect)="chooseFromMenu($event)"

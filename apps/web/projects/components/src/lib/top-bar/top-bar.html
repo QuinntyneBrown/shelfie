@@ -19,6 +19,9 @@
     </nav>
   }
   <span class="topbar__spacer"></span>
+  @if (streak() !== null) {
+    <sh-streak-badge [days]="streak()!" />
+  }
   <sh-menu
     [label]="'Account menu for ' + name()"
     [triggerClass]="'avatar avatar--sm avatar--' + color()"

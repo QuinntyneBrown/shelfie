@@ -82,6 +82,10 @@ export class ShellPage {
     return this.page.getByRole('navigation', { name: 'Primary, phone' });
   }
 
+  streakBadge() {
+    return this.page.getByRole('banner').getByLabel(/-day reading streak$/);
+  }
+
   menu() {
     return this.page.getByRole('menu');
   }
