@@ -27,3 +27,23 @@ export function expireSessions() {
     db.close();
   }
 }
+
+/** Leaves every session one day from expiring. */
+export function shortenSessions() {
+  const db = new DatabaseSync('e2e.db');
+  try {
+    db.prepare('UPDATE session SET expires_at = ?').run(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+  } finally {
+    db.close();
+  }
+}
+
+/** When the newest session expires, as stored. */
+export function sessionExpiresAt(): string {
+  const db = new DatabaseSync('e2e.db', { readOnly: true });
+  try {
+    return (db.prepare('SELECT expires_at FROM session ORDER BY created_at DESC LIMIT 1').get() as { expires_at: string }).expires_at;
+  } finally {
+    db.close();
+  }
+}

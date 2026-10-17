@@ -2,6 +2,9 @@ import type { NextFunction, Request, Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { readCookie } from './device.ts';
 
+/** A session lasts this long after its last request. */
+export const SESSION_DAYS = 30;
+
 export interface RequestSession {
   profileId: string;
   name: string;
@@ -26,6 +29,8 @@ export function requireSession(db: DatabaseSync) {
       res.clearCookie('shelfie_session');
       return res.status(401).json({ type: 'session-expired' });
     }
+    const slidTo = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    db.prepare('UPDATE session SET expires_at = ? WHERE id = ?').run(slidTo, id);
     res.locals['session'] = row;
     next();
   };

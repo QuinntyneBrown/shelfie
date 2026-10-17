@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { DEVICE_COOKIE, deviceHousehold, rememberDevice } from './device.ts';
+import { DEVICE_COOKIE, deviceHousehold, readCookie, rememberDevice } from './device.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { listProfiles, signInWithPassword, signInWithPin } from './auth.service.ts';
 
@@ -17,6 +17,13 @@ export function authRouter(db: DatabaseSync) {
   router.get('/session', requireSession(db), (_req, res) => {
     const { profileId, name, role } = res.locals['session'] as RequestSession;
     res.json({ profileId, name, role });
+  });
+
+  router.post('/sign-out', (req, res) => {
+    const id = readCookie(req.headers.cookie, 'shelfie_session');
+    if (id) db.prepare('DELETE FROM session WHERE id = ?').run(id);
+    res.clearCookie('shelfie_session');
+    res.status(204).end();
   });
 
   router.get('/profiles', (req, res) => {

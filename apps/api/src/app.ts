@@ -7,6 +7,10 @@ import { shelfRouter } from './shelf.router.ts';
 export function createApp(db: DatabaseSync) {
   const app = express();
   app.use(express.json());
+  app.use('/api', (_req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
   app.get('/api/health', (_req, res) => {
     db.prepare('SELECT 1').get();
     res.json({ ok: true });

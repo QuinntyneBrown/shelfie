@@ -3,7 +3,7 @@ import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
-import { expireSessions } from '../support/database';
+import { expireSessions, sessionExpiresAt, shortenSessions } from '../support/database';
 
 test('Given Nia is signed in, when the page is reloaded, then she is still signed in on the same page', async ({ page }) => {
   await signInAsNia(page);
@@ -42,4 +42,34 @@ test('Given Nia’s session expires while the app is open, when she takes her ne
 
   await expect(page).toHaveURL(/\/sign-in\?reason=expired$/);
   await expect(new SignInPage(page).signedOutNotice()).toBeVisible();
+});
+
+test('Given Nia is using the app, when a request is made, then her session runs 30 days from that request', async ({ page }) => {
+  await signInAsNia(page);
+  await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
+  shortenSessions();
+
+  await page.request.get('/api/shelf');
+
+  const daysLeft = (Date.parse(sessionExpiresAt()) - Date.now()) / (24 * 60 * 60 * 1000);
+  expect(daysLeft).toBeGreaterThan(29.9);
+});
+
+test('Given Nia is signed in, when she signs out, then the server ends the session', async ({ page }) => {
+  await signInAsNia(page);
+  await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
+
+  const signOut = await page.request.post('/api/auth/sign-out');
+  const afterwards = await page.request.get('/api/shelf');
+
+  expect(signOut.status()).toBe(204);
+  expect(afterwards.status()).toBe(401);
+});
+
+test('Given any API response, then the browser is told not to keep it', async ({ page }) => {
+  await signInAsNia(page);
+
+  const response = await page.request.get('/api/shelf');
+
+  expect(response.headers()['cache-control']).toBe('no-store');
 });

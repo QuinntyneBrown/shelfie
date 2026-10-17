@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { hashSecret, verifySecret } from './secret.ts';
+import { SESSION_DAYS } from './session.ts';
 
-const SESSION_DAYS = 30;
 const MAX_FAILURES = 5;
 const LOCK_MINUTES = 5;
 
