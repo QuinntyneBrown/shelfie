@@ -39,3 +39,25 @@ test('Given the PIN keypad is showing, when she types letters and digits, then o
   await signIn.deleteLastDigit();
   await expect(signIn.digitsEntered(1)).toBeVisible();
 });
+
+test('Given Nia has entered five wrong PINs, when the fifth fails, then the keypad locks for 5 minutes and shows the time left', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.choose('Nia');
+  await signIn.failPin(5);
+
+  await expect(signIn.lockNotice()).toContainText('locked for 5 minutes');
+  await expect(signIn.lockNotice()).toContainText(/Try again in [45]:\d\d/);
+  await expect(signIn.digitButton('1')).toBeDisabled();
+});
+
+test('Given Nia is locked out, when the correct PIN is sent, then it is refused', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.choose('Nia');
+  await signIn.failPin(5);
+
+  const response = await signIn.postPin('Nia', '1234');
+  expect(response.status()).toBe(423);
+  expect((await response.json()).type).toBe('pin-locked');
+});

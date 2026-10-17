@@ -19,6 +19,7 @@ export class SignInPage {
   protected readonly readers = signal<ProfileSummary[]>([]);
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);
+  protected readonly lockedUntil = signal<number | null>(null);
   private readonly keypad = viewChild(PinKeypad);
 
   constructor() {
@@ -32,6 +33,11 @@ export class SignInPage {
     try {
       this.session.current.set(await this.api.signInWithPin(profile.id, pin));
     } catch (e) {
+      if (e instanceof ApiError && e.type === 'pin-locked') {
+        this.lockedUntil.set(Date.parse(String(e.body['lockedUntil'])));
+        this.keypad()?.clear();
+        return;
+      }
       if (!(e instanceof ApiError) || e.type !== 'pin-invalid') throw e;
       const left = Number(e.body['triesLeft']);
       this.pinError.set(`That PIN didn’t match. ${left} ${left === 1 ? 'try' : 'tries'} left.`);

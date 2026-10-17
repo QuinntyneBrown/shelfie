@@ -21,6 +21,7 @@ export function authRouter(db: DatabaseSync) {
     if (!householdId) return res.status(401).json({ type: 'no-device' });
 
     const result = signInWithPin(db, householdId, body.data.profileId, body.data.pin);
+    if ('lockedUntil' in result) return res.status(423).json({ type: 'pin-locked', lockedUntil: result.lockedUntil });
     if ('triesLeft' in result) return res.status(401).json({ type: 'pin-invalid', triesLeft: result.triesLeft });
 
     const { id, ...summary } = result.session;
