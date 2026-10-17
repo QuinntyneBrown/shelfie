@@ -112,3 +112,27 @@ export async function requestPasswordReset(db: DatabaseSync, email: string) {
   const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
   await sendMail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
 }
+
+/** Spends a reset token: sets the new password, ends every session of the grown-up and signs him in. Null when the link is used or expired. */
+export function resetPassword(db: DatabaseSync, token: string, password: string): (Session & { householdId: string }) | null {
+  const reset = db
+    .prepare('SELECT token_hash, profile_id FROM password_reset WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?')
+    .get(sha256(token), new Date().toISOString()) as { token_hash: string; profile_id: string } | undefined;
+  if (!reset) return null;
+  const profile = db
+    .prepare('SELECT id, name, role, color, email, household_id FROM profile WHERE id = ?')
+    .get(reset.profile_id) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string };
+
+  db.exec('BEGIN');
+  try {
+    db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(password), profile.id);
+    db.prepare('UPDATE password_reset SET used_at = ? WHERE token_hash = ?').run(new Date().toISOString(), reset.token_hash);
+    db.prepare('DELETE FROM session WHERE profile_id = ?').run(profile.id);
+    const session = createSession(db, profile);
+    db.exec('COMMIT');
+    return { ...session, householdId: profile.household_id };
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+}

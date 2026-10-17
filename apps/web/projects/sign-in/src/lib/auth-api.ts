@@ -22,6 +22,10 @@ export class AuthApi {
     return this.api.post<void>('/auth/forgot-password', { email });
   }
 
+  resetPassword(token: string, password: string) {
+    return this.api.post<Session>('/auth/reset-password', { token, password });
+  }
+
   signInWithPassword(email: string, password: string) {
     return this.api.post<Session>('/auth/password', { email, password });
   }

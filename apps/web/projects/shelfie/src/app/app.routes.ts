@@ -8,6 +8,10 @@ export const routes: Routes = [
     path: 'forgot-password',
     loadComponent: () => import('sign-in').then((m) => m.ForgotPasswordPage),
   },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('sign-in').then((m) => m.ResetPasswordPage),
+  },
   { path: 'error', loadComponent: () => import('sign-in').then((m) => m.ServerErrorPage) },
   {
     path: 'settings',

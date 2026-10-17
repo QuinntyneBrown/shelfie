@@ -14,11 +14,15 @@ export async function mailFor(address: string): Promise<Mail[]> {
   return all.filter((mail) => mail.to.includes(address));
 }
 
+/** Undoes quoted-printable encoding, which mail servers use for long lines and '='. */
+const decode = (raw: string) =>
+  raw.replace(/=\r?\n/g, '').replace(/=([0-9A-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+
 /** The reset link in the newest mail sent to the address, once it has arrived. */
 export async function resetLinkFor(address: string): Promise<string> {
   for (let attempt = 0; attempt < 50; attempt++) {
     const mails = await mailFor(address);
-    const link = mails.at(-1)?.raw.match(/http:\/\/\S+\/reset-password\?\S+/);
+    const link = decode(mails.at(-1)?.raw ?? '').match(/http:\/\/\S+\/reset-password\?\S+/);
     if (link) return link[0];
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
