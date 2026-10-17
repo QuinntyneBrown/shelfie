@@ -15,6 +15,10 @@ export class BookPage {
     return this.page.locator('.chapter').filter({ has: this.page.getByText(new RegExp(`^Chapter ${number}$`)) });
   }
 
+  async logNext(chapter: number) {
+    await this.primaryAction(chapter).click();
+  }
+
   async openChapterRow(number: number) {
     await this.chapterRow(number).click();
   }

@@ -61,34 +61,43 @@
       </section>
     }
     <ng-template #row let-chapter>
-      @switch (chapter.state) {
-        @case ('logged') {
-          <sh-chapter-row
-            [number]="chapter.number"
-            state="logged"
-            [link]="['/chapter-logs', chapter.log.id]"
-            [meta]="
-              (whenRead(book, chapter) ?? (chapter.log.readOn | date: 'EEE d MMM' : 'UTC')) +
-              ' · ' +
-              chapter.log.firstLine
-            "
-            [status]="
-              chapter.log.reviewSticker
-                ? stickerEmoji(chapter.log.reviewSticker) + ' ' + book.grownUpName + ' read it'
-                : 'Waiting for ' + book.grownUpName
-            "
-          />
-        }
-        @case ('next') {
-          <sh-chapter-row
-            [number]="chapter.number"
-            state="next"
-            [link]="['/books', book.id, 'chapters', chapter.number, 'log']"
-            meta="Up next · tap when you’ve read it"
-          />
-        }
-        @default {
-          <sh-chapter-row [number]="chapter.number" state="future" />
+      @if (offline.isPending(book.id, chapter.number)) {
+        <sh-chapter-row
+          [number]="chapter.number"
+          state="future"
+          meta="Saved on this device"
+          status="Will send"
+        />
+      } @else {
+        @switch (chapter.state) {
+          @case ('logged') {
+            <sh-chapter-row
+              [number]="chapter.number"
+              state="logged"
+              [link]="['/chapter-logs', chapter.log.id]"
+              [meta]="
+                (whenRead(book, chapter) ?? (chapter.log.readOn | date: 'EEE d MMM' : 'UTC')) +
+                ' · ' +
+                chapter.log.firstLine
+              "
+              [status]="
+                chapter.log.reviewSticker
+                  ? stickerEmoji(chapter.log.reviewSticker) + ' ' + book.grownUpName + ' read it'
+                  : 'Waiting for ' + book.grownUpName
+              "
+            />
+          }
+          @case ('next') {
+            <sh-chapter-row
+              [number]="chapter.number"
+              state="next"
+              [link]="['/books', book.id, 'chapters', chapter.number, 'log']"
+              meta="Up next · tap when you’ve read it"
+            />
+          }
+          @default {
+            <sh-chapter-row [number]="chapter.number" state="future" />
+          }
         }
       }
     </ng-template>

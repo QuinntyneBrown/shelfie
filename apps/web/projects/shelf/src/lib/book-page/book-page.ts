@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ChapterRow, Cover, EmptyState, FEEDBACK_STICKERS, Progress } from 'components';
-import { ApiError } from 'core';
+import { ApiError, OfflineQueue } from 'core';
 import { BookResponse, ChapterSummary, ShelfApi } from '../shelf-api';
 
 /** Books with more chapters than this fold the later ones away. */
@@ -33,6 +33,7 @@ const addDays = (isoDay: string, days: number) => {
 export class BookPage {
   private readonly api = inject(ShelfApi);
   private readonly router = inject(Router);
+  protected readonly offline = inject(OfflineQueue);
 
   /** Route parameter. */
   readonly id = input.required<string>();

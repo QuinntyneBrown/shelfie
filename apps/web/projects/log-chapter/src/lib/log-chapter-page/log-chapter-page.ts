@@ -17,7 +17,7 @@ import {
   Segmented,
   SegmentedOption,
 } from 'components';
-import { ApiError, DraftStore, ToastService } from 'core';
+import { ApiError, DraftStore, OfflineQueue, ToastService } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -43,6 +43,7 @@ export class LogChapterPage {
   private readonly api = inject(ChaptersApi);
   private readonly drafts = inject(DraftStore);
   private readonly toasts = inject(ToastService);
+  private readonly offline = inject(OfflineQueue);
   private readonly router = inject(Router);
 
   readonly id = input.required<string>();
@@ -103,6 +104,26 @@ export class LogChapterPage {
   protected pickDay(day: string) {
     this.day.set(day);
     this.dayInFuture.set(false);
+  }
+
+  /** Offline: keep the chapter on this device to send later, and go back to the book. */
+  private async keepForLater(form: ChapterForm, readOn: string) {
+    this.offline.enqueue({
+      bookId: form.book.id,
+      chapterNumber: form.chapterNumber,
+      body: {
+        readOn,
+        answers: form.questions.map((q, i) => ({ position: q.position, text: this.answers()[i] })),
+      },
+      queuedAt: new Date().toISOString(),
+    });
+    this.drafts.clear(this.draftKey());
+    this.toasts.show({
+      severity: 'warning',
+      title: 'You’re offline',
+      text: `We saved Chapter ${form.chapterNumber} on this device and will send it when you’re back online.`,
+    });
+    await this.router.navigate(['/book', form.book.id]);
   }
 
   private offerUndo(form: ChapterForm, result: LogResult, readOn: string) {
@@ -181,6 +202,10 @@ export class LogChapterPage {
       this.offerUndo(form, result, readOn);
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      if (!this.offline.online()) {
+        await this.keepForLater(form, readOn);
+        return;
+      }
       this.failureToast = this.toasts.show({
         severity: 'danger',
         title: 'Couldn’t save your answers',

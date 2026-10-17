@@ -140,6 +140,10 @@ export class LogChapterPage {
     await this.page.getByRole('button', { name: 'I’m done!' }).press('Enter');
   }
 
+  toast(text: string | RegExp) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
   async done() {
     await this.page.getByRole('button', { name: 'I’m done!' }).click();
   }

@@ -21,7 +21,7 @@ import {
   },
 })
 export class Toast {
-  readonly severity = input<'success' | 'danger'>('success');
+  readonly severity = input<'success' | 'warning' | 'danger'>('success');
   readonly title = input.required<string>();
   readonly text = input<string | null>(null);
   readonly actionLabel = input<string | null>(null);

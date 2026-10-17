@@ -75,8 +75,18 @@ export interface ShelfResponse {
 export class ShelfApi {
   private readonly api = inject(ApiClient);
 
-  book(id: string) {
-    return this.api.get<BookResponse>(`/books/${id}`);
+  /** A book page seen before stays readable offline, from the copy kept on this device. */
+  async book(id: string): Promise<BookResponse> {
+    const key = `shelfie.book.${id}`;
+    try {
+      const book = await this.api.get<BookResponse>(`/books/${id}`);
+      writeCache(key, book);
+      return book;
+    } catch (e) {
+      const cached = e instanceof ApiError && e.status === 0 ? readCache<BookResponse>(key) : null;
+      if (cached) return cached;
+      throw e;
+    }
   }
 
   addBook(book: NewBook) {
@@ -86,25 +96,30 @@ export class ShelfApi {
   async shelf(): Promise<ShelfResponse> {
     try {
       const shelf = await this.api.get<ShelfResponse>('/shelf');
-      try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(shelf));
-      } catch {
-        // Without storage there is simply no offline copy.
-      }
+      writeCache(CACHE_KEY, shelf);
       return shelf;
     } catch (e) {
-      const cached = e instanceof ApiError && e.status === 0 ? readCache() : null;
+      const cached =
+        e instanceof ApiError && e.status === 0 ? readCache<ShelfResponse>(CACHE_KEY) : null;
       if (cached) return cached;
       throw e;
     }
   }
 }
 
-function readCache(): ShelfResponse | null {
+function readCache<T>(key: string): T | null {
   try {
-    const stored = localStorage.getItem(CACHE_KEY);
-    return stored ? (JSON.parse(stored) as ShelfResponse) : null;
+    const stored = localStorage.getItem(key);
+    return stored ? (JSON.parse(stored) as T) : null;
   } catch {
     return null;
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Without storage there is simply no offline copy.
   }
 }
