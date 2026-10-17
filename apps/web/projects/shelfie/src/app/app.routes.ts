@@ -4,6 +4,7 @@ import { authGuard, grownUpGuard } from 'core';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
   { path: 'sign-in', loadComponent: () => import('sign-in').then((m) => m.SignInPage) },
+  { path: 'error', loadComponent: () => import('sign-in').then((m) => m.ServerErrorPage) },
   { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
     path: 'review',

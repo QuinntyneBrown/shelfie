@@ -4,6 +4,7 @@ import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ErrorPage } from '../pages/error.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
+import { LogChapterPage } from '../pages/log-chapter.page';
 
 test('Given Nia is signed in, when she opens Review by URL, then she is told it is for grown-ups and can go back', async ({ page }) => {
   await signInAsNia(page);
@@ -47,4 +48,22 @@ test('Given Dad is signed in, when he opens an unknown URL, then the Not found p
   await notFound.homeLink('Go to Review').click();
 
   await expect(page).toHaveURL(/\/review$/);
+});
+
+test('Given the server fails while a page loads, when Nia opens a chapter, then she sees Something went wrong with a code and can try again', async ({ page }) => {
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
+  const failure = new ErrorPage(page);
+  await failure.breakServer('**/api/books/b-lion/chapters/12/form');
+
+  await shelf.logChapter('On the go', 'The Lion, the Witch and the Wardrobe', 12);
+
+  await expect(failure.heading()).toHaveText('Something went wrong on our side');
+  await expect(failure.codeShown()).toHaveText('SHF-1A2B');
+  await expect(page.getByText(/at .*\.ts/)).toBeHidden();
+
+  await failure.repairServer('**/api/books/b-lion/chapters/12/form');
+  await failure.tryAgain();
+  await expect(new LogChapterPage(page).heading()).toHaveText('Chapter 12');
 });
