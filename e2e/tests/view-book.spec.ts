@@ -17,7 +17,8 @@ test('Given Nia opens a book from her shelf, then she sees its progress and ever
 
   const first = book.chapterRow(1);
   await expect(first).toContainText('Lucy found a wardrobe in the empty room and went inside.');
-  await expect(first).toContainText('Waiting for Dad');
+  await expect(first).toContainText('🌟 Dad read it');
+  await expect(book.chapterRow(11)).toContainText('Waiting for Dad');
 
   const next = book.chapterRow(12);
   await expect(next).toContainText('Up next');

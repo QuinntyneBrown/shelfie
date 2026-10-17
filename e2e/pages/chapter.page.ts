@@ -16,6 +16,10 @@ export class ChapterPage {
     return this.page.getByRole('region', { name: /hasn’t read this yet/ });
   }
 
+  feedback() {
+    return this.page.getByRole('region', { name: /gave you a/ });
+  }
+
   answers() {
     return this.page.getByRole('region', { name: 'Your answers' }).getByRole('listitem');
   }

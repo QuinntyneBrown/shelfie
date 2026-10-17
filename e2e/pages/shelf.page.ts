@@ -7,6 +7,18 @@ export class ShelfPage {
     return this.page.getByText(/day streak/);
   }
 
+  feedbackBanner() {
+    return this.page.getByRole('status').filter({ hasText: /read Chapter \d+ and gave you/ });
+  }
+
+  async openFeedback(chapter: number) {
+    await this.page.getByRole('link', { name: `Open Chapter ${chapter}` }).click();
+  }
+
+  async dismissFeedback() {
+    await this.feedbackBanner().getByRole('button', { name: 'Dismiss' }).click();
+  }
+
   greeting() {
     return this.page.getByRole('heading', { level: 1 });
   }

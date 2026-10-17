@@ -22,7 +22,7 @@ export function createBook(db: DatabaseSync, householdId: string, role: 'reader'
 export interface ChapterSummary {
   number: number;
   state: 'logged' | 'next' | 'future';
-  log: { id: string; readOn: string; firstLine: string } | null;
+  log: { id: string; readOn: string; firstLine: string; reviewSticker: string | null } | null;
 }
 
 export interface BookResponse {
@@ -58,11 +58,11 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
   const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   const logs = db
     .prepare(
-      `SELECT c.id, c.chapter_number, c.read_on, a.text AS first_answer
+      `SELECT c.id, c.chapter_number, c.read_on, c.sticker AS review_sticker, a.text AS first_answer
            FROM chapter_log c LEFT JOIN answer a ON a.chapter_log_id = c.id AND a.position = 1
           WHERE c.book_id = ?`,
     )
-    .all(bookId) as unknown as { id: string; chapter_number: number; read_on: string; first_answer: string | null }[];
+    .all(bookId) as unknown as { id: string; chapter_number: number; read_on: string; review_sticker: string | null; first_answer: string | null }[];
   const reward = db.prepare('SELECT text, given_at FROM reward WHERE book_id = ?').get(bookId) as { text: string; given_at: string } | undefined;
 
   const byNumber = new Map(logs.map((l) => [l.chapter_number, l]));
@@ -73,7 +73,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     return {
       number,
       state: log ? 'logged' : number === nextNumber ? 'next' : 'future',
-      log: log ? { id: log.id, readOn: log.read_on, firstLine: (log.first_answer ?? '').split('\n')[0] } : null,
+      log: log ? { id: log.id, readOn: log.read_on, firstLine: (log.first_answer ?? '').split('\n')[0], reviewSticker: log.review_sticker } : null,
     };
   });
 

@@ -4,7 +4,7 @@ import { ApiClient } from 'core';
 export interface ChapterSummary {
   number: number;
   state: 'logged' | 'next' | 'future';
-  log: { id: string; readOn: string; firstLine: string } | null;
+  log: { id: string; readOn: string; firstLine: string; reviewSticker: string | null } | null;
 }
 
 export interface BookResponse {
@@ -51,7 +51,16 @@ export interface FinishedBook {
   reward: { text: string; givenOn: string } | null;
 }
 
+export interface UnseenFeedback {
+  chapterLogId: string;
+  bookId: string;
+  bookTitle: string;
+  chapterNumber: number;
+  sticker: string;
+}
+
 export interface ShelfResponse {
+  unseenFeedback: UnseenFeedback[];
   streak: number;
   grownUpName: string;
   reading: ShelfBook[];

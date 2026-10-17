@@ -1,7 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Cover } from 'components';
+import { Cover, FEEDBACK_STICKERS } from 'components';
 import { ApiError } from 'core';
 import { ChapterView, ChaptersApi } from '../chapters-api';
 
@@ -19,6 +27,9 @@ export class ChapterPage {
   /** Route parameter: the chapter log. */
   readonly id = input.required<string>();
   protected readonly chapter = signal<ChapterView | null>(null);
+  protected readonly given = computed(() =>
+    FEEDBACK_STICKERS.find((s) => s.value === this.chapter()?.review?.sticker),
+  );
 
   constructor() {
     effect(() => {
@@ -29,7 +40,13 @@ export class ChapterPage {
   private async load(id: string) {
     this.chapter.set(null);
     try {
-      this.chapter.set(await this.api.chapter(id));
+      const chapter = await this.api.chapter(id);
+      this.chapter.set(chapter);
+      if (chapter.review && !chapter.review.feedbackSeenAt) {
+        this.api
+          .markSeen(chapter.id)
+          .catch((e) => console.error('Could not mark feedback seen', e));
+      }
     } catch (e) {
       if (!(e instanceof ApiError) || e.status !== 404) throw e;
       await this.router.navigateByUrl('/not-found', { skipLocationChange: true });

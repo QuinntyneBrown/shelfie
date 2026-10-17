@@ -23,7 +23,16 @@ export interface FinishedBook {
   reward: { text: string; givenOn: string } | null;
 }
 
+export interface UnseenFeedback {
+  chapterLogId: string;
+  bookId: string;
+  bookTitle: string;
+  chapterNumber: number;
+  sticker: string;
+}
+
 export interface ShelfResponse {
+  unseenFeedback: UnseenFeedback[];
   streak: number;
   grownUpName: string;
   reading: ShelfBook[];
@@ -76,7 +85,17 @@ export function getShelf(db: DatabaseSync, householdId: string): ShelfResponse {
   });
   const newestFirst = (a: string, b: string) => b.localeCompare(a);
 
+  const unseenFeedback = db
+    .prepare(
+      `SELECT c.id AS chapterLogId, b.id AS bookId, b.title AS bookTitle, c.chapter_number AS chapterNumber, c.sticker
+         FROM chapter_log c JOIN book b ON b.id = c.book_id
+        WHERE b.household_id = ? AND c.reviewed_at IS NOT NULL AND c.feedback_seen_at IS NULL
+        ORDER BY c.reviewed_at DESC`,
+    )
+    .all(householdId) as unknown as UnseenFeedback[];
+
   return {
+    unseenFeedback,
     streak: streakFor(db, householdId),
     grownUpName: grownUp.name,
     reading: rows

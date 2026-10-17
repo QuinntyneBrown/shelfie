@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ChapterRow, Cover, EmptyState, Progress } from 'components';
+import { ChapterRow, Cover, EmptyState, FEEDBACK_STICKERS, Progress } from 'components';
 import { ApiError } from 'core';
 import { BookResponse, ChapterSummary, ShelfApi } from '../shelf-api';
 
@@ -77,6 +77,10 @@ export class BookPage {
         this.failed.set(true);
       }
     }
+  }
+
+  protected stickerEmoji(value: string) {
+    return FEEDBACK_STICKERS.find((s) => s.value === value)?.emoji ?? '⭐';
   }
 
   protected whenRead(book: BookResponse, chapter: ChapterSummary) {

@@ -24,12 +24,25 @@
       </div>
     </div>
 
-    <section class="card stack" aria-labelledby="waiting-title">
-      <h2 id="waiting-title" class="section-title">
-        {{ chapter.grownUpName }} hasn’t read this yet
-      </h2>
-      <p class="text-muted">When he does, his sticker and note will show up here.</p>
-    </section>
+    @if (chapter.review; as review) {
+      <section class="card stack" aria-labelledby="feedback-title">
+        <h2 id="feedback-title" class="section-title">
+          <span aria-hidden="true">{{ given()?.emoji }}</span> {{ chapter.grownUpName }} gave you a
+          {{ given()?.name }}
+        </h2>
+        @if (review.note) {
+          <p>{{ review.note }}</p>
+        }
+        <p class="text-muted">{{ review.reviewedAt | date: 'EEE d MMM, h:mm a' }}</p>
+      </section>
+    } @else {
+      <section class="card stack" aria-labelledby="waiting-title">
+        <h2 id="waiting-title" class="section-title">
+          {{ chapter.grownUpName }} hasn’t read this yet
+        </h2>
+        <p class="text-muted">When he does, his sticker and note will show up here.</p>
+      </section>
+    }
 
     <section class="card stack" aria-labelledby="answers-title">
       <h2 id="answers-title" class="section-title">Your answers</h2>

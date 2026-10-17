@@ -165,3 +165,15 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
     nextChapterLogId: next?.id ?? null,
   };
 }
+
+/** Notes that the reader has opened her feedback, so the shelf stops announcing it. */
+export function markFeedbackSeen(db: DatabaseSync, householdId: string, chapterLogId: string) {
+  const log = db
+    .prepare('SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId);
+  if (!log) throw new Problem(404, 'not-found');
+  db.prepare('UPDATE chapter_log SET feedback_seen_at = ? WHERE id = ? AND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL').run(
+    new Date().toISOString(),
+    chapterLogId,
+  );
+}

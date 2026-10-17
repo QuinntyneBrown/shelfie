@@ -38,6 +38,12 @@ export interface ChapterView {
   today: string;
   grownUpName: string;
   answers: { position: number; questionText: string; text: string }[];
+  review: {
+    sticker: string;
+    note: string | null;
+    reviewedAt: string;
+    feedbackSeenAt: string | null;
+  } | null;
   nextChapterLogId: string | null;
 }
 
@@ -47,6 +53,10 @@ export class ChaptersApi {
 
   chapter(chapterLogId: string) {
     return this.api.get<ChapterView>(`/chapter-logs/${chapterLogId}`);
+  }
+
+  markSeen(chapterLogId: string) {
+    return this.api.post<void>(`/chapter-logs/${chapterLogId}/seen`, {});
   }
 
   form(bookId: string, n: number) {

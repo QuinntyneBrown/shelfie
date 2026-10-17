@@ -72,7 +72,11 @@
               ' · ' +
               chapter.log.firstLine
             "
-            [status]="'Waiting for ' + book.grownUpName"
+            [status]="
+              chapter.log.reviewSticker
+                ? stickerEmoji(chapter.log.reviewSticker) + ' ' + book.grownUpName + ' read it'
+                : 'Waiting for ' + book.grownUpName
+            "
           />
         }
         @case ('next') {

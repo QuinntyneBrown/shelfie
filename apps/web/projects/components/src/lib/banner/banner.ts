@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Banner {
-  readonly severity = input<'success' | 'danger'>('success');
+  readonly severity = input<'info' | 'success' | 'danger'>('success');
   readonly title = input.required<string>();
   readonly message = input<string | null>(null);
 }
