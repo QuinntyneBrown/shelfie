@@ -3,6 +3,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { authRouter } from './auth.router.ts';
 import { csrfGuard } from './csrf.ts';
 import { problemDetailsHandler } from './errors.ts';
+import { requestLogging, stdoutLog, type Log } from './logging.ts';
 import { booksRouter } from './books.router.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { questionsRouter } from './questions.router.ts';
@@ -10,8 +11,9 @@ import { reviewRouter } from './review.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
-export function createApp(db: DatabaseSync) {
+export function createApp(db: DatabaseSync, options: { log?: Log } = {}) {
   const app = express();
+  app.use(requestLogging(options.log ?? stdoutLog));
   app.use(express.json({ limit: '16kb' }));
   app.use('/api', (_req, res, next) => {
     res.set({
