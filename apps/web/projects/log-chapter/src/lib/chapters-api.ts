@@ -30,9 +30,24 @@ export interface LogResult {
   bookFinished: boolean;
 }
 
+export interface ChapterView {
+  id: string;
+  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  chapterNumber: number;
+  readOn: string;
+  today: string;
+  grownUpName: string;
+  answers: { position: number; questionText: string; text: string }[];
+  nextChapterLogId: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ChaptersApi {
   private readonly api = inject(ApiClient);
+
+  chapter(chapterLogId: string) {
+    return this.api.get<ChapterView>(`/chapter-logs/${chapterLogId}`);
+  }
 
   form(bookId: string, n: number) {
     return this.api.get<ChapterForm>(`/books/${bookId}/chapters/${n}/form`);

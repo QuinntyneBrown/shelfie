@@ -110,3 +110,43 @@ export function undoLog(db: DatabaseSync, householdId: string, chapterLogId: str
   db.prepare('DELETE FROM chapter_log WHERE id = ?').run(log.id);
   db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(log.book_id);
 }
+
+export interface ChapterView {
+  id: string;
+  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  chapterNumber: number;
+  readOn: string;
+  today: string;
+  grownUpName: string;
+  answers: { position: number; questionText: string; text: string }[];
+  nextChapterLogId: string | null;
+}
+
+export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: string): ChapterView {
+  const log = db
+    .prepare(
+      `SELECT c.id, c.chapter_number, c.read_on, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
+         FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?`,
+    )
+    .get(chapterLogId, householdId) as
+    | { id: string; chapter_number: number; read_on: string; book_id: string; title: string; cover_color: string; sticker: string; chapter_count: number }
+    | undefined;
+  if (!log) throw new Problem(404, 'not-found');
+  const answers = db
+    .prepare('SELECT position, question_text AS questionText, text FROM answer WHERE chapter_log_id = ? ORDER BY position')
+    .all(log.id) as unknown as ChapterView['answers'];
+  const next = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(log.book_id, log.chapter_number + 1) as
+    | { id: string }
+    | undefined;
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  return {
+    id: log.id,
+    book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
+    chapterNumber: log.chapter_number,
+    readOn: log.read_on,
+    today: householdToday(db, householdId),
+    grownUpName: grownUp.name,
+    answers,
+    nextChapterLogId: next?.id ?? null,
+  };
+}

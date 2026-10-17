@@ -1,0 +1,34 @@
+import type { Page } from '@playwright/test';
+
+/** A logged chapter, read-only: Nia's answers and, once reviewed, Dad's feedback. */
+export class ChapterPage {
+  constructor(private readonly page: Page) {}
+
+  heading() {
+    return this.page.getByRole('heading', { level: 1 });
+  }
+
+  whenRead() {
+    return this.page.getByText(/you read it/);
+  }
+
+  waitingCard() {
+    return this.page.getByRole('region', { name: /hasn’t read this yet/ });
+  }
+
+  answers() {
+    return this.page.getByRole('region', { name: 'Your answers' }).getByRole('listitem');
+  }
+
+  answer(position: number) {
+    return this.answers().nth(position - 1);
+  }
+
+  async backToBook() {
+    await this.page.getByRole('link', { name: 'Back to the book' }).click();
+  }
+
+  nextChapterLink(number: number) {
+    return this.page.getByRole('link', { name: `Chapter ${number}`, exact: true });
+  }
+}

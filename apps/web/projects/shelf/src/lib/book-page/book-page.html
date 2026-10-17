@@ -63,6 +63,7 @@
           <sh-chapter-row
             [number]="chapter.number"
             state="logged"
+            [link]="['/chapter-logs', chapter.log.id]"
             [meta]="
               (whenRead(book, chapter) ?? (chapter.log.readOn | date: 'EEE d MMM' : 'UTC')) +
               ' · ' +

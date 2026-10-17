@@ -1,7 +1,7 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { getForm, logChapter, undoLog } from './chapters.service.ts';
+import { getChapter, getForm, logChapter, undoLog } from './chapters.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
@@ -30,6 +30,11 @@ function replying(res: Response, run: () => unknown, status = 200) {
 export function chapterLogsRouter(db: DatabaseSync) {
   const router = Router();
   router.use(requireSession(db));
+  router.get('/:id', (req, res) => {
+    const householdId = (res.locals['session'] as RequestSession).householdId;
+    replying(res, () => getChapter(db, householdId, String(req.params['id'])));
+  });
+
   router.delete('/:id', (req, res) => {
     const householdId = (res.locals['session'] as RequestSession).householdId;
     replying(res, () => undoLog(db, householdId, String(req.params['id'])));

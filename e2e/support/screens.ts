@@ -112,4 +112,12 @@ export const screens: Screen[] = [
       await page.getByRole('button', { name: 'Remove book', exact: true }).waitFor();
     },
   },
+  {
+    name: 'chapter answers',
+    open: async (page) => {
+      await signInAsNia(page);
+      await page.goto('/chapter-logs/b-lion-c10');
+      await page.getByRole('heading', { name: 'Chapter 10' }).waitFor();
+    },
+  },
 ];
