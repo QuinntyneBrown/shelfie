@@ -5,6 +5,7 @@ import { problemDetailsHandler } from './errors.ts';
 import { booksRouter } from './books.router.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { questionsRouter } from './questions.router.ts';
+import { reviewRouter } from './review.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
@@ -22,6 +23,7 @@ export function createApp(db: DatabaseSync) {
   app.use('/api/auth', authRouter(db));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db));
+  app.use('/api', reviewRouter(db));
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
   app.use('/api/settings', settingsRouter(db));

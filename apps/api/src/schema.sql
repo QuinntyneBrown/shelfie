@@ -40,6 +40,10 @@ CREATE TABLE IF NOT EXISTS chapter_log (
   read_on TEXT NOT NULL,
   logged_at TEXT NOT NULL,
   undo_until TEXT NOT NULL,
+  reviewed_at TEXT,
+  sticker TEXT,
+  note TEXT,
+  feedback_seen_at TEXT,
   UNIQUE (book_id, chapter_number)
 );
 CREATE TABLE IF NOT EXISTS reward (

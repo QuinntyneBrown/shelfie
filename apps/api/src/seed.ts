@@ -71,5 +71,9 @@ if (!process.argv.includes('--no-books')) {
   book.run('b-web', 'h1', 'Charlotte’s Web', 'E. B. White', 3, 'sky', '🕷️', 'grown_up', `${day(4)}T09:00:00.000Z`, `${day(10)}T16:00:00.000Z`);
   logChapters('b-web', 3, 10);
   reward.run('b-web', 'Movie night with popcorn', `${day(11)}T18:00:00.000Z`);
+
+  // Dad has read everything except Nia's two newest Lion chapters.
+  db.exec("UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'star', note = 'Lovely work!', feedback_seen_at = logged_at WHERE id NOT IN ('b-lion-c10', 'b-lion-c11') AND book_id != 'b-other'");
+  db.prepare('UPDATE chapter_log SET logged_at = ? WHERE id = ?').run(`${day(15)}T17:00:00.000Z`, 'b-lion-c11');
 }
 console.log('seeded');

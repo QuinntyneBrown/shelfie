@@ -1,1 +1,52 @@
-<div class="container"><h1>Review</h1></div>
+<div class="container stack page">
+  <div class="page-header">
+    <div>
+      <h1>Review</h1>
+      @if (overview()) {
+        <p class="subtitle">{{ summary() }}</p>
+      }
+    </div>
+  </div>
+  @if (overview(); as overview) {
+    <section class="card card--flush" aria-labelledby="waiting">
+      <h2 id="waiting" class="section-title">Waiting for you</h2>
+      <ul class="list">
+        @for (item of overview.queue; track item.chapterLogId; let first = $first) {
+          <li class="list__item">
+            <sh-cover [color]="item.coverColor" [sticker]="item.coverSticker" size="sm" />
+            <div class="list__body">
+              <div class="list__title">Chapter {{ item.chapterNumber }} · {{ item.bookTitle }}</div>
+              <div class="list__meta">
+                {{ overview.readerName }} read it
+                {{ relativeDay(overview, item) ?? (item.readOn | date: 'EEE d MMM' : 'UTC') }}
+              </div>
+            </div>
+            <a
+              class="btn btn--sm"
+              [class.btn--primary]="first"
+              [routerLink]="['/review/chapters', item.chapterLogId]"
+              >Review</a
+            >
+          </li>
+        }
+      </ul>
+    </section>
+
+    @for (book of overview.finishedUnrewarded; track book.bookId) {
+      <section class="card stack reward-card" [attr.aria-labelledby]="'finished-' + book.bookId">
+        <div class="book-card">
+          <sh-cover [color]="book.coverColor" [sticker]="book.coverSticker" size="sm" />
+          <div class="book-card__body">
+            <h2 [id]="'finished-' + book.bookId" class="section-title">
+              {{ book.title }} is finished!
+            </h2>
+            <span class="book-card__author">
+              {{ overview.readerName }} logged the last chapter on
+              {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }} · {{ book.chapterCount }} chapters
+            </span>
+          </div>
+        </div>
+      </section>
+    }
+  }
+</div>
