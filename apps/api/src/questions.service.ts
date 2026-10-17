@@ -39,3 +39,22 @@ export function addQuestion(db: DatabaseSync, householdId: string, bookId: strin
   );
   return question;
 }
+
+function findQuestion(db: DatabaseSync, householdId: string, questionId: string) {
+  const question = db
+    .prepare('SELECT q.id FROM question q JOIN book b ON b.id = q.book_id WHERE q.id = ? AND b.household_id = ? AND q.removed_at IS NULL')
+    .get(questionId, householdId);
+  if (!question) throw new Problem(404, 'not-found');
+}
+
+/** Earlier answers keep the wording they were written against, because each answer stores its own copy. */
+export function updateQuestion(db: DatabaseSync, householdId: string, questionId: string, text: string) {
+  findQuestion(db, householdId, questionId);
+  db.prepare('UPDATE question SET text = ? WHERE id = ?').run(text, questionId);
+}
+
+/** Removal hides the question from later chapters; the row stays. */
+export function removeQuestion(db: DatabaseSync, householdId: string, questionId: string) {
+  findQuestion(db, householdId, questionId);
+  db.prepare('UPDATE question SET removed_at = ? WHERE id = ?').run(new Date().toISOString(), questionId);
+}

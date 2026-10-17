@@ -66,6 +66,14 @@ export class BooksApi {
     return this.api.post<CustomQuestion>(`/books/${bookId}/questions`, { text });
   }
 
+  updateQuestion(id: string, text: string) {
+    return this.api.patch<void>(`/questions/${id}`, { text });
+  }
+
+  removeQuestion(id: string) {
+    return this.api.delete(`/questions/${id}`);
+  }
+
   remove(id: string) {
     return this.api.delete(`/books/${id}`);
   }

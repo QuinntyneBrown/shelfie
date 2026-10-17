@@ -3,7 +3,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
 import { Problem } from './problem.ts';
-import { addQuestion } from './questions.service.ts';
+import { addQuestion, removeQuestion, updateQuestion } from './questions.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 const questionSchema = z.object({ text: z.string().trim().min(5).max(200) });
@@ -27,6 +27,16 @@ export function questionsRouter(db: DatabaseSync) {
     const body = questionSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json({ type: 'validation' });
     replying(res, () => addQuestion(db, householdOf(res), String(req.params['id']), body.data.text), 201);
+  });
+
+  router.patch('/questions/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+    const body = questionSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json({ type: 'validation' });
+    replying(res, () => updateQuestion(db, householdOf(res), String(req.params['id']), body.data.text));
+  });
+
+  router.delete('/questions/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+    replying(res, () => removeQuestion(db, householdOf(res), String(req.params['id'])));
   });
 
   return router;

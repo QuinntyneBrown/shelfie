@@ -40,6 +40,16 @@
                 Added by you · {{ question.createdAt | date: 'EEE d MMM' }}
               </div>
             </div>
+            <button
+              class="btn btn--sm btn--ghost"
+              type="button"
+              (click)="openEditQuestion(question)"
+            >
+              Edit
+            </button>
+            <button class="btn btn--sm btn--ghost" type="button" (click)="removeQuestion(question)">
+              Remove
+            </button>
           </li>
         }
       </ol>
@@ -49,6 +59,7 @@
     </section>
     <sh-question-dialog
       [open]="questionOpen()"
+      [editing]="editingQuestion()?.text ?? null"
       [readerName]="book.readerName"
       [bookTitle]="book.title"
       [busy]="questionBusy()"

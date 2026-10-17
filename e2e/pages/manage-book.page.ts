@@ -67,6 +67,22 @@ export class ManageBookPage {
     await this.question(text).getByRole('button', { name: 'Remove' }).click();
   }
 
+  private questionWrites = 0;
+
+  watchQuestionWrites() {
+    this.page.on('request', (request) => {
+      if (/\/questions/.test(request.url()) && request.method() !== 'GET') this.questionWrites++;
+    });
+  }
+
+  questionWriteCount() {
+    return this.questionWrites;
+  }
+
+  async breakQuestionSaving() {
+    await this.page.route('**/questions**', (route) => route.abort());
+  }
+
   questionDialog() {
     return this.page.getByRole('dialog', { name: /question/i });
   }

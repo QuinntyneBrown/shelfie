@@ -11,7 +11,7 @@ import {
 import { Router } from '@angular/router';
 import { Banner, Button, Cover, Dialog, Progress, TextField } from 'components';
 import { ApiError, ToastService } from 'core';
-import { BookDetail, BooksApi } from '../books-api';
+import { BookDetail, BooksApi, CustomQuestion } from '../books-api';
 import { QuestionDialog } from '../question-dialog/question-dialog';
 
 @Component({
@@ -37,6 +37,7 @@ export class ManageBookPage {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly questionOpen = signal(false);
+  protected readonly editingQuestion = signal<CustomQuestion | null>(null);
   protected readonly questionBusy = signal(false);
   protected readonly questionFailed = signal(false);
   protected readonly removeOpen = signal(false);
@@ -103,6 +104,7 @@ export class ManageBookPage {
   }
 
   protected openAddQuestion() {
+    this.editingQuestion.set(null);
     this.questionFailed.set(false);
     this.questionOpen.set(true);
   }
@@ -113,8 +115,17 @@ export class ManageBookPage {
     this.questionBusy.set(true);
     this.questionFailed.set(false);
     try {
-      const question = await this.api.addQuestion(book.id, text);
-      this.book.set({ ...book, questions: [...book.questions, question] });
+      const editing = this.editingQuestion();
+      if (editing) {
+        await this.api.updateQuestion(editing.id, text);
+        this.book.set({
+          ...book,
+          questions: book.questions.map((q) => (q.id === editing.id ? { ...q, text } : q)),
+        });
+      } else {
+        const question = await this.api.addQuestion(book.id, text);
+        this.book.set({ ...book, questions: [...book.questions, question] });
+      }
       this.questionOpen.set(false);
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
@@ -122,6 +133,19 @@ export class ManageBookPage {
     } finally {
       this.questionBusy.set(false);
     }
+  }
+
+  protected openEditQuestion(question: CustomQuestion) {
+    this.editingQuestion.set(question);
+    this.questionFailed.set(false);
+    this.questionOpen.set(true);
+  }
+
+  protected async removeQuestion(question: CustomQuestion) {
+    const book = this.book();
+    if (!book) return;
+    await this.api.removeQuestion(question.id);
+    this.book.set({ ...book, questions: book.questions.filter((q) => q.id !== question.id) });
   }
 
   protected openRemove() {

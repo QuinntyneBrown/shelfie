@@ -21,15 +21,23 @@ export class QuestionDialog {
   readonly closed = output<void>();
 
   protected readonly text = signal('');
+  protected readonly error = signal<string | null>(null);
 
   constructor() {
     effect(() => {
-      if (this.open()) this.text.set(this.editing() ?? '');
+      if (!this.open()) return;
+      this.text.set(this.editing() ?? '');
+      this.error.set(null);
     });
   }
 
   protected save() {
     if (this.busy()) return;
-    this.saved.emit(this.text().trim());
+    const text = this.text().trim();
+    const fits = text.length >= 5 && text.length <= 200;
+    this.error.set(
+      fits ? null : 'Finish the question — at least a few words, ending in a question mark helps.',
+    );
+    if (fits) this.saved.emit(text);
   }
 }
