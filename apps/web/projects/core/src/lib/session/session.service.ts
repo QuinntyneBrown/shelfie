@@ -14,6 +14,15 @@ export class SessionService {
   /** Set when the API reports the session ran out, so sign-in can say why. */
   readonly expired = signal(false);
 
+  /** Ends the session on the server and forgets it here. */
+  async signOut() {
+    try {
+      await this.api.post('/auth/sign-out', {});
+    } finally {
+      this.current.set(null);
+    }
+  }
+
   /** Asks the API whether this browser still has a session; run once at start-up. */
   async restore() {
     try {

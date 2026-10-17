@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
-import { authGuard } from 'core';
+import { authGuard, grownUpGuard } from 'core';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
   { path: 'sign-in', loadComponent: () => import('sign-in').then((m) => m.SignInPage) },
+  { path: 'forbidden', loadComponent: () => import('sign-in').then((m) => m.ForbiddenPage) },
   {
     path: 'review',
-    canActivate: [authGuard],
+    canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('review').then((m) => m.ReviewPage),
   },
   {

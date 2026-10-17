@@ -11,3 +11,4 @@ export * from './lib/segmented/segmented';
 export * from './lib/toast/toast';
 export * from './lib/button/button';
 export * from './lib/text-field/text-field';
+export * from './lib/error-state/error-state';

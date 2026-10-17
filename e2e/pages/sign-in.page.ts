@@ -75,6 +75,10 @@ export class SignInPage {
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }
 
+  pickerHeading() {
+    return this.page.getByRole('heading', { name: 'Who’s reading today?' });
+  }
+
   signedOutNotice() {
     return this.page.getByRole('status').filter({ hasText: 'You were signed out' });
   }

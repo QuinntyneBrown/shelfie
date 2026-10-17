@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+.top-space {
+  padding-top: var(--space-16);
+}
+.heading {
+  font: var(--text-h2);
+}
