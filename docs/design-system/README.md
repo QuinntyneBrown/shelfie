@@ -28,6 +28,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Menu](components/menu.html) | Actions | account menu (reader, grown-up) | closed, open, item hover/focus | account-menu, shelf |
 | [Form field](components/form-field.html) | Inputs | label, optional, help, error | default, invalid | add-book, manage-book, settings, give-reward |
 | [Text field](components/text-field.html) | Inputs | text, e-mail, password · sm/md/lg | default, hover, focus, disabled, read-only, invalid | sign-in, add-book, settings, log-chapter |
+| [Combobox](components/combobox.html) | Inputs | catalogue matches (with cover), suggested matches (badge) | closed, searching, open with active row, row hover, no matches, lookup failed | add-book |
 | [Textarea](components/textarea.html) | Inputs | answer, note | default, hover, focus, disabled, read-only, invalid | log-chapter, review-chapter, give-reward, edit-question |
 | [Suggestion](components/suggestion.html) | Inputs | one row | not ticked, ticked, focus, invalid, disabled | suggest-questions |
 | [Radio group](components/radio-group.html) | Inputs | vertical with description | default, hover, focus, checked, disabled, invalid | settings, edit-question, add-book |
@@ -137,6 +138,9 @@ The mocks were pointed at this system but their HTML was not rewritten, so the i
 ### 2026-10-18: suggested questions
 
 - **Added:** [Suggestion](components/suggestion.html) (`.suggestions`, `.suggestion`, `.suggestion__check`): a suggested question with a keep tick and editable wording, for the Suggested questions dialog.
+### 2026-10-18: book autocomplete
+
+- **Added:** [Combobox](components/combobox.html) (`.combobox`, `.combobox__panel`, `.combobox__list`, `.combobox__option`, `.combobox__text`, `.combobox__title`, `.combobox__detail`, `.combobox__note`): the Title field on Add a book with its dropped list of matches, the Suggested badge on AI rows and the searching, no-match and lookup-failed notes.
 - **Tokens:** none added or changed.
 
 ### 2026-10-18: book cover pictures
