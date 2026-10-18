@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { DatabaseSync } from 'node:sqlite';
+import { all, get, run, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { DEFAULT_QUESTIONS, customQuestions, type CustomQuestion } from './questions.service.ts';
 
@@ -11,11 +11,13 @@ export interface NewBook {
   sticker: string;
 }
 
-export function createBook(db: DatabaseSync, householdId: string, role: 'reader' | 'parent', book: NewBook): { id: string } {
+export async function createBook(db: Db, householdId: string, role: 'reader' | 'parent', book: NewBook): Promise<{ id: string }> {
   const id = randomUUID();
-  db.prepare(
-    'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  ).run(id, householdId, book.title, book.author, book.chapterCount, book.coverColor, book.sticker, role, new Date().toISOString());
+  await run(
+    db,
+    'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+    [id, householdId, book.title, book.author, book.chapterCount, book.coverColor, book.sticker, role, new Date().toISOString()],
+  );
   return { id };
 }
 
@@ -44,26 +46,31 @@ export interface BookResponse {
   chapters: ChapterSummary[];
 }
 
-export function getBook(db: DatabaseSync, householdId: string, bookId: string): BookResponse {
-  const book = db
-    .prepare('SELECT id, title, author, chapter_count, cover_color, sticker, finished_at FROM book WHERE id = ? AND household_id = ?')
-    .get(bookId, householdId) as
-    | { id: string; title: string; author: string | null; chapter_count: number; cover_color: string; sticker: string; finished_at: string | null }
-    | undefined;
+const profileName = async (db: Db, householdId: string, role: string) =>
+  (await get<{ name: string }>(db, 'SELECT name FROM profile WHERE household_id = $1 AND role = $2 ORDER BY name', [householdId, role]))?.name;
+
+const parentName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'parent'))!;
+// A household need not have a reader yet, so her name falls back to something the page can still say.
+const readerName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'reader')) ?? 'your reader';
+
+export async function getBook(db: Db, householdId: string, bookId: string): Promise<BookResponse> {
+  const book = await get<{ id: string; title: string; author: string | null; chapter_count: number; cover_color: string; sticker: string; finished_at: string | null }>(
+    db,
+    'SELECT id, title, author, chapter_count, cover_color, sticker, finished_at FROM book WHERE id = $1 AND household_id = $2',
+    [bookId, householdId],
+  );
   if (!book) throw new Problem(404, 'not-found');
 
-  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
+  const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
-  const logs = db
-    .prepare(
-      `SELECT c.id, c.chapter_number, c.read_on, c.sticker AS review_sticker, a.text AS first_answer
-           FROM chapter_log c LEFT JOIN answer a ON a.chapter_log_id = c.id AND a.position = 1
-          WHERE c.book_id = ?`,
-    )
-    .all(bookId) as unknown as { id: string; chapter_number: number; read_on: string; review_sticker: string | null; first_answer: string | null }[];
-  const reward = db.prepare('SELECT text, given_at FROM reward WHERE book_id = ?').get(bookId) as { text: string; given_at: string } | undefined;
+  const logs = await all<{ id: string; chapter_number: number; read_on: string; review_sticker: string | null; first_answer: string | null }>(
+    db,
+    `SELECT c.id, c.chapter_number, c.read_on, c.sticker AS review_sticker, a.text AS first_answer
+         FROM chapter_log c LEFT JOIN answer a ON a.chapter_log_id = c.id AND a.position = 1
+        WHERE c.book_id = $1`,
+    [bookId],
+  );
+  const reward = await get<{ text: string; given_at: string }>(db, 'SELECT text, given_at FROM reward WHERE book_id = $1', [bookId]);
 
   const byNumber = new Map(logs.map((l) => [l.chapter_number, l]));
   const nextNumber = Array.from({ length: book.chapter_count }, (_, i) => i + 1).find((n) => !byNumber.has(n));
@@ -89,10 +96,10 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     finishedOn: book.finished_at ? dayFormat.format(new Date(book.finished_at)) : null,
     reward: reward ? { text: reward.text, givenOn: dayFormat.format(new Date(reward.given_at)) } : null,
     today: dayFormat.format(new Date()),
-    grownUpName: grownUp.name,
-    readerName: reader?.name ?? 'your reader',
+    grownUpName: await parentName(db, householdId),
+    readerName: await readerName(db, householdId),
     defaultQuestions: DEFAULT_QUESTIONS,
-    questions: customQuestions(db, bookId),
+    questions: await customQuestions(db, bookId),
     chapters,
   };
 }
@@ -114,18 +121,11 @@ export interface BookList {
   books: BookListItem[];
 }
 
-export function listBooks(db: DatabaseSync, householdId: string): BookList {
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
-  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
+export async function listBooks(db: Db, householdId: string): Promise<BookList> {
+  const name = await readerName(db, householdId);
+  const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
-  const rows = db
-    .prepare(
-      `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.finished_at, b.created_at,
-              (SELECT COUNT(*) FROM chapter_log c WHERE c.book_id = b.id) AS logged_count, r.text AS reward_text
-         FROM book b LEFT JOIN reward r ON r.book_id = b.id
-        WHERE b.household_id = ? ORDER BY b.created_at DESC`,
-    )
-    .all(householdId) as unknown as {
+  const rows = await all<{
     id: string;
     title: string;
     author: string | null;
@@ -135,7 +135,14 @@ export function listBooks(db: DatabaseSync, householdId: string): BookList {
     finished_at: string | null;
     logged_count: number;
     reward_text: string | null;
-  }[];
+  }>(
+    db,
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.finished_at, b.created_at,
+            (SELECT COUNT(*) FROM chapter_log c WHERE c.book_id = b.id) AS logged_count, r.text AS reward_text
+       FROM book b LEFT JOIN reward r ON r.book_id = b.id
+      WHERE b.household_id = $1 ORDER BY b.created_at DESC`,
+    [householdId],
+  );
   const books = rows.map((r) => ({
     id: r.id,
     title: r.title,
@@ -147,7 +154,7 @@ export function listBooks(db: DatabaseSync, householdId: string): BookList {
     finishedOn: r.finished_at ? dayFormat.format(new Date(r.finished_at)) : null,
     reward: r.reward_text ? { text: r.reward_text } : null,
   }));
-  return { readerName: reader?.name ?? 'your reader', books };
+  return { readerName: name, books };
 }
 
 export interface BookPatch {
@@ -156,43 +163,32 @@ export interface BookPatch {
   chapterCount?: number;
 }
 
-export function updateBook(db: DatabaseSync, householdId: string, bookId: string, patch: BookPatch): BookResponse {
-  const book = db.prepare('SELECT id, finished_at FROM book WHERE id = ? AND household_id = ?').get(bookId, householdId) as
-    | { id: string; finished_at: string | null }
-    | undefined;
+export async function updateBook(db: Db, householdId: string, bookId: string, patch: BookPatch): Promise<BookResponse> {
+  const book = await get<{ id: string; finished_at: string | null }>(db, 'SELECT id, finished_at FROM book WHERE id = $1 AND household_id = $2', [
+    bookId,
+    householdId,
+  ]);
   if (!book) throw new Problem(404, 'not-found');
-  const { count } = db.prepare('SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = ?').get(bookId) as { count: number };
+  const { count } = (await get<{ count: number }>(db, 'SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = $1', [bookId]))!;
   if (patch.chapterCount !== undefined && patch.chapterCount < count) {
     throw new Problem(400, 'chapter-count-too-low', { errors: [{ field: 'chapterCount' }] });
   }
 
-  db.prepare('UPDATE book SET title = COALESCE(?, title), chapter_count = COALESCE(?, chapter_count) WHERE id = ?').run(
+  await run(db, 'UPDATE book SET title = COALESCE($1, title), chapter_count = COALESCE($2, chapter_count) WHERE id = $3', [
     patch.title ?? null,
     patch.chapterCount ?? null,
     bookId,
-  );
-  if (patch.author !== undefined) db.prepare('UPDATE book SET author = ? WHERE id = ?').run(patch.author, bookId);
+  ]);
+  if (patch.author !== undefined) await run(db, 'UPDATE book SET author = $1 WHERE id = $2', [patch.author, bookId]);
   // Adding chapters to a finished book means it is no longer finished; its reward stays.
   if (patch.chapterCount !== undefined && patch.chapterCount > count && book.finished_at) {
-    db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(bookId);
+    await run(db, 'UPDATE book SET finished_at = NULL WHERE id = $1', [bookId]);
   }
   return getBook(db, householdId, bookId);
 }
 
-/** Deletes a book and everything that hangs off it: answers, chapter logs and its reward. */
-export function deleteBook(db: DatabaseSync, householdId: string, bookId: string) {
-  const book = db.prepare('SELECT id FROM book WHERE id = ? AND household_id = ?').get(bookId, householdId);
-  if (!book) throw new Problem(404, 'not-found');
-  db.exec('BEGIN');
-  try {
-    db.prepare('DELETE FROM answer WHERE chapter_log_id IN (SELECT id FROM chapter_log WHERE book_id = ?)').run(bookId);
-    db.prepare('DELETE FROM chapter_log WHERE book_id = ?').run(bookId);
-    db.prepare('DELETE FROM reward WHERE book_id = ?').run(bookId);
-    db.prepare('DELETE FROM question WHERE book_id = ?').run(bookId);
-    db.prepare('DELETE FROM book WHERE id = ?').run(bookId);
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+/** Deletes a book; its chapter logs, answers, questions and reward go with it through the cascades. */
+export async function deleteBook(db: Db, householdId: string, bookId: string) {
+  const deleted = await run(db, 'DELETE FROM book WHERE id = $1 AND household_id = $2', [bookId, householdId]);
+  if (deleted === 0) throw new Problem(404, 'not-found');
 }

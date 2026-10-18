@@ -1,5 +1,5 @@
 import { Router, type Response } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { getChapter, getForm, logChapter, markFeedbackSeen, undoLog } from './chapters.service.ts';
@@ -17,9 +17,9 @@ const logChapterSchema = z.object({
     }),
 });
 
-function replying(res: Response, run: () => unknown, status = 200) {
+async function replying(res: Response, run: () => Promise<unknown>, status = 200) {
   try {
-    const body = run();
+    const body = await run();
     if (body === undefined) res.status(204).end();
     else res.status(status).json(body);
   } catch (e) {
@@ -28,46 +28,46 @@ function replying(res: Response, run: () => unknown, status = 200) {
   }
 }
 
-export function chapterLogsRouter(db: DatabaseSync) {
+export function chapterLogsRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db));
-  router.get('/:id', (req, res) => {
+  router.get('/:id', async (req, res) => {
     const householdId = (res.locals['session'] as RequestSession).householdId;
-    replying(res, () => getChapter(db, householdId, String(req.params['id'])));
+    await replying(res, () => getChapter(db, householdId, String(req.params['id'])));
   });
 
-  router.post('/:id/seen', (req, res) => {
+  router.post('/:id/seen', async (req, res) => {
     const householdId = (res.locals['session'] as RequestSession).householdId;
-    replying(res, () => markFeedbackSeen(db, householdId, String(req.params['id'])));
+    await replying(res, () => markFeedbackSeen(db, householdId, String(req.params['id'])));
   });
 
-  router.delete('/:id', (req, res) => {
+  router.delete('/:id', async (req, res) => {
     const householdId = (res.locals['session'] as RequestSession).householdId;
-    replying(res, () => undoLog(db, householdId, String(req.params['id'])));
+    await replying(res, () => undoLog(db, householdId, String(req.params['id'])));
   });
   return router;
 }
 
-export function chaptersRouter(db: DatabaseSync) {
+export function chaptersRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db));
 
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
 
-  router.get('/:id/chapters/:n/form', (req, res) => {
+  router.get('/:id/chapters/:n/form', async (req, res) => {
     const p = params.safeParse(req.params);
     if (!p.success) return res.status(404).json({ type: 'not-found' });
-    replying(res, () => getForm(db, householdOf(res), p.data.id, p.data.n));
+    await replying(res, () => getForm(db, householdOf(res), p.data.id, p.data.n));
   });
 
-  router.post('/:id/chapters/:n', (req, res) => {
+  router.post('/:id/chapters/:n', async (req, res) => {
     const p = params.safeParse(req.params);
     if (!p.success) return res.status(404).json({ type: 'not-found' });
     const body = logChapterSchema.safeParse(req.body);
     if (!body.success) {
       return res.status(400).json(validationProblem(body.error));
     }
-    replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
+    await replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
   });
 
   return router;
