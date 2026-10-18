@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/mocks/assets/logo.png" alt="Shelfie logo" width="160"></p>
+<p align="center"><img src="docs/mocks/assets/logo.svg" alt="Shelfie logo" width="160"></p>
 
 # Shelfie
 
