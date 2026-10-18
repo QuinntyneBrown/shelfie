@@ -70,3 +70,13 @@ test('Given a request that skips the page, when Nia sends feedback or Dad target
   expect((await chapter.sendViaApi('b-other-c1', { sticker: 'star' })).status()).toBe(404);
   expect((await chapter.sendViaApi('b-lion-c11', { sticker: 'glitter' })).status()).toBe(400);
 });
+
+test('Given Dad opens a chapter on a phone, when the page shows, then the breadcrumb sits clear of the top bar', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInAsDad(page);
+  await new ReviewPage(page).review(11);
+  const chapter = new ReviewChapterPage(page);
+  await expect(chapter.heading()).toHaveText('Chapter 11');
+
+  expect(await chapter.breadcrumbGapBelowTopBar()).toBeGreaterThanOrEqual(16);
+});
