@@ -11,12 +11,13 @@ export class SettingsPage {
     return this.page.getByLabel('Your name');
   }
 
+  // Role queries, so the fields of a closed (hidden) dialog never match.
   username() {
-    return this.page.getByLabel('Username');
+    return this.page.getByRole('textbox', { name: 'Username' });
   }
 
   email() {
-    return this.page.getByLabel('E-mail address');
+    return this.page.getByRole('textbox', { name: 'E-mail address', exact: true });
   }
 
   async open() {
@@ -106,6 +107,7 @@ export class SettingsPage {
 
   async signOut() {
     await this.page.getByRole('button', { name: 'Sign out' }).click();
+    await this.page.waitForURL('**/sign-in');
   }
 
   /** A row of the Parents list: a parent or a pending invite. */
