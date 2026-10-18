@@ -42,7 +42,7 @@ The reader opens a book from her shelf to see its chapters and pick the next one
 
 ### Containers
 
-The book page in the Angular application reads one response from the Express API, which composes it from the SQLite database.
+The book page in the Angular application reads one response from the Express API, which composes it from the PostgreSQL database.
 
 ![C4 container view for viewing a book](diagrams/c4-container.png)
 

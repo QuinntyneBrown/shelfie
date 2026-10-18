@@ -11,7 +11,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "rewards.service.ts", "Service", "giveReward: 404 other household, 400 not finished, 409 reward exists, insert")
   Component(repo, "rewards.repo.ts", "Repository", "findBookForHousehold, findRewardByBook, insertReward")
   Component(booksRepo, "books.repo.ts / shelf.repo.ts", "Repositories (books, shelf modules)", "LEFT JOIN reward so book and shelf responses carry the reward")
-  ComponentDb(db, "Shelfie database", "SQLite", "reward, book")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "reward, book")
 }
 Rel(web, router, "POST /api/books/:id/reward", "JSON/HTTPS")
 Rel(router, authz, "Applies")

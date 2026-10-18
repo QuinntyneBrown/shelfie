@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(routers, "*.router.ts", "Express Routers", "Apply requireRole per endpoint (reader or parent)")
   Component(services, "*.service.ts", "Services", "Every query includes household_id = ?; throw NotFoundError when it returns nothing")
     Component(errors, "errors.ts", "Middleware", "problemDetailsHandler: 404 not-found, 500 generic with requestId, no stack")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, question, chapter_log, answer, reward, users, session")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, question, chapter_log, answer, reward, users, session")
 }
 Rel(web, sessionMw, "Request with session cookie", "JSON/HTTPS")
 Rel(sessionMw, routers, "Session or none")

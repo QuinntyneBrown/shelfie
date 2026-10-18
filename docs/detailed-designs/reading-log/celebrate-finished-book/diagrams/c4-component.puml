@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "chapters.service.ts", "Service", "logChapter: after insert, count logs; when count = chapter_count set finished_at")
   Component(repo, "chapters.repo.ts", "Repository", "countLogs, setFinishedAt")
   Component(review, "review.service.ts", "Service", "Lists books with finished_at and no reward (reference)")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, chapter_log")
 }
 Rel(web, router, "POST the last chapter log", "JSON/HTTPS")
 Rel(router, service, "logChapter")

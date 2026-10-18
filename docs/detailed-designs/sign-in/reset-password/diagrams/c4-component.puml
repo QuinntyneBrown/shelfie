@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "auth.service.ts", "Service", "requestPasswordReset: hashed token, 1-hour expiry, mail; resetPassword: single use, argon2id, delete all sessions of the parent, new session")
   Component(mailer, "nodemailer transport", "SMTP client", "Sends the plain-text reset link")
   Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over password_reset, users and session")
-  ComponentDb(db, "Shelfie database", "SQLite", "password_reset, users, session")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "password_reset, users, session")
 }
 System_Ext(mail, "E-mail provider", "SMTP")
 Rel(web, router, "POST forgot-password, POST reset-password", "JSON/HTTPS")

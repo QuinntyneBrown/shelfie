@@ -50,7 +50,7 @@ Parents and readers are authorised by Shelfie on every page and request; other h
 
 ### Containers
 
-Route guards in the Angular application decide what renders; `requireRole()` and household-scoped queries in the Express API decide what the SQLite database returns.
+Route guards in the Angular application decide what renders; `requireRole()` and household-scoped queries in the Express API decide what the PostgreSQL database returns.
 
 ![C4 container view for authorising access](diagrams/c4-container.png)
 

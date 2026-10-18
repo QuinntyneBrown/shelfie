@@ -14,40 +14,36 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Nightly scheduler\n(cron or systemd timer)" as scheduler
-box "Backend — Shelfie API (services)" #ECFDF3
-  participant "backup.ts\nBackupJob.run(now)" as job
+actor "cron\n(/etc/cron.d/shelfie-backup)" as scheduler
+box "Backend — VM host scripts" #ECFDF3
+  participant "backup.sh" as job
 end box
 box "Backend — Shelfie infrastructure" #FFF4E5
-  participant "db.ts\n(read-only connection)" as dbmod
-  database "Shelfie database (SQLite)" as db
-  participant "Backup directory" as dir
-  participant "stdout log (pino)" as log
+  participant "pg_dump" as dump
+  database "Shelfie database (PostgreSQL)" as db
+  participant "Blob Storage (backups)" as blobs
+  participant "journald (shelfie-backup)" as log
 end box
 
-scheduler -> job : node dist/backup.js (schedule deferred with hosting)
-job -> dbmod : open(livePath, {readonly: true})
-dbmod --> job : connection
-job -> job : target = backupDir/shelfie-YYYY-MM-DD.sqlite
-job -> db : VACUUM INTO target (L2-031)
-alt copy succeeds
-  db --> job : ok
-  job -> dir : open target read-only
-  job -> dir : PRAGMA integrity_check
-  dir --> job : ok
-  job -> dir : delete copies older than retention (30 days)
-  dir --> job : pruned count
-  job -> log : {event: "backup", path, bytes, verified: true, pruned}
+scheduler -> job : /usr/local/bin/shelfie-backup at 08:15 UTC
+job -> job : node apps/api/src/purge.ts (expired rows)
+job -> dump : pg_dump "$DATABASE_URL" --format=custom --file=tmp
+dump -> db : read schema and rows over TLS (L2-031)
+alt dump succeeds
+  db --> dump : rows
+  dump --> job : tmp written
+  job -> blobs : PUT shelfie-YYYY-MM-DD.dump (managed identity)
+  blobs --> job : 201 Created
+  job -> log : uploaded shelfie-YYYY-MM-DD.dump
   job --> scheduler : exit 0
-else copy or integrity check fails
-  db --> job : error
-  job -> dir : remove partial target file
-  job -> log : logger.error({event: "backup", err})
-  job --> scheduler : exit 1 (previous backups untouched)
+else dump or upload fails
+  dump --> job : non-zero exit
+  job -> log : error line
+  job --> scheduler : exit 1 (earlier dumps untouched)
 end
-note over job
-  Restore (docs/runbook.md): stop the API,
-  move the live file and its -wal/-shm aside, copy the dated
-  backup to the live path, start the API, check GET /api/health
+note over blobs
+  A lifecycle rule deletes dumps 30 days after their last
+  modification; the managed server keeps 7 days of
+  point-in-time restore on its own (docs/runbook.md)
 end note
 @enduml

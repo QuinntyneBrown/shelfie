@@ -44,26 +44,10 @@ class HealthResponse {
 }
 
 class Db <<db.ts>> {
-  +connection: Database
-  +open(path: string): Database
-  +migrate(dir: string): void
-  -pragmas: journal_mode=WAL, synchronous=NORMAL, foreign_keys=ON, busy_timeout=5000
-}
-
-class BackupJob <<backup.ts>> {
-  +run(now: Date): BackupResult
-  -backupDir: string
-  -retentionDays: number
-  -targetPath(now: Date): string
-  -verify(path: string): boolean
-  -prune(now: Date): number
-}
-
-class BackupResult {
-  +path: string
-  +bytes: number
-  +verified: boolean
-  +pruned: number
+  +pool: pg.Pool
+  +openDb(url: string): Pool
+  +migrate(pool: Pool): Promise<void>
+  -pool: max 10, connectionTimeoutMillis 5000, ssl verified in production
 }
 
 class ProblemDetailsHandler <<errors.ts>> {
@@ -94,9 +78,6 @@ Logger --> RequestContext : creates per request
 Logger --> RequestLine : writes on finish
 HealthRouter ..> Db : SELECT 1
 HealthRouter --> HealthResponse : answers
-BackupJob ..> Db : VACUUM INTO, integrity_check
-BackupJob --> BackupResult : returns
-BackupJob ..> Logger : logs result
 ProblemDetailsHandler ..> RequestContext : reads requestId
 ProblemDetailsHandler --> Problem : produces
 ProblemDetailsHandler ..> Logger : logs unhandled error

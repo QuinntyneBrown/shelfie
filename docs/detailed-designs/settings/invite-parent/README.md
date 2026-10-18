@@ -45,7 +45,7 @@ A parent invites another person through Shelfie, which sends the link through th
 
 ### Containers
 
-The Settings page calls the Express API, which stores the invite hash in SQLite and hands the mail to the SMTP server (Mailpit locally).
+The Settings page calls the Express API, which stores the invite hash in PostgreSQL and hands the mail to the SMTP server (Mailpit locally).
 
 ![C4 container view for inviting a parent](diagrams/c4-container.png)
 

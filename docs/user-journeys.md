@@ -25,7 +25,7 @@
 | 21 | Edit household settings | Parent edits their own account | 100% | 2 days |
 | 22 | Choose appearance | Pick light or dark theme | 100% | 1 day |
 | 23 | Secure the API | API rejects abuse and protects data | 100% | 2 days |
-| 24 | Operate the service | Health checks, logs and SQLite backups | 94% | 5 days |
+| 24 | Operate the service | Health checks, logs and nightly database dumps | 94% | 5 days |
 | 25 | Invite a parent | Parent e-mails a single-use invite link | 100% | 4 days |
 | 26 | Accept an invite | Invited parent joins the household from the link | 100% | 5 days |
 | 27 | Manage readers | Parent adds and edits reader profiles | 100% | 5 days |

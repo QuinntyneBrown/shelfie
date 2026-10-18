@@ -44,7 +44,7 @@ The parent asks Shelfie for a reset link; Shelfie hands the message to the exter
 
 ### Containers
 
-The two pages in the Angular application post to the Express API, which stores the token hash in the SQLite database and sends the link over SMTP.
+The two pages in the Angular application post to the Express API, which stores the token hash in the PostgreSQL database and sends the link over SMTP.
 
 ![C4 container view for resetting a password](diagrams/c4-container.png)
 

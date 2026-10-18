@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run the production database
+
+System_Ext(cron, "cron on the VM", "backup.sh at 08:15 UTC")
+Container_Boundary(api, "Shelfie API") {
+  Component(main, "main.ts", "Entry point", "openDb(DATABASE_URL); await migrate(); listen; exit 1 with one error line on failure")
+  Component(dbmod, "db.ts", "pg Pool and helpers", "openDb(url): max 10, 5 s timeout, TLS verified in production; all/get/run/transaction")
+  Component(migrate, "migrate()", "Migration runner (db.ts)", "pg_advisory_lock; schema_migration table; one transaction per migrations/*.sql")
+  Component(migrations, "migrations/001-initial.sql", "SQL files", "Tables with ON DELETE CASCADE from household; indexes on every household-scoped key")
+  Component(health, "GET /api/health", "Route (app.ts)", "SELECT 1 through the pool; 503 on failure")
+  Component(services, "*.service.ts", "Services", "$n placeholders; chapter log and answers committed together")
+  Component(purge, "purge.ts", "Entry point", "purgeExpired(): expired sessions, spent resets, old sign-in attempts")
+  Component(importer, "import-sqlite.ts", "Entry point", "importSqlite(path, pool): parent-first copy in one transaction; refuses a non-empty target")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "Flexible server, private subnet, TLS")
+}
+Rel(main, dbmod, "openDb")
+Rel(main, migrate, "await before listen")
+Rel(migrate, migrations, "Reads in file-name order")
+Rel(migrate, db, "BEGIN, file, INSERT schema_migration, COMMIT")
+Rel(health, dbmod, "SELECT 1")
+Rel(services, dbmod, "all / get / run / transaction")
+Rel(dbmod, db, "Parameterised SQL", "TLS")
+Rel(cron, purge, "Runs nightly before pg_dump")
+Rel(purge, dbmod, "DELETE ... WHERE expires_at < now")
+Rel(importer, dbmod, "INSERT rows")
+@enduml

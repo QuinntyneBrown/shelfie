@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Run the production database
+
+Person(grownUp, "Grown-up", "Parent in one of many households; the operator follows docs/runbook.md")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for many households")
+System_Ext(azure, "Azure", "Runs the flexible server with encrypted storage and 7-day point-in-time restore; holds the backups container")
+System_Ext(ci, "GitHub Actions", "Runs API and Playwright tests against a PostgreSQL 16 service container; deploys releases")
+
+Rel(grownUp, shelfie, "Uses; erases a household or restores a backup from the runbook", "HTTPS, SSH")
+Rel(shelfie, azure, "Stores every household's data in; dumps nightly to", "TLS")
+Rel(ci, shelfie, "Tests each change on a throwaway database; deploys to")
+@enduml

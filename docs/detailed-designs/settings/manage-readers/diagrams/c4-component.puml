@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(router, "readers.router.ts", "Express Router", "POST /api/readers; PATCH /api/readers/:id validated with readerSchema")
   Component(service, "readers.service.ts", "Service", "addReader, updateReader: case-insensitive username check, household scope, argon2id hashing")
   Component(repo, "readers.repo.ts", "Repository", "findUserByUsername, findReader, insertReader, updateReader, deleteSessionsOf")
-  ComponentDb(db, "Shelfie database", "SQLite", "users, session")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "users, session")
 }
 Rel(web, router, "POST /api/readers, PATCH /api/readers/:id", "JSON/HTTPS")
 Rel(router, authz, "Applies")

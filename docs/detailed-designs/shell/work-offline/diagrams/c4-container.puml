@@ -8,7 +8,7 @@ System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Service worker caches the app shell and the last GET /api/shelf; OfflineQueue in core; offline banner; Offline page")
   ContainerDb(idb, "Browser IndexedDB", "shelfie-offline database", "pending-chapter-logs store: chapter logs waiting to be sent")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "POST /api/books/:id/chapters/:n receives the replay; 409 for a duplicate")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "chapter_log UNIQUE(book_id, chapter_number)")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "chapter_log UNIQUE(book_id, chapter_number)")
 }
 Rel(reader, web, "Reads the shelf; logs a chapter", "HTTPS")
 Rel(web, idb, "enqueue / read / delete pending logs", "IndexedDB")

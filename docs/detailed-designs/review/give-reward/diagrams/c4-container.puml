@@ -7,7 +7,7 @@ Person(grownUp, "Parent", "Gives a reward")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "GiveRewardDialog on the Review page; reward shown on shelf, book and Manage book pages")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Checks the book is finished and unrewarded; inserts the reward")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "reward and book tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "reward and book tables")
 }
 Rel(grownUp, web, "Picks or types a reward, adds a note, saves", "HTTPS")
 Rel(web, api, "POST /api/books/:id/reward", "JSON/HTTPS")

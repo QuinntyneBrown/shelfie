@@ -8,7 +8,7 @@ Person(reader, "Reader", "Sees feedback")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "ReviewChapterPage with sh-sticker-picker; ShelfPage with sh-banner")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Marks chapter logs reviewed; reports unseen feedback")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "chapter_log and answer tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "chapter_log and answer tables")
 }
 Rel(grownUp, web, "Picks a sticker, writes a note, sends", "HTTPS")
 Rel(reader, web, "Opens shelf; follows the banner to the chapter", "HTTPS")

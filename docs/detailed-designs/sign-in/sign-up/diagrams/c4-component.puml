@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate()", "Middleware (zod)", "signUpSchema; 400 with field errors")
   Component(service, "auth.service.ts", "Service", "signUp: uniqueness checks, argon2id hash, household, parent, session")
   Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over household, profile, session and device")
-  ComponentDb(db, "Shelfie database", "SQLite", "household, profile, session, device")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household, profile, session, device")
 }
 Rel(web, router, "POST sign-up", "JSON/HTTPS")
 Rel(router, validate, "Applies")

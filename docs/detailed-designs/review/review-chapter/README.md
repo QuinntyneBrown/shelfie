@@ -46,7 +46,7 @@ The parent sends feedback through Shelfie and the reader sees it on her shelf an
 
 ### Containers
 
-The review-chapter page and the shelf page in the Angular application call the Express API, which updates and reads `chapter_log` in the SQLite database.
+The review-chapter page and the shelf page in the Angular application call the Express API, which updates and reads `chapter_log` in the PostgreSQL database.
 
 ![C4 container view for reviewing a chapter](diagrams/c4-container.png)
 

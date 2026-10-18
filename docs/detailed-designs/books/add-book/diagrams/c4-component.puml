@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate(createBookSchema)", "Middleware (zod)", "Title 1-120, author up to 120, chapterCount 1-200, colour and sticker names; 400 with errors[]")
   Component(service, "books.service.ts", "Service", "createBook: sets added_by_profile_id from the session")
   Component(repo, "books.repo.ts", "Repository", "insertBook")
-  ComponentDb(db, "Shelfie database", "SQLite", "book")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book")
 }
 Rel(web, router, "POST /api/books", "JSON/HTTPS")
 Rel(router, validate, "Applies")

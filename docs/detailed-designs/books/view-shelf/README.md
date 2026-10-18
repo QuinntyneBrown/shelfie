@@ -49,7 +49,7 @@ The reader opens her shelf; the parent's reviews and rewards appear on it.
 
 ### Containers
 
-The shelf page in the Angular application reads one response from the Express API, which assembles it from the SQLite database.
+The shelf page in the Angular application reads one response from the Express API, which assembles it from the PostgreSQL database.
 
 ![C4 container view for viewing the shelf](diagrams/c4-container.png)
 

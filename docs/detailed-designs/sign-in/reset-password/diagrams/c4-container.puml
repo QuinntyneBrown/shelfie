@@ -7,7 +7,7 @@ Person(parent, "Parent", "Requests a reset link; opens it; chooses a new passwor
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Forgot password and Reset password pages")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Issues hashed single-use tokens, sends the link, replaces the password, ends all sessions of that parent")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "password_reset, users and session tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "password_reset, users and session tables")
 }
 System_Ext(mail, "E-mail provider", "SMTP")
 Rel(parent, web, "Enters e-mail; later enters the new password twice", "HTTPS")

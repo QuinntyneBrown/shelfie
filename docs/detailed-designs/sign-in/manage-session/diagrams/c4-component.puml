@@ -8,7 +8,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(app, "app.ts", "Express app", "Sets Cache-Control: no-store on /api responses")
   Component(sessionMw, "session.ts", "Middleware", "requireSession: resolves shelfie_session to a row; slides a remembered session; deletes an expired row and answers 401 session-expired")
   Component(router, "auth.router.ts", "Express Router", "GET /api/auth/session; POST /api/auth/sign-out")
-  ComponentDb(db, "Shelfie database", "SQLite", "session, users")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "session, users")
 }
 Rel(web, app, "Every /api request", "JSON/HTTPS")
 Rel(app, router, "Routes /api/auth")
