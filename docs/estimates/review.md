@@ -6,3 +6,4 @@
 | give-reward | 2 days | 100% |
 | review-chapter | 2 days | 100% |
 | review-queue | 2 days | 90% |
+| reward-gallery | 4 days | 0% |
