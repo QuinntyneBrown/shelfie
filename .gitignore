@@ -11,3 +11,4 @@ backups/
 .playwright-cli/
 .cache/
 *.mp3
+.DS_Store
