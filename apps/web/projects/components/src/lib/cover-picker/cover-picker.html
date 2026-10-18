@@ -19,12 +19,7 @@
       />
     </label>
     @if (hasPicture()) {
-      <button
-        class="btn btn--sm btn--ghost"
-        type="button"
-        [disabled]="busy()"
-        (click)="remove()"
-      >
+      <button class="btn btn--sm btn--ghost" type="button" [disabled]="busy()" (click)="remove()">
         <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
         </svg>
@@ -33,7 +28,11 @@
     }
   </div>
   <p class="field__help" role="status" [id]="helpId">
-    {{ busy() ? 'Uploading the picture…' : 'A photo of the real cover. JPEG, PNG or WebP, up to 5 MB.' }}
+    {{
+      busy()
+        ? 'Uploading the picture…'
+        : 'A photo of the real cover. JPEG, PNG or WebP, up to 5 MB.'
+    }}
   </p>
   @if (shownError(); as message) {
     <p class="field__error" role="alert" [id]="errorId">{{ message }}</p>

@@ -15,7 +15,12 @@
       <ul class="list card card--flush">
         @for (book of list.books; track book.id) {
           <li class="list__item">
-            <sh-cover [color]="book.coverColor" [sticker]="book.sticker" [image]="book.coverImage" size="sm" />
+            <sh-cover
+              [color]="book.coverColor"
+              [sticker]="book.sticker"
+              [image]="book.coverImage"
+              size="sm"
+            />
             <div class="list__body">
               <div class="list__title">{{ book.title }}</div>
               <div class="list__meta">

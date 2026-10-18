@@ -3,7 +3,12 @@
     @if (result(); as result) {
       @if (result.bookFinished) {
         <sh-celebration variant="book">
-          <sh-cover [color]="form.book.coverColor" [sticker]="form.book.sticker" [image]="form.book.coverImage" size="xl" />
+          <sh-cover
+            [color]="form.book.coverColor"
+            [sticker]="form.book.sticker"
+            [image]="form.book.coverImage"
+            size="xl"
+          />
           <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
           <h1>You finished the whole book!</h1>
           <p class="text-muted">
@@ -44,7 +49,11 @@
     } @else {
       <div class="page-header">
         <div class="book-card">
-          <sh-cover [color]="form.book.coverColor" [sticker]="form.book.sticker" [image]="form.book.coverImage" />
+          <sh-cover
+            [color]="form.book.coverColor"
+            [sticker]="form.book.sticker"
+            [image]="form.book.coverImage"
+          />
           <div class="book-card__body">
             <h1>Chapter {{ form.chapterNumber }}</h1>
             <span class="book-card__author"

@@ -34,7 +34,14 @@ export interface ActivityItem {
 
 export interface ChapterLog {
   id: string;
-  book: { id: string; title: string; coverColor: string; sticker: string; coverImage: string | null; chapterCount: number };
+  book: {
+    id: string;
+    title: string;
+    coverColor: string;
+    sticker: string;
+    coverImage: string | null;
+    chapterCount: number;
+  };
   chapterNumber: number;
   readOn: string;
   today: string;

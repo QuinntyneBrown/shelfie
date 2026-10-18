@@ -31,6 +31,7 @@ page -> client : addBook({title, author, chapterCount, coverColor, sticker})
 client -> books : POST /api/books
 books -> db : INSERT book
 books --> client : 201 {id}
+page -> toasts : "{title} is on your shelf under Up next."
 opt a picture was chosen
   page -> client : addCover(id, file)
   client -> router : PUT /api/books/{id}/cover (raw body)
@@ -43,6 +44,5 @@ opt a picture was chosen
     router --> client : 200 {coverImage}
   end
 end
-page -> toasts : "{title} is on your shelf under Up next."
 page --> person : Navigate to /shelf
 @enduml

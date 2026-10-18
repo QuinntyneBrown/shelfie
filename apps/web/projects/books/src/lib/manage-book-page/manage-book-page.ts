@@ -129,18 +129,24 @@ export class ManageBookPage {
   }
 
   protected async uploadCover(file: File) {
-    await this.changeCover({ title: 'The picture didn’t upload', retry: () => this.uploadCover(file) }, async (book) => {
-      const { coverImage } = await this.api.uploadCover(book.id, file);
-      this.book.set({ ...book, coverImage });
-      this.toasts.show({ title: `${book.title} has a new cover.` });
-    });
+    await this.changeCover(
+      { title: 'The picture didn’t upload', retry: () => this.uploadCover(file) },
+      async (book) => {
+        const { coverImage } = await this.api.uploadCover(book.id, file);
+        this.book.set({ ...book, coverImage });
+        this.toasts.show({ title: `${book.title} has a new cover.` });
+      },
+    );
   }
 
   protected async removeCover() {
-    await this.changeCover({ title: 'The picture wasn’t removed', retry: () => this.removeCover() }, async (book) => {
-      await this.api.removeCover(book.id);
-      this.book.set({ ...book, coverImage: null });
-    });
+    await this.changeCover(
+      { title: 'The picture wasn’t removed', retry: () => this.removeCover() },
+      async (book) => {
+        await this.api.removeCover(book.id);
+        this.book.set({ ...book, coverImage: null });
+      },
+    );
   }
 
   /** Runs one cover request with the busy state; a refusal shows in the picker, a failure in a banner. */
@@ -156,8 +162,10 @@ export class ManageBookPage {
     try {
       await work(book);
     } catch (e) {
-      if (e instanceof ApiError && e.type === 'photo-type') this.coverError.set(COVER_PICTURE_ERRORS.type);
-      else if (e instanceof ApiError && e.type === 'photo-too-large') this.coverError.set(COVER_PICTURE_ERRORS.size);
+      if (e instanceof ApiError && e.type === 'photo-type')
+        this.coverError.set(COVER_PICTURE_ERRORS.type);
+      else if (e instanceof ApiError && e.type === 'photo-too-large')
+        this.coverError.set(COVER_PICTURE_ERRORS.size);
       else if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
       else this.coverFailure.set(failure);
     } finally {
