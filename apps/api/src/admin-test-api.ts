@@ -38,14 +38,26 @@ export async function call(
     if (token) headers['authorization'] = `Bearer ${token}`;
     if (cookie) headers['cookie'] = cookie;
     if (body !== undefined) headers['content-type'] = 'application/json';
+    const audited = await auditCount(db);
     const response = await fetch(`http://localhost:${port}${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
     const text = await response.text();
     // The audit row is written after the response is sent, so wait for it (admin routes write exactly one).
     for (let i = 0; i < 200 && path.startsWith('/api/admin/') && (await auditCount()) === before; i++) await new Promise((resolve) => setTimeout(resolve, 10));
     await new Promise((resolve) => setTimeout(resolve, 10));
+    // The audit row is written after the response is sent; wait for it rather than a fixed delay.
+    if (path.startsWith('/api/admin/')) await until(async () => (await auditCount(db)) > audited);
     return { status: response.status, headers: response.headers, body: text ? JSON.parse(text) : undefined, text, lines };
   } finally {
     server.close();
+  }
+}
+
+const auditCount = async (db: Pool) => (await all<{ n: number }>(db, 'SELECT COUNT(*)::int AS n FROM admin_audit'))[0].n;
+
+async function until(done: () => Promise<boolean>, timeoutMs = 2000) {
+  for (const started = performance.now(); !(await done()); ) {
+    if (performance.now() - started > timeoutMs) throw new Error('timed out waiting for the audit row');
+    await new Promise((resolve) => setTimeout(resolve, 5));
   }
 }
 
