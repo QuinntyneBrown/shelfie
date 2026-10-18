@@ -3,7 +3,7 @@
 | Design | Effort | Complete |
 |---|---|---|
 | add-book | 2 days | 100% |
-| autocomplete-book | 4 days | 100% |
+| autocomplete-book | 5 days | 100% |
 | manage-book | 2 days | 100% |
 | manage-questions | 1 days | 100% |
 | view-book | 1 days | 100% |

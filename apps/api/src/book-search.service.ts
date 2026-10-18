@@ -7,6 +7,8 @@ export interface BookMatch {
   author: string | null;
   chapterCount: number | null;
   coverId: string | null;
+  /** The catalogue's work key, which lists the book's other covers; null for a guess from the AI helper. */
+  workKey: string | null;
   /** True for a guess from the AI helper, which the page labels as such. */
   suggested: boolean;
 }
@@ -14,15 +16,24 @@ export interface BookMatch {
 /** A source of matches: given only the typed title, answers rows that `matchSchema` then bounds. */
 export type Provider = (title: string, signal: AbortSignal) => Promise<unknown>;
 
+/** Lists the cover ids the catalogue holds for one work; the answer is untrusted and bounded by `boundCoverIds`. */
+export type WorkCoversProvider = (workKey: string, signal: AbortSignal) => Promise<unknown>;
+
 export interface Providers {
   catalogue: Provider;
   /** Null when no AI key is configured. */
   ai: Provider | null;
+  /** Lists a work's covers for the cover gallery. */
+  workCovers: WorkCoversProvider;
   /** Reaches the catalogue's cover host; tests pass a fake. */
   coverFetch?: typeof fetch;
 }
 
 const MAX_MATCHES = 5;
+
+/** An Open Library work key such as `OL45804W`. */
+export const WORK_KEY = /^OL\d{1,10}W$/;
+const MAX_COVERS = 12;
 
 const text = (max: number) =>
   z
@@ -42,6 +53,7 @@ export const matchSchema = z
       .pipe(z.string().regex(/^\d{1,12}$/))
       .nullish()
       .catch(null),
+    workKey: z.string().regex(WORK_KEY).nullish().catch(null),
   })
   .transform(
     (row): BookMatch => ({
@@ -49,9 +61,16 @@ export const matchSchema = z
       author: row.author || null,
       chapterCount: row.chapterCount ?? null,
       coverId: row.coverId ?? null,
+      workKey: row.workKey ?? null,
       suggested: false,
     }),
   );
+
+/** Keeps the valid cover ids of a work's answer, at most 12, in the order the catalogue gave them. */
+export function boundCoverIds(answer: unknown): number[] {
+  if (!Array.isArray(answer)) return [];
+  return answer.filter((id): id is number => Number.isInteger(id) && id >= 1 && id <= 999_999_999_999).slice(0, MAX_COVERS);
+}
 
 /** Keeps the well-formed rows of a provider's answer, at most `limit`, marked as suggested or not. */
 export function boundMatches(rows: unknown, suggested: boolean, limit = MAX_MATCHES): BookMatch[] {
@@ -76,7 +95,7 @@ export interface LookupTimeouts {
  * Asks the catalogue first; when it has nothing, fails or times out, asks the AI helper, whose rows come back
  * marked as suggested. Fails as `lookup-unavailable` only when the catalogue failed and no AI could answer.
  */
-export async function searchBooks(providers: Providers, title: string, { catalogueMs = 5000, aiMs = 10_000 }: LookupTimeouts = {}): Promise<BookMatch[]> {
+export async function searchBooks(providers: Pick<Providers, 'catalogue' | 'ai'>, title: string, { catalogueMs = 5000, aiMs = 10_000 }: LookupTimeouts = {}): Promise<BookMatch[]> {
   let catalogueFailed = false;
   try {
     const matches = boundMatches(await providers.catalogue(title, AbortSignal.timeout(catalogueMs)), false);
@@ -86,7 +105,7 @@ export async function searchBooks(providers: Providers, title: string, { catalog
   }
   if (providers.ai) {
     try {
-      return boundMatches(await providers.ai(title, AbortSignal.timeout(aiMs)), true, MAX_SUGGESTIONS).map((match) => ({ ...match, coverId: null }));
+      return boundMatches(await providers.ai(title, AbortSignal.timeout(aiMs)), true, MAX_SUGGESTIONS).map((match) => ({ ...match, coverId: null, workKey: null }));
     } catch {
       // The helper is a fallback; its failure matters only when the catalogue failed too.
     }

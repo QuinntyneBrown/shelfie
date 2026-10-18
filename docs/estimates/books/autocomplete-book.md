@@ -2,7 +2,7 @@
 
 ## Basis
 
-Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, node:test API tests with fake providers, Playwright acceptance tests through the `AddBookPage` page object, and review fixes. They exclude the requirements, mocks, design system page, CRD and this design. `ApiClient`, `ShelfApi`, `sh-cover`, `sh-cover-picker`, `processCover`, `requireSession`, `csrfGuard` and `passwordSignInLimiter` are assumed present and reused. No Open Library or Anthropic account is needed to build or test: the tests swap in fakes. [Detailed design](../../detailed-designs/books/autocomplete-book/README.md).
+Hours for an intermediate Angular/TypeScript and Node/Express developer who has not seen this codebase. The hours cover implementation, node:test API tests with fake providers, Playwright acceptance tests through the `AddBookPage` page object, and review fixes. They exclude the requirements, mocks, design system page and this design. `ApiClient`, `ShelfApi`, `sh-cover`, `sh-cover-picker`, `processCover`, `requireSession`, `csrfGuard` and `passwordSignInLimiter` are assumed present and reused. No Open Library or Anthropic account is needed to build or test: the tests swap in fakes. [Detailed design](../../detailed-designs/books/autocomplete-book/README.md).
 
 ## Full design
 
@@ -12,11 +12,21 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | `catalogue.ts`: `openLibrary` search and `fetchCatalogueCover` (fixed host, 5 MB cap, 5 s, `processCover`) | 3 |
 | `ai.ts`: `claudeSuggestions` over `fetch`, JSON answer parsed through `matchSchema`, not-configured path | 2 |
 | `book-search.router.ts`, `lookupLimiter` over the existing `rateLimiter`, `createApp` options | 2 |
-| `sh-combobox` (combobox and listbox roles, keyboard, announcements, notes, badge, covers) per the CRD | 5 |
+| `sh-combobox` (combobox and listbox roles, keyboard, announcements, notes, badge, covers) | 5 |
 | `ApiClient` abort and blob support; `ShelfApi.searchBooks` and `catalogueCover` | 1 |
 | `AddBookPage`: debounce, abort, option mapping, pick-to-fill, focus to Chapters, cover as `File` | 3 |
 | API tests (session, limit, validation, providers, fallback, failure, cover rules) and Playwright acceptance tests (typing, keyboard and ARIA, pick and save with cover, suggested, empty, failed, manual add) | 9 |
 | **Total** | **28** |
+
+## Cover photo picker (L1-021)
+
+| Work item | Hours |
+|-----------|------:|
+| `workKey` on `BookMatch`, `openLibraryCovers` and `GET /api/books/search/covers?work=` with validation, limit and API tests | 3 |
+| `sh-cover-gallery` (radiogroup, loading, empty and failed states) | 3 |
+| `ShelfApi.catalogueCovers`; "More covers" and the dialog in `AddBookPage` | 2 |
+| Playwright acceptance tests through `AddBookPage` (pick another, cancel, no button for guesses, empty, failed) | 3 |
+| **Total** | **11** |
 
 ## Minimal scope
 

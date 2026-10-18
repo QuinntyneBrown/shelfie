@@ -33,6 +33,8 @@ export interface BookMatch {
   author: string | null;
   chapterCount: number | null;
   coverId: string | null;
+  /** Lists the book's other catalogue covers; null for a guess. */
+  workKey: string | null;
   suggested: boolean;
 }
 
@@ -134,6 +136,14 @@ export class ShelfApi {
     return this.api.get<{ matches: BookMatch[] }>(`/books/search?q=${encodeURIComponent(title)}`, {
       signal,
     });
+  }
+
+  /** The ids of the other covers the catalogue holds for a book's work, for the cover gallery. */
+  async catalogueCovers(workKey: string): Promise<number[]> {
+    const { covers } = await this.api.get<{ covers: number[] }>(
+      `/books/search/covers?work=${encodeURIComponent(workKey)}`,
+    );
+    return covers;
   }
 
   /** A catalogue cover as a file, so it travels the same way as a picture chosen from the device. */

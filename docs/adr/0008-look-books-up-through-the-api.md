@@ -18,6 +18,8 @@ The reader is nine. Whatever is filled in is shown to her as the book's facts, s
 4. **A chapter count is filled in only when a source states one.** Open Library's search results state none, so catalogue matches leave the Chapters field to the reader and the page moves focus there. Open Library's page count is not divided into chapters: picture books, chapter books and novels differ too much for any ratio to be a fact. Suggested matches carry the AI's chapter count, under the same badge.
 5. **The cover travels through a proxy route and the existing picture path.** The API fetches `https://covers.openlibrary.org/b/id/<id>-L.jpg` with a fixed host, a 5 second timeout and a 5 MB cap, runs it through `processCover` (the checks and re-encoding of `L2-048`) and serves the WebP. The page shows that URL in the list and, on a pick, reads it as a `File` and hands it to the cover picker's path, so the book saves its picture through the unchanged `PUT /api/books/:id/cover`.
 
+6. **Other covers of a picked book come from its Open Library work.** `GET /api/books/search/covers?work=<key>` fetches only `https://openlibrary.org/works/<key>.json`, with the same 5 second timeout, session and limit, keeps its `covers` ids (at most 12) and nothing else, and each cover then loads through decision 5 unchanged. No other catalogue is used and nothing is stored.
+
 ## Consequences
 
 - One new table-less feature: nothing is cached or stored by the lookup; a book exists only once `POST /api/books` is called as before.

@@ -20,7 +20,10 @@ import {
   ComboboxOption,
   ComboboxStatus,
   Cover,
+  CoverGallery,
   CoverPicker,
+  Dialog,
+  EmptyState,
   StickerPicker,
   TextField,
 } from 'components';
@@ -41,7 +44,10 @@ const SUGGESTED_NOTE =
     ColorPicker,
     Combobox,
     Cover,
+    CoverGallery,
     CoverPicker,
+    Dialog,
+    EmptyState,
     RouterLink,
     StickerPicker,
     TextField,
@@ -63,6 +69,8 @@ export class AddBookPage {
   protected readonly sticker = signal('📚');
   /** The chosen cover picture, kept here until the book is saved, and its preview URL. */
   private picture: File | null = null;
+  /** The catalogue cover the picture came from, so the gallery can show which one is in use. */
+  private pictureUrl: string | null = null;
   protected readonly preview = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly failed = signal(false);
@@ -78,6 +86,16 @@ export class AddBookPage {
   protected readonly matchNote = computed(() =>
     this.matches().some((match) => match.suggested) ? SUGGESTED_NOTE : null,
   );
+  /** The picked catalogue match whose other covers can be browsed, for as long as the title is left as it was. */
+  private readonly pickedWork = signal<{ key: string; title: string } | null>(null);
+  protected readonly canBrowseCovers = computed(() => {
+    const work = this.pickedWork();
+    return !!work && this.title() === work.title;
+  });
+  protected readonly coversOpen = signal(false);
+  protected readonly coverUrls = signal<string[]>([]);
+  protected readonly coversStatus = signal<'loading' | 'ready' | 'failed'>('loading');
+  protected readonly galleryChoice = signal<string | null>(null);
   private found: BookMatch[] = [];
   private lookupTimer: ReturnType<typeof setTimeout> | null = null;
   private lookupController: AbortController | null = null;
@@ -156,6 +174,7 @@ export class AddBookPage {
     this.matches.set([]);
     this.lookup.set('idle');
     this.title.set(match.title);
+    this.pickedWork.set(match.workKey ? { key: match.workKey, title: match.title } : null);
     if (match.author) this.author.set(match.author);
     if (match.chapterCount) this.chapters.set(String(match.chapterCount));
     // The catalogue states no chapter count, so the next thing to do is count them.
@@ -163,14 +182,47 @@ export class AddBookPage {
     if (match.coverId) {
       // A cover the API cannot fetch or refuses is only a missed convenience; the colour and sticker stay.
       const picture = await this.api.catalogueCover(match.coverId).catch(() => null);
-      if (picture && this.title() === match.title) this.choosePicture(picture);
+      if (picture && this.title() === match.title) this.choosePicture(picture, catalogueCoverUrl(match.coverId));
     }
   }
 
-  protected choosePicture(file: File | null) {
+  /** Opens the gallery of the picked book's other covers, with the one in use selected. */
+  protected openCovers() {
+    this.galleryChoice.set(this.pictureUrl);
+    this.coversOpen.set(true);
+    return this.loadCovers();
+  }
+
+  protected async loadCovers() {
+    const work = this.pickedWork();
+    if (!work) return;
+    this.coversStatus.set('loading');
+    try {
+      const ids = await this.api.catalogueCovers(work.key);
+      this.coverUrls.set(ids.map((id) => catalogueCoverUrl(String(id))));
+      this.coversStatus.set('ready');
+    } catch {
+      this.coversStatus.set('failed');
+    }
+  }
+
+  /** Makes the chosen cover the picture, as a pick does; choosing the one already in use changes nothing. */
+  protected async useCover() {
+    const url = this.galleryChoice();
+    if (!url || url === this.pictureUrl) return this.coversOpen.set(false);
+    try {
+      this.choosePicture(await this.api.catalogueCover(url.split('/').pop()!), url);
+      this.coversOpen.set(false);
+    } catch {
+      this.coversStatus.set('failed');
+    }
+  }
+
+  protected choosePicture(file: File | null, catalogueUrl: string | null = null) {
     const old = this.preview();
     if (old) URL.revokeObjectURL(old);
     this.picture = file;
+    this.pictureUrl = catalogueUrl;
     this.preview.set(file ? URL.createObjectURL(file) : null);
   }
 

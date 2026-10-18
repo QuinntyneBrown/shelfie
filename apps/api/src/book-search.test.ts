@@ -1,8 +1,8 @@
-// Traces to: L2-074, L2-075, L2-076, L2-077, L2-079, L2-080
+// Traces to: L2-074, L2-075, L2-076, L2-077, L2-079, L2-080, L2-081
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from './app.ts';
-import type { BookMatch, Provider } from './book-search.service.ts';
+import type { BookMatch, Provider, WorkCoversProvider } from './book-search.service.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
@@ -18,9 +18,9 @@ after(async () => {
 });
 
 const WINN: BookMatch[] = [
-  { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapterCount: null, coverId: '8739161', suggested: false },
-  { title: 'Because of Winn-Dixie: Read-Along Edition', author: 'Kate DiCamillo', chapterCount: null, coverId: null, suggested: false },
-  { title: 'Winnie-the-Pooh', author: 'A. A. Milne', chapterCount: null, coverId: '12345', suggested: false },
+  { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapterCount: null, coverId: '8739161', workKey: 'OL18020194W', suggested: false },
+  { title: 'Because of Winn-Dixie: Read-Along Edition', author: 'Kate DiCamillo', chapterCount: null, coverId: null, workKey: null, suggested: false },
+  { title: 'Winnie-the-Pooh', author: 'A. A. Milne', chapterCount: null, coverId: '12345', workKey: 'OL262460W', suggested: false },
 ];
 
 /** A catalogue that answers from a fixed table and remembers what it was asked. */
@@ -34,8 +34,8 @@ function fakeCatalogue(answers: Record<string, unknown> = { Winn: WINN }) {
 }
 
 /** An API over the given providers, listening on a free port. */
-function serve(options: { catalogue?: Provider; ai?: Provider | null } = {}) {
-  const server = createApp(db.pool, { log: () => {}, catalogue: options.catalogue ?? fakeCatalogue().provider, ai: options.ai ?? null }).listen(0);
+function serve(options: { catalogue?: Provider; ai?: Provider | null; workCovers?: WorkCoversProvider } = {}) {
+  const server = createApp(db.pool, { log: () => {}, catalogue: options.catalogue ?? fakeCatalogue().provider, ai: options.ai ?? null, workCovers: options.workCovers }).listen(0);
   const url = `http://localhost:${(server.address() as { port: number }).port}`;
   return { server, url, close: () => server.close() };
 }
@@ -109,11 +109,11 @@ test('Given q is missing, blank, under 3 or over 120 characters, when searched, 
 
 test('Given the catalogue answers with more than five rows and some that are malformed, then at most five well-formed, bounded matches come back', async () => {
   const raw = [
-    { title: '  <b>Matilda</b>  ', author: 'Roald Dahl', chapterCount: 21, coverId: 'not-digits', suggested: true, extra: 'ignored' },
+    { title: '  <b>Matilda</b>  ', author: 'Roald Dahl', chapterCount: 21, coverId: 'not-digits', workKey: '/works/OL1W', suggested: true, extra: 'ignored' },
     { title: 'm'.repeat(150), author: 'a'.repeat(150), chapterCount: 500, coverId: 777 },
     { author: 'No title' },
     { title: '' },
-    { title: 'Matilda the Musical', author: null, chapterCount: 2.5, coverId: '1' },
+    { title: 'Matilda the Musical', author: null, chapterCount: 2.5, coverId: '1', workKey: 'OL45804W' },
     { title: 'Four', author: 'Four' },
     { title: 'Five', author: 'Five' },
     { title: 'Six', author: 'Six' },
@@ -123,15 +123,15 @@ test('Given the catalogue answers with more than five rows and some that are mal
     const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
     const { matches } = (await (await search(url, cookie, 'Matilda')).json()) as { matches: BookMatch[] };
     assert.equal(matches.length, 5);
-    assert.deepEqual(matches[0], { title: '<b>Matilda</b>', author: 'Roald Dahl', chapterCount: 21, coverId: null, suggested: false });
-    assert.deepEqual(matches[1], { title: 'm'.repeat(120), author: 'a'.repeat(120), chapterCount: null, coverId: '777', suggested: false });
-    assert.deepEqual(matches[2], { title: 'Matilda the Musical', author: null, chapterCount: null, coverId: '1', suggested: false });
+    assert.deepEqual(matches[0], { title: '<b>Matilda</b>', author: 'Roald Dahl', chapterCount: 21, coverId: null, workKey: null, suggested: false });
+    assert.deepEqual(matches[1], { title: 'm'.repeat(120), author: 'a'.repeat(120), chapterCount: null, coverId: '777', workKey: null, suggested: false });
+    assert.deepEqual(matches[2], { title: 'Matilda the Musical', author: null, chapterCount: null, coverId: '1', workKey: 'OL45804W', suggested: false });
     assert.deepEqual(matches.map((m) => m.title).slice(3), ['Four', 'Five']);
   });
 });
 
 const DRAGON = [
-  { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: '999' },
+  { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: '999', workKey: 'OL1W' },
   { title: 'Dragon Rider: The Griffin’s Feather', author: 'Cornelia Funke', chapterCount: 40 },
   { title: 'The Dragon Rider’s Handbook', chapterCount: 12 },
   { title: 'A fourth guess', chapterCount: 3 },
@@ -148,9 +148,9 @@ test('Given the catalogue has nothing and an AI key is configured, when a title 
     const { matches } = (await response.json()) as { matches: BookMatch[] };
     assert.deepEqual(ai.asked, ['Dragon Rider']);
     assert.deepEqual(matches, [
-      { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: null, suggested: true },
-      { title: 'Dragon Rider: The Griffin’s Feather', author: 'Cornelia Funke', chapterCount: 40, coverId: null, suggested: true },
-      { title: 'The Dragon Rider’s Handbook', author: null, chapterCount: 12, coverId: null, suggested: true },
+      { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: null, workKey: null, suggested: true },
+      { title: 'Dragon Rider: The Griffin’s Feather', author: 'Cornelia Funke', chapterCount: 40, coverId: null, workKey: null, suggested: true },
+      { title: 'The Dragon Rider’s Handbook', author: null, chapterCount: 12, coverId: null, workKey: null, suggested: true },
     ]);
   });
 });
@@ -257,7 +257,7 @@ function fakeFetch(answer: { status?: number; body: unknown }) {
 test('Given Open Library answers, when the catalogue provider is asked, then it sent the title only and maps docs to matches without a chapter count', async () => {
   const { openLibrary } = await import('./catalogue.ts');
   const { fetchFn, calls } = fakeFetch({
-    body: { docs: [{ title: 'Because of Winn-Dixie', author_name: ['Kate DiCamillo', 'Someone Else'], cover_i: 8739161, number_of_pages_median: 182 }, { title: 'Winnie-the-Pooh', author_name: [] }, { title: 'No author or cover' }] },
+    body: { docs: [{ key: '/works/OL18020194W', title: 'Because of Winn-Dixie', author_name: ['Kate DiCamillo', 'Someone Else'], cover_i: 8739161, number_of_pages_median: 182 }, { title: 'Winnie-the-Pooh', author_name: [] }, { title: 'No author or cover' }] },
   });
 
   const matches = await openLibrary(fetchFn)('Winn & co', AbortSignal.timeout(1000));
@@ -269,9 +269,9 @@ test('Given Open Library answers, when the catalogue provider is asked, then it 
   assert.equal(url.searchParams.get('limit'), '5');
   assert.deepEqual([...url.searchParams.keys()].sort(), ['fields', 'limit', 'title']);
   assert.deepEqual(matches, [
-    { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapterCount: null, coverId: '8739161' },
-    { title: 'Winnie-the-Pooh', author: null, chapterCount: null, coverId: null },
-    { title: 'No author or cover', author: null, chapterCount: null, coverId: null },
+    { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapterCount: null, coverId: '8739161', workKey: 'OL18020194W' },
+    { title: 'Winnie-the-Pooh', author: null, chapterCount: null, coverId: null, workKey: null },
+    { title: 'No author or cover', author: null, chapterCount: null, coverId: null, workKey: null },
   ]);
 });
 
@@ -420,4 +420,104 @@ test('Given the cover host serves something that is not a JPEG, PNG or WebP, or 
     const response = await fetchCover(url, cookie, '5');
     assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [404, 'photo-type']);
   });
+});
+
+// L2-081: the other covers of a picked book
+
+const coversOf = (url: string, cookie: string | null, work: string | null) =>
+  fetch(`${url}/api/books/search/covers${work === null ? '' : `?work=${encodeURIComponent(work)}`}`, { headers: cookie ? { Cookie: cookie } : {} });
+
+/** A work lookup that answers from a fixed table and remembers what it was asked. */
+function fakeWorkCovers(answers: Record<string, unknown>) {
+  const asked: string[] = [];
+  const provider: WorkCoversProvider = async (workKey) => {
+    asked.push(workKey);
+    if (!(workKey in answers)) throw new Error('catalogue down');
+    return answers[workKey];
+  };
+  return { provider, asked };
+}
+
+test('Given a work key, when its covers are requested, then the catalogue is asked for that work only and at most 12 valid ids come back in order', async () => {
+  const works = fakeWorkCovers({ OL45804W: [8739161, 1937, -1, 0, 'x', 1.5, 1234567890123, ...Array.from({ length: 20 }, (_, i) => 100 + i)] });
+  await withServer({ workCovers: works.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+
+    const response = await coversOf(url, cookie, 'OL45804W');
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { covers: [8739161, 1937, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109] });
+    assert.deepEqual(works.asked, ['OL45804W']);
+  });
+});
+
+test('Given a work with no covers or an answer of the wrong shape, then the list is empty', async () => {
+  const works = fakeWorkCovers({ OL1W: [], OL2W: { covers: 'none' } });
+  await withServer({ workCovers: works.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    assert.deepEqual(await (await coversOf(url, cookie, 'OL1W')).json(), { covers: [] });
+    assert.deepEqual(await (await coversOf(url, cookie, 'OL2W')).json(), { covers: [] });
+  });
+});
+
+test('Given no session, when covers are requested, then the API answers 401 and the catalogue is not asked', async () => {
+  const works = fakeWorkCovers({ OL45804W: [1] });
+  await withServer({ workCovers: works.provider }, async (url) => {
+    assert.equal((await coversOf(url, null, 'OL45804W')).status, 401);
+    assert.deepEqual(works.asked, []);
+  });
+});
+
+test('Given a work key that is missing or not a work key, then the API answers 400 validation without asking the catalogue', async () => {
+  const works = fakeWorkCovers({});
+  await withServer({ workCovers: works.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    for (const work of [null, '', 'abc', 'OL1', 'OL12345678901W', '../x', 'OL1W/../../x', 'ol1w']) {
+      const response = await coversOf(url, cookie, work);
+      assert.equal(response.status, 400, String(work));
+      assert.equal(((await response.json()) as { type: string }).type, 'validation');
+    }
+    assert.deepEqual(works.asked, []);
+  });
+});
+
+test('Given the catalogue fails, when covers are requested, then the API answers 503 lookup-unavailable', async () => {
+  await withServer({ workCovers: fakeWorkCovers({}).provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    const response = await coversOf(url, cookie, 'OL45804W');
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { type: 'lookup-unavailable' });
+  });
+});
+
+test('Given 60 searches and cover lists from one source in ten minutes, then the 61st is answered 429 whichever route it uses', async () => {
+  const works = fakeWorkCovers({ OL45804W: [1] });
+  await withServer({ workCovers: works.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    for (let i = 0; i < 30; i++) assert.equal((await search(url, cookie, 'Winn')).status, 200);
+    for (let i = 0; i < 30; i++) assert.equal((await coversOf(url, cookie, 'OL45804W')).status, 200);
+
+    const response = await coversOf(url, cookie, 'OL45804W');
+
+    assert.equal(response.status, 429);
+    assert.ok(Number(response.headers.get('retry-after')) >= 1);
+  });
+});
+
+test('Given Open Library answers, when the work provider is asked, then it fetches that work only and returns its covers list', async () => {
+  const { openLibraryWorkCovers } = await import('./catalogue.ts');
+  const { fetchFn, calls } = fakeFetch({ body: { title: 'Matilda', covers: [1, 2, 3] } });
+
+  const covers = await openLibraryWorkCovers(fetchFn)('OL45804W', AbortSignal.timeout(1000));
+
+  assert.deepEqual(covers, [1, 2, 3]);
+  assert.deepEqual(calls.map((call) => String(call.url)), ['https://openlibrary.org/works/OL45804W.json']);
+});
+
+test('Given Open Library answers with an error status or the key is not a work key, then the work provider fails and asks nothing for a bad key', async () => {
+  const { openLibraryWorkCovers } = await import('./catalogue.ts');
+  await assert.rejects(openLibraryWorkCovers(fakeFetch({ status: 503, body: {} }).fetchFn)('OL45804W', AbortSignal.timeout(1000)));
+  const bad = fakeFetch({ body: {} });
+  await assert.rejects(openLibraryWorkCovers(bad.fetchFn)('../x', AbortSignal.timeout(1000)));
+  assert.equal(bad.calls.length, 0);
 });

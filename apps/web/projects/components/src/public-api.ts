@@ -25,5 +25,6 @@ export * from './lib/activity-item/activity-item';
 export * from './lib/avatar/avatar';
 export * from './lib/photo-picker/photo-picker';
 export * from './lib/cover-picker/cover-picker';
+export * from './lib/cover-gallery/cover-gallery';
 export * from './lib/suggestion/suggestion';
 export * from './lib/combobox/combobox';

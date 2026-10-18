@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add a book · covers-empty — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="add-book">
+<meta name="mock:state" content="covers-empty">
+<meta name="mock:requirements" content="L2-009 L2-046 L2-048 L2-074 L2-075 L2-076 L2-077 L2-078 L2-079 L2-080 L2-081 L2-082 L2-083">
+<meta name="description" content="The Pick a cover dialog over Add a book: The catalogue knows the book but holds no other covers; the form is unchanged.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div>
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/shelf/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <span class="topbar__spacer"></span>
+  <span class="streak" aria-label="5-day reading streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days</span>
+  <button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">N</button>
+</header>
+
+<main id="main" class="container">
+<nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="../../pages/shelf/default.html">My shelf</a></li><li aria-current="page">Add a book</li></ol></nav>
+<div class="page-header"><div><h1>Add a book</h1><p class="subtitle">Tell Shelfie what you’re reading and pick a cover.</p></div></div>
+<div class="grid" style="align-items: start;">
+  <form class="stack span-full" style="grid-column: span 8;" action="../../pages/book/default.html" method="get" novalidate>
+    
+    <div class="card stack">
+      <div class="field combobox"><label class="field__label" for="title">Title</label><input class="input input--lg" id="title" name="title" type="text" required value="Because of Winn-Dixie" autofocus role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="title-matches" autocomplete="off"></div>
+      <div class="field"><label class="field__label" for="author">Author <span class="optional">(optional)</span></label><input class="input" id="author" name="author" type="text" value="Kate DiCamillo"></div>
+      <div class="field"><label class="field__label" for="chapters">How many chapters?</label><div class="field__help" id="chapters-help">Count them in the contents page. You can change this later.</div><input class="input" id="chapters" name="chapters" type="number" inputmode="numeric" min="1" max="200" required value="" style="max-width: 8rem;" aria-describedby="chapters-help" data-state="focus"></div>
+    </div>
+    <fieldset class="card stack">
+      <legend style="font: var(--text-h4); margin-bottom: var(--space-4);">Make a cover</legend>
+      <div class="field"><span class="field__label" id="cover-colour-label">Colour</span><div class="swatches" role="radiogroup" aria-labelledby="cover-colour-label"><label class="swatch cover--sage" style="--cover: var(--color-cover-sage);"><input type="radio" name="cover" value="sage"><span class="visually-hidden">Sage</span></label><label class="swatch cover--rose" style="--cover: var(--color-cover-rose);"><input type="radio" name="cover" value="rose"><span class="visually-hidden">Rose</span></label><label class="swatch cover--sky" style="--cover: var(--color-cover-sky);"><input type="radio" name="cover" value="sky"><span class="visually-hidden">Sky</span></label><label class="swatch cover--sun" style="--cover: var(--color-cover-sun);"><input type="radio" name="cover" value="sun" checked><span class="visually-hidden">Sun</span></label><label class="swatch cover--lilac" style="--cover: var(--color-cover-lilac);"><input type="radio" name="cover" value="lilac"><span class="visually-hidden">Lilac</span></label><label class="swatch cover--mint" style="--cover: var(--color-cover-mint);"><input type="radio" name="cover" value="mint"><span class="visually-hidden">Mint</span></label><label class="swatch cover--peach" style="--cover: var(--color-cover-peach);"><input type="radio" name="cover" value="peach"><span class="visually-hidden">Peach</span></label></div></div>
+      <div class="field"><span class="field__label" id="sticker-label">Sticker</span><div class="emoji-grid" role="radiogroup" aria-labelledby="sticker-label"><label class="swatch"><input type="radio" name="sticker" value="🦁"><span aria-hidden="true">🦁</span><span class="visually-hidden">Lion</span></label><label class="swatch"><input type="radio" name="sticker" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot</span></label><label class="swatch"><input type="radio" name="sticker" value="🐕" checked><span aria-hidden="true">🐕</span><span class="visually-hidden">Dog</span></label><label class="swatch"><input type="radio" name="sticker" value="📚"><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label><label class="swatch"><input type="radio" name="sticker" value="🕷️"><span aria-hidden="true">🕷️</span><span class="visually-hidden">Spider</span></label><label class="swatch"><input type="radio" name="sticker" value="🐰"><span aria-hidden="true">🐰</span><span class="visually-hidden">Rabbit</span></label><label class="swatch"><input type="radio" name="sticker" value="🧙"><span aria-hidden="true">🧙</span><span class="visually-hidden">Wizard</span></label><label class="swatch"><input type="radio" name="sticker" value="🚀"><span aria-hidden="true">🚀</span><span class="visually-hidden">Rocket</span></label><label class="swatch"><input type="radio" name="sticker" value="🐉"><span aria-hidden="true">🐉</span><span class="visually-hidden">Dragon</span></label><label class="swatch"><input type="radio" name="sticker" value="🌳"><span aria-hidden="true">🌳</span><span class="visually-hidden">Tree</span></label><label class="swatch"><input type="radio" name="sticker" value="🐘"><span aria-hidden="true">🐘</span><span class="visually-hidden">Elephant</span></label><label class="swatch"><input type="radio" name="sticker" value="🍫"><span aria-hidden="true">🍫</span><span class="visually-hidden">Chocolate</span></label></div></div>
+      <div class="field" role="group" aria-labelledby="picture-label"><span class="field__label" id="picture-label">Cover picture (optional)</span><div class="cover-picker__actions"><label class="btn btn--sm"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Change picture<input class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="picture-help"></label><button class="btn btn--sm btn--ghost" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Remove picture</button><button class="btn btn--sm btn--ghost" type="button" aria-haspopup="dialog"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>More covers</button></div><p class="field__help" id="picture-help" role="status">A photo of the real cover. JPEG, PNG or WebP, up to 5 MB.</p></div>
+    </fieldset>
+    <div class="form-actions">
+      <a class="btn btn--ghost" href="../../pages/shelf/default.html">Cancel</a>
+      <button class="btn btn--primary btn--lg" type="submit"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add to my shelf</button>
+    </div>
+  </form>
+  <aside class="card stack" style="grid-column: span 4; align-items: center; text-align: center;" aria-label="Cover preview">
+    <span class="overline">Preview</span>
+    <span class="cover cover--xl cover--sun" aria-hidden="true">🐕<img class="cover__img" src="../../assets/covers/winn-dixie.jpg" alt=""></span>
+    <strong>Because of Winn-Dixie</strong>
+    <span class="text-caption">Kate DiCamillo</span>
+  </aside>
+</div>
+<style>@media (max-width: 63.99rem) { .grid > form, .grid > aside { grid-column: 1 / -1 !important; } }</style>
+</main>
+</div>
+<div class="backdrop"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" data-dismiss-on-escape>
+  <div class="dialog__panel">
+    <div class="dialog__header"><div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Pick a cover</h2></div><button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="dialog__body stack"><style>.cover-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-3)}@media(min-width:40rem){.cover-grid{grid-template-columns:repeat(3,1fr)}}@media(min-width:64rem){.cover-grid{grid-template-columns:repeat(4,1fr)}}.cover-tile{display:flex;justify-content:center;align-items:center;min-height:44px;padding:var(--space-2);border:2px solid transparent;border-radius:var(--radius-md,12px);cursor:pointer}.cover-tile:has(input:checked){border-color:var(--color-primary,currentColor)}.cover-tile:has(input:focus-visible){outline:2px solid var(--color-primary,currentColor);outline-offset:2px}</style><div class="empty"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg></div><p>No other covers for this book.</p></div></div>
+    <div class="dialog__footer"><button class="btn btn--primary" type="button">Close</button></div>
+  </div>
+</div>
+<p class="mock-note" style="top: 1rem; left: 1rem;">The catalogue knows the book but holds no other covers; the form is unchanged.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Add a book</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="suggestions.html">suggestions</a></li><li><a href="suggestions-ai.html">suggestions-ai</a></li><li><a href="searching.html">searching</a></li><li><a href="no-matches.html">no-matches</a></li><li><a href="lookup-failed.html">lookup-failed</a></li><li><a href="picked.html">picked</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="picture.html">picture</a></li><li><a href="wrong-file.html">wrong-file</a></li><li><a href="too-large.html">too-large</a></li><li><a href="covers-loading.html">covers-loading</a></li><li><a href="covers.html">covers</a></li><li><a href="covers-empty.html" aria-current="page">covers-empty</a></li><li><a href="covers-failed.html">covers-failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

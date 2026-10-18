@@ -55,6 +55,11 @@
           (picked)="choosePicture($event)"
           (removed)="choosePicture(null)"
         />
+        @if (canBrowseCovers()) {
+          <button class="btn btn--sm btn--ghost" type="button" aria-haspopup="dialog" (click)="openCovers()">
+            More covers
+          </button>
+        }
       </div>
       <div class="form-actions">
         <a class="btn btn--ghost" routerLink="/shelf">Cancel</a>
@@ -69,3 +74,46 @@
     </aside>
   </div>
 </div>
+<sh-dialog heading="Pick a cover" [open]="coversOpen()" (closed)="coversOpen.set(false)">
+  @switch (coversStatus()) {
+    @case ('failed') {
+      <sh-banner
+        severity="danger"
+        title="Shelfie couldn’t get the covers."
+        message="You can still add the book."
+      />
+    }
+    @case ('ready') {
+      @if (coverUrls().length) {
+        <sh-cover-gallery label="Covers" [options]="coverUrls()" [(value)]="galleryChoice" />
+      } @else {
+        <sh-empty-state
+          title="No other covers for this book."
+          text="The catalogue has no more pictures for it."
+        />
+      }
+    }
+    @default {
+      <sh-cover-gallery label="Covers" [loading]="true" />
+    }
+  }
+  <div dialog-actions class="cluster">
+    @if (coversStatus() === 'ready' && !coverUrls().length) {
+      <button class="btn btn--primary" type="button" (click)="coversOpen.set(false)">Close</button>
+    } @else {
+      <button class="btn" type="button" (click)="coversOpen.set(false)">Cancel</button>
+      @if (coversStatus() === 'failed') {
+        <button class="btn btn--primary" type="button" (click)="loadCovers()">Try again</button>
+      } @else {
+        <button
+          class="btn btn--primary"
+          type="button"
+          [disabled]="coversStatus() !== 'ready' || !galleryChoice()"
+          (click)="useCover()"
+        >
+          Use this cover
+        </button>
+      }
+    }
+  </div>
+</sh-dialog>

@@ -215,6 +215,82 @@ export class AddBookPage {
     await this.page.route('**/api/books/search?*', (route) => route.abort());
   }
 
+  // The cover gallery: "More covers" opens a dialog of the other covers the catalogue has for the picked book.
+
+  moreCoversButton() {
+    return this.page.getByRole('button', { name: 'More covers' });
+  }
+
+  async openMoreCovers() {
+    await this.moreCoversButton().click();
+  }
+
+  coversDialog() {
+    return this.page.getByRole('dialog', { name: 'Pick a cover' });
+  }
+
+  /** Waits for the dialog's opening animation to finish, so colours are read at rest. */
+  async coversSettled() {
+    await this.page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished)));
+  }
+
+  galleryCovers() {
+    return this.coversDialog().getByRole('radio');
+  }
+
+  galleryCover(n: number, total: number) {
+    return this.coversDialog().getByRole('radio', { name: `Cover ${n} of ${total}` });
+  }
+
+  async chooseGalleryCover(n: number, total: number) {
+    await this.galleryCover(n, total).check({ force: true });
+  }
+
+  async useThisCover() {
+    await this.coversDialog().getByRole('button', { name: 'Use this cover' }).click();
+  }
+
+  async cancelCovers() {
+    await this.coversDialog().getByRole('button', { name: 'Cancel' }).click();
+  }
+
+  async closeCovers() {
+    await this.coversDialog().getByRole('button', { name: 'Close' }).click();
+  }
+
+  noOtherCovers() {
+    return this.coversDialog().getByText('No other covers for this book.');
+  }
+
+  coversFailure() {
+    return this.coversDialog().getByRole('alert').filter({ hasText: /Shelfie couldn’t get the covers\.\s*You can still add the book\./ });
+  }
+
+  private pickedCoverIds: string[] = [];
+
+  /** Remembers each catalogue cover the page fetched as a file (a pick), not those shown as pictures. */
+  watchPickedCovers() {
+    this.page.on('request', (request) => {
+      const id = request.url().match(/\/api\/books\/search\/covers\/(\d+)$/)?.[1];
+      if (id && request.resourceType() !== 'image') this.pickedCoverIds.push(id);
+    });
+  }
+
+  pickedCovers() {
+    return [...this.pickedCoverIds];
+  }
+
+  /** The shortest gallery tile, in CSS pixels, either way round. */
+  async smallestGalleryTile() {
+    const sizes = await this.galleryCovers().evaluateAll((radios) =>
+      radios.map((radio) => {
+        const box = radio.closest('label')!.getBoundingClientRect();
+        return Math.min(box.width, box.height);
+      }),
+    );
+    return Math.min(...sizes);
+  }
+
   async scrollsSideways() {
     return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   }
