@@ -1,0 +1,53 @@
+<sh-dialog [heading]="sentTo() ? 'Invite sent' : 'Invite a parent'" [open]="open()" (closed)="busy() || closed.emit()">
+  @if (sentTo(); as address) {
+    <div class="stack sent">
+      <span class="sticker sticker--lg" aria-hidden="true">📬</span>
+      <p>
+        We e-mailed <strong>{{ address }}</strong
+        >.
+      </p>
+    </div>
+  } @else {
+    <form id="invite-form" class="stack" (submit)="$event.preventDefault(); send()" novalidate>
+      @if (emailError()) {
+        <sh-banner severity="danger" [summary]="true" title="Fix 1 thing">
+          <ul class="summary-list">
+            <li>E-mail needs an &#64; and a dot</li>
+          </ul>
+        </sh-banner>
+      }
+      @if (failed()) {
+        <sh-banner severity="danger" title="The invite wasn’t sent" message="Nothing was sent.">
+          <div class="alert__actions">
+            <button class="btn btn--sm" type="button" (click)="send()">Try again</button>
+          </div>
+        </sh-banner>
+      }
+      <sh-text-field
+        label="Their e-mail address"
+        type="email"
+        autocomplete="email"
+        help="The link works for 7 days."
+        [autofocus]="true"
+        [error]="emailError()"
+        [(value)]="email"
+      />
+    </form>
+  }
+  <div dialog-actions class="cluster">
+    @if (sentTo()) {
+      <button class="btn btn--primary" type="button" (click)="closed.emit()">Done</button>
+    } @else {
+      <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+      <button
+        class="btn btn--primary"
+        type="submit"
+        form="invite-form"
+        [disabled]="busy()"
+        [attr.aria-busy]="busy() ? true : null"
+      >
+        Send invite
+      </button>
+    }
+  </div>
+</sh-dialog>

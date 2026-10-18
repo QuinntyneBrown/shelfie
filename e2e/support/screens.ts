@@ -7,6 +7,9 @@ import { SettingsPage } from '../pages/settings.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
 import { SignUpPage } from '../pages/sign-up.page';
+import { AcceptInvitePage } from '../pages/accept-invite.page';
+import { InviteParentDialog } from '../pages/invite-parent-dialog.page';
+import { inviteLinkFor } from './mailbox';
 
 export interface Screen {
   name: string;
@@ -125,6 +128,35 @@ export const screens: Screen[] = [
       await signInAsDad(page);
       await page.goto('/review/chapters/b-lion-c11');
       await page.getByRole('button', { name: 'Send to Nia' }).waitFor();
+    },
+  },
+  {
+    name: 'invite a parent dialog',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.inviteParent();
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
+    },
+  },
+  {
+    name: 'accept an invite',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.inviteParent();
+      const dialog = new InviteParentDialog(page);
+      await dialog.send('priya@example.com');
+      await dialog.done();
+      await settings.signOut();
+      const accept = new AcceptInvitePage(page);
+      await accept.openLink(inviteLinkFor('priya@example.com'));
+      await accept.nameField().waitFor();
+      await settled(page);
     },
   },
   {

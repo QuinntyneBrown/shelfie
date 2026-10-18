@@ -37,6 +37,12 @@
       <section class="card card--flush people" aria-labelledby="parents-title">
         <div class="cluster cluster--between people__header">
           <h2 id="parents-title" class="section-title">Parents</h2>
+          <button class="btn btn--sm" type="button" (click)="inviteDialogOpen.set(true)">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M3 6h18v12H3zM3 7l9 6 9-6" />
+            </svg>
+            Invite a parent
+          </button>
         </div>
         <ul class="list">
           @for (parent of view.parents; track parent.id) {
@@ -61,10 +67,18 @@
                 </div>
                 <div class="list__meta">Invite sent</div>
               </div>
+              <button class="btn btn--sm btn--ghost" type="button" (click)="sendAgain(invite)">
+                Send again
+              </button>
             </li>
           }
         </ul>
       </section>
+      <sh-invite-parent-dialog
+        [open]="inviteDialogOpen()"
+        (sent)="inviteSent($event)"
+        (closed)="inviteDialogOpen.set(false)"
+      />
       <section class="card card--flush people" aria-labelledby="readers-title">
         <div class="cluster cluster--between people__header">
           <h2 id="readers-title" class="section-title">Readers</h2>

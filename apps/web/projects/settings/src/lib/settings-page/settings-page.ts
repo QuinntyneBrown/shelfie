@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { Banner, Button, ErrorState, Skeleton, TextField } from 'components';
 import { ApiError, SessionService, ToastService } from 'core';
 import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
-import { ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
+import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
+import { InvitesApi } from '../invites-api';
+import { InviteView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
   selector: 'sh-settings-page',
-  imports: [Banner, Button, EditReaderDialog, ErrorState, Skeleton, TextField],
+  imports: [Banner, Button, EditReaderDialog, ErrorState, InviteParentDialog, Skeleton, TextField],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +19,7 @@ export class SettingsPage {
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
+  private readonly invites = inject(InvitesApi);
 
   protected readonly view = signal<SettingsView | null>(null);
   protected readonly loadFailed = signal(false);
@@ -35,6 +38,7 @@ export class SettingsPage {
       this.confirmError() && 'Passwords don’t match',
     ].filter((p): p is string => !!p),
   );
+  protected readonly inviteDialogOpen = signal(false);
   protected readonly readerDialogOpen = signal(false);
   protected readonly editingReader = signal<ReaderView | null>(null);
   protected readonly theme = signal<Theme>('device');
@@ -59,6 +63,22 @@ export class SettingsPage {
       this.view.set(view);
     } catch {
       this.loadFailed.set(true);
+    }
+  }
+
+  /** Lists the pending invite, in place of an earlier one to the same address. */
+  protected inviteSent(invite: InviteView) {
+    const view = this.view()!;
+    this.view.set({ ...view, invites: [...view.invites.filter((i) => i.email !== invite.email), invite] });
+  }
+
+  protected async sendAgain(invite: InviteView) {
+    try {
+      this.inviteSent(await this.invites.send(invite.email));
+      this.toasts.show({ title: `Invite sent again to ${invite.email}` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ severity: 'danger', title: 'The invite wasn’t sent', text: 'Check your connection and try again.' });
     }
   }
 

@@ -13,6 +13,14 @@ export class AuthApi {
     return this.api.post<Session>('/auth/reset-password', { token, password });
   }
 
+  getInvite(token: string) {
+    return this.api.get<{ email: string; invitedBy: string }>(`/auth/invites/${encodeURIComponent(token)}`);
+  }
+
+  acceptInvite(account: { token: string; name: string; username: string; password: string }) {
+    return this.api.post<Session>('/auth/accept-invite', account);
+  }
+
   signUp(account: { name: string; email: string; username: string; password: string }) {
     return this.api.post<Session>('/auth/sign-up', account);
   }

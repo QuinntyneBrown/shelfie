@@ -113,6 +113,14 @@ export class SettingsPage {
     return this.page.getByRole('region', { name: 'Parents' }).getByRole('listitem').filter({ hasText: text });
   }
 
+  async inviteParent() {
+    await this.page.getByRole('button', { name: 'Invite a parent' }).click();
+  }
+
+  async sendInviteAgain(email: string) {
+    await this.parent(email).getByRole('button', { name: 'Send again' }).click();
+  }
+
   async addReader() {
     await this.page.getByRole('button', { name: 'Add a reader' }).click();
   }

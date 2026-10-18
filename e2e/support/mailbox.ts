@@ -19,6 +19,13 @@ export function mailFor(address: string): Mail[] {
   return outbox.filter((mail) => mail.to === address);
 }
 
+/** The invite link in the newest mail sent to the address. */
+export function inviteLinkFor(address: string): string {
+  const link = mailFor(address).at(-1)?.text.match(/http:\/\/\S+\/accept-invite\?\S+/);
+  if (!link) throw new Error(`No invite mail arrived for ${address}`);
+  return link[0];
+}
+
 /** The reset link in the newest mail sent to the address. */
 export function resetLinkFor(address: string): string {
   const link = mailFor(address).at(-1)?.text.match(/http:\/\/\S+\/reset-password\?\S+/);

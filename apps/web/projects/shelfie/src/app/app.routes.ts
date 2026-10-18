@@ -6,6 +6,10 @@ export const routes: Routes = [
   { path: 'sign-in', loadComponent: () => import('sign-in').then((m) => m.SignInPage) },
   { path: 'sign-up', loadComponent: () => import('sign-in').then((m) => m.SignUpPage) },
   {
+    path: 'accept-invite',
+    loadComponent: () => import('sign-in').then((m) => m.AcceptInvitePage),
+  },
+  {
     path: 'forgot-password',
     loadComponent: () => import('sign-in').then((m) => m.ForgotPasswordPage),
   },
