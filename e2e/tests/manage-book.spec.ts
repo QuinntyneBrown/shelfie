@@ -160,7 +160,7 @@ test('Given Dad confirms Remove, then the book, its chapters and answers are gon
   await expect(page).toHaveURL(/\/books$/);
   await expect(page.getByRole('status').getByText(`${LION} removed from the shelf`)).toBeVisible();
   await expect(new BooksPage(page).row(LION)).toHaveCount(0);
-  expect(readOnOf('b-lion', 1)).toBeUndefined();
+  expect(await readOnOf('b-lion', 1)).toBeUndefined();
 });
 
 for (const how of ['Keep the book', 'Escape']) {
@@ -173,7 +173,7 @@ for (const how of ['Keep the book', 'Escape']) {
 
     await expect(manage.removeDialog()).toBeHidden();
     await expect(manage.removeButton()).toBeFocused();
-    expect(readOnOf('b-lion', 1)).toBeDefined();
+    expect(await readOnOf('b-lion', 1)).toBeDefined();
   });
 }
 
@@ -184,7 +184,7 @@ test('Given removing fails, when Dad confirms, then the dialog says so and the b
   await manage.confirmRemove();
 
   await expect(manage.removeDialog()).toContainText('The book wasn’t removed');
-  expect(readOnOf('b-lion', 1)).toBeDefined();
+  expect(await readOnOf('b-lion', 1)).toBeDefined();
 });
 
 test('Given a delete that skips the page, when Nia asks or the book is another family’s, then the API refuses it', async ({ page }) => {

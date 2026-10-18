@@ -7,7 +7,7 @@ Person(reader, "Reader", "Opens her shelf")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "ShelfPage with book cards, hero and trophy shelf")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Groups books, attaches rewards and streak")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "book, chapter_log, reward tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "book, chapter_log, reward tables")
 }
 Rel(reader, web, "Opens /shelf", "HTTPS")
 Rel(web, api, "GET /api/shelf", "JSON/HTTPS")

@@ -8,7 +8,7 @@ Person(parent, "Parent", "Opens pages by tap or URL")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "authGuard and grownUpGuard on routes; Not found, Grown-ups only and Something went wrong pages")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "requireRole() on every endpoint; household-scoped queries; 401, 403, 404 and 500 problems")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "Every household-owned table carries household_id directly or through book")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "Every household-owned table carries household_id directly or through book")
 }
 Rel(reader, web, "Uses", "HTTPS")
 Rel(parent, web, "Uses", "HTTPS")

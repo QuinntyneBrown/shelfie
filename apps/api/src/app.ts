@@ -1,5 +1,5 @@
 import express from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { authRouter } from './auth.router.ts';
 import { csrfGuard } from './csrf.ts';
 import { problemDetailsHandler } from './errors.ts';
@@ -14,7 +14,7 @@ import { reviewRouter } from './review.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
-export function createApp(db: DatabaseSync, options: { log?: Log; mail?: Mail } = {}) {
+export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
   const app = express();
   app.use(requestLogging(options.log ?? stdoutLog));
   app.use(express.json({ limit: '16kb' }));
@@ -28,9 +28,9 @@ export function createApp(db: DatabaseSync, options: { log?: Log; mail?: Mail } 
     });
     next();
   });
-  app.get('/api/health', (_req, res) => {
+  app.get('/api/health', async (_req, res) => {
     try {
-      db.prepare('SELECT 1').get();
+      await db.query('SELECT 1');
       res.json({ status: 'ok' });
     } catch {
       res.status(503).json({ status: 'unavailable' });

@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Start-up migrates and then listens
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "systemd\n(shelfie.service)" as systemd
+box "Backend — Shelfie API application" #D1FADF
+  participant "main.ts" as main
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "db.ts\nopenDb / migrate" as dbmod
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database\n(PostgreSQL flexible server)" as db
+  participant "stdout (journald)" as log
+end box
+
+systemd -> main : node apps/api/src/main.ts (DATABASE_URL from /etc/shelfie/env)
+main -> dbmod : openDb(url) — pool max 10, TLS verified (L2-037, L2-040)
+main -> dbmod : await migrate(pool)
+dbmod -> db : SELECT pg_advisory_lock(key)
+alt server reachable
+  db --> dbmod : lock held (a second process waits here)
+  dbmod -> db : CREATE TABLE IF NOT EXISTS schema_migration
+  dbmod -> db : SELECT name FROM schema_migration
+  db --> dbmod : applied names
+  loop each migrations/*.sql not yet applied (file-name order)
+    dbmod -> db : BEGIN; <file>; INSERT INTO schema_migration; COMMIT (L2-038)
+    alt statement fails
+      dbmod -> db : ROLLBACK
+      dbmod --> main : Error("Migration 00N-name.sql failed: ...")
+      main -> log : {level: "error", error: message} — never DATABASE_URL (L2-040)
+      main --> systemd : exit 1; no listener (L2-037)
+    end
+  end
+  dbmod -> db : SELECT pg_advisory_unlock(key)
+  dbmod --> main : migrated
+  main -> main : createApp(pool).listen(PORT)
+  main -> log : api listening on 3000
+else server unreachable (5 s timeout)
+  db --> dbmod : connection error
+  dbmod --> main : error
+  main -> log : {level: "error", error: message}
+  main --> systemd : exit 1; Restart=always retries after 2 s
+end
+@enduml

@@ -61,7 +61,7 @@ for (const path of ['/shelf', '/review', '/books/b-lion/chapters/12/log']) {
 test('Given Nia’s session has expired, when she reloads, then the sign-in page says she was signed out', async ({ page }) => {
   await signInAsNia(page);
   await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
-  expireSessions();
+  await expireSessions();
 
   await page.reload();
 
@@ -73,7 +73,7 @@ test('Given Nia’s session expires while the app is open, when she takes her ne
   await signInAsNia(page);
   const shelf = new ShelfPage(page);
   await expect(shelf.book('On the go', 'The Wild Robot')).toBeVisible();
-  expireSessions();
+  await expireSessions();
 
   await shelf.logChapter('On the go', 'The Wild Robot', 4);
 
@@ -84,11 +84,11 @@ test('Given Nia’s session expires while the app is open, when she takes her ne
 test('Given Nia is using the app, when a request is made, then her session runs 30 days from that request', async ({ page }) => {
   await signInAsNia(page);
   await expect(new ShelfPage(page).book('On the go', 'The Wild Robot')).toBeVisible();
-  shortenSessions();
+  await shortenSessions();
 
   await page.request.get('/api/shelf');
 
-  const daysLeft = (Date.parse(sessionExpiresAt()) - Date.now()) / (24 * 60 * 60 * 1000);
+  const daysLeft = (Date.parse(await sessionExpiresAt()) - Date.now()) / (24 * 60 * 60 * 1000);
   expect(daysLeft).toBeGreaterThan(29.9);
 });
 

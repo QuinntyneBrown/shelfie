@@ -7,7 +7,7 @@ Person(reader, "Reader", "Logs the next chapter of a book")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "LogChapterPage: read date, question fields, drafts in localStorage, success toast with Undo")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Serves the chapter form, validates and stores the log and answers, honours Undo until undo_until")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "book, question, chapter_log and answer tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "book, question, chapter_log and answer tables")
 }
 Rel(reader, web, "Answers the questions and presses I'm done!", "HTTPS")
 Rel(web, api, "GET /api/books/:id/chapters/:n/form, POST /api/books/:id/chapters/:n, DELETE /api/chapter-logs/:id", "JSON/HTTPS")

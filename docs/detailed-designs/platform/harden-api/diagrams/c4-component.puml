@@ -14,11 +14,11 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate.ts", "Middleware factory", "validate(schema): zod parse; 400 problem with errors[]")
   Component(authz, "authz.ts", "Middleware factory", "requireRole(role): 401 without session, 403 with wrong role")
   Component(routers, "modules/*/*.router.ts", "Express Routers", "Mounted under /api; call services and repos")
-  Component(repos, "modules/*/*.repo.ts", "Repositories", "better-sqlite3 prepared statements with placeholders")
+  Component(repos, "*.service.ts", "Services", "pg statements with $n placeholders")
   Component(hashing, "hashing.ts", "Helper", "hashSecret / verifySecret with argon2id")
   Component(errors, "errors.ts", "Error handler", "Problem type; problemDetailsHandler: RFC 9457 body, no stack, SQL or path")
   Component(logger, "logger.ts", "pino logger", "Redacts cookie, password, token, text and answers; never logs bodies")
-  ComponentDb(db, "Shelfie database", "SQLite", "session, profile, book and child tables with ON DELETE CASCADE")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household, profile, book and child tables with ON DELETE CASCADE")
 }
 Rel(web, app, "JSON/HTTPS requests")
 Rel(app, helmet, "1. applies")

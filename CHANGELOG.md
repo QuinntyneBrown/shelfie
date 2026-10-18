@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Accounts and profiles: everyone signs in with a username and password on one page, with a Keep me signed in switch that decides whether the session outlives the browser; a parent signs up to start a household, invites another parent by a single-use 7-day e-mail link, and adds and edits readers (name, colour, username, password) from Settings.
+- Household data now lives in PostgreSQL 16 (Azure Database for PostgreSQL Flexible Server in production, private and TLS-only) instead of SQLite on the VM: versioned migrations run at start-up, every table cascades from its household so one `DELETE` erases a family, a nightly job purges expired rows and uploads a `pg_dump` to Blob Storage, and `npm run import-sqlite -w apps/api` carries the first release's data over. Requirements L1-014 and L2-037 to L2-041, design `platform/run-production-database`.
 - GitHub Actions CI (typecheck, API tests, build, Playwright e2e) and a deploy workflow that ships every push to `main` to Azure.
-- Production infrastructure in `infra/`: Bicep for one Ubuntu VM with Caddy and SQLite on local disk, cloud-init, host scripts and a one-time bootstrap.
-- Nightly database backup job with integrity check, 30-day pruning and an off-host copy to Blob Storage.
+- Production infrastructure in `infra/`: Bicep for one Ubuntu VM with Caddy, cloud-init, host scripts and a one-time bootstrap.
+- Nightly database dump to Blob Storage, kept for 30 days.
 - Operations runbook in `docs/runbook.md`.
 - Project README, license and community health files.
 - Working agreement for contributors in `AGENTS.md`.

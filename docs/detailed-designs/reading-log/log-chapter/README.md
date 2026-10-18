@@ -51,7 +51,7 @@ The reader logs chapters in Shelfie; the parent later reads the answers.
 
 ### Containers
 
-`LogChapterPage` in the Angular application fetches the form from the Express API, posts the log, and the API writes the chapter log and answers to SQLite.
+`LogChapterPage` in the Angular application fetches the form from the Express API, posts the log, and the API writes the chapter log and answers to PostgreSQL.
 
 ![C4 container view for logging a chapter](diagrams/c4-container.png)
 

@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(authz, "requireRole()", "Middleware (authz.ts)", "401 without a session")
   Component(service, "books.service.ts", "Service", "getBook: 404 outside the household; composes chapters 1..N with state, first line, review status")
   Component(repo, "books.repo.ts", "Repository", "findBook, listChapterLogsWithFirstAnswer, findReward")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, answer, reward")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, chapter_log, answer, reward")
 }
 Rel(web, router, "GET /api/books/:id", "JSON/HTTPS")
 Rel(router, authz, "Applies")

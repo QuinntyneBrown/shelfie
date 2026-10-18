@@ -11,7 +11,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(reviewService, "review.service.ts", "Service", "Assembles the review response; includes thisWeek.streak")
   Component(streak, "streak.service.ts", "Service (chapters module)", "computeStreak(days, today); todayIn(timeZone, now); streakFor(householdId, now)")
   Component(repo, "chapters.repo.ts", "Repository", "distinctReadOnDays(householdId)")
-  ComponentDb(db, "Shelfie database", "SQLite", "household, chapter_log, book")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household, chapter_log, book")
 }
 Rel(web, shelfRouter, "GET /api/shelf", "JSON/HTTPS")
 Rel(web, reviewRouter, "GET /api/review", "JSON/HTTPS")

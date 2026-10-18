@@ -27,7 +27,7 @@ test('Given Nia is signed in, when the review overview is asked for, then the AP
 });
 
 test('Given nothing is waiting, when Dad opens Review, then he is told he is all caught up', async ({ page }) => {
-  reviewEverything();
+  await reviewEverything();
   await signInAsDad(page);
   const review = new ReviewPage(page);
 
@@ -47,7 +47,7 @@ test('Given two chapters wait, then the Review link carries a badge with the cou
 
 test('Given Nia read on the last five days, when Dad opens Review, then This week shows her chapters and her streak', async ({ page }) => {
   // Traces to: L2-020
-  setReadingDays([0, 1, 2, 3, 4]);
+  await setReadingDays([0, 1, 2, 3, 4]);
   await signInAsDad(page);
   const review = new ReviewPage(page);
 
@@ -56,7 +56,7 @@ test('Given Nia read on the last five days, when Dad opens Review, then This wee
 });
 
 test('Given a long queue on a phone, when Dad opens Review, then it fits the screen, every chapter can be reached and the summary notices', async ({ page }) => {
-  unreviewEverything();
+  await unreviewEverything();
   await page.setViewportSize({ width: 360, height: 700 });
   await signInAsDad(page);
   const review = new ReviewPage(page);

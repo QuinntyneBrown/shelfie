@@ -5,12 +5,12 @@ title System Context — Operate the service
 
 Person(reader, "Reader", "Child who logs chapters on a phone")
 Person(grownUp, "Parent", "Parent who reviews answers and operates the service")
-System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
-System_Ext(ci, "GitHub Actions", "Runs lint, unit, API, Playwright and Lighthouse CI checks on every change")
-System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer on the host; deferred with hosting")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for many households")
+System_Ext(ci, "GitHub Actions", "Runs typecheck, API, build and Playwright checks on every change against a PostgreSQL service container")
+System_Ext(scheduler, "cron on the VM", "Runs backup.sh at 08:15 UTC")
 
 Rel(reader, shelfie, "Uses on a phone over 4G", "HTTPS")
 Rel(grownUp, shelfie, "Uses; reads the health endpoint and logs", "HTTPS")
 Rel(ci, shelfie, "Builds, tests and checks budgets of")
-Rel(scheduler, shelfie, "Starts the backup job nightly")
+Rel(scheduler, shelfie, "Dumps the database nightly")
 @enduml

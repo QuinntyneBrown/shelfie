@@ -42,7 +42,7 @@ Both people see the same streak in Shelfie; neither can change it.
 
 ### Containers
 
-The Angular application reads `streak` from the shelf and review responses; the Express API derives it from `chapter_log.read_on` in SQLite on every load.
+The Angular application reads `streak` from the shelf and review responses; the Express API derives it from `chapter_log.read_on` in PostgreSQL on every load.
 
 ![C4 container view for the reading streak](diagrams/c4-container.png)
 

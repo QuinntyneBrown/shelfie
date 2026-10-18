@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Run the production database
+
+Person(grownUp, "Grown-up", "Operator")
+System_Ext(cron, "cron on the VM", "/etc/cron.d/shelfie-backup at 08:15 UTC")
+System_Boundary(shelfie, "Shelfie (Azure resource group shelfie-prod)") {
+  Container(api, "Shelfie API", "Node.js, Express 5, pg", "db.ts pool of 10 with TLS verified; migrate() before listen; services use $n placeholders inside transactions")
+  ContainerDb(db, "Shelfie database", "Azure Database for PostgreSQL Flexible Server 16, B1ms", "Database shelfie owned by role shelfie_app; private subnet only; encrypted; 7-day PITR")
+  Container(job, "Nightly job", "backup.sh", "node purge.ts, then pg_dump --format=custom and upload")
+  ContainerDb(blobs, "Blob Storage", "Storage account, container backups", "shelfie-YYYY-MM-DD.dump; lifecycle rule deletes after 30 days")
+  Container(importer, "Import tool", "import-sqlite.ts", "Copies the first release's SQLite rows once into an empty database")
+}
+Rel(grownUp, api, "Uses", "HTTPS")
+Rel(grownUp, db, "Runs the erasure statement; restores from the runbook", "psql over TLS from the VM")
+Rel(api, db, "Reads and writes", "TLS 1.2+, DATABASE_URL from /etc/shelfie/env")
+Rel(cron, job, "Runs daily")
+Rel(job, db, "pg_dump; DELETE expired sessions, resets and attempts", "TLS")
+Rel(job, blobs, "Uploads the dump", "HTTPS, managed identity")
+Rel(importer, db, "INSERT every row in one transaction", "TLS")
+@enduml

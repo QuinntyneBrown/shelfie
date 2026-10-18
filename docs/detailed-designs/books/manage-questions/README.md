@@ -44,7 +44,7 @@ The parent shapes the questions for a book; the reader answers them when she log
 
 ### Containers
 
-The dialog in the Angular application calls the Express API, which stores custom questions in the SQLite database; the log form reads the composed list.
+The dialog in the Angular application calls the Express API, which stores custom questions in the PostgreSQL database; the log form reads the composed list.
 
 ![C4 container view for managing questions](diagrams/c4-container.png)
 

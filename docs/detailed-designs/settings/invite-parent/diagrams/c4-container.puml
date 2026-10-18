@@ -7,7 +7,7 @@ Person(parent, "Parent", "Invites another parent")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Settings page and InviteParentDialog")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Creates the invite, stores its hash, sends the link")
-  ContainerDb(db, "Shelfie database", "SQLite", "invites table")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "invites table")
 }
 System_Ext(mail, "SMTP server", "Mailpit locally; production provider is deferred")
 

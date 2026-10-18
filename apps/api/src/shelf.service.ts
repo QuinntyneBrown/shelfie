@@ -1,4 +1,4 @@
-import type { DatabaseSync } from 'node:sqlite';
+import { all, get, type Db } from './db.ts';
 import { streakFor } from './streak.ts';
 
 export interface ShelfBook {
@@ -55,19 +55,19 @@ interface BookRow {
   reward_given_at: string | null;
 }
 
-export function getShelf(db: DatabaseSync, householdId: string): ShelfResponse {
-  const rows = db
-    .prepare(
-      `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.created_at, b.finished_at,
-              COUNT(c.id) AS logged_count, MAX(c.logged_at) AS last_logged_at,
-              r.text AS reward_text, r.given_at AS reward_given_at
-         FROM book b LEFT JOIN chapter_log c ON c.book_id = b.id LEFT JOIN reward r ON r.book_id = b.id
-        WHERE b.household_id = ? GROUP BY b.id`,
-    )
-    .all(householdId) as unknown as BookRow[];
+export async function getShelf(db: Db, householdId: string): Promise<ShelfResponse> {
+  const rows = await all<BookRow>(
+    db,
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.created_at, b.finished_at,
+            COUNT(c.id) AS logged_count, MAX(c.logged_at) AS last_logged_at,
+            r.text AS reward_text, r.given_at AS reward_given_at
+       FROM book b LEFT JOIN chapter_log c ON c.book_id = b.id LEFT JOIN reward r ON r.book_id = b.id
+      WHERE b.household_id = $1 GROUP BY b.id, r.book_id`,
+    [householdId],
+  );
 
-  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
+  const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
+  const grownUp = (await get<{ name: string }>(db, "SELECT name FROM profile WHERE household_id = $1 AND role = 'parent' ORDER BY name", [householdId]))!;
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
   const dayOf = (iso: string) => dayFormat.format(new Date(iso));
 
@@ -85,18 +85,18 @@ export function getShelf(db: DatabaseSync, householdId: string): ShelfResponse {
   });
   const newestFirst = (a: string, b: string) => b.localeCompare(a);
 
-  const unseenFeedback = db
-    .prepare(
-      `SELECT c.id AS chapterLogId, b.id AS bookId, b.title AS bookTitle, c.chapter_number AS chapterNumber, c.sticker
-         FROM chapter_log c JOIN book b ON b.id = c.book_id
-        WHERE b.household_id = ? AND c.reviewed_at IS NOT NULL AND c.feedback_seen_at IS NULL
-        ORDER BY c.reviewed_at DESC`,
-    )
-    .all(householdId) as unknown as UnseenFeedback[];
+  const unseenFeedback = await all<UnseenFeedback>(
+    db,
+    `SELECT c.id AS "chapterLogId", b.id AS "bookId", b.title AS "bookTitle", c.chapter_number AS "chapterNumber", c.sticker
+       FROM chapter_log c JOIN book b ON b.id = c.book_id
+      WHERE b.household_id = $1 AND c.reviewed_at IS NOT NULL AND c.feedback_seen_at IS NULL
+      ORDER BY c.reviewed_at DESC`,
+    [householdId],
+  );
 
   return {
     unseenFeedback,
-    streak: streakFor(db, householdId),
+    streak: await streakFor(db, householdId),
     grownUpName: grownUp.name,
     reading: rows
       .filter((r) => !r.finished_at && r.logged_count > 0)

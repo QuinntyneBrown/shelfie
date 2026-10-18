@@ -44,7 +44,7 @@ The parent manages the household's books; the reader sees the changes on her she
 
 ### Containers
 
-The Books list, manage page and Remove dialog in the Angular application call the Express API, which reads and writes the SQLite database.
+The Books list, manage page and Remove dialog in the Angular application call the Express API, which reads and writes the PostgreSQL database.
 
 ![C4 container view for managing a book](diagrams/c4-container.png)
 

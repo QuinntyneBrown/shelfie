@@ -46,7 +46,7 @@ A parent manages the household's readers in Shelfie, and each reader later signs
 
 ### Containers
 
-The Settings page and its dialog call the Express API, which reads and writes reader rows in SQLite.
+The Settings page and its dialog call the Express API, which reads and writes reader rows in PostgreSQL.
 
 ![C4 container view for managing readers](diagrams/c4-container.png)
 

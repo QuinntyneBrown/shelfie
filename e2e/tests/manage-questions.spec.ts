@@ -53,7 +53,7 @@ test('Given Dad adds a question, then it follows the defaults and Nia answers it
   await expect(manage.questions().nth(3)).toContainText(CUSTOM);
 
   await logLionChapter(page, 12);
-  expect(questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
+  expect(await questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
 });
 
 for (const text of ['What', 'x'.repeat(201)]) {
@@ -79,8 +79,8 @@ test('Given a custom question, when Dad edits it, then later chapters ask the ne
   await expect(again.question('Where did they go next?')).toBeVisible();
   await logLionChapter(page, 13);
 
-  expect(questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
-  expect(questionsAnswered('b-lion', 13)).toEqual([...DEFAULTS, 'Where did they go next?']);
+  expect(await questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
+  expect(await questionsAnswered('b-lion', 13)).toEqual([...DEFAULTS, 'Where did they go next?']);
 });
 
 test('Given a custom question, when Dad removes it, then later chapters stop asking it and earlier answers keep it', async ({ page }) => {
@@ -94,8 +94,8 @@ test('Given a custom question, when Dad removes it, then later chapters stop ask
   await expect(again.questions()).toHaveCount(3);
   await logLionChapter(page, 13);
 
-  expect(questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
-  expect(questionsAnswered('b-lion', 13)).toEqual(DEFAULTS);
+  expect(await questionsAnswered('b-lion', 12)).toEqual([...DEFAULTS, CUSTOM]);
+  expect(await questionsAnswered('b-lion', 13)).toEqual(DEFAULTS);
 });
 
 test('Given saving fails, when Dad adds a question, then the dialog says so and keeps his wording', async ({ page }) => {

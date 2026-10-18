@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "chapters.service.ts", "Service", "getForm, logChapter (future-date check, transaction, undo_until), undoLog")
   Component(questions, "questions.service.ts", "Service", "DEFAULT_QUESTIONS and the book's active custom questions")
   Component(repo, "chapters.repo.ts", "Repository", "Parameterised SQL over chapter_log, answer and book")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, question, chapter_log, answer")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, question, chapter_log, answer")
 }
 Rel(web, router, "Form, log and undo requests", "JSON/HTTPS")
 Rel(router, validate, "Applies")

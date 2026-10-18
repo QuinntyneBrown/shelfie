@@ -1,6 +1,7 @@
-// Production environment for Shelfie: one small Ubuntu VM running Caddy + the Node API with SQLite
-// on its local disk, and a storage account that holds release tarballs and nightly database backups.
-// Deployed once by infra/bootstrap.sh; code deploys never touch it.
+// Production environment for Shelfie: one small Ubuntu VM running Caddy + the Node API, a managed
+// PostgreSQL flexible server reachable only inside the virtual network, and a storage account that
+// holds release tarballs and nightly database dumps. Deployed once by infra/bootstrap.sh; code
+// deploys never touch it.
 
 targetScope = 'resourceGroup'
 
@@ -25,7 +26,15 @@ param adminSourceAddress string
 @description('Public hostname Caddy serves; the A record must point at the public IP output.')
 param hostname string = 'shelfie.kids'
 
+@description('Administrator password of the PostgreSQL server. bootstrap.sh generates it once and keeps it on the VM in /etc/shelfie/db-admin.')
+@secure()
+param databaseAdminPassword string
+
+@description('PostgreSQL compute. B1ms is 1 burstable vCore and 2 GiB, enough for the API\'s pool of 10 connections.')
+param databaseSku string = 'Standard_B1ms'
+
 var storageAccountName = toLower('${name}${uniqueString(resourceGroup().id)}')
+var databaseServerName = toLower('${name}-db-${uniqueString(resourceGroup().id)}')
 var storageBlobDataContributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
 var cloudInit = replace(replace(loadTextContent('cloud-init.yaml'), '__HOSTNAME__', hostname), '__STORAGE_ACCOUNT__', storageAccountName)
 
@@ -46,6 +55,26 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     name: 'default'
     resource releases 'containers' = { name: 'releases' }
     resource backups 'containers' = { name: 'backups' }
+  }
+
+  // Nightly dumps are kept for 30 days; the server's own point-in-time restore covers the last 7.
+  resource lifecycle 'managementPolicies' = {
+    name: 'default'
+    properties: {
+      policy: {
+        rules: [
+          {
+            name: 'prune-backups'
+            enabled: true
+            type: 'Lifecycle'
+            definition: {
+              filters: { blobTypes: ['blockBlob'], prefixMatch: ['backups/'] }
+              actions: { baseBlob: { delete: { daysAfterModificationGreaterThan: 30 } } }
+            }
+          }
+        ]
+      }
+    }
   }
 }
 
@@ -74,9 +103,17 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: '${name}-vnet'
   location: location
   properties: {
-    addressSpace: { addressPrefixes: ['10.0.0.0/24'] }
+    addressSpace: { addressPrefixes: ['10.0.0.0/24', '10.0.1.0/24'] }
     subnets: [
       { name: 'default', properties: { addressPrefix: '10.0.0.0/24' } }
+      {
+        // Delegated to the flexible server; nothing else can be placed in it.
+        name: 'database'
+        properties: {
+          addressPrefix: '10.0.1.0/24'
+          delegations: [{ name: 'postgres', properties: { serviceName: 'Microsoft.DBforPostgreSQL/flexibleServers' } }]
+        }
+      }
     ]
   }
 }
@@ -151,6 +188,48 @@ resource vmBlobAccess 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+// The server's name resolves to its private address only through this zone, which the VM's network is linked to.
+resource databaseDns 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: '${name}.private.postgres.database.azure.com'
+  location: 'global'
+
+  resource link 'virtualNetworkLinks' = {
+    name: '${name}-vnet'
+    location: 'global'
+    properties: { virtualNetwork: { id: vnet.id }, registrationEnabled: false }
+  }
+}
+
+// Managed PostgreSQL 16: no public endpoint, TLS required, storage encrypted with service-managed keys,
+// 7 days of automated backups with point-in-time restore.
+resource database 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
+  name: databaseServerName
+  location: location
+  sku: { name: databaseSku, tier: 'Burstable' }
+  properties: {
+    version: '16'
+    administratorLogin: 'shelfie_admin'
+    administratorLoginPassword: databaseAdminPassword
+    storage: { storageSizeGB: 32, autoGrow: 'Enabled' }
+    backup: { backupRetentionDays: 7, geoRedundantBackup: 'Disabled' }
+    highAvailability: { mode: 'Disabled' }
+    dataEncryption: { type: 'SystemManaged' }
+    authConfig: { passwordAuth: 'Enabled', activeDirectoryAuth: 'Disabled' }
+    network: {
+      delegatedSubnetResourceId: vnet.properties.subnets[1].id
+      privateDnsZoneArmResourceId: databaseDns.id
+      publicNetworkAccess: 'Disabled'
+    }
+  }
+  dependsOn: [databaseDns::link]
+
+  resource shelfie 'databases' = {
+    name: 'shelfie'
+    properties: { charset: 'UTF8', collation: 'en_US.utf8' }
+  }
+}
+
 output publicIp string = publicIp.properties.ipAddress
+output databaseHost string = database.properties.fullyQualifiedDomainName
 output vmName string = vm.name
 output storageAccountName string = storage.name

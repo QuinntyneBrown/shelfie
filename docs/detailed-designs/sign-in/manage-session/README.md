@@ -53,7 +53,7 @@ Parents and readers both hold sessions in Shelfie and end them from the account 
 
 ### Containers
 
-The Angular application restores, uses and ends the session through the Express API, which keeps the session rows in the SQLite database.
+The Angular application restores, uses and ends the session through the Express API, which keeps the session rows in the PostgreSQL database.
 
 ![C4 container view for managing a session](diagrams/c4-container.png)
 

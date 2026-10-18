@@ -41,7 +41,7 @@ The reader finishes a book in Shelfie and the parent later gives a reward for it
 
 ### Containers
 
-The Angular application shows the celebration from the `bookFinished` flag in the log response; the Express API sets `book.finished_at` in SQLite in the same transaction as the last log.
+The Angular application shows the celebration from the `bookFinished` flag in the log response; the Express API sets `book.finished_at` in PostgreSQL in the same transaction as the last log.
 
 ![C4 container view for celebrating a finished book](diagrams/c4-container.png)
 

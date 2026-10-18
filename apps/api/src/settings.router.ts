@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
@@ -17,21 +17,21 @@ const settingsPatchSchema = z.object({
   }),
 });
 
-export function settingsRouter(db: DatabaseSync) {
+export function settingsRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db), requireRole('parent'));
 
-  router.get('/', (_req, res) => {
+  router.get('/', async (_req, res) => {
     const { householdId, profileId } = res.locals['session'] as RequestSession;
-    res.json(getSettings(db, householdId, profileId));
+    res.json(await getSettings(db, householdId, profileId));
   });
 
-  router.patch('/', (req, res) => {
+  router.patch('/', async (req, res) => {
     const { householdId, profileId } = res.locals['session'] as RequestSession;
     const body = settingsPatchSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      res.json(updateSettings(db, householdId, profileId, body.data));
+      res.json(await updateSettings(db, householdId, profileId, body.data));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type, ...e.extra });

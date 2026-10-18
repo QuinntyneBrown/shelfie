@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "review.service.ts", "Service", "overview: queue, finished books without reward, this-week stats, activity")
   Component(streak, "chapters module streak function", "Service (reading-log)", "Derives the streak from chapter_log.read_on")
   Component(repo, "review.repo.ts", "Repository", "Parameterised SQL over chapter_log, book, reward")
-  ComponentDb(db, "Shelfie database", "SQLite", "chapter_log, book, reward")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "chapter_log, book, reward")
 }
 Rel(web, router, "GET /api/review", "JSON/HTTPS")
 Rel(router, authz, "Applies")

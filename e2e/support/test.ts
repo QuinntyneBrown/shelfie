@@ -1,49 +1,48 @@
 import { test as base } from '@playwright/test';
 import express from 'express';
 import type { AddressInfo } from 'node:net';
-import type { DatabaseSync } from 'node:sqlite';
 import { join } from 'node:path';
 import { createApp } from '../../apps/api/src/app.ts';
-import { openDb } from '../../apps/api/src/db.ts';
 import { seed } from '../../apps/api/src/seed.ts';
+import { createTestDatabase } from '../../apps/api/src/test-db.ts';
 import { useDatabase } from './database';
 import { clearMailbox, deliver } from './mailbox';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
 
 interface Stack {
-  db: DatabaseSync;
+  db: Awaited<ReturnType<typeof createTestDatabase>>;
   url: string;
 }
 
-// Each worker runs its own copy of the API over an in-memory database and serves the built web app
-// from the same port, so tests never share state and never touch a database file.
+// Each worker runs its own copy of the API over a database of its own on the PostgreSQL server at
+// DATABASE_URL and serves the built web app from the same port, so tests never share state.
 export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { stack: Stack }>({
   stack: [
     async ({}, use) => {
-      const db = openDb(':memory:');
+      const db = await createTestDatabase();
       const app = express();
-      app.use(createApp(db, { log: () => {}, mail: deliver }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver }));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
       const server = app.listen(0);
       await new Promise((resolve) => server.once('listening', resolve));
       const url = `http://localhost:${(server.address() as AddressInfo).port}`;
       process.env.APP_URL = url; // Reset links point at this worker's app.
-      useDatabase(db);
+      useDatabase(db.pool);
       await use({ db, url });
       server.closeAllConnections();
       server.close();
-      db.close();
+      await db.drop();
     },
     { scope: 'worker' },
   ],
   baseURL: async ({ stack }, use) => use(stack.url),
   shelf: ['books', { option: true }],
-  // Every test starts from the seeded household: fresh PIN counters, no sessions, no mail.
+  // Every test starts from the seeded household: no sessions, no mail.
   seeded: [
     async ({ stack, shelf }, use) => {
-      seed(stack.db, { books: shelf !== 'empty' });
+      await seed(stack.db.pool, { books: shelf !== 'empty' });
       clearMailbox();
       await use();
     },

@@ -7,7 +7,7 @@ Person(grownUp, "Parent", "Opens the Review page")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "ReviewPage with queue, finished books, this-week panel and activity feed")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Assembles the review overview for the household")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "chapter_log, book and reward tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "chapter_log, book and reward tables")
 }
 Rel(grownUp, web, "Reads the queue and picks a chapter to review", "HTTPS")
 Rel(web, api, "GET /api/review", "JSON/HTTPS")

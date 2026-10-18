@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — The operator erases a household
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Grown-up (operator)" as op
+box "Backend — VM host" #D1FADF
+  participant "psql\n(from docs/runbook.md)" as psql
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database\n(PostgreSQL flexible server)" as db
+end box
+
+op -> psql : psql "$DATABASE_URL"
+psql -> db : BEGIN
+psql -> db : SELECT id, name, email FROM profile WHERE household_id = $1
+db --> psql : the household's two profiles (confirm the right one)
+psql -> db : DELETE FROM household WHERE id = $1 (L2-041)
+db -> db : cascade: profile, device, book
+db -> db : cascade: session, password_reset (from profile)
+db -> db : cascade: chapter_log, question, reward (from book)
+db -> db : cascade: answer (from chapter_log)
+db --> psql : DELETE 1
+psql -> db : COMMIT
+db --> psql : committed; other households unchanged
+psql --> op : household erased
+@enduml

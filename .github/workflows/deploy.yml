@@ -41,7 +41,7 @@ jobs:
           rm -rf release
           mkdir -p release/apps/api release/web release/host
           cp package.json package-lock.json release/
-          cp -r apps/api/package.json apps/api/src release/apps/api/
+          cp -r apps/api/package.json apps/api/src apps/api/migrations release/apps/api/
           cp -r apps/web/dist/shelfie/browser/. release/web/
           cp -r infra/host/. release/host/
           (cd release && npm ci --omit=dev --workspace apps/api --ignore-scripts)

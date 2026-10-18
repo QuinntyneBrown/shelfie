@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400")
   Component(service, "auth.service.ts", "Service", "signInWithPassword: case-insensitive lookup, argon2id verify, generic failure, session creation")
   Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over users and session")
-  ComponentDb(db, "Shelfie database", "SQLite", "users, session")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "users, session")
 }
 Rel(web, router, "POST /api/auth/password", "JSON/HTTPS")
 Rel(router, limiter, "Applies")

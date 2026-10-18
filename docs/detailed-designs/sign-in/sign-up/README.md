@@ -49,7 +49,7 @@ A parent signs up with Shelfie directly; no external system takes part.
 
 ### Containers
 
-The Sign up page in the Angular application posts to the Express API, which creates the household, parent and session in the SQLite database in one transaction.
+The Sign up page in the Angular application posts to the Express API, which creates the household, parent and session in the PostgreSQL database in one transaction.
 
 ![C4 container view for parent sign-up](diagrams/c4-container.png)
 

@@ -66,7 +66,7 @@ test('Given an invite link that has been used, when it is opened again, then it 
 
 test('Given an invite link older than 7 days, when it is opened, then it says the invite has expired', async ({ page }) => {
   const link = await invitePriya(page);
-  expireInvites();
+  await expireInvites();
   const accept = new AcceptInvitePage(page);
   await accept.openLink(link);
 

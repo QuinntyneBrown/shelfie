@@ -8,6 +8,9 @@ release=$root/releases/$sha
 [[ -d $release ]] || { echo "release $release not found" >&2; exit 1; }
 previous=$(readlink -f "$root/current" 2>/dev/null || true)
 
+# backup.sh needs pg_dump; a VM created before the move to PostgreSQL gains it here.
+command -v pg_dump >/dev/null 2>&1 || DEBIAN_FRONTEND=noninteractive apt-get install -y -q postgresql-client >/dev/null
+
 install -m 0644 "$release/host/Caddyfile" /etc/caddy/Caddyfile
 install -m 0644 "$release/host/shelfie.service" /etc/systemd/system/shelfie.service
 install -m 0644 "$release/host/shelfie-backup.cron" /etc/cron.d/shelfie-backup

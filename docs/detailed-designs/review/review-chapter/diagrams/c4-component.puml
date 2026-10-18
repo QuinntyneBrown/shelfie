@@ -12,7 +12,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(repo, "review.repo.ts", "Repository", "findChapterLogForHousehold, markReviewed, pendingChapterLogs")
   Component(shelfService, "shelf.service.ts", "Service (shelf module)", "GET /api/shelf adds unseenFeedback")
   Component(shelfRepo, "shelf.repo.ts", "Repository (shelf module)", "chapter_log WHERE reviewed_at IS NOT NULL AND feedback_seen_at IS NULL")
-  ComponentDb(db, "Shelfie database", "SQLite", "chapter_log, answer, book")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "chapter_log, answer, book")
 }
 Rel(web, router, "POST /api/chapter-logs/:id/feedback", "JSON/HTTPS")
 Rel(web, shelfService, "GET /api/shelf (via shelf.router.ts)", "JSON/HTTPS")

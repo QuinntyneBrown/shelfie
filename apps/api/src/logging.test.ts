@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
 import { createApp } from './app.ts';
-import { openDb } from './db.ts';
+import { createTestDatabase } from './test-db.ts';
 import { requestLogging } from './logging.ts';
 import { problemDetailsHandler } from './errors.ts';
 
@@ -24,9 +24,11 @@ async function call(app: express.Express, path: string, init?: RequestInit) {
 
 test('Given a request, then one line is logged with its request id, method, route pattern, status and duration', async () => {
   const lines: Line[] = [];
-  const app = createApp(openDb(':memory:'), { log: (line) => lines.push(line) });
+  const db = await createTestDatabase();
+  const app = createApp(db.pool, { log: (line) => lines.push(line) });
 
   const response = await call(app, '/api/books/some-book-id');
+  await db.drop();
 
   assert.equal(lines.length, 1);
   const [line] = lines;
@@ -41,13 +43,15 @@ test('Given a request, then one line is logged with its request id, method, rout
 
 test('Given a sign-in with a password and a cookie, then nothing secret reaches the log', async () => {
   const lines: Line[] = [];
-  const app = createApp(openDb(':memory:'), { log: (line) => lines.push(line) });
+  const db = await createTestDatabase();
+  const app = createApp(db.pool, { log: (line) => lines.push(line) });
 
   await call(app, '/api/auth/password', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-requested-with': 'Shelfie', cookie: 'shelfie_session=secret-session-id' },
     body: JSON.stringify({ username: 'dad', password: 'my-secret-password', remember: true }),
   });
+  await db.drop();
 
   const logged = JSON.stringify(lines);
   for (const secret of ['my-secret-password', 'secret-session-id']) {

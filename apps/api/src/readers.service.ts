@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
+import { get, run, transaction, type Db } from './db.ts';
 import { takenFields } from './auth.service.ts';
 import { Problem } from './problem.ts';
 import { hashSecret } from './secret.ts';
@@ -12,41 +13,36 @@ export interface ReaderInput {
   password?: string;
 }
 
-function readerView(db: DatabaseSync, id: string): ReaderView {
-  return db.prepare('SELECT id, name, color, username FROM profile WHERE id = ?').get(id) as unknown as ReaderView;
+async function readerView(db: Db, id: string): Promise<ReaderView> {
+  return (await get<ReaderView>(db, 'SELECT id, name, color, username FROM profile WHERE id = $1', [id]))!;
 }
 
 /** Adds a reader to the household; the parent chooses her username and password. */
-export function addReader(db: DatabaseSync, householdId: string, input: ReaderInput): ReaderView {
-  if (takenFields(db, input.username, null).length) throw new Problem(409, 'username-taken');
+export async function addReader(db: Pool, householdId: string, input: ReaderInput): Promise<ReaderView> {
+  if ((await takenFields(db, input.username, null)).length) throw new Problem(409, 'username-taken');
   const id = randomUUID();
-  db.prepare("INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES (?, ?, 'reader', ?, ?, ?, NULL, ?)").run(
+  await run(db, "INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, 'reader', $3, $4, $5, NULL, $6)", [
     id,
     householdId,
     input.name.trim(),
     input.color,
     input.username,
     hashSecret(input.password!),
-  );
+  ]);
   return readerView(db, id);
 }
 
 /** Changes a reader of the household; a new password ends her sessions so she uses it next time. */
-export function updateReader(db: DatabaseSync, householdId: string, id: string, input: ReaderInput): ReaderView {
-  const reader = db.prepare("SELECT id FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'").get(id, householdId);
+export async function updateReader(pool: Pool, householdId: string, id: string, input: ReaderInput): Promise<ReaderView> {
+  const reader = await get(pool, "SELECT id FROM profile WHERE id = $1 AND household_id = $2 AND role = 'reader'", [id, householdId]);
   if (!reader) throw new Problem(404, 'not-found');
-  if (takenFields(db, input.username, null, id).length) throw new Problem(409, 'username-taken');
-  db.exec('BEGIN');
-  try {
-    db.prepare('UPDATE profile SET name = ?, color = ?, username = ? WHERE id = ?').run(input.name.trim(), input.color, input.username, id);
+  if ((await takenFields(pool, input.username, null, id)).length) throw new Problem(409, 'username-taken');
+  await transaction(pool, async (db) => {
+    await run(db, 'UPDATE profile SET name = $1, color = $2, username = $3 WHERE id = $4', [input.name.trim(), input.color, input.username, id]);
     if (input.password) {
-      db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(input.password), id);
-      db.prepare('DELETE FROM session WHERE profile_id = ?').run(id);
+      await run(db, 'UPDATE profile SET password_hash = $1 WHERE id = $2', [hashSecret(input.password), id]);
+      await run(db, 'DELETE FROM session WHERE profile_id = $1', [id]);
     }
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
-  return readerView(db, id);
+  });
+  return readerView(pool, id);
 }

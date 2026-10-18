@@ -44,7 +44,7 @@ The parent gives the reward through Shelfie; the reader sees it on her trophy sh
 
 ### Containers
 
-The dialog in the Angular application calls the Express API, which checks the book and inserts the reward in the SQLite database.
+The dialog in the Angular application calls the Express API, which checks the book and inserts the reward in the PostgreSQL database.
 
 ![C4 container view for giving a reward](diagrams/c4-container.png)
 

@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Nightly maintenance and dump
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "cron\n(/etc/cron.d/shelfie-backup, 08:15 UTC)" as cron
+box "Backend — VM host scripts" #D1FADF
+  participant "backup.sh" as job
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "purge.ts\npurgeExpired(pool, now)" as purge
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database\n(PostgreSQL flexible server)" as db
+  participant "pg_dump" as dump
+  participant "Blob Storage\ncontainer backups" as blobs
+  participant "journald (shelfie-backup)" as log
+end box
+
+cron -> job : /usr/local/bin/shelfie-backup
+job -> purge : node apps/api/src/purge.ts
+purge -> db : DELETE FROM session WHERE expires_at < now (L2-041)
+purge -> db : DELETE FROM password_reset WHERE used_at IS NOT NULL OR expires_at < now
+purge -> db : DELETE FROM sign_in_attempt WHERE at < now - 10 minutes
+db --> purge : row counts
+purge --> job : exit 0
+job -> dump : pg_dump "$DATABASE_URL" --format=custom --file=tmp
+dump -> db : read schema and rows over TLS
+alt dump succeeds
+  db --> dump : rows
+  dump --> job : tmp written
+  job -> blobs : PUT backups/shelfie-YYYY-MM-DD.dump (managed identity) (L2-039)
+  blobs --> job : 201 Created
+  job -> log : uploaded shelfie-YYYY-MM-DD.dump
+  job --> cron : exit 0
+  note over blobs
+    Lifecycle rule in main.bicep deletes
+    blobs under backups/ 30 days after
+    their last modification
+  end note
+else dump or upload fails
+  dump --> job : non-zero exit
+  job -> log : error line
+  job --> cron : exit 1 (earlier dumps untouched)
+end
+@enduml
