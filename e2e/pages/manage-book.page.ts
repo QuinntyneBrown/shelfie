@@ -168,6 +168,10 @@ export class ManageBookPage {
     await this.questionDialog().getByRole('button', { name: 'Add question' }).click();
   }
 
+  async suggestQuestions() {
+    await this.page.getByRole('button', { name: 'Suggest questions' }).click();
+  }
+
   async editQuestion(from: string, to: string) {
     await this.question(from).getByRole('button', { name: 'Edit' }).click();
     await this.questionDialog().getByLabel('Question').fill(to);

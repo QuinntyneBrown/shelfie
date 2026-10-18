@@ -1,0 +1,69 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Suggest questions
+
+class "ManageBookPage" as Page {
+  #suggestOpen: Signal<boolean>
+  #addSuggested(question: CustomQuestion)
+}
+
+class "sh-suggest-questions-dialog" as Dialog {
+  +open: boolean
+  +bookId: string
+  +bookTitle: string
+  +readerName: string
+  +added: EventEmitter<CustomQuestion>
+  +closed: EventEmitter<void>
+  #state: 'busy' | 'ready' | 'empty' | 'failed' | 'unavailable'
+  #rows: Signal<Row[]>
+  #saving: Signal<boolean>
+  #ask()
+  #add()
+}
+
+class "Row" as Row {
+  +text: string
+  +chosen: boolean
+  +error: string | null
+}
+
+class "sh-suggestion" as Suggestion {
+  +number: number
+  +error: string | null
+  +disabled: boolean
+  +chosen: ModelSignal<boolean>
+  +text: ModelSignal<string>
+  +focus()
+}
+
+class "BooksApi" as Api {
+  +suggestQuestions(bookId): Promise<QuestionSuggestions>
+  +addQuestion(bookId, text): Promise<CustomQuestion>
+}
+
+class "QuestionSuggestions" as Suggestions {
+  +chapter: number
+  +suggestions: string[]
+}
+
+class "suggestions.ts" as Service <<API>> {
+  +anthropicSuggester(apiKey): SuggestQuestions | undefined
+  +suggestQuestions(db, householdId, bookId, suggest)
+}
+
+Page --> Dialog : opens
+Dialog *-- Row
+Dialog --> Suggestion : one per row
+Dialog --> Api
+Api ..> Suggestions
+Api ..> Service : HTTPS
+@enduml

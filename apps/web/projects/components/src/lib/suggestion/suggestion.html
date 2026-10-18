@@ -1,0 +1,24 @@
+<input
+  class="suggestion__check"
+  type="checkbox"
+  [attr.aria-label]="'Keep suggestion ' + number()"
+  [checked]="chosen()"
+  [disabled]="disabled()"
+  (change)="tick($event)"
+/>
+<div class="field">
+  <label class="visually-hidden" [for]="id">Suggestion {{ number() }}</label>
+  <textarea
+    class="textarea"
+    [id]="id"
+    rows="2"
+    [value]="text()"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="errorId()"
+    (input)="edit($event)"
+  ></textarea>
+  @if (error(); as message) {
+    <div class="field__error" [id]="errorId()">{{ message }}</div>
+  }
+</div>

@@ -1,6 +1,7 @@
 import { createApp } from './app.ts';
 import { migrate, openDb } from './db.ts';
 import { stdoutLog } from './logging.ts';
+import { anthropicSuggester } from './suggestions.ts';
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -16,4 +17,4 @@ try {
   process.exit(1);
 }
 const port = Number(process.env.PORT ?? 3000);
-createApp(db).listen(port, () => console.log(`api listening on ${port}`));
+createApp(db, { suggest: anthropicSuggester(process.env.ANTHROPIC_API_KEY) }).listen(port, () => console.log(`api listening on ${port}`));

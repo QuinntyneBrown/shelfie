@@ -1,0 +1,101 @@
+<sh-dialog heading="Suggested questions" [open]="open()" (closed)="closed.emit()">
+  <div class="stack">
+    <p>
+      Ideas for chapter {{ chapter() }} of {{ bookTitle() }}. Tick the ones to keep and change any
+      wording. Nothing reaches {{ readerName() }} until you add it.
+    </p>
+    @switch (state()) {
+      @case ('busy') {
+        <p class="text-muted" role="status">Thinking up questions…</p>
+        <div class="suggestions">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="suggestion">
+              <div class="field">
+                <sh-skeleton />
+                <sh-skeleton />
+              </div>
+            </div>
+          }
+        </div>
+      }
+      @case ('ready') {
+        @if (saveFailed()) {
+          <sh-banner
+            severity="danger"
+            title="The questions weren’t all added"
+            message="Shelfie couldn’t reach the server. The ones still ticked weren’t added; try again."
+          />
+        }
+        <div class="suggestions" role="list" aria-label="Suggested questions">
+          @for (row of rows(); track $index) {
+            <sh-suggestion
+              [number]="$index + 1"
+              [error]="row.error"
+              [disabled]="saving()"
+              [chosen]="row.chosen"
+              (chosenChange)="update($index, { chosen: $event })"
+              [text]="row.text"
+              (textChange)="update($index, { text: $event })"
+            />
+          }
+        </div>
+        @if (!chosenCount()) {
+          <p class="field__help">Tick at least one question to add it.</p>
+        }
+      }
+      @case ('empty') {
+        <sh-empty-state
+          title="No new ideas this time"
+          text="Shelfie couldn’t come up with questions this book doesn’t already ask. Ask again, or write your own."
+        >
+          <button class="btn btn--primary" type="button" (click)="ask()">Ask again</button>
+        </sh-empty-state>
+      }
+      @case ('failed') {
+        <sh-banner
+          severity="danger"
+          title="Suggestions didn’t come through"
+          [message]="
+            rateLimited()
+              ? 'You’ve asked for a lot of ideas just now. Try again in a few minutes.'
+              : 'Shelfie couldn’t get ideas just now. Try again, or close this and use Add a question.'
+          "
+        >
+          <button class="btn btn--sm" type="button" (click)="ask()">Try again</button>
+        </sh-banner>
+      }
+      @case ('unavailable') {
+        <sh-banner
+          severity="info"
+          title="Suggestions aren’t switched on"
+          message="This Shelfie hasn’t been set up to suggest questions. You can still write your own with Add a question."
+        />
+      }
+    }
+  </div>
+  <div dialog-actions class="cluster">
+    @if (state() === 'ready') {
+      <button class="btn btn--ghost" type="button" [disabled]="saving()" (click)="ask()">
+        Ask again
+      </button>
+    }
+    @if (state() === 'busy' || state() === 'ready') {
+      <button class="btn" type="button" (click)="closed.emit()">Cancel</button>
+      <button
+        class="btn btn--primary"
+        type="button"
+        [disabled]="state() !== 'ready' || !chosenCount() || saving()"
+        [attr.aria-busy]="saving() ? true : null"
+        (click)="add()"
+      >
+        @if (chosenCount()) {
+          Add {{ chosenCount() }} {{ chosenCount() === 1 ? 'question' : 'questions' }}
+        } @else {
+          Add questions
+        }
+      </button>
+    } @else {
+      <button class="btn" type="button" (click)="closed.emit()">Close</button>
+    }
+  </div>
+</sh-dialog>

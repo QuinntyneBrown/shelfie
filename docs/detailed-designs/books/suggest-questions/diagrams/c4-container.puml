@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Suggest questions
+
+Person(parent, "Parent", "Asks for ideas and keeps some")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ManageBookPage, SuggestQuestionsDialog, sh-suggestion")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Asks the provider with ANTHROPIC_API_KEY; filters ideas; stores nothing")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "book, question, sign_in_attempt (rate limit)")
+}
+System_Ext(claude, "Anthropic Messages API", "claude-opus-5-5")
+Rel(parent, web, "Suggest questions; Add N questions", "HTTPS")
+Rel(web, api, "POST /api/books/{id}/question-suggestions; POST /api/books/{id}/questions", "HTTPS")
+Rel(api, claude, "POST /v1/messages (one call, 20 s limit)", "HTTPS")
+Rel(api, db, "Reads the book and its questions; counts asks; inserts kept questions", "SQL")
+@enduml

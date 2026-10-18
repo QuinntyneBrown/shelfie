@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Suggest questions
+
+Container(web, "Shelfie web", "Angular", "SuggestQuestionsDialog and BooksApi")
+System_Ext(claude, "Anthropic Messages API", "claude-opus-5-5")
+Container_Boundary(api, "Shelfie API") {
+  Component(csrf, "csrfGuard", "Middleware", "403 without X-Requested-With or from another origin")
+  Component(session, "requireSession, requireRole('parent')", "Middleware", "401 without a session; 403 grown-ups-only for a reader")
+  Component(limiter, "rateLimiter", "Middleware", "5 asks per household in 10 minutes, else 429")
+  Component(router, "questions.router.ts", "Express Router", "POST /books/:id/question-suggestions; 503 without a provider; 502 when it fails")
+  Component(service, "suggestions.ts", "Service", "suggestQuestions: book, next chapter, questions; filter 5-200, no duplicates, at most 5")
+  Component(provider, "anthropicSuggester", "Provider function", "fetch with x-api-key; JSON schema output; 20 s timeout")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, question, sign_in_attempt")
+}
+Rel(web, router, "POST", "HTTPS")
+Rel(router, csrf, "Applies")
+Rel(router, session, "Applies")
+Rel(router, limiter, "Applies")
+Rel(router, service, "suggestQuestions(householdId, bookId, suggest)")
+Rel(service, provider, "suggest({title, author, chapter, questions})")
+Rel(provider, claude, "POST /v1/messages", "HTTPS")
+Rel(service, db, "Reads", "SQL")
+Rel(limiter, db, "Counts and records asks", "SQL")
+@enduml

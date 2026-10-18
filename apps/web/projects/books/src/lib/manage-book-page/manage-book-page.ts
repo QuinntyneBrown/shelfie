@@ -22,6 +22,7 @@ import {
 import { ApiError, ToastService } from 'core';
 import { BookDetail, BooksApi, CustomQuestion } from '../books-api';
 import { QuestionDialog } from '../question-dialog/question-dialog';
+import { SuggestQuestionsDialog } from '../suggest-questions-dialog/suggest-questions-dialog';
 
 @Component({
   selector: 'sh-manage-book-page',
@@ -35,6 +36,7 @@ import { QuestionDialog } from '../question-dialog/question-dialog';
     Progress,
     QuestionDialog,
     RouterLink,
+    SuggestQuestionsDialog,
     TextField,
   ],
   templateUrl: './manage-book-page.html',
@@ -60,6 +62,7 @@ export class ManageBookPage {
   protected readonly editingQuestion = signal<CustomQuestion | null>(null);
   protected readonly questionBusy = signal(false);
   protected readonly questionFailed = signal(false);
+  protected readonly suggestOpen = signal(false);
   protected readonly removeOpen = signal(false);
   protected readonly removing = signal(false);
   protected readonly removeFailed = signal(false);
@@ -203,6 +206,12 @@ export class ManageBookPage {
     } finally {
       this.questionBusy.set(false);
     }
+  }
+
+  /** A suggested question the dialog has just saved joins the list. */
+  protected addSuggested(question: CustomQuestion) {
+    const book = this.book();
+    if (book) this.book.set({ ...book, questions: [...book.questions, question] });
   }
 
   protected openEditQuestion(question: CustomQuestion) {

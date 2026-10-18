@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Suggest questions
+
+Person(parent, "Parent", "Asks for suggested questions on Manage a book; keeps, rewords or skips each")
+Person(reader, "Reader", "Answers the kept questions for later chapters; never sees suggestions")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(claude, "Anthropic Messages API", "Claude Opus 5.5 drafts questions from a book's title, author, chapter number and questions")
+
+Rel(parent, shelfie, "Asks for and keeps suggestions", "HTTPS")
+Rel(reader, shelfie, "Answers kept questions", "HTTPS")
+Rel(shelfie, claude, "Title, author, chapter number, existing questions", "HTTPS")
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — Keep suggested questions
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "SuggestQuestionsDialog\n+ sh-suggestion" as dialog
+  participant "ManageBookPage" as page
+  participant "BooksApi" as client
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "questions.router.ts" as router
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+person -> dialog : Tick and reword suggestions
+dialog --> person : "Add N questions"
+person -> dialog : Add N questions
+dialog -> dialog : Each ticked row 5–200 characters after trimming?
+alt a row fails
+  dialog --> person : Row error "Finish the question…"; focus it; send nothing (L2-070)
+else all pass
+  dialog --> person : Button busy; rows locked
+  loop each ticked row, in order
+    dialog -> client : addQuestion(bookId, text)
+    client -> router : POST /api/books/{id}/questions (L2-013)
+    router -> db : INSERT question
+    alt saved
+      router --> client : 201 question
+      dialog -> page : added(question)
+      page --> person : Question follows the others, "Added by you"
+    else failure
+      dialog --> person : Banner "The questions weren’t all added"; the rest stay ticked
+    end
+  end
+  dialog --> person : Toast "N questions added" / "Nia answers them from chapter C."
+  dialog -> page : closed
+end
+@enduml
