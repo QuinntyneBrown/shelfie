@@ -126,4 +126,53 @@ export class ShelfPage {
   cover(group: 'On the go' | 'Up next', title: string) {
     return this.book(group, title).locator('.cover');
   }
+
+  /** The "Reading toward" reward gallery. */
+  gallery() {
+    return this.page.getByRole('region', { name: 'Reading toward' });
+  }
+
+  galleryReward(name: string) {
+    return this.gallery().getByRole('listitem').filter({ hasText: name });
+  }
+
+  async pickGoal(name: string) {
+    await this.gallery().getByRole('button', { name: `Pick ${name}` }).click();
+  }
+
+  pickButtons() {
+    return this.gallery().getByRole('button', { name: /^Pick / });
+  }
+
+  goalProgress(name: string) {
+    return this.galleryReward(name).getByRole('progressbar');
+  }
+
+  noRewardsYet() {
+    return this.gallery().getByRole('heading', { name: 'No rewards to pick yet' });
+  }
+
+  galleryLoadError() {
+    return this.gallery().getByRole('heading', { name: 'Your rewards didn’t load' });
+  }
+
+  async retryGallery() {
+    await this.gallery().getByRole('button', { name: 'Try again' }).click();
+  }
+
+  goalCelebration() {
+    return this.gallery().getByRole('heading', { name: /You did it!/ });
+  }
+
+  async breakGalleryRequests() {
+    await this.page.route('**/api/gallery-rewards**', (route) => route.abort());
+  }
+
+  async repairGalleryRequests() {
+    await this.page.unroute('**/api/gallery-rewards**');
+  }
+
+  async reload() {
+    await this.page.reload();
+  }
 }

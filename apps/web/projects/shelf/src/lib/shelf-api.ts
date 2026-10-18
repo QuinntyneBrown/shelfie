@@ -77,6 +77,27 @@ export interface UnseenFeedback {
   sticker: string;
 }
 
+export interface GalleryReward {
+  id: string;
+  name: string;
+  target: number;
+}
+
+/** The reward she is reading toward; `finished` counts the books since she picked it. */
+export interface Goal {
+  rewardId: string;
+  name: string;
+  target: number;
+  finished: number;
+  reached: boolean;
+  bookId: string | null;
+}
+
+export interface GalleryView {
+  rewards: GalleryReward[];
+  goal: Goal | null;
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
@@ -124,6 +145,15 @@ export class ShelfApi {
   /** Uploads a book's cover picture and returns its URL. */
   addCover(bookId: string, file: File) {
     return this.api.put<{ coverImage: string }>(`/books/${bookId}/cover`, file);
+  }
+
+  gallery() {
+    return this.api.get<GalleryView>('/gallery-rewards');
+  }
+
+  /** Makes a gallery reward her goal, counting from now, and returns the gallery as it now stands. */
+  pickGoal(id: string) {
+    return this.api.post<GalleryView>(`/gallery-rewards/${id}/pick`, {});
   }
 
   async shelf(): Promise<ShelfResponse> {
