@@ -513,3 +513,17 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
   .btn--primary { background: Highlight; color: HighlightText; }
 }
 @media print { .topbar, .tabbar, .toast-region, .skip-link { display: none !important; } }
+
+/* ---------- Shelfie: profile photos ----------------------------------------------------- */
+/* Avatar photo: the person's own picture fills the circle over their letter. The letter shows
+   while it loads and stays if the picture breaks (the image is removed, never shown broken). */
+.avatar { position: relative; }
+.avatar--xl { --avatar-size: var(--size-avatar-xl); font-size: var(--font-size-xl); }
+.avatar__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; animation: fade-in var(--duration-base) var(--ease-standard); }
+.avatar[aria-busy="true"]::after { content: ""; position: absolute; inset: 0; margin: auto; width: 40%; height: 40%; border: var(--border-width-thick) solid var(--color-bg-surface); border-right-color: transparent; border-radius: var(--radius-full); animation: spin calc(var(--duration-loop) / 2) linear infinite; }
+.avatar[aria-busy="true"] .avatar__img { opacity: 0.5; }
+/* Photo picker: a big avatar with "Choose a photo" (a label around a hidden file input) and "Remove photo". */
+.photo-picker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+.photo-picker__body { flex: 1; min-width: 12rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.photo-picker__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.photo-picker__actions .btn:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
