@@ -154,6 +154,12 @@ export class ShellPage {
     await this.accountMenuButton(name).click();
   }
 
+  /** Opens "My photo" from a reader's account menu. */
+  async openMyPhoto(name: string) {
+    await this.openAccountMenu(name);
+    await this.menuItem('My photo').click();
+  }
+
   async focusAccountMenuButton(name: string) {
     await this.accountMenuButton(name).focus();
   }

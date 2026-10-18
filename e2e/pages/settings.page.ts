@@ -153,6 +153,11 @@ export class SettingsPage {
     return this.page.getByRole('region', { name: 'Your account' }).locator('img');
   }
 
+  /** The photo in a reader's row, when she has one. */
+  readerPhoto(name: string) {
+    return this.reader(name).locator('img');
+  }
+
   /** Asks the API for the settings, as a client that skips the page would. */
   getViaApi() {
     return this.page.request.get('/api/settings');
