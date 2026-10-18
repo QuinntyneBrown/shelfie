@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { SAME_SITE } from '../support/same-site';
 
 export class ReviewChapterPage {
@@ -25,8 +25,17 @@ export class ReviewChapterPage {
     return this.page.getByRole('radiogroup', { name: 'Pick a sticker' }).getByRole('radio');
   }
 
+  /** The sticker's tile: clicking it waits for the page to settle, which a forced click on the hidden radio does not. */
+  private stickerTile(name: string) {
+    return this.page
+      .getByRole('radiogroup', { name: 'Pick a sticker' })
+      .locator('label')
+      .filter({ has: this.page.getByText(name, { exact: true }) });
+  }
+
   async pickSticker(name: string) {
-    await this.page.getByRole('radio', { name, exact: true }).check({ force: true });
+    await this.stickerTile(name).click();
+    await expect(this.page.getByRole('radio', { name, exact: true })).toBeChecked();
   }
 
   noteField() {
