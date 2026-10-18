@@ -34,12 +34,12 @@ else configured
   else under the limit
     router -> service : suggestQuestions(householdId, bookId, suggest)
     service -> db : book in household? (else 404); logged count; questions
-    service -> claude : POST /v1/messages {title, author, chapter, questions} as JSON data (L2-067)
+    service -> claude : POST /v1/messages {title, author, chapter, questions} as JSON data (L2-072)
     alt error, refusal, bad output or no answer in 20 s
       router --> client : 502 suggestions-failed
       dialog --> person : Danger banner "Suggestions didn’t come through", Try again
     else answered
-      service -> service : trim; keep 5–200 characters; drop duplicates; at most 5 (L2-064)
+      service -> service : trim; keep 5–200 characters; drop duplicates; at most 5 (L2-069)
       router --> client : 200 {chapter, suggestions}
       alt no suggestions left
         dialog --> person : "No new ideas this time", Ask again

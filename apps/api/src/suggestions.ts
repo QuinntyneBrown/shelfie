@@ -2,7 +2,7 @@ import { get, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
 
-/** Everything the AI service is told about a book (L2-067): no names, answers or ids. */
+/** Everything the AI service is told about a book (L2-072): no names, answers or ids. */
 export interface SuggestionInput {
   title: string;
   author: string | null;

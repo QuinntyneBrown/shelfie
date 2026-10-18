@@ -2,13 +2,13 @@
 
 - Status: Accepted
 - Date: 2026-10-18
-- Requirements: L2-064, L2-066, L2-067, L2-068
+- Requirements: L2-069, L2-071, L2-072, L2-073
 
 ## Context
 
-A parent wants help writing comprehension questions for a book (`L1-018`). Shelfie has no model of its own, so the ideas must come from a hosted large language model. That raises four choices: which provider and model, where the call is made, how the code reaches the provider, and when an idea becomes a question the reader sees.
+A parent wants help writing comprehension questions for a book (`L1-019`). Shelfie has no model of its own, so the ideas must come from a hosted large language model. That raises four choices: which provider and model, where the call is made, how the code reaches the provider, and when an idea becomes a question the reader sees.
 
-The household's data includes a child's name, answers and photos, which must not leave Shelfie for this feature (`L2-067`). The API key must never reach the browser (`L2-068`). Tests must run without a key or a network.
+The household's data includes a child's name, answers and photos, which must not leave Shelfie for this feature (`L2-072`). The API key must never reach the browser (`L2-073`). Tests must run without a key or a network.
 
 ## Decision
 

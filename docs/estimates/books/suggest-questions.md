@@ -18,7 +18,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 
 ## Minimal scope
 
-Ask and keep only: suggestions arrive, the parent ticks and adds them, failures show one generic message and no Try again. No rewording in place (the parent edits after adding), no rate limit. This satisfies `L2-064`, `L2-065` criteria 1, 2, 4, 6 and 7, `L2-066` criteria 1–3 and 6, `L2-067` and `L2-068` criteria 1–4. Total: 20 hours.
+Ask and keep only: suggestions arrive, the parent ticks and adds them, failures show one generic message and no Try again. No rewording in place (the parent edits after adding), no rate limit. This satisfies `L2-069`, `L2-070` criteria 1, 2, 4, 6 and 7, `L2-071` criteria 1–3 and 6, `L2-072` and `L2-073` criteria 1–4. Total: 20 hours.
 
 ## Partial descoping
 

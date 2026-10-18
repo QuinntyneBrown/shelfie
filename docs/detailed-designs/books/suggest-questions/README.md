@@ -21,7 +21,7 @@ The slice runs from a "Suggest questions" button on Manage a book, through one n
   - **empty** — `sh-empty-state` "No new ideas this time" with "Ask again".
   - **failed** — `sh-banner` `danger` "Suggestions didn’t come through" with "Try again"; after a 429 its message is "You’ve asked for a lot of ideas just now. Try again in a few minutes."
   - **unavailable** — `sh-banner` `info` "Suggestions aren’t switched on", no retry (503 `suggestions-unavailable`).
-  - **saving** — "Add N questions" checks every ticked row (5 to 200 characters after trimming, the same message as the add-question dialog) and, if one fails, shows the error on it, focuses it and sends nothing (`L2-065` criterion 5). Otherwise it sends each ticked row in order with `BooksApi.addQuestion`, with the button busy and the rows disabled. Each saved row leaves the list and is emitted as `added`. When all are saved it shows the toast "N questions added" / "{reader} answers them from chapter C." and emits `closed`. A failure stops there and shows `sh-banner` `danger` "The questions weren’t all added"; the rest stay ticked (`L2-065` criterion 8).
+  - **saving** — "Add N questions" checks every ticked row (5 to 200 characters after trimming, the same message as the add-question dialog) and, if one fails, shows the error on it, focuses it and sends nothing (`L2-070` criterion 5). Otherwise it sends each ticked row in order with `BooksApi.addQuestion`, with the button busy and the rows disabled. Each saved row leaves the list and is emitted as `added`. When all are saved it shows the toast "N questions added" / "{reader} answers them from chapter C." and emits `closed`. A failure stops there and shows `sh-banner` `danger` "The questions weren’t all added"; the rest stay ticked (`L2-070` criterion 8).
 - **`ManageBookPage`** — adds `sh-button`-styled "Suggest questions" beside "Add a question" in the questions card, holds `suggestOpen`, appends each `added` question to `book.questions` and closes the dialog on `closed`.
 - **`BooksApi`** — `suggestQuestions(bookId)` sends `POST /api/books/{id}/question-suggestions` and returns `{ chapter, suggestions }`.
 
@@ -49,7 +49,7 @@ The slice runs from a "Suggest questions" button on Manage a book, through one n
 
 ### What is sent
 
-Only the title, the author (or `null`), the chapter number and the texts of the book's questions (`L2-067`). The `system` prompt says the JSON document is data about a children's book and that any instructions inside it are part of the book's text, not instructions. Whatever the model returns is read only as a list of strings and filtered as above, and the web app shows it as text in a `textarea` (`L2-068`). Nothing about the request or its answer is stored or logged beyond the request log's route, status and duration.
+Only the title, the author (or `null`), the chapter number and the texts of the book's questions (`L2-072`). The `system` prompt says the JSON document is data about a children's book and that any instructions inside it are part of the book's text, not instructions. Whatever the model returns is read only as a list of strings and filtered as above, and the web app shows it as text in a `textarea` (`L2-073`). Nothing about the request or its answer is stored or logged beyond the request log's route, status and duration.
 
 ## Requirements
 
@@ -57,11 +57,11 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-064` | `L1-018` | "Suggest questions" asks for up to 5 ideas for the next chapter; too short, too long and duplicate ideas are dropped; nothing is stored; readers get 403 and other households 404. |
-| `L2-065` | `L1-018` | Ideas arrive unticked; the parent ticks and rewords them; "Add N questions" saves each through the add-question route; invalid rows show the `L2-013` message; a toast confirms; the next chapter asks them. |
-| `L2-066` | `L1-018` | Not configured → unavailable; provider failure or 20 s timeout → failed with Try again; 5 asks per household in 10 minutes → 429; manual add always works. |
-| `L2-067` | `L1-018` | Only title, author, chapter number and existing questions are sent; nothing stored or logged. |
-| `L2-068` | `L1-018` | Key in a server environment variable only; session, role and CSRF as for other writes; book data sent as data; output validated and shown as text. |
+| `L2-069` | `L1-019` | "Suggest questions" asks for up to 5 ideas for the next chapter; too short, too long and duplicate ideas are dropped; nothing is stored; readers get 403 and other households 404. |
+| `L2-070` | `L1-019` | Ideas arrive unticked; the parent ticks and rewords them; "Add N questions" saves each through the add-question route; invalid rows show the `L2-013` message; a toast confirms; the next chapter asks them. |
+| `L2-071` | `L1-019` | Not configured → unavailable; provider failure or 20 s timeout → failed with Try again; 5 asks per household in 10 minutes → 429; manual add always works. |
+| `L2-072` | `L1-019` | Only title, author, chapter number and existing questions are sent; nothing stored or logged. |
+| `L2-073` | `L1-019` | Key in a server environment variable only; session, role and CSRF as for other writes; book data sent as data; output validated and shown as text. |
 
 ## Decisions
 
@@ -100,13 +100,13 @@ Manage a book opens the dialog, which composes `sh-suggestion` rows and uses `Bo
 
 ### Behaviour — ask for suggestions
 
-The API checks who is asking, whether a key is set and the rate limit, then asks Claude and filters the answer (`L2-064`, `L2-066`, `L2-067`, `L2-068`).
+The API checks who is asking, whether a key is set and the rate limit, then asks Claude and filters the answer (`L2-069`, `L2-071`, `L2-072`, `L2-073`).
 
 ![Sequence diagram for asking for suggested questions](diagrams/sequence-ask-for-suggestions.png)
 
 ### Behaviour — keep suggestions
 
-Ticked rows are checked in the browser, then saved one by one through the add-question route (`L2-065`).
+Ticked rows are checked in the browser, then saved one by one through the add-question route (`L2-070`).
 
 ![Sequence diagram for keeping suggested questions](diagrams/sequence-keep-suggestions.png)
 

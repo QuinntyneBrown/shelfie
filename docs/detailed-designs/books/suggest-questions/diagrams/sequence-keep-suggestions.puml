@@ -22,7 +22,7 @@ dialog --> person : "Add N questions"
 person -> dialog : Add N questions
 dialog -> dialog : Each ticked row 5–200 characters after trimming?
 alt a row fails
-  dialog --> person : Row error "Finish the question…"; focus it; send nothing (L2-065)
+  dialog --> person : Row error "Finish the question…"; focus it; send nothing (L2-070)
 else all pass
   dialog --> person : Button busy; rows locked
   loop each ticked row, in order
