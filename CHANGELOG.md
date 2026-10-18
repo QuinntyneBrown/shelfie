@@ -21,5 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - PIN keypad keys are now equal round circles; a long "Not <name>?" label no longer stretches the first column.
+- README logo is a vector SVG instead of a 64px PNG scaled up, so it no longer looks fuzzy.
 
 [Unreleased]: https://github.com/QuinntyneBrown/shelfie/commits/main
