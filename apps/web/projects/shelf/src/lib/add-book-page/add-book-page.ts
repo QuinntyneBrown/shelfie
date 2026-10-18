@@ -120,6 +120,8 @@ export class AddBookPage {
       this.lookup.set('idle');
       return;
     }
+    // A note about the last lookup is stale as soon as she types again; rows stay until the new answer.
+    if (this.lookup() !== 'searching') this.lookup.set('idle');
     this.lookupTimer = setTimeout(() => this.runLookup(query), LOOKUP_DELAY_MS);
   }
 

@@ -214,4 +214,20 @@ export class AddBookPage {
   async breakLookups() {
     await this.page.route('**/api/books/search?*', (route) => route.abort());
   }
+
+  async scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  }
+
+  /** Whether the dropped list spans exactly the Title field's width. */
+  async listAsWideAsTitle() {
+    const [field, list] = await Promise.all([this.titleField().boundingBox(), this.matchList().boundingBox()]);
+    return !!field && !!list && Math.abs(field.width - list.width) < 12 && Math.abs(field.x - list.x) < 12;
+  }
+
+  /** The shortest row in the dropped list, in CSS pixels. */
+  async shortestMatchHeight() {
+    const boxes = await this.matches().evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect().height));
+    return Math.min(...boxes);
+  }
 }

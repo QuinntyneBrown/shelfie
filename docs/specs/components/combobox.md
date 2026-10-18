@@ -4,7 +4,7 @@
 |---|---|
 | Selector | `sh-combobox` |
 | Library path | `apps/web/projects/components/src/lib/combobox/` |
-| Status | planned |
+| Status | built |
 | Traces to | L2-025, L2-026, L2-028, L2-064, L2-065, L2-067, L2-068, L2-069 |
 | Design system | [`combobox.html`](../../design-system/components/combobox.html) |
 | Source mocks | [`pages/add-book/suggestions`](../../mocks/pages/add-book/suggestions.html), [`pages/add-book/suggestions-ai`](../../mocks/pages/add-book/suggestions-ai.html), [`pages/add-book/searching`](../../mocks/pages/add-book/searching.html), [`pages/add-book/no-matches`](../../mocks/pages/add-book/no-matches.html), [`pages/add-book/lookup-failed`](../../mocks/pages/add-book/lookup-failed.html), [`pages/add-book/picked`](../../mocks/pages/add-book/picked.html) |
