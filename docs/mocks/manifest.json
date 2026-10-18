@@ -252,7 +252,15 @@
       ],
       "not_applicable": {
         "empty": "Only logged chapters appear in the queue, so there are always answers to show."
-      }
+      },
+      "requirements": [
+        "L2-015",
+        "L2-049",
+        "L2-050",
+        "L2-051",
+        "L2-052",
+        "L2-053"
+      ]
     },
     {
       "id": "books",
