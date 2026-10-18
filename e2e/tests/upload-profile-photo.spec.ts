@@ -64,3 +64,16 @@ test('Given Dad has a photo, when he removes it, then his initial comes back in 
   await expect(shell.accountMenuButton('Dad')).toHaveText('D');
   await expect(shell.accountPhoto('Dad')).toHaveCount(0);
 });
+
+test('Given Dad closes Your photo, then focus goes back to the button that opened it', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  const dialog = new ProfilePhotoDialog(page);
+  await settings.open();
+  await settings.openPhotoDialog();
+
+  await dialog.done();
+
+  await expect(dialog.dialog()).toBeHidden();
+  await expect(settings.photoButton()).toBeFocused();
+});

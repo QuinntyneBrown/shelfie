@@ -70,8 +70,8 @@ export class ShellPage {
     return this.page.evaluate(() =>
       [...document.querySelectorAll<HTMLElement>('button, a.btn, [role=menuitem], input, textarea, select, .chip')]
         .filter((el) => el.offsetParent !== null)
-        // A radio or checkbox is hit through its label, so that is the target to measure.
-        .map((el) => ({ el, box: (el.matches('input[type=radio], input[type=checkbox]') ? (el.closest('label') ?? el) : el).getBoundingClientRect() }))
+        // A radio, checkbox or file input is hit through its label, so that is the target to measure.
+        .map((el) => ({ el, box: (el.matches('input[type=radio], input[type=checkbox], input[type=file]') ? (el.closest('label') ?? el) : el).getBoundingClientRect() }))
         .filter(({ box }) => box.width < 44 || box.height < 44)
         .map(({ el, box }) => `${el.tagName.toLowerCase()}.${el.className} "${(el.textContent ?? '').trim().slice(0, 20)}" ${Math.round(box.width)}x${Math.round(box.height)}`),
     );

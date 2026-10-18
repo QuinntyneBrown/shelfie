@@ -10,6 +10,7 @@ import { SignUpPage } from '../pages/sign-up.page';
 import { AcceptInvitePage } from '../pages/accept-invite.page';
 import { InviteParentDialog } from '../pages/invite-parent-dialog.page';
 import { inviteLinkFor } from './mailbox';
+import { ShellPage } from '../pages/shell.page';
 
 export interface Screen {
   name: string;
@@ -176,6 +177,14 @@ export const screens: Screen[] = [
       await signInAsDad(page);
       await page.getByRole('button', { name: 'Give a reward' }).click();
       // Measure the dialog at rest, not part-way through its opening animation.
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
+    },
+  },
+  {
+    name: 'your photo dialog',
+    open: async (page) => {
+      await signInAsNia(page);
+      await new ShellPage(page).openMyPhoto('Nia');
       await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
     },
   },

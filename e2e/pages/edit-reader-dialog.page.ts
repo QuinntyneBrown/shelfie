@@ -26,6 +26,10 @@ export class EditReaderDialog {
     return this.dialog().getByLabel('Name', { exact: true });
   }
 
+  colourGroup() {
+    return this.dialog().getByRole('radiogroup', { name: 'Colour' });
+  }
+
   usernameField() {
     return this.dialog().getByLabel('Username');
   }

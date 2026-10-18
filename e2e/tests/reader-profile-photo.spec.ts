@@ -4,6 +4,7 @@ import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ProfilePhotoDialog, fixture } from '../pages/profile-photo-dialog.page';
+import { EditReaderDialog } from '../pages/edit-reader-dialog.page';
 
 test('Given Nia without a photo, when she adds one from My photo, then she is told it worked and it replaces her initial in the top bar', async ({ page }) => {
   await signInAsNia(page);
@@ -60,4 +61,29 @@ test('Given Nia has a photo, when Dad opens Settings, then her row in Readers sh
   await settings.open();
 
   await expect(settings.readerPhoto('Nia')).toBeVisible();
+});
+
+test('Given Nia has a photo, when Dad edits her, then her colour says it shows only when she has no photo', async ({ page }) => {
+  await signInAsNia(page);
+  await new ProfilePhotoDialog(page).uploadViaApi(fixture('nia.jpg'));
+  await page.context().clearCookies();
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+
+  await settings.editReader('Nia');
+
+  await expect(new EditReaderDialog(page).colourGroup()).toHaveAccessibleDescription('Shows when Nia has no photo.');
+});
+
+test('Given Nia closes Your photo, then focus goes back to her account button', async ({ page }) => {
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
+  const dialog = new ProfilePhotoDialog(page);
+  await shell.openMyPhoto('Nia');
+
+  await dialog.done();
+
+  await expect(dialog.dialog()).toBeHidden();
+  await expect(shell.accountMenuButton('Nia')).toBeFocused();
 });
