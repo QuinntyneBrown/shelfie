@@ -1,4 +1,4 @@
-import { openDb } from './db.ts';
+import type { DatabaseSync } from 'node:sqlite';
 import { hashSecret } from './secret.ts';
 
 export const SEED = {
@@ -10,27 +10,35 @@ export const SEED = {
   grownUpPassword: 'sunny-days-42',
 };
 
-const db = openDb(process.env.SHELFIE_DB ?? 'shelfie.db');
-db.exec('DELETE FROM session; DELETE FROM sign_in_attempt; DELETE FROM password_reset; DELETE FROM device; DELETE FROM answer; DELETE FROM chapter_log; DELETE FROM reward; DELETE FROM question; DELETE FROM book');
-db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
-const profile = db.prepare(
-  'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, email, password_hash, pin_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-);
-profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', null, null, hashSecret(SEED.pin));
-profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', SEED.grownUpEmail, hashSecret(SEED.grownUpPassword), null);
+// Hashed once per process: argon2 is deliberately slow, and the acceptance tests seed before every test.
+const NIA_PIN = hashSecret(SEED.pin);
+const DAD_PASSWORD = hashSecret(SEED.grownUpPassword);
+const ZED_PIN = hashSecret('4321');
+const ZEDS_DAD_PASSWORD = hashSecret('another-pass-99');
 
-// A second family, so tests can check that one household never sees another's data.
-db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES ('h2', 'UTC')").run();
-profile.run('p-other-reader', 'h2', 'reader', 'Zed', 'sky', null, null, hashSecret('4321'));
-profile.run('p-other-dad', 'h2', 'grown_up', 'Zed’s dad', 'rose', 'other@example.com', hashSecret('another-pass-99'), null);
-db.prepare(
-  "INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at, finished_at) VALUES ('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'grown_up', '2026-10-01T09:00:00.000Z', NULL)",
-).run();
-db.prepare(
-  "INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z')",
-).run();
+/** Replaces everything in the database with Nia and Dad's household, their books unless `books` is false, and a second family. */
+export function seed(db: DatabaseSync, { books = true } = {}) {
+  db.exec('DELETE FROM session; DELETE FROM sign_in_attempt; DELETE FROM password_reset; DELETE FROM device; DELETE FROM answer; DELETE FROM chapter_log; DELETE FROM reward; DELETE FROM question; DELETE FROM book');
+  db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
+  const profile = db.prepare(
+    'INSERT OR REPLACE INTO profile (id, household_id, role, name, color, email, password_hash, pin_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  );
+  profile.run(SEED.readerId, SEED.householdId, 'reader', 'Nia', 'rose', null, null, NIA_PIN);
+  profile.run(SEED.grownUpId, SEED.householdId, 'grown_up', 'Dad', 'sky', SEED.grownUpEmail, DAD_PASSWORD, null);
 
-if (!process.argv.includes('--no-books')) {
+  // A second family, so tests can check that one household never sees another's data.
+  db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES ('h2', 'UTC')").run();
+  profile.run('p-other-reader', 'h2', 'reader', 'Zed', 'sky', null, null, ZED_PIN);
+  profile.run('p-other-dad', 'h2', 'grown_up', 'Zed’s dad', 'rose', 'other@example.com', ZEDS_DAD_PASSWORD, null);
+  db.prepare(
+    "INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at, finished_at) VALUES ('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'grown_up', '2026-10-01T09:00:00.000Z', NULL)",
+  ).run();
+  db.prepare(
+    "INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z')",
+  ).run();
+
+  if (!books) return;
+
   const book = db.prepare(
     'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at, finished_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   );
@@ -76,4 +84,3 @@ if (!process.argv.includes('--no-books')) {
   db.exec("UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'star', note = 'Lovely work!', feedback_seen_at = logged_at WHERE id NOT IN ('b-lion-c10', 'b-lion-c11') AND book_id != 'b-other'");
   db.prepare('UPDATE chapter_log SET logged_at = ? WHERE id = ?').run(`${day(15)}T17:00:00.000Z`, 'b-lion-c11');
 }
-console.log('seeded');

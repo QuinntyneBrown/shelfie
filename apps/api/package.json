@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/main.ts",
-    "seed": "node src/seed.ts",
+    "seed": "node src/seed-cli.ts",
     "test": "node --test \"src/**/*.test.ts\"",
     "backup": "node src/backup.ts"
   },
