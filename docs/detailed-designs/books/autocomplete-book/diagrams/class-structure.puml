@@ -1,0 +1,130 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Autocomplete a book
+
+class AddBookPage {
+  +title: WritableSignal<string>
+  +author: WritableSignal<string>
+  +chapters: WritableSignal<string>
+  +matches: Signal<ComboboxOption[]>
+  +lookup: Signal<'idle' | 'searching' | 'empty' | 'failed'>
+  -lookupController: AbortController | null
+  -scheduleLookup(title: string): void
+  +pick(option: ComboboxOption): Promise<void>
+  +choosePicture(file: File | null): void
+  +submit(): Promise<void>
+}
+
+class "sh-combobox" as Combobox {
+  +label: string
+  +value: model<string>
+  +options: ComboboxOption[]
+  +status: 'idle' | 'searching' | 'empty' | 'failed'
+  +note: string | null
+  +error: string | null
+  +picked: OutputEmitter<ComboboxOption>
+}
+
+class ComboboxOption {
+  +id: string
+  +title: string
+  +detail: string
+  +image: string | null
+  +suggested: boolean
+}
+
+class "sh-cover" as Cover {
+  +color: string
+  +sticker: string
+  +image: string | null
+  +size: 'sm' | 'md' | 'lg' | 'xl'
+}
+
+class ShelfApi {
+  +searchBooks(title: string, signal: AbortSignal): Promise<{ matches: BookMatch[] }>
+  +catalogueCover(coverId: string): Promise<File>
+  +addBook(book: NewBook): Promise<{ id: string }>
+  +addCover(bookId: string, file: File): Promise<{ coverImage: string }>
+}
+
+class ApiClient {
+  +get<T>(path: string, options?: { signal?: AbortSignal }): Promise<T>
+  +blob(path: string): Promise<Blob>
+}
+
+class BookMatch {
+  +title: string
+  +author: string | null
+  +chapterCount: number | null
+  +coverId: string | null
+  +suggested: boolean
+}
+
+class "book-search.router.ts" as Router {
+  +bookSearchRouter(db: Pool, providers: Providers): Router
+}
+
+class Providers {
+  +catalogue: Catalogue
+  +ai: Ai | null
+}
+
+class "book-search.service.ts" as Service {
+  +matchSchema: ZodType<BookMatch>
+  +searchBooks(providers: Providers, title: string): Promise<BookMatch[]>
+}
+
+interface Catalogue {
+  (title: string, signal: AbortSignal): Promise<BookMatch[]>
+}
+
+interface Ai {
+  (title: string, signal: AbortSignal): Promise<BookMatch[]>
+}
+
+class "catalogue.ts" as CatalogueModule {
+  +openLibrary: Catalogue
+  +fetchCatalogueCover(coverId: string, signal: AbortSignal): Promise<Buffer>
+}
+
+class "ai.ts" as AiModule {
+  +claudeSuggestions: Ai
+}
+
+class "rate-limit.ts" as RateLimit {
+  +rateLimiter(db, options: { kind?: string; limit: number; windowMinutes: number }): RequestHandler
+  +passwordSignInLimiter(db): RequestHandler
+  +lookupLimiter(db): RequestHandler
+}
+
+class "covers.service.ts" as Covers {
+  +processCover(bytes: Buffer): Promise<Buffer>
+}
+
+AddBookPage *-- Combobox : title field
+Combobox *-- Cover : one per row
+Combobox ..> ComboboxOption : renders, emits
+AddBookPage ..> ShelfApi : searchBooks, catalogueCover, addBook, addCover
+ShelfApi --> ApiClient : uses
+ShelfApi ..> BookMatch : receives
+Router --> Providers : holds
+Router ..> Service : searchBooks
+Router ..> RateLimit : lookupLimiter
+Router ..> CatalogueModule : fetchCatalogueCover
+Service ..> Providers : calls catalogue, then ai
+Service ..> BookMatch : bounds with matchSchema
+Providers --> Catalogue
+Providers --> Ai
+CatalogueModule ..|> Catalogue : openLibrary
+AiModule ..|> Ai : claudeSuggestions
+CatalogueModule ..> Covers : processCover
+@enduml

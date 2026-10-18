@@ -1,0 +1,75 @@
+@startuml
+title UML sequence behaviour — Pick a match
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or Parent" as user
+box "Frontend — Shelfie web (shelf and components libraries)" #E0F2FE
+  participant "sh-combobox" as combobox
+  participant "AddBookPage" as page
+  participant "sh-cover (preview)" as preview
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "book-search.router.ts\n+ requireSession\n+ coverId digits" as searchRouter
+  participant "books.router.ts and covers.router.ts\n(unchanged)" as booksRouter
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "catalogue.ts" as catalogue
+  participant "covers.service.ts" as covers
+end box
+box "Backend — outside Shelfie and infrastructure" #FFF4E5
+  participant "covers.openlibrary.org" as coverHost
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+user -> combobox : ArrowDown / Enter, or click a row (L2-068)
+combobox -> page : picked(option)
+page -> page : title = match title; author if any;\nchapters if any, else focus Chapters (L2-065)
+page -> combobox : options = [], status = idle; status line "Filled in from the match. Check the chapters."
+alt match has a coverId
+  page -> client : catalogueCover(coverId)
+  client -> searchRouter : GET /api/books/search/covers/8739161
+  searchRouter -> searchRouter : Require session; id is 1–12 digits (L2-066)
+  searchRouter -> catalogue : fetchCatalogueCover(id, 5 s)
+  catalogue -> coverHost : GET /b/id/8739161-L.jpg (fixed host, 5 MB cap)
+  coverHost --> catalogue : bytes
+  catalogue -> covers : processCover(bytes): type by content, 40 MP, 320 × 480 WebP (L2-048)
+  alt accepted
+    covers --> catalogue : WebP
+    catalogue --> searchRouter : WebP
+    searchRouter --> client : 200 image/webp, private, sandboxed (L2-066)
+    client --> page : File "cover.webp"
+    page -> page : choosePicture(file) — the same path as a chosen file
+    page -> preview : image = object URL
+    preview --> user : Cover shows in the preview; Change picture / Remove picture
+  else refused or unreachable
+    searchRouter --> client : 404 photo-type or not-found
+    client --> page : ApiError, swallowed
+    page --> user : No picture; colour and sticker stay (L2-066)
+  end
+end
+user -> page : Edit any field; press "Add to my shelf"
+page -> client : addBook({ title, author, chapterCount, coverColor, sticker })
+client -> booksRouter : POST /api/books (L2-009, unchanged)
+booksRouter -> db : INSERT book
+booksRouter --> client : 201 { id }
+opt a picture is held
+  page -> client : addCover(id, file)
+  client -> booksRouter : PUT /api/books/:id/cover (L2-046, unchanged)
+  booksRouter -> db : UPSERT book_cover
+  booksRouter --> client : 200 { coverImage }
+end
+page --> user : Toast; shelf shows the book with its cover
+@enduml

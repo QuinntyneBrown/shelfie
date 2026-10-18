@@ -31,4 +31,5 @@
 | 27 | Manage readers | Parent adds and edits reader profiles | 100% | 5 days |
 | 28 | AI review assistant | Parent asks for flagged answers and a draft note while reviewing | 100% | 2 days |
 | 29 | AI-assisted questions | Parent asks for suggested questions, edits and keeps the good ones | 100% | 4 days |
-| | **Total** | | **99%** | **64 days** |
+| 30 | Book autocomplete | Type a title, pick a match; author, chapters and cover fill in | 0% | 4 days |
+| | **Total** | | **93%** | **68 days** |
