@@ -16,5 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Project README, license and community health files.
 - Working agreement for contributors in `AGENTS.md`.
 - Agent skills for requirements, mocks, design system, detailed designs and estimates.
+- Shelfie favicon: three pastel books on a shelf on the violet brand tile, replacing the Angular default.
 
 [Unreleased]: https://github.com/QuinntyneBrown/shelfie/commits/main
