@@ -25,5 +25,5 @@
 | 21 | Edit household settings | Parent manages household members and PINs | 100% | 2 days |
 | 22 | Choose appearance | Pick light or dark theme | 100% | 1 day |
 | 23 | Secure the API | API rejects abuse and protects data | 100% | 2 days |
-| 24 | Operate the service | Health checks, logs and SQLite backups | 90% | 3 days |
-| | **Total** | | **98%** | **40 days** |
+| 24 | Operate the service | Health checks, logs and SQLite backups | 94% | 5 days |
+| | **Total** | | **98%** | **42 days** |

@@ -5,7 +5,7 @@
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [platform](platform.md) | 7 days | 94% |
+| [platform](platform.md) | 7 days | 96% |
 | [shell](shell.md) | 5 days | 94% |
 | [sign-in](sign-in.md) | 7 days | 100% |
 | [books](books.md) | 8 days | 100% |
