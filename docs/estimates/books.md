@@ -8,4 +8,4 @@
 | view-book | 1 days | 100% |
 | view-shelf | 2 days | 100% |
 | upload-book-cover | 4 days | 100% |
-| suggest-questions | 4 days | 0% |
+| suggest-questions | 4 days | 100% |

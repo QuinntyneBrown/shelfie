@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 91 days
-- Complete: 93%
+- Complete: 98%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -12,15 +12,14 @@
 | [review](review.md) | 8 days | 98% |
 | [admin-api](admin-api.md) | 6 days | 100% |
 | [admin-cli](admin-cli.md) | 7 days | 100% |
-| [books](books.md) | 16 days | 75% |
+| [books](books.md) | 16 days | 100% |
 | [reading-log](reading-log.md) | 6 days | 100% |
 
 ## Roadmap
 
-1. books: suggest questions (AI-assisted questions on Manage a book)
-2. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
-3. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-4. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output
+1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
+2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
+3. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output
 
 ## Risks and dependencies
 
