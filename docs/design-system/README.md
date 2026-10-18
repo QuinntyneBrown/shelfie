@@ -29,6 +29,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Form field](components/form-field.html) | Inputs | label, optional, help, error | default, invalid | add-book, manage-book, settings, give-reward |
 | [Text field](components/text-field.html) | Inputs | text, e-mail, password · sm/md/lg | default, hover, focus, disabled, read-only, invalid | sign-in, add-book, settings, log-chapter |
 | [Textarea](components/textarea.html) | Inputs | answer, note | default, hover, focus, disabled, read-only, invalid | log-chapter, review-chapter, give-reward, edit-question |
+| [Suggestion](components/suggestion.html) | Inputs | one row | not ticked, ticked, focus, invalid, disabled | suggest-questions |
 | [Radio group](components/radio-group.html) | Inputs | vertical with description | default, hover, focus, checked, disabled, invalid | settings, edit-question, add-book |
 | [Switch](components/switch.html) | Inputs | on/off with label | off, on, hover, focus, disabled | sign-in |
 | [Form layout](components/form-layout.html) | Inputs | actions bar, error summary, danger zone | default, submitting, invalid | manage-book, settings, add-book, sign-in |
@@ -132,6 +133,11 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Changelog
+
+### 2026-10-18: suggested questions
+
+- **Added:** [Suggestion](components/suggestion.html) (`.suggestions`, `.suggestion`, `.suggestion__check`): a suggested question with a keep tick and editable wording, for the Suggested questions dialog.
+- **Tokens:** none added or changed.
 
 ### 2026-10-18: book cover pictures
 
