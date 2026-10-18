@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Upload a book cover picture
+
+Person(parent, "Parent", "Adds a cover picture with a new book; changes or removes it on Manage a book")
+Person(reader, "Reader", "Adds a cover picture when she adds a book")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(parent, shelfie, "Adds, changes and removes cover pictures; sees them on every cover", "HTTPS")
+Rel(reader, shelfie, "Adds a cover picture with a new book; sees them on every cover", "HTTPS")
+@enduml

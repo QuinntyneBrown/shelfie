@@ -1,0 +1,83 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Upload a book cover picture
+
+class "sh-cover" as Cover {
+  +color: string
+  +sticker: string
+  +image: string | null
+  +size: 'sm' | 'md' | 'lg' | 'xl'
+  -broken: Signal<boolean>
+}
+
+class "sh-cover-picker" as CoverPicker {
+  +label: string
+  +hasPicture: boolean
+  +busy: boolean
+  +error: string | null
+  +picked: EventEmitter<File>
+  +removed: EventEmitter<void>
+}
+
+class "sh-book-card / sh-reward-card" as Cards {
+  +coverColor: string
+  +sticker: string
+  +coverImage: string | null
+}
+
+class AddBookPage {
+  -picture: Signal<File | null>
+  -preview: Signal<string | null>
+  +submit(): Promise<void>
+}
+
+class ManageBookPage {
+  -coverBusy: Signal<boolean>
+  -coverError: Signal<string | null>
+  -coverFailed: Signal<'upload' | 'remove' | null>
+  +uploadCover(file: File): Promise<void>
+  +removeCover(): Promise<void>
+}
+
+class ShelfApi {
+  +addBook(book): Promise<{id: string}>
+  +addCover(bookId, file): Promise<{coverImage: string}>
+}
+
+class BooksApi {
+  +uploadCover(bookId, file): Promise<{coverImage: string}>
+  +removeCover(bookId): Promise<void>
+}
+
+class CoversService {
+  +processCover(bytes: Buffer): Promise<Buffer>
+  +saveCover(db, householdId, bookId, image): Promise<string>
+  +removeCover(db, householdId, bookId): Promise<void>
+  +readCover(db, householdId, bookId): Promise<BookCover | undefined>
+}
+
+class BookCover {
+  +bookId: string
+  +image: Buffer
+  +etag: string
+  +updatedAt: string
+}
+
+Cards *-- Cover : renders
+AddBookPage *-- CoverPicker : renders
+AddBookPage *-- Cover : xl preview
+ManageBookPage *-- CoverPicker : renders
+ManageBookPage *-- Cover : lg header
+AddBookPage ..> ShelfApi : calls
+ManageBookPage ..> BooksApi : calls
+CoversService --> BookCover : reads / writes
+@enduml

@@ -8,7 +8,7 @@ This feature is the parent's side of the bookshelf. The **Books list** shows eve
 
 Chapter count has a floor: a book whose reader has logged N chapters cannot be set below N, because those logs would point at chapters that no longer exist. Removing a book is a hard delete that cascades to the book's chapter logs, answers, custom questions and reward; it is confirmed in the **Remove dialog**, whose initial focus is on "Keep the book" and which closes on Escape.
 
-The feature sits in the `books` subsystem beside the shelf, the book page, adding a book and managing questions. Both pages are parent only (`parentGuard`, sign-in/authorize-access). The mock's details form offers title, author and chapter count only, while `L2-010` also names cover colour and sticker; this design follows the mock and leaves cover editing out.
+The feature sits in the `books` subsystem beside the shelf, the book page, adding a book and managing questions. Both pages are parent only (`parentGuard`, sign-in/authorize-access). The mock's details form offers title, author and chapter count only, while `L2-010` also names cover colour and sticker; this design follows the mock and leaves colour and sticker editing out. The cover picture is changed and removed from the header; see [upload-book-cover](../upload-book-cover/README.md).
 
 ## Description
 

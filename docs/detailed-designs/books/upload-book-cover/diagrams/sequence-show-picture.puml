@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Show a cover picture
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent or reader" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "Any page\n+ sh-cover" as cover
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "books, shelf, chapters,\nreview services" as views
+  participant "covers.router.ts" as router
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+person -> cover : Open the shelf, a book, Review…
+cover -> views : GET the page's data
+views -> db : SELECT … FROM book b LEFT JOIN book_cover bc
+views --> cover : book {coverColor, sticker, coverImage}
+cover --> person : Colour and sticker
+opt coverImage is set
+  cover -> router : GET /api/books/{id}/cover?v={etag}
+  router -> db : readCover(householdId, id)
+  alt other household or no picture
+    router --> cover : 404
+    cover --> person : img error → dropped; colour and sticker stay (L2-047)
+  else If-None-Match matches
+    router --> cover : 304
+  else
+    router --> cover : 200 image/webp, nosniff, sandbox CSP, private no-cache, ETag
+    cover --> person : Picture fades in over the colour and sticker
+  end
+end
+@enduml

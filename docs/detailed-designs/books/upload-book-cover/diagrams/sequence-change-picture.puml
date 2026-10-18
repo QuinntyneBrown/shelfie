@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Change a cover picture on Manage a book
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "ManageBookPage\n+ sh-cover-picker" as page
+  participant "BooksApi" as client
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "covers.router.ts\n+ csrfGuard, requireSession" as router
+  participant "covers.service.ts\n(sharp)" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+person -> page : Add a picture (or Change picture)
+page -> page : Picker checks type and size
+alt a check fails
+  page --> person : Show the type or size error; keep the current cover; send nothing
+else checks pass
+  page -> page : Set busy: Change picture busy, both buttons disabled (L2-046)
+  page -> client : uploadCover(bookId, file)
+  client -> router : PUT /api/books/{id}/cover (raw body, X-Requested-With: Shelfie)
+  router -> router : Session (401); CSRF (403); over 5 MB → 413 photo-too-large
+  router -> service : processCover(bytes)
+  alt content not JPEG, PNG or WebP, or over 40 MP
+    service --> router : Problem 400 photo-type
+    router --> client : 400 {type: photo-type}
+    page --> person : Show "Shelfie can’t use that file…"; keep the current cover
+  else decoded
+    service -> service : rotate(); resize 320 x 480 cover; WebP q80; no metadata (L2-048)
+    router -> service : saveCover(householdId, bookId, image)
+    service -> db : book in household? else 404; INSERT … ON CONFLICT (book_id) DO UPDATE
+    alt database or network failure
+      router --> client : 500 problem
+      page --> person : Banner "The picture didn’t upload" with Try again; keep the current cover
+    else saved
+      router --> client : 200 {coverImage: /api/books/{id}/cover?v={etag}}
+      page --> person : Header cover shows the picture; toast "{title} has a new cover."
+    end
+  end
+end
+@enduml
