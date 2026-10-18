@@ -568,3 +568,29 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .combobox__note { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3); font: var(--text-body-sm); color: var(--color-fg-muted); }
 .combobox__note[aria-busy="true"]::before { content: ""; flex: none; width: 1em; height: 1em; border: var(--border-width-thick) solid currentColor; border-right-color: transparent; border-radius: var(--radius-full); animation: spin calc(var(--duration-loop) / 2) linear infinite; }
 @media (prefers-reduced-motion: reduce) { .combobox__panel { animation: none; } }
+
+/* ---------- Shelfie: reward pictures ----------------------------------------------------- */
+/* Sticker picture: a photo fills the sticker's circle over its emoji, which shows while it loads and
+   stays if it fails (the image is removed, never shown broken). */
+.sticker { position: relative; overflow: hidden; }
+.sticker__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: fade-in var(--duration-base) var(--ease-standard); }
+/* A gallery reward's description: the parent's own words under its target. */
+.trophy__description { margin-top: var(--space-1); font: var(--text-body-sm); color: var(--color-fg-default); white-space: pre-line; overflow-wrap: anywhere; }
+/* Picture list: a reward's pictures as square thumbnails, one marked Featured, each with its own
+   actions, then "Add a picture" (a label around a hidden file input). */
+.picture-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.picture-list__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: var(--space-3); }
+.picture-list__item { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.picture-list__thumb { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-md); background: var(--color-bg-subtle); border: var(--border-width-hairline) solid var(--color-border-default); }
+.picture-list__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; animation: fade-in var(--duration-base) var(--ease-standard); }
+.picture-list__thumb .badge { position: absolute; top: var(--space-2); left: var(--space-2); }
+.picture-list__item--featured .picture-list__thumb { border-color: var(--color-accent); box-shadow: 0 0 0 var(--border-width-thick) var(--color-accent); }
+.picture-list__item--failed .picture-list__thumb { border-color: var(--color-danger-solid); }
+.picture-list__thumb[aria-busy="true"] img, .picture-list__item--failed .picture-list__thumb img { opacity: 0.5; }
+.picture-list__thumb[aria-busy="true"]::after { content: ""; position: absolute; inset: 0; margin: auto; width: 30%; height: 30%; border: var(--border-width-thick) solid var(--color-bg-surface); border-right-color: transparent; border-radius: var(--radius-full); animation: spin calc(var(--duration-loop) / 2) linear infinite; }
+.picture-list__remove { position: absolute; top: var(--space-1); right: var(--space-1); background: var(--color-bg-surface); box-shadow: var(--shadow-1); }
+.picture-list__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
+.picture-list__note { font: var(--text-caption); color: var(--color-fg-muted); }
+.picture-list__item--failed .picture-list__note { color: var(--color-danger-fg); }
+.picture-list__add .btn:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+@media (prefers-reduced-motion: reduce) { .picture-list__thumb img, .sticker__img { animation: none; } }

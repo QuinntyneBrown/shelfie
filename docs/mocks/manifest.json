@@ -141,7 +141,8 @@
         "L2-047",
         "L2-086",
         "L2-087",
-        "L2-088"
+        "L2-088",
+        "L2-096"
       ]
     },
     {
@@ -368,7 +369,8 @@
         "L2-043",
         "L2-081",
         "L2-082",
-        "L2-083"
+        "L2-083",
+        "L2-096"
       ]
     },
     {
@@ -452,11 +454,21 @@
       "opens_from": "settings",
       "requirements": [
         "L2-081",
-        "L2-082"
+        "L2-082",
+        "L2-093",
+        "L2-094",
+        "L2-095",
+        "L2-097",
+        "L2-098"
       ],
       "states": [
         "default",
         "edit",
+        "pictures",
+        "uploading",
+        "picture-failed",
+        "wrong-file",
+        "too-many",
         "invalid",
         "busy",
         "failed"

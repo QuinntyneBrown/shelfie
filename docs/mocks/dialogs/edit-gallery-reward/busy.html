@@ -7,8 +7,8 @@
 <meta name="mock:kind" content="dialog">
 <meta name="mock:screen" content="edit-gallery-reward">
 <meta name="mock:state" content="busy">
-<meta name="mock:requirements" content="L2-081 L2-082">
-<meta name="description" content="Over Settings: a new gallery reward being saved.">
+<meta name="mock:requirements" content="L2-081 L2-082 L2-093 L2-094 L2-095 L2-097 L2-098">
+<meta name="description" content="Over Settings: a new gallery reward being saved, then its picture sent.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
 <link rel="stylesheet" href="../../assets/mock.css">
@@ -47,8 +47,8 @@
     <div class="cluster cluster--between" style="padding: var(--space-4) var(--space-4) var(--space-2);"><h2 id="rewards-title" style="font: var(--text-h4);">Rewards</h2><a class="btn btn--sm" href="../../dialogs/edit-gallery-reward/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a reward</a></div>
     <p class="text-muted" style="padding: 0 var(--space-4) var(--space-2);">Nia picks one to read toward. Finished books count from the day she picks it.</p>
     <ul class="list">
-      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">Trip to the zoo</div><div class="list__meta">Finish 3 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
-      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">New art set</div><div class="list__meta">Finish 2 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁<img class="sticker__img" src="../../assets/rewards/zoo-penguins.jpg" alt=""></span><div class="list__body"><div class="list__title">Trip to the zoo</div><div class="list__meta">Finish 3 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁<img class="sticker__img" src="../../assets/rewards/art-set.jpg" alt=""></span><div class="list__body"><div class="list__title">New art set</div><div class="list__meta">Finish 2 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
       <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">Sleepover with Ava</div><div class="list__meta">Finish 5 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
     </ul>
   </section>
@@ -87,19 +87,21 @@
   <div class="dialog__panel">
     <div class="dialog__header">
       <div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Add a reward</h2></div>
-      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" disabled><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="dialog__body stack">
 <div class="field"><label class="field__label" for="gallery-name">The reward</label><div class="field__help" id="gallery-name-help">Nia sees this in her reward gallery. Up to 100 characters.</div><input class="input" id="gallery-name" type="text" required value="Pizza and a film" aria-describedby="gallery-name-help" maxlength="100" autofocus disabled></div>
+<div class="field"><label class="field__label" for="gallery-description">Description <span class="optional">(optional)</span></label><div class="field__help" id="gallery-description-help">What makes it special. Up to 500 characters.</div><textarea class="textarea" id="gallery-description" rows="3" aria-describedby="gallery-description-help" disabled>You pick the film.</textarea></div>
 <div class="field"><label class="field__label" for="gallery-target">Books to finish</label><div class="field__help" id="gallery-target-help">A whole number from 1 to 20.</div><input class="input" id="gallery-target" type="number" required value="2" aria-describedby="gallery-target-help" inputmode="numeric" style="max-width: 8rem;" disabled></div>
+<div class="field picture-list" role="group" aria-labelledby="pictures-label"><span class="field__label" id="pictures-label">Pictures <span class="optional">(optional)</span></span><ul class="picture-list__grid" aria-label="Pictures"><li class="picture-list__item picture-list__item--featured"><div class="picture-list__thumb" aria-busy="true"><img src="../../assets/rewards/art-set.jpg" alt="Picture 1 of 1"><span class="badge badge--success">Featured</span></div><div class="picture-list__actions"><span class="picture-list__note">Uploading…</span></div></li></ul><div class="picture-list__add"><label class="btn btn--sm" aria-disabled="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a picture<input class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="pictures-help" disabled></label></div><p class="field__help" id="pictures-help" role="status">Uploading the picture…</p></div>
     </div>
     <div class="dialog__footer"><button class="btn" type="button" disabled>Cancel</button><button class="btn btn--primary" type="button" disabled aria-busy="true">Add reward</button></div>
   </div>
-</div><p class="mock-note" style="top: 1rem; left: 1rem;">Every control is disabled while saving, so nothing is sent twice.</p>
+</div><p class="mock-note" style="top: 1rem; left: 1rem;">Every control is disabled while saving, so nothing is sent twice. The reward is saved first, then each chosen picture is sent.</p>
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Add a reward</span>
-  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="edit.html">edit</a></li><li><a href="invalid.html">invalid</a></li><li><a href="busy.html" aria-current="page">busy</a></li><li><a href="failed.html">failed</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="edit.html">edit</a></li><li><a href="pictures.html">pictures</a></li><li><a href="uploading.html">uploading</a></li><li><a href="picture-failed.html">picture-failed</a></li><li><a href="wrong-file.html">wrong-file</a></li><li><a href="too-many.html">too-many</a></li><li><a href="invalid.html">invalid</a></li><li><a href="busy.html" aria-current="page">busy</a></li><li><a href="failed.html">failed</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>
