@@ -8,7 +8,7 @@ A **chapter log** is the record that the reader has read one numbered chapter of
 
 This feature covers both halves of that exchange. On the parent's side, the review-chapter page shows the answers, lets him pick a sticker and write a note, sends the feedback, and then offers the next waiting chapter. Once reviewed, the same page shows the sent feedback read-only. On the reader's side, the shelf greets her with a **banner** ("Dad read Chapter 9 and gave you a Star ⭐") that links to the chapter page; opening that page marks the feedback **seen** and the banner stops appearing. The chapter page itself, which shows the sticker and note to the reader, belongs to the reading-log subsystem's view-chapter-answers feature.
 
-The feature sits in the `review` subsystem beside review-queue and give-reward.
+The feature sits in the `review` subsystem beside review-queue and give-reward. The optional "Help me review" assistant on a pending chapter, with its flags and suggested note, is designed in [review/ai-review-assistant](../ai-review-assistant/README.md); it adds the `assist-*` mock states and changes nothing described here.
 
 ## Description
 

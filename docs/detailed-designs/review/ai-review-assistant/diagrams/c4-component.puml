@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — AI review assistant
+
+Container(web, "Shelfie web", "Angular", "ReviewChapterPage; ReviewApi.assist(id)")
+Container_Boundary(api, "Shelfie API") {
+  Component(csrf, "csrfGuard", "Middleware (csrf.ts)", "403 cross-site without X-Requested-With")
+  Component(router, "review.router.ts", "Express Router", "POST /api/chapter-logs/:id/assist")
+  Component(authz, "requireSession + requireRole('parent')", "Middleware", "401 / 403 grown-ups-only")
+  Component(limit, "assistLimiter", "Middleware (rate-limit.ts)", "5 per parent in 10 minutes, 429 too-many-attempts")
+  Component(chapters, "chapters.service.ts", "Service", "getChapter: 404 outside the household")
+  Component(assistant, "review-assistant.ts", "Module", "askAssistant(provider, input): prompt, call, checkAdvice")
+  Component(provider, "anthropicAssistant", "Provider function", "fetch to the Messages API; fake in tests")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "chapter_log, answer, book, sign_in_attempt")
+}
+System_Ext(anthropic, "Anthropic Messages API", "claude-opus-5-5")
+Rel(web, csrf, "POST /api/chapter-logs/:id/assist", "JSON/HTTPS")
+Rel(csrf, router, "Passes")
+Rel(router, authz, "Applies")
+Rel(router, limit, "Applies")
+Rel(router, chapters, "getChapter(householdId, id)")
+Rel(router, assistant, "askAssistant(provider, AssistInput)")
+Rel(assistant, provider, "provider(AssistInput)")
+Rel(provider, anthropic, "POST /v1/messages", "HTTPS")
+Rel(chapters, db, "Reads", "SQL")
+Rel(limit, db, "Counts and records", "SQL")
+@enduml
