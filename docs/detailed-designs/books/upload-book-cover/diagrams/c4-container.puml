@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Upload a book cover picture
+
+Person(person, "Parent or reader", "Chooses a picture of the book's real cover")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "AddBookPage and ManageBookPage with sh-cover-picker; sh-cover with the picture everywhere")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript, sharp", "Validates, re-encodes to 320 x 480 WebP without metadata, serves pictures within the household")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "book_cover (bytea), book")
+}
+Rel(person, web, "Chooses or removes a picture", "HTTPS")
+Rel(web, api, "PUT and DELETE /api/books/{id}/cover; GET /api/books/{id}/cover", "HTTPS")
+Rel(api, db, "Upserts, deletes and reads cover rows", "SQL")
+@enduml

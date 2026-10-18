@@ -76,6 +76,7 @@
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"
+              [coverImage]="book.coverImage"
               [logged]="book.loggedCount"
               [chapters]="book.chapterCount"
             >
@@ -100,6 +101,7 @@
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"
+              [coverImage]="book.coverImage"
               [logged]="book.loggedCount"
               [chapters]="book.chapterCount"
             >
@@ -124,6 +126,7 @@
                 [link]="['/book', book.id]"
                 [coverColor]="book.coverColor"
                 [sticker]="book.sticker"
+                [coverImage]="book.coverImage"
                 [note]="
                   book.reward
                     ? book.reward.text + ' · ' + (book.reward.givenOn | date: 'EEE d MMM' : 'UTC')

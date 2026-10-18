@@ -152,6 +152,15 @@ export class LogChapterPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  async open(bookId: string, chapter: number) {
+    await this.page.goto(`/books/${bookId}/chapters/${chapter}/log`);
+  }
+
+  /** The cover picture on the book's cover; there is none when the book has no picture. */
+  coverPicture() {
+    return this.page.locator('main .cover img');
+  }
+
   progressSummary() {
     return this.page.getByText(/That’s \d+ of \d+/);
   }

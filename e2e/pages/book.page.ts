@@ -7,6 +7,15 @@ export class BookPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  async open(bookId: string) {
+    await this.page.goto(`/book/${bookId}`);
+  }
+
+  /** The cover picture on the book's cover; there is none when the book has no picture. */
+  coverPicture() {
+    return this.page.locator('main .cover img');
+  }
+
   progress(label: string) {
     return this.page.getByRole('progressbar', { name: label });
   }

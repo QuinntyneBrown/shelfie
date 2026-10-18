@@ -7,6 +7,7 @@ export interface QueueItem {
   bookTitle: string;
   coverColor: string;
   coverSticker: string;
+  coverImage: string | null;
   chapterNumber: number;
   readOn: string;
 }
@@ -16,6 +17,7 @@ export interface FinishedBook {
   title: string;
   coverColor: string;
   coverSticker: string;
+  coverImage: string | null;
   chapterCount: number;
   finishedOn: string;
 }
@@ -32,7 +34,14 @@ export interface ActivityItem {
 
 export interface ChapterLog {
   id: string;
-  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  book: {
+    id: string;
+    title: string;
+    coverColor: string;
+    sticker: string;
+    coverImage: string | null;
+    chapterCount: number;
+  };
   chapterNumber: number;
   readOn: string;
   today: string;

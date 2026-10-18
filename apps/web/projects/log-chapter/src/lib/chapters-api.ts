@@ -9,6 +9,7 @@ export interface ChapterForm {
     chapterCount: number;
     coverColor: string;
     sticker: string;
+    coverImage: string | null;
   };
   chapterNumber: number;
   /** Today in the household's time zone, as YYYY-MM-DD. */
@@ -32,7 +33,14 @@ export interface LogResult {
 
 export interface ChapterView {
   id: string;
-  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  book: {
+    id: string;
+    title: string;
+    coverColor: string;
+    sticker: string;
+    coverImage: string | null;
+    chapterCount: number;
+  };
   chapterNumber: number;
   readOn: string;
   today: string;

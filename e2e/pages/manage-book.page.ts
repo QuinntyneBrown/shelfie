@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { coverPictureRoute } from '../support/covers';
 import { SAME_SITE } from '../support/same-site';
 
 export class ManageBookPage {
@@ -6,6 +7,115 @@ export class ManageBookPage {
 
   heading() {
     return this.page.getByRole('heading', { level: 1 });
+  }
+
+  async open(bookId: string) {
+    await this.page.goto(`/manage-book/${bookId}`);
+  }
+
+  /** The header cover: the sticker on its colour, with the cover picture over them when there is one. */
+  cover() {
+    return this.page.locator('.page-header .cover');
+  }
+
+  coverPicture() {
+    return this.cover().locator('img');
+  }
+
+  coverPictureUrl() {
+    return this.coverPicture().getAttribute('src');
+  }
+
+  /** Whether the cover picture has loaded and has pixels to show. */
+  async coverPictureLoaded() {
+    return this.coverPicture().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
+  private picker() {
+    return this.page.getByRole('group', { name: 'Cover picture' });
+  }
+
+  /** The file input behind "Add a picture" or "Change picture". */
+  pictureChooser() {
+    return this.picker().getByLabel(/Add a picture|Change picture/);
+  }
+
+  /** The button face of the chooser, which shows the busy state. */
+  pictureChooserButton() {
+    return this.picker().locator('label.btn');
+  }
+
+  removePictureButton() {
+    return this.picker().getByRole('button', { name: 'Remove picture' });
+  }
+
+  async choosePicture(file: string) {
+    await this.pictureChooser().setInputFiles(file);
+  }
+
+  async chooseNotAPicture() {
+    await this.pictureChooser().setInputFiles({ name: 'story.txt', mimeType: 'text/plain', buffer: Buffer.from('Once upon a time') });
+  }
+
+  /** A real JPEG name and type, but not a picture inside. */
+  async chooseBrokenJpeg() {
+    await this.pictureChooser().setInputFiles({ name: 'cover.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('not really a jpeg') });
+  }
+
+  async chooseTooLargePicture() {
+    await this.pictureChooser().setInputFiles({ name: 'huge.jpg', mimeType: 'image/jpeg', buffer: Buffer.alloc(5 * 1024 * 1024 + 1) });
+  }
+
+  async removePicture() {
+    await this.removePictureButton().click();
+  }
+
+  /** The picker's own error. */
+  pictureError() {
+    return this.picker().getByRole('alert');
+  }
+
+  pictureFailure() {
+    return this.page.getByRole('alert').filter({ hasText: /The picture (didn’t upload|wasn’t removed)/ });
+  }
+
+  async tryAgain() {
+    await this.pictureFailure().getByRole('button', { name: 'Try again' }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
+  private pictureUploads = 0;
+
+  watchPictureUploads() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'PUT' && /\/api\/books\/[^/]+\/cover$/.test(request.url())) this.pictureUploads++;
+    });
+  }
+
+  pictureUploadCount() {
+    return this.pictureUploads;
+  }
+
+  async breakPictureChanges() {
+    await this.page.route(coverPictureRoute, (route) => (route.request().method() === 'GET' ? route.continue() : route.abort()));
+  }
+
+  async repairPictureChanges() {
+    await this.page.unroute(coverPictureRoute);
+  }
+
+  /** Holds picture uploads until the returned function is called. */
+  async holdPictureUploads() {
+    let release!: () => void;
+    const released = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route(coverPictureRoute, async (route) => {
+      if (route.request().method() === 'PUT') await released;
+      await route.continue();
+    });
+    return release;
   }
 
   loggedChapters() {
@@ -102,6 +212,10 @@ export class ManageBookPage {
 
   removeDialog() {
     return this.page.getByRole('dialog', { name: /^Remove/ });
+  }
+
+  removeDialogCoverPicture() {
+    return this.removeDialog().locator('.cover img');
   }
 
   keepButton() {

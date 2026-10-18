@@ -23,20 +23,25 @@ export function photoUrl(profileId: string, etag: string) {
 }
 
 /**
- * Decodes an upload and re-encodes it as a centre-cropped 256 × 256 WebP. The result carries no
- * EXIF, GPS, XMP or ICC data, because sharp writes none unless asked. Anything that is not a JPEG,
+ * Decodes an upload and re-encodes it as a centre-cropped WebP of the given size. The result carries
+ * no EXIF, GPS, XMP or ICC data, because sharp writes none unless asked. Anything that is not a JPEG,
  * PNG or WebP, or is over 40 megapixels, is refused as `photo-type`.
  */
-export async function processPhoto(bytes: Buffer): Promise<Buffer> {
+export async function processImage(bytes: Buffer, width: number, height: number): Promise<Buffer> {
   try {
     const image = sharp(bytes, { limitInputPixels: MAX_PIXELS });
     const { format } = await image.metadata();
     if (!format || !FORMATS.has(format)) throw new Problem(400, 'photo-type');
-    return await image.rotate().resize(SIZE, SIZE, { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
+    return await image.rotate().resize(width, height, { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
   } catch (e) {
     if (e instanceof Problem) throw e;
     throw new Problem(400, 'photo-type');
   }
+}
+
+/** A profile photo: centre-cropped to 256 × 256. */
+export function processPhoto(bytes: Buffer): Promise<Buffer> {
+  return processImage(bytes, SIZE, SIZE);
 }
 
 /** Stores the profile's photo in place of any earlier one and returns its URL. */

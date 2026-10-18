@@ -8,6 +8,15 @@ export class ReviewChapterPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  async open(chapterLogId: string) {
+    await this.page.goto(`/review/chapters/${chapterLogId}`);
+  }
+
+  /** The cover picture on the book's cover; there is none when the book has no picture. */
+  coverPicture() {
+    return this.page.locator('main .cover img');
+  }
+
   answers() {
     return this.page.getByRole('region', { name: /answers$/ }).getByRole('listitem');
   }

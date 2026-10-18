@@ -7,6 +7,7 @@ import { requestLogging, stdoutLog, type Log } from './logging.ts';
 import type { Mail } from './mail.ts';
 import { booksRouter } from './books.router.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
+import { coversRouter } from './covers.router.ts';
 import { questionsRouter } from './questions.router.ts';
 import { invitesRouter } from './invites.router.ts';
 import { readersRouter } from './readers.router.ts';
@@ -44,6 +45,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
   app.use('/api', reviewRouter(db));
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
+  app.use('/api/books', coversRouter(db));
   app.use('/api/settings', settingsRouter(db));
   app.use('/api/readers', readersRouter(db));
   app.use('/api/invites', invitesRouter(db, options.mail));

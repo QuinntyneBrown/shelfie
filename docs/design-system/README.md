@@ -53,7 +53,8 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Chip](components/chip.html) | Data display | toggle | default, hover, focus, pressed, disabled | log-chapter, give-reward |
 | [Streak](components/streak.html) | Data display | pill | — | shelf, book, log-chapter, review |
 | [Stat](components/stat.html) | Data display | label + value | — | review, give-reward |
-| [Book cover](components/cover.html) | Data display | 7 colours · sm/md/lg/xl; skeleton | — | shelf, book, books, add-book |
+| [Book cover](components/cover.html) | Data display | 7 colours · sm/md/lg/xl; picture; skeleton | picture loading, picture failed | shelf, book, books, add-book, manage-book |
+| [Cover picker](components/cover-picker.html) | Input | no picture, with picture | focus, uploading, too large, wrong type | add-book, manage-book |
 | [Book card](components/book-card.html) | Data display | reading, up next, finished | — | shelf, book, log-chapter, give-reward |
 | [Chapter row](components/chapter-row.html) | Data display | done, next, future | default, hover, focus | book |
 | [Sticker](components/sticker.html) | Data display | md, lg, xl | — | review, shelf, chapter, book |
@@ -131,6 +132,12 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Changelog
+
+### 2026-10-18: book cover pictures
+
+- **Added:** [Cover picker](components/cover-picker.html) (`.cover-picker__actions`) and the picture variant of [Book cover](components/cover.html) (`img.cover__img` over the colour and sticker, with picture-loading and picture-failed states). Sample covers in `assets/covers/`.
+- **Changed:** Book cover overview, anatomy, variants, states, accessibility, motion, content, code and sources.
+- **Tokens:** none added or changed.
 
 ### 2026-10-18: profile photos
 

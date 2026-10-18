@@ -32,6 +32,18 @@ export class ReviewPage {
     return this.page.getByRole('region', { name: `${title} is finished!` });
   }
 
+  queueCoverPicture(chapter: number) {
+    return this.queue().filter({ hasText: `Chapter ${chapter} ·` }).locator('.cover img');
+  }
+
+  rewardCardCoverPicture(title: string) {
+    return this.rewardCard(title).locator('.cover img');
+  }
+
+  rewardDialogCoverPicture() {
+    return this.rewardDialog().locator('.cover img');
+  }
+
   async openGiveReward(title: string) {
     await this.rewardCard(title).getByRole('button', { name: 'Give a reward' }).click();
   }

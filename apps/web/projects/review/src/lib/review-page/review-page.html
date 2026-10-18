@@ -33,7 +33,12 @@
         <ul class="list">
           @for (item of overview.queue; track item.chapterLogId; let first = $first) {
             <li class="list__item">
-              <sh-cover [color]="item.coverColor" [sticker]="item.coverSticker" size="sm" />
+              <sh-cover
+                [color]="item.coverColor"
+                [sticker]="item.coverSticker"
+                [image]="item.coverImage"
+                size="sm"
+              />
               <div class="list__body">
                 <div class="list__title">
                   Chapter {{ item.chapterNumber }} · {{ item.bookTitle }}
@@ -58,7 +63,12 @@
     @for (book of overview.finishedUnrewarded; track book.bookId) {
       <section class="card stack reward-card" [attr.aria-labelledby]="'finished-' + book.bookId">
         <div class="book-card">
-          <sh-cover [color]="book.coverColor" [sticker]="book.coverSticker" size="sm" />
+          <sh-cover
+            [color]="book.coverColor"
+            [sticker]="book.coverSticker"
+            [image]="book.coverImage"
+            size="sm"
+          />
           <div class="book-card__body">
             <h2 [id]="'finished-' + book.bookId" class="section-title">
               {{ book.title }} is finished!

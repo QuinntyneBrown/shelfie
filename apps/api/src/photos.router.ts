@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, type NextFunction, type Request, type Response } from 'express';
 import type { Pool } from 'pg';
 import { Problem } from './problem.ts';
 import { processPhoto, readPhoto, removePhoto, savePhoto } from './photos.service.ts';
@@ -7,15 +7,18 @@ import { requireSession, type RequestSession } from './session.ts';
 /** Any declared type is read: the content decides what the upload is, not its name or header. */
 const rawPhoto = express.raw({ type: () => true, limit: '5mb' });
 
+/** Reads an uploaded image of up to 5 MB as the raw body; a bigger one is answered 413 `photo-too-large`. */
+export function readImage(req: Request, res: Response, next: NextFunction) {
+  rawPhoto(req, res, (error?: unknown) => {
+    if ((error as { type?: string } | undefined)?.type === 'entity.too.large') return res.status(413).json({ type: 'photo-too-large' });
+    next(error);
+  });
+}
+
 export function photosRouter(db: Pool) {
   const router = Router();
 
-  router.put('/profile/photo', requireSession(db), (req, res, next) => {
-    rawPhoto(req, res, (error?: unknown) => {
-      if ((error as { type?: string } | undefined)?.type === 'entity.too.large') return res.status(413).json({ type: 'photo-too-large' });
-      next(error);
-    });
-  }, async (req, res) => {
+  router.put('/profile/photo', requireSession(db), readImage, async (req, res) => {
     const { profileId } = res.locals['session'] as RequestSession;
     try {
       if (!Buffer.isBuffer(req.body) || req.body.length === 0) throw new Problem(400, 'photo-type');

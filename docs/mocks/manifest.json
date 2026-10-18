@@ -130,7 +130,11 @@
         "error",
         "long"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-007",
+        "L2-047"
+      ]
     },
     {
       "id": "book",
@@ -142,11 +146,16 @@
         "loading",
         "error",
         "finished",
-        "edge"
+        "edge",
+        "picture"
       ],
       "not_applicable": {
         "empty": "A book always has at least one chapter row because the chapter count is required when the book is added."
-      }
+      },
+      "requirements": [
+        "L2-008",
+        "L2-047"
+      ]
     },
     {
       "id": "add-book",
@@ -157,13 +166,22 @@
         "default",
         "invalid",
         "submitting",
-        "error"
+        "error",
+        "picture",
+        "wrong-file",
+        "too-large"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
         "empty": "A single form; nothing to be empty.",
-        "success": "Success navigates to the new book and shows the toast in notifications/toast/success.html."
-      }
+        "success": "Success navigates to the new book and shows the toast in notifications/toast/success.html.",
+        "picture-failed": "The book is still added; the shelf shows a warning toast (notifications/toast/warning.html) saying its picture didn’t upload."
+      },
+      "requirements": [
+        "L2-009",
+        "L2-046",
+        "L2-048"
+      ]
     },
     {
       "id": "log-chapter",
@@ -241,7 +259,10 @@
         "empty",
         "error"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-047"
+      ]
     },
     {
       "id": "manage-book",
@@ -255,11 +276,20 @@
         "invalid",
         "submitting",
         "success",
-        "rewarded"
+        "rewarded",
+        "picture",
+        "uploading",
+        "picture-failed",
+        "wrong-file"
       ],
       "not_applicable": {
         "empty": "A book always has its three default questions and a chapter count, so the page is never empty."
-      }
+      },
+      "requirements": [
+        "L2-010",
+        "L2-046",
+        "L2-048"
+      ]
     },
     {
       "id": "settings",

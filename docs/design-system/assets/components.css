@@ -530,3 +530,9 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 /* Account trigger: a round button whose face is an avatar; the avatar gets the hover ring. */
 .avatar-trigger { display: inline-grid; padding: 0; border: 0; border-radius: var(--radius-full); background: none; cursor: pointer; }
 .avatar-trigger:hover .avatar, .avatar-trigger[data-state="hover"] .avatar { box-shadow: 0 0 0 var(--border-width-thick) var(--color-border-strong); }
+/* Cover picture: the book's own picture over its colour and sticker, which show while it loads or if it fails. */
+.cover { position: relative; overflow: hidden; }
+.cover__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: fade-in var(--duration-base) var(--ease-standard); }
+/* Cover picker: "Add a picture" (a label around a hidden file input) and "Remove picture". */
+.cover-picker__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.cover-picker__actions .btn:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }

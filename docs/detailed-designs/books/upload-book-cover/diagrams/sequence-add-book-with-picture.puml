@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Add a book with a cover picture
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader or parent" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "AddBookPage\n+ sh-cover-picker" as page
+  participant "ShelfApi" as client
+  participant "ToastService" as toasts
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "books.router.ts" as books
+  participant "covers.router.ts\n+ csrfGuard, requireSession" as router
+  participant "covers.service.ts\n(sharp)" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+person -> page : Add a picture
+page -> page : Picker checks type (JPEG, PNG, WebP) and size (5 MB)
+alt a check fails
+  page --> person : Show the type or size error; preview keeps colour and sticker (L2-048)
+else checks pass
+  page -> page : Keep the File; preview shows URL.createObjectURL(file) (L2-046)
+end
+person -> page : Add to my shelf
+page -> client : addBook({title, author, chapterCount, coverColor, sticker})
+client -> books : POST /api/books
+books -> db : INSERT book
+books --> client : 201 {id}
+page -> toasts : "{title} is on your shelf under Up next."
+opt a picture was chosen
+  page -> client : addCover(id, file)
+  client -> router : PUT /api/books/{id}/cover (raw body)
+  router -> service : processCover(bytes) then saveCover(householdId, id, image)
+  service -> db : INSERT book_cover … ON CONFLICT DO UPDATE
+  alt refused (400 photo-type, 413) or failed (network, 5xx)
+    router --> client : error
+    page -> toasts : warning "{title} is on your shelf, but its picture didn’t upload."
+  else saved
+    router --> client : 200 {coverImage}
+  end
+end
+page --> person : Navigate to /shelf
+@enduml

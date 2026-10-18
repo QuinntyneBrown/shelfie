@@ -38,6 +38,12 @@
         />
         <sh-color-picker label="Cover colour" [colors]="colors" [(value)]="color" />
         <sh-sticker-picker label="Sticker" [(value)]="sticker" />
+        <sh-cover-picker
+          label="Cover picture (optional)"
+          [hasPicture]="!!preview()"
+          (picked)="choosePicture($event)"
+          (removed)="choosePicture(null)"
+        />
       </div>
       <div class="form-actions">
         <a class="btn btn--ghost" routerLink="/shelf">Cancel</a>
@@ -46,7 +52,7 @@
     </form>
     <aside class="card stack preview" aria-label="Cover preview">
       <span class="overline">Preview</span>
-      <sh-cover [color]="color()" [sticker]="sticker()" size="xl" />
+      <sh-cover [color]="color()" [sticker]="sticker()" [image]="preview()" size="xl" />
       <strong>{{ title().trim() || 'Untitled book' }}</strong>
       <span class="text-caption">{{ previewDetail() }}</span>
     </aside>

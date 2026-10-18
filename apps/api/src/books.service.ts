@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, run, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { DEFAULT_QUESTIONS, customQuestions, type CustomQuestion } from './questions.service.ts';
@@ -34,6 +35,7 @@ export interface BookResponse {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   finishedAt: string | null;
   finishedOn: string | null;
@@ -54,9 +56,10 @@ const parentName = async (db: Db, householdId: string) => (await profileName(db,
 const readerName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'reader')) ?? 'your reader';
 
 export async function getBook(db: Db, householdId: string, bookId: string): Promise<BookResponse> {
-  const book = await get<{ id: string; title: string; author: string | null; chapter_count: number; cover_color: string; sticker: string; finished_at: string | null }>(
+  const book = await get<{ id: string; title: string; author: string | null; chapter_count: number; cover_color: string; sticker: string; cover_image: string | null; finished_at: string | null }>(
     db,
-    'SELECT id, title, author, chapter_count, cover_color, sticker, finished_at FROM book WHERE id = $1 AND household_id = $2',
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image, b.finished_at
+       FROM book b LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE b.id = $1 AND b.household_id = $2`,
     [bookId, householdId],
   );
   if (!book) throw new Problem(404, 'not-found');
@@ -91,6 +94,7 @@ export async function getBook(db: Db, householdId: string, bookId: string): Prom
     chapterCount: book.chapter_count,
     coverColor: book.cover_color,
     sticker: book.sticker,
+    coverImage: book.cover_image,
     loggedCount: logs.length,
     finishedAt: book.finished_at,
     finishedOn: book.finished_at ? dayFormat.format(new Date(book.finished_at)) : null,
@@ -111,6 +115,7 @@ export interface BookListItem {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   finishedOn: string | null;
   reward: { text: string } | null;
@@ -132,14 +137,15 @@ export async function listBooks(db: Db, householdId: string): Promise<BookList> 
     chapter_count: number;
     cover_color: string;
     sticker: string;
+    cover_image: string | null;
     finished_at: string | null;
     logged_count: number;
     reward_text: string | null;
   }>(
     db,
-    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.finished_at, b.created_at,
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image, b.finished_at, b.created_at,
             (SELECT COUNT(*) FROM chapter_log c WHERE c.book_id = b.id) AS logged_count, r.text AS reward_text
-       FROM book b LEFT JOIN reward r ON r.book_id = b.id
+       FROM book b LEFT JOIN reward r ON r.book_id = b.id LEFT JOIN book_cover bc ON bc.book_id = b.id
       WHERE b.household_id = $1 ORDER BY b.created_at DESC`,
     [householdId],
   );
@@ -150,6 +156,7 @@ export async function listBooks(db: Db, householdId: string): Promise<BookList> 
     chapterCount: r.chapter_count,
     coverColor: r.cover_color,
     sticker: r.sticker,
+    coverImage: r.cover_image,
     loggedCount: r.logged_count,
     finishedOn: r.finished_at ? dayFormat.format(new Date(r.finished_at)) : null,
     reward: r.reward_text ? { text: r.reward_text } : null,

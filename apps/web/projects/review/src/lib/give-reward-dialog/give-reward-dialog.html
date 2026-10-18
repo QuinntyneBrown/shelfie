@@ -14,7 +14,12 @@
         />
       }
       <div class="book-card">
-        <sh-cover [color]="book.coverColor" [sticker]="book.coverSticker" size="sm" />
+        <sh-cover
+          [color]="book.coverColor"
+          [sticker]="book.coverSticker"
+          [image]="book.coverImage"
+          size="sm"
+        />
         <div class="book-card__body">
           <strong>{{ book.title }} · {{ book.chapterCount }} chapters</strong>
           <span class="book-card__author"

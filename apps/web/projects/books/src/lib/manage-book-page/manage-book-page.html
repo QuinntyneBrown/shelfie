@@ -2,7 +2,12 @@
   @if (book(); as book) {
     <div class="page-header">
       <div class="book-card">
-        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="lg" />
+        <sh-cover
+          [color]="book.coverColor"
+          [sticker]="book.sticker"
+          [image]="book.coverImage"
+          size="lg"
+        />
         <div class="book-card__body">
           <h1>{{ book.title }}</h1>
           @if (book.author) {
@@ -12,6 +17,23 @@
             [value]="book.loggedCount"
             [max]="book.chapterCount"
             [label]="book.loggedCount + ' of ' + book.chapterCount + ' chapters read'"
+          />
+          @if (coverFailure(); as failure) {
+            <sh-banner
+              severity="danger"
+              [title]="failure.title"
+              message="Shelfie couldn’t reach the server. The book keeps its old cover."
+            >
+              <button class="btn btn--sm" type="button" (click)="failure.retry()">Try again</button>
+            </sh-banner>
+          }
+          <sh-cover-picker
+            label="Cover picture"
+            [hasPicture]="!!book.coverImage"
+            [busy]="coverBusy()"
+            [error]="coverError()"
+            (picked)="uploadCover($event)"
+            (removed)="removeCover()"
           />
         </div>
       </div>
@@ -164,7 +186,12 @@
         />
       }
       <div class="book-card">
-        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="sm" />
+        <sh-cover
+          [color]="book.coverColor"
+          [sticker]="book.sticker"
+          [image]="book.coverImage"
+          size="sm"
+        />
         <div class="book-card__body">
           <strong>{{ book.title }}</strong>
           <span class="book-card__author"

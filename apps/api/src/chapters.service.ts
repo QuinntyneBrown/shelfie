@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
+import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
@@ -26,13 +27,16 @@ interface BookRow {
   chapter_count: number;
   cover_color: string;
   sticker: string;
+  cover_image: string | null;
 }
 
 async function findBook(db: Db, householdId: string, bookId: string, n: number): Promise<BookRow> {
-  const book = await get<BookRow>(db, 'SELECT id, title, author, chapter_count, cover_color, sticker FROM book WHERE id = $1 AND household_id = $2', [
-    bookId,
-    householdId,
-  ]);
+  const book = await get<BookRow>(
+    db,
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image
+       FROM book b LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE b.id = $1 AND b.household_id = $2`,
+    [bookId, householdId],
+  );
   if (!book || n > book.chapter_count) throw new Problem(404, 'not-found');
   return book;
 }
@@ -57,7 +61,7 @@ export async function getForm(db: Db, householdId: string, bookId: string, n: nu
   const book = await findBook(db, householdId, bookId, n);
   await refuseIfLogged(db, bookId, n);
   return {
-    book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker },
+    book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker, coverImage: book.cover_image },
     chapterNumber: n,
     today: await householdToday(db, householdId),
     grownUpName: await parentName(db, householdId),
@@ -126,7 +130,7 @@ export async function undoLog(db: Db, householdId: string, chapterLogId: string)
 
 export interface ChapterView {
   id: string;
-  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  book: { id: string; title: string; coverColor: string; sticker: string; coverImage: string | null; chapterCount: number };
   chapterNumber: number;
   readOn: string;
   today: string;
@@ -150,11 +154,13 @@ export async function getChapter(db: Db, householdId: string, chapterLogId: stri
     title: string;
     cover_color: string;
     sticker: string;
+    cover_image: string | null;
     chapter_count: number;
   }>(
     db,
-    `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
-       FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2`,
+    `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count,
+            ${COVER_IMAGE_COLUMN} AS cover_image
+       FROM chapter_log c JOIN book b ON b.id = c.book_id LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE c.id = $1 AND b.household_id = $2`,
     [chapterLogId, householdId],
   );
   if (!log) throw new Problem(404, 'not-found');
@@ -166,7 +172,7 @@ export async function getChapter(db: Db, householdId: string, chapterLogId: stri
   const next = await get<{ id: string }>(db, 'SELECT id FROM chapter_log WHERE book_id = $1 AND chapter_number = $2', [log.book_id, log.chapter_number + 1]);
   return {
     id: log.id,
-    book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
+    book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, coverImage: log.cover_image, chapterCount: log.chapter_count },
     chapterNumber: log.chapter_number,
     readOn: log.read_on,
     today: await householdToday(db, householdId),
