@@ -40,7 +40,7 @@ export class EditReaderDialog {
 
   async fill(reader: { name?: string; colour?: string; username?: string; password?: string }) {
     if (reader.name !== undefined) await this.nameField().fill(reader.name);
-    if (reader.colour) await this.dialog().getByRole('radio', { name: reader.colour }).check({ force: true });
+    if (reader.colour) await this.dialog().getByRole('radio', { name: reader.colour }).check();
     if (reader.username !== undefined) await this.usernameField().fill(reader.username);
     if (reader.password !== undefined) await this.passwordField().fill(reader.password);
   }

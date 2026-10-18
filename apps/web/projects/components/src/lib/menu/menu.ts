@@ -1,8 +1,10 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
+  Injector,
   input,
   output,
   signal,
@@ -25,6 +27,7 @@ export interface MenuItem {
 })
 export class Menu {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly label = input.required<string>();
   readonly triggerClass = input('');
@@ -80,8 +83,8 @@ export class Menu {
 
   private show(index: number) {
     this.open.set(true);
-    // The items exist once this change has rendered.
-    setTimeout(() => this.itemButtons()[index]?.nativeElement.focus());
+    // Focus the item in the same render that creates it, so a key pressed right after opening reaches the menu.
+    afterNextRender(() => this.itemButtons()[index]?.nativeElement.focus(), { injector: this.injector });
   }
 
   private close() {
