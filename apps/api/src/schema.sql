@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS profile (
   role TEXT NOT NULL CHECK (role IN ('reader','grown_up')),
   name TEXT NOT NULL,
   color TEXT NOT NULL,
-  email TEXT UNIQUE,
+  email TEXT,
   password_hash TEXT,
   pin_hash TEXT,
   pin_failed_count INTEGER NOT NULL DEFAULT 0,
@@ -83,3 +83,4 @@ CREATE TABLE IF NOT EXISTS sign_in_attempt (
 );
 CREATE INDEX IF NOT EXISTS book_household ON book (household_id);
 CREATE INDEX IF NOT EXISTS chapter_log_reviewed ON chapter_log (reviewed_at);
+CREATE UNIQUE INDEX IF NOT EXISTS profile_email ON profile (email);
