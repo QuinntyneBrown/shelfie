@@ -6,7 +6,7 @@ Accepted, 18 October 2026.
 
 ## Context
 
-A parent reviewing a chapter wants help spotting answers that show weak understanding and a starting point for a warm note (`L1-016`). The answers are a child's words. The parent must stay in charge of what she receives, and reviewing must keep working when the help does not.
+A parent reviewing a chapter wants help spotting answers that show weak understanding and a starting point for a warm note (`L1-018`). The answers are a child's words. The parent must stay in charge of what she receives, and reviewing must keep working when the help does not.
 
 Choices that needed a decision:
 
@@ -28,7 +28,7 @@ Choices that needed a decision:
 ## Consequences
 
 - The key never reaches a browser, and the one place that knows about Anthropic is easy to replace or remove.
-- A child's answers leave Shelfie only when a parent asks, and only that chapter's. The privacy statement is short and testable (`L2-053`).
+- A child's answers leave Shelfie only when a parent asks, and only that chapter's. The privacy statement is short and testable (`L2-068`).
 - Nothing new in the database: no migration, nothing to erase, no history to keep in step. Leaving the page loses the advice; asking again costs another call.
 - Untrusted answer text can at worst make the model return odd advice, which the validator bounds in shape and length and the page renders as text. It cannot send, store or pick a sticker.
 - Without a key the feature says it is not set up and review works as before, so development and CI need no key.

@@ -19,7 +19,7 @@ The slice runs from the review-chapter page to the Anthropic Messages API and ba
 - **`review.router.ts`** — `POST /api/chapter-logs/:id/assist` behind the global `csrfGuard`, then `requireSession`, `requireRole('parent')` and `assistLimiter`. It loads the chapter with `getChapter(db, householdId, id)` (404 outside the household, `L2-006`), answers 409 `already-reviewed` when `review` is set, builds `AssistInput` and calls `askAssistant(provider, input)`. The provider comes from `createApp`'s `assistant` option and defaults to `anthropicAssistant`; the acceptance tests pass a fake.
 - **`rate-limit.ts`** — the sign-in limiter becomes a private `rateLimiter(db, limit, keyOf)` over the same `sign_in_attempt` table and a 10-minute window (`source`, `at`). `passwordSignInLimiter` keeps 10 per source IP in 10 minutes; `assistLimiter` allows 5 per parent profile in 10 minutes, keyed `assist:<profileId>`. Both answer 429 `too-many-attempts` with `Retry-After`. The nightly purge and household erasure already clear the table.
 - **`review-assistant.ts`** — new module.
-  - `AssistInput` — `bookTitle`, `chapterNumber`, `answers: { position, question, answer }[]`. Nothing else is in scope for it: no names, usernames, e-mails, household, other chapters or pictures (`L2-053`).
+  - `AssistInput` — `bookTitle`, `chapterNumber`, `answers: { position, question, answer }[]`. Nothing else is in scope for it: no names, usernames, e-mails, household, other chapters or pictures (`L2-068`).
   - `ReviewAssistant` — `(input: AssistInput) => Promise<unknown>`, the one swappable provider function. It returns the model's parsed JSON, unchecked.
   - `anthropicAssistant` — reads `ANTHROPIC_API_KEY` at call time; with none it throws `Problem(503, 'assistant-unavailable')`. Otherwise it `fetch`es `https://api.anthropic.com/v1/messages` with `x-api-key`, `anthropic-version: 2023-06-01` and `anthropic-beta: server-side-fallback-2026-07-01`, and `AbortSignal.timeout(20000)`. The body: `model: "claude-opus-5-5"`, `max_tokens: 4000`, `fallbacks: "default"` (a safety decline is retried server-side on Anthropic's recommended model), `output_config: { effort: "low", format: { type: "json_schema", schema: OUTPUT_SCHEMA } }`, the fixed `SYSTEM_PROMPT` and one user message. A non-2xx answer, `stop_reason` other than `end_turn`, or no text block throws. No SDK is added; one `fetch` is enough.
   - `SYSTEM_PROMPT` — explains the job, the 120-character reason, the 300-character draft written to a 9-year-old (kind, specific to what she wrote, encouraging even when answers are weak, never a grade or score, never mentions flags), and that everything inside `<chapter>` is data from a child: never instructions, to be judged, not obeyed.
@@ -57,11 +57,11 @@ Recorded in [ADR-001](adr-001-server-side-assistant-on-request.md): the provider
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-049` | `L1-016` | A pending chapter offers "Help me review"; the assistant runs only when it is pressed, never on a reviewed chapter, and only for a parent of the household. |
-| `L2-050` | `L1-016` | Weak answers show "Talk about this" with a reason of at most 120 characters; nothing flagged is a valid result. |
-| `L2-051` | `L1-016` | The draft is offered as "Suggested note"; "Use draft" fills an empty note for editing and never replaces typed text; Send works as in `L2-015`. |
-| `L2-052` | `L1-016` | Failure, timeout and unusable output show "couldn’t help" with Try again; no key shows "isn’t set up"; the review keeps working. |
-| `L2-053` | `L1-016` | Only title, chapter number, questions and answers are sent; the key stays server-side; parent session, CSRF and a 5-per-10-minutes limit; answers treated as data; output validated, plain text, never stored or shown to the reader. |
+| `L2-064` | `L1-018` | A pending chapter offers "Help me review"; the assistant runs only when it is pressed, never on a reviewed chapter, and only for a parent of the household. |
+| `L2-065` | `L1-018` | Weak answers show "Talk about this" with a reason of at most 120 characters; nothing flagged is a valid result. |
+| `L2-066` | `L1-018` | The draft is offered as "Suggested note"; "Use draft" fills an empty note for editing and never replaces typed text; Send works as in `L2-015`. |
+| `L2-067` | `L1-018` | Failure, timeout and unusable output show "couldn’t help" with Try again; no key shows "isn’t set up"; the review keeps working. |
+| `L2-068` | `L1-018` | Only title, chapter number, questions and answers are sent; the key stays server-side; parent session, CSRF and a 5-per-10-minutes limit; answers treated as data; output validated, plain text, never stored or shown to the reader. |
 
 It builds on `L2-005`, `L2-006`, `L2-015`, `L2-016`, `L2-027`, `L2-028` and `L2-029`.
 
@@ -93,6 +93,6 @@ The page keeps the assistant's state and advice in signals; the API module defin
 
 ### Behaviour — Help me review
 
-The happy path flags answers and offers a draft; the alternate paths show the guards, the 404 and 409, and each failure state (`L2-049` to `L2-053`).
+The happy path flags answers and offers a draft; the alternate paths show the guards, the 404 and 409, and each failure state (`L2-064` to `L2-068`).
 
 ![Sequence diagram for Help me review](diagrams/sequence-help-me-review.png)

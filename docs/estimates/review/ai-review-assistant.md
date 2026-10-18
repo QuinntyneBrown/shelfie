@@ -17,7 +17,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 
 ## Minimal scope
 
-Flags and the draft with "Use draft", a single failed state for every error (no separate "not set up"), and no rate limit beyond the session and CSRF guards. Satisfies `L2-049`, `L2-050`, `L2-051`, most of `L2-052` and `L2-053` except criterion 3. Total: 12 hours.
+Flags and the draft with "Use draft", a single failed state for every error (no separate "not set up"), and no rate limit beyond the session and CSRF guards. Satisfies `L2-064`, `L2-065`, `L2-066`, most of `L2-067` and `L2-068` except criterion 3. Total: 12 hours.
 
 ## Partial descoping
 

@@ -87,7 +87,7 @@ export class ReviewChapterPage {
     try {
       advice = await this.api.assist(chapter.id);
     } catch (e) {
-      // Whatever went wrong, the review itself keeps working (L2-052).
+      // Whatever went wrong, the review itself keeps working (L2-067).
       outcome =
         e instanceof ApiError && e.type === 'assistant-unavailable' ? 'unavailable' : 'failed';
     }

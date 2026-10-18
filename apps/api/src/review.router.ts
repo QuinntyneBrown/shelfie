@@ -51,7 +51,7 @@ export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
     }
   });
 
-  // Asked for by the parent only; the advice is returned and never stored (L2-049, L2-053).
+  // Asked for by the parent only; the advice is returned and never stored (L2-064, L2-068).
   router.post('/chapter-logs/:id/assist', requireSession(db), requireRole('parent'), assistLimiter(db), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     try {
