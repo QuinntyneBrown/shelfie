@@ -16,13 +16,13 @@ The feature sits in the `sign-in` subsystem beside sign-up, invite acceptance, s
 
 The slice runs from the sign-in page to the `users` and `session` tables. The mock states are in `docs/mocks/pages/sign-in/`: `default`, `missing`, `invalid`, `submitting`, `error` and `expired`.
 
-- **`SignInPage`** — page component in the `sign-in` library, titled "Welcome back". It renders a username field, a password field with a show/hide toggle, the Remember me checkbox (labelled "Keep me signed in" in the mocks, a copy difference to settle: <TO SUPPLY>), a Sign in button, a "Forgot your password?" link to `/forgot-password` and a "Create a parent account" link to sign-up. The `expired` state shows an info alert, "You were signed out", after a session expires.
+- **`SignInPage`** — page component in the `sign-in` library, titled "Welcome back". It renders a username field, a password field with a show/hide toggle, the Remember me checkbox (labelled "Keep me signed in", the mock wording; L2-003 calls it Remember me), a Sign in button, a "Forgot your password?" link to `/forgot-password` and a "Create a parent account" link to sign-up. The `expired` state shows an info alert, "You were signed out", after a session expires.
   - Before sending, the page validates the form. An empty username or password produces field-level errors, a summary alert ("Fill in 2 things") and no request (`L2-002`).
   - On submit the button enters its busy state and further presses send nothing (`submitting` state). Enter submits.
   - A `401` shows the `invalid` state: a summary alert ("We couldn’t sign you in") and the single message "Username or password is wrong." under the password field. The typed username is kept.
   - A network failure or a `5xx` shows the `error` state, an alert ("Can’t reach Shelfie") with a Try again action that resubmits (`L2-002`).
   - On success the page stores the session and navigates to `/review` for a parent or to the shelf for a reader.
-- **`sh-text-field`**, **`sh-button`** and **`sh-alert`** — components in the `components` library. The library entries for the password toggle, the checkbox switch and the alert are listed in `docs/screen-composition.md`; the composition of this page is <TO SUPPLY> until that entry is updated for the new model.
+- **`sh-text-field`**, **`sh-button`** and **`sh-alert`** — components in the `components` library. The library entries for the password toggle, the checkbox switch and the alert are listed in `docs/screen-composition.md`; `sh-text-field` with `type: 'password'` carries the Show password button, and `sh-banner` with `summary` is focusable for the failure summary.
 - **`AuthApi`** — service in the `sign-in` library built on `ApiClient`. `signInWithPassword(username, password, remember)` posts to `/api/auth/password` and returns a typed `Session` carrying the role, or throws `ApiError`.
 - **`SessionService`** — service in the `core` library; set from the response before the page navigates.
 - **`auth.router.ts`** — Express router. `POST /api/auth/password` applies the sign-in rate limiter, validates the body with `passwordSignInSchema` (`username: string, at least 1 character`, `password: string, at least 1 character`, `remember: boolean`) through `validate()`, then calls the service.
@@ -31,7 +31,7 @@ The slice runs from the sign-in page to the `users` and `session` tables. The mo
 - **`users`** table columns used: `id`, `household_id`, `role`, `name`, `username` (unique, case-insensitive), `password_hash`.
 - **`session`** table: `id`, `user_id`, `created_at`, `expires_at`. The response sets cookie `shelfie_session` (HttpOnly, Secure, SameSite=Strict); a new session id is issued on every sign-in. The cookie persists past the browser only when `remember` is true (`L2-003`).
 
-The error body for wrong credentials is a problem document with `type: "credentials-invalid"` and status `401`. A `429` from the rate limiter is shown in the summary slot with the copy <TO SUPPLY>, as no mock state exists for it.
+The error body for wrong credentials is a problem document with `type: "credentials-invalid"` and status `401`. A `429` from the rate limiter is shown in the summary slot with the copy "Too many tries. Wait 10 minutes and try again.", as no mock state exists for it.
 
 State of the code: the existing implementation still follows the earlier model (e-mail sign-in, a profile picker and PINs). The username column, the `remember` flag and the role-based landing are not built yet.
 

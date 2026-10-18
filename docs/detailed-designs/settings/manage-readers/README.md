@@ -24,7 +24,7 @@ The slice runs from the Settings page to the `users` table.
 - **`readers.router.ts`** — Express router under `requireRole('parent')`. `POST /api/readers` and `PATCH /api/readers/:id` validate the body with `readerSchema` through `validate()` (name 1–40, `color` in `rose|sky|sun|mint|lilac`, `username` matching `/^[A-Za-z0-9._]{3,20}$/`, `password` minimum 8) and call the service.
 - **`readers.service.ts`** — `addReader(householdId, input)` and `updateReader(householdId, id, input)`. Each checks the username against all users case-insensitively and answers 409 problem type `username-taken` when another user holds it. `updateReader` answers 404 when the id is not a reader in the session's household, which enforces household isolation. A password is hashed with argon2id into `password_hash`. In `updateReader`, a new password also ends the reader's sessions so she must use it at her next sign-in (`L2-036` criterion 3).
 - **`readers.repo.ts`** — parameterised SQL over `users`: `findUserByUsername`, `findReader`, `insertReader`, `updateReader`, `deleteSessionsOf`.
-- **`users`** table columns used: `id`, `household_id`, `role` (`reader`), `name`, `color`, `username` (unique, case-insensitive), `email` (NULL for a reader), `password_hash`. The migration from the `profile` table is <TO SUPPLY>.
+- **`users`** table columns used: `id`, `household_id`, `role` (`reader`), `name`, `color`, `username` (unique, case-insensitive), `email` (NULL for a reader), `password_hash`. The code keeps the table name `profile`; `db.ts` rebuilds it with the `username` column and the `parent` role on start-up.
 
 Deleting a reader and changing a reader's username on the sign-in page are not in `L2-036` and are not designed here.
 

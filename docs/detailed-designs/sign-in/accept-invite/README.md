@@ -21,15 +21,15 @@ The slice runs from one page in the sign-in library to the `invites`, `profile`,
 - **`auth.router.ts`** — `GET /api/auth/invites/:token` answers `200 InviteSummary` or `400` problem type `invite-invalid`. `POST /api/auth/accept-invite` validates with `acceptInviteSchema` (`token`, `displayName`, `username` matching `^[A-Za-z0-9._]{3,20}$`, `password` of at least 8 characters, `confirm` equal to `password`) and answers `201 {session}` with `Set-Cookie shelfie_session` and, when the device cookie is absent, `Set-Cookie shelfie_device`. Neither endpoint requires a session. The `GET` endpoint exists because the requirement shows the error state when the link is opened, not when the form is submitted.
 - **`auth.service.ts`** — `getInvite(token)`: hashes the token with SHA-256, loads the row where `used_at IS NULL` and `expires_at` is in the future, otherwise fails with `invite-invalid`. `acceptInvite(input, deviceId)`: repeats that lookup, checks that the lower-cased username is unused (`username-taken`, HTTP `409`), hashes the password with argon2id (`L2-027`), then in one transaction inserts the `profile` with role `parent`, the invite's `household_id` and the invite's e-mail, sets `invites.used_at`, inserts the session and ensures the device row. A second submission of the same link therefore fails with `invite-invalid`.
 - **`auth.repo.ts`** — `findInviteByHash`, `usernameExists`, `createParent`, `markInviteUsed`, `createSession`, `createDevice`. All SQL is parameterised.
-- **Remember me** — whether the session created here is remembered or ends with the browser is `<TO SUPPLY>`; the mocks show no control.
+- **Remember me** — the session created here is remembered (30-day idle timeout); the mocks show no control and the sign-in switch defaults to on.
 
 Data changes, shared with parent sign-up:
 
 - **`invites`** — new table: `token_hash TEXT PRIMARY KEY` (SHA-256 of the token), `email TEXT NOT NULL`, `household_id TEXT NOT NULL REFERENCES household(id)`, `invited_by TEXT NOT NULL REFERENCES profile(id)`, `expires_at TEXT NOT NULL` (creation time plus 7 days), `used_at TEXT NULL`. The invite-parent design inserts the row; this feature reads it and sets `used_at`.
 - **`profile.username`**, **`profile.role`** and PIN-column removal — as described in the parent sign-up design.
-- **Existing table name** — the codebase names the table `profile`; the migration plan calls the same entity `users`. The final name is `<TO SUPPLY>`.
-- **Household name** — the page names the household ("the Bells"). Where that name is stored, since `household` has no name column, is `<TO SUPPLY>`.
-- **Invited e-mail already registered** — behaviour when the invited address already belongs to an account is `<TO SUPPLY>`; L2-035 does not cover it.
+- **Existing table name** — the codebase names the table `profile`; the migration plan calls the same entity `users`. The code keeps `profile`.
+- **Household name** — the page names the household ("the Bells"). No name is stored: the page is headed "Join {inviter}’s household" with "{inviter} invited you.", from the invite's `invited_by`. A used or expired link still names the inviter in its `invite-invalid` answer so the page can say whom to ask.
+- **Invited e-mail already registered** — sending an invite to an address that already has an account is refused (`email-in-use`, 409); if the address gains an account while the invite is pending, accepting fails with `email-taken` (409) and the page says the e-mail already has an account and offers sign-in.
 
 ## Requirements
 

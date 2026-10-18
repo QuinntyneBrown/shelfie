@@ -14,12 +14,12 @@ The feature sits in the `sign-in` subsystem beside password sign-in, accept-invi
 
 The slice runs from one page in the sign-in library to the `household`, `profile`, `session` and `device` tables.
 
-- **`SignUpPage`** — page component in the `sign-in` library at `/sign-up`. Fields: Your name, E-mail address, Username (help text "3–20 letters, numbers, . or _"), Password (help text "At least 8 characters") and Type it again, plus a Create my account button and an "Already have an account? Sign in" link. It owns the states in `docs/mocks/pages/sign-up/`: `default`, `invalid`, `submitting`, `taken` and `error`. Client-side validation enforces the username length and character set, a well-formed e-mail, the 8-character minimum and equality of the two password boxes; failures show the "Fix N things" summary and field errors, and no request is sent. A server answer of `username-taken` or `email-taken` shows "Username is taken" or "E-mail is taken" on the field, with a Sign in link beside the e-mail error. Any other failure shows the `error` state with the entered values kept.
+- **`SignUpPage`** — page component in the `sign-in` library at `/sign-up`. Fields: Your name, E-mail address, Username (help text "3–20 letters, numbers, . or _"), Password (help text "At least 8 characters") and Type it again, plus a Create my account button and an "Already have an account? Sign in" link. It owns the states in `docs/mocks/pages/sign-up/`: `default`, `invalid`, `submitting`, `taken` and `error`. Client-side validation enforces the username length and character set, a well-formed e-mail, the 8-character minimum and equality of the two password boxes; failures show the "Fix N things" summary and field errors, and no request is sent. A server answer of `taken` names each field in `fields` (`username`, `email`); the page shows "Username is taken" or "E-mail is taken" in the summary and "That username is taken." or "That e-mail already has an account." on the field, both at once when both are taken. Any other failure shows the `error` state with the entered values kept.
 - **`AuthApi`** — `signUp(input)` posts to `/api/auth/sign-up` and returns a `Session`.
 - **`auth.router.ts`** — `POST /api/auth/sign-up` validates with `signUpSchema` (`displayName`, `email`, `username` matching `^[A-Za-z0-9._]{3,20}$`, `password` of at least 8 characters, `confirm` equal to `password`) and answers `201 {session}` with `Set-Cookie shelfie_session` and, when the device cookie is absent, `Set-Cookie shelfie_device`. It requires no session.
-- **`auth.service.ts`** — `signUp(input, deviceId)`: checks that the lower-cased username is unused by any parent or reader and that the e-mail is unregistered, failing with `username-taken` or `email-taken` (HTTP `409`); hashes the password with argon2id (`L2-027`); then, in one transaction, inserts the `household`, inserts the `profile` with role `parent`, inserts the session and ensures the device row.
+- **`auth.service.ts`** — `signUp(input, deviceId)`: checks that the lower-cased username is unused by any parent or reader and that the e-mail is unregistered, failing with one `taken` problem (HTTP `409`) whose `fields` lists `username`, `email` or both; hashes the password with argon2id (`L2-027`); then, in one transaction, inserts the `household`, inserts the `profile` with role `parent`, inserts the session and ensures the device row.
 - **`auth.repo.ts`** — `usernameExists`, `emailExists`, `createHousehold`, `createParent`, `createSession`, `createDevice`. All SQL is parameterised.
-- **Remember me** — the sign-up page offers no "Remember me" control in the mock; whether the session created here is remembered or ends with the browser is `<TO SUPPLY>`.
+- **Remember me** — the sign-up page offers no "Remember me" control in the mock; the session created here is remembered (30-day idle timeout), as the sign-in page's switch defaults to on.
 
 Data changes this feature relies on, shared with accept-invite and password sign-in:
 
@@ -28,8 +28,8 @@ Data changes this feature relies on, shared with accept-invite and password sign
 - **`profile.household_id`** — unchanged; a household now has one or more parents and any number of readers.
 - **`profile.email`** — required and unique, case-insensitively, for a parent; null for a reader.
 - **PIN columns** — `pin_hash`, `pin_failed_count` and `pin_locked_until` are removed.
-- **Existing table name** — the codebase names the table `profile`; the requirement text and the migration plan call the same entity `users`. The name used in code is kept here. The final name is `<TO SUPPLY>`.
-- **Household display name** — the accept-invite mock shows "Join the Bells"; where that name is stored, and whether sign-up asks for it, is `<TO SUPPLY>`.
+- **Existing table name** — the codebase names the table `profile`; the requirement text and the migration plan call the same entity `users`. The name used in code is kept: the table stays `profile`, and `session.profile_id` keeps its name; the migration in `db.ts` rebuilds the table in place.
+- **Household display name** — the accept-invite mock shows "Join the Bells"; no household name is stored and sign-up does not ask for one; the Join page names the inviting parent instead ("Join Dad’s household").
 
 ## Requirements
 

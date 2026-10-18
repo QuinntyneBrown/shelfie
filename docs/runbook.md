@@ -1,6 +1,6 @@
 # Runbook
 
-How Shelfie runs in production and what to do when something needs a hand. The grown-up is the operator.
+How Shelfie runs in production and what to do when something needs a hand. A parent is the operator.
 
 ## Shape
 
@@ -86,7 +86,7 @@ To run a backup by hand: `sudo -u shelfie /usr/local/bin/shelfie-backup` on the 
 
 ## Changing settings
 
-Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `SHELFIE_DB`, `SHELFIE_BACKUP_DIR`, `APP_URL`, `STORAGE_ACCOUNT`. The e-mail transport for password reset is added here when that provider is chosen (see AGENTS.md, Deferred work).
+Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `SHELFIE_DB`, `SHELFIE_BACKUP_DIR`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work).
 
 ## Changing the infrastructure
 
