@@ -20,6 +20,71 @@ export class ProfilePhotoDialog {
     await this.dialog().getByLabel(/Choose a photo|Choose another/).setInputFiles(file);
   }
 
+  private chooser() {
+    return this.dialog().getByLabel(/Choose a photo|Choose another/);
+  }
+
+  async chooseNotAPhoto() {
+    await this.chooser().setInputFiles({ name: 'story.txt', mimeType: 'text/plain', buffer: Buffer.from('Once upon a time') });
+  }
+
+  /** A real JPEG name and type, but not a picture inside. */
+  async chooseBrokenJpeg() {
+    await this.chooser().setInputFiles({ name: 'photo.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('not really a jpeg') });
+  }
+
+  async chooseTooLarge() {
+    await this.chooser().setInputFiles({ name: 'huge.jpg', mimeType: 'image/jpeg', buffer: Buffer.alloc(5 * 1024 * 1024 + 1) });
+  }
+
+  /** Every alert in the dialog: the picker's error and a failure banner. */
+  problem() {
+    return this.dialog().getByRole('alert');
+  }
+
+  chooseButton() {
+    return this.dialog().locator('label.btn');
+  }
+
+  doneButton() {
+    return this.dialog().getByRole('button', { name: 'Done' });
+  }
+
+  async tryAgain() {
+    await this.dialog().getByRole('button', { name: 'Try again' }).click();
+  }
+
+  private uploads = 0;
+
+  watchUploads() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'PUT' && request.url().endsWith('/api/profile/photo')) this.uploads++;
+    });
+  }
+
+  uploadCount() {
+    return this.uploads;
+  }
+
+  async breakUploads() {
+    await this.page.route('**/api/profile/photo', (route) => route.abort());
+  }
+
+  async repairUploads() {
+    await this.page.unroute('**/api/profile/photo');
+  }
+
+  /** Holds uploads until the returned function is called. */
+  async holdUploads() {
+    let release!: () => void;
+    const released = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route('**/api/profile/photo', async (route) => {
+      await released;
+      await route.continue();
+    });
+    return release;
+  }
+
   success() {
     return this.dialog().getByRole('status').filter({ hasText: 'Looking great' });
   }
