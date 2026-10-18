@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Agent skills for requirements, mocks, design system, detailed designs and estimates.
 - Shelfie favicon: three pastel books on a shelf on the violet brand tile, replacing the Angular default.
 
+### Fixed
+
+- Sign-in, sign-up and the other pages outside the shell no longer show a vertical scrollbar when everything fits in the window.
+
 ### Removed
 
 - PIN sign-in, the profile picker and the remembered-device cookie; an existing database is migrated on start-up, with usernames derived from the parent's e-mail and the reader's name.
