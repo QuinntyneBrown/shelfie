@@ -132,3 +132,21 @@ test('Given a chapter Dad already reviewed, when he opens it, then the assistant
   await expect(chapter.sentFeedback()).toContainText('You gave a Star');
   await expect(chapter.helpButton()).toHaveCount(0);
 });
+
+test('Given Dad sends and moves on while the assistant is still reading, when its advice arrives, then it does not show on the next chapter', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c11');
+  const release = holdAssistant();
+  await chapter.askForHelp();
+  await chapter.pickSticker('Star');
+  await chapter.send();
+  await chapter.reviewNext(10);
+  await expect(chapter.heading()).toHaveText('Chapter 10');
+
+  release();
+
+  await expect(chapter.helpButton()).toBeEnabled();
+  await expect(chapter.assistSummary()).toHaveCount(0);
+  await expect(chapter.suggestedNote()).toHaveCount(0);
+});

@@ -82,14 +82,19 @@ export class ReviewChapterPage {
     const chapter = this.chapter();
     if (!chapter || this.assist() === 'busy') return;
     this.assist.set('busy');
+    let advice: Advice | null = null;
+    let outcome: 'done' | 'failed' | 'unavailable' = 'done';
     try {
-      this.advice.set(await this.api.assist(chapter.id));
-      this.assist.set('done');
+      advice = await this.api.assist(chapter.id);
     } catch (e) {
       // Whatever went wrong, the review itself keeps working (L2-052).
-      const notSetUp = e instanceof ApiError && e.type === 'assistant-unavailable';
-      this.assist.set(notSetUp ? 'unavailable' : 'failed');
+      outcome =
+        e instanceof ApiError && e.type === 'assistant-unavailable' ? 'unavailable' : 'failed';
     }
+    // Advice for a chapter the parent has already moved on from is dropped.
+    if (this.chapter() !== chapter) return;
+    this.advice.set(advice);
+    this.assist.set(outcome);
   }
 
   protected useDraft() {
