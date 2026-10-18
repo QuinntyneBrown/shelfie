@@ -28,8 +28,8 @@ export class AddBookPage {
     await this.titleField().fill(book.title);
     if (book.author) await this.authorField().fill(book.author);
     await this.chaptersField().fill(String(book.chapters));
-    if (book.colour) await this.page.getByRole('radio', { name: book.colour, exact: true }).check({ force: true });
-    if (book.sticker) await this.page.getByRole('radio', { name: book.sticker, exact: true }).check({ force: true });
+    if (book.colour) await this.page.getByRole('radio', { name: book.colour, exact: true }).check();
+    if (book.sticker) await this.page.getByRole('radio', { name: book.sticker, exact: true }).check();
   }
 
   private requests = 0;
