@@ -133,6 +133,24 @@
                   </button>
                 </div>
               </sh-banner>
+            } @else if (assist() === 'unavailable') {
+              <sh-banner
+                severity="info"
+                title="The assistant isn’t set up"
+                message="You can still review on your own."
+              />
+            } @else if (assist() === 'failed') {
+              <sh-banner
+                severity="danger"
+                title="The assistant couldn’t help this time"
+                message="You can still review on your own."
+              >
+                <div class="alert__actions">
+                  <button class="btn btn--sm" type="button" (click)="askForHelp()">
+                    Try again
+                  </button>
+                </div>
+              </sh-banner>
             } @else {
               <div class="assist">
                 <div>

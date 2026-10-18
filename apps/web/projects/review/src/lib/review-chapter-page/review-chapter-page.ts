@@ -37,7 +37,7 @@ export class ReviewChapterPage {
   protected readonly sentSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.sticker()),
   );
-  protected readonly assist = signal<'idle' | 'busy' | 'done'>('idle');
+  protected readonly assist = signal<'idle' | 'busy' | 'done' | 'failed' | 'unavailable'>('idle');
   protected readonly advice = signal<Advice | null>(null);
   protected readonly weakCount = computed(
     () => this.advice()?.answers.filter((a) => a.verdict === 'weak').length ?? 0,
@@ -82,8 +82,14 @@ export class ReviewChapterPage {
     const chapter = this.chapter();
     if (!chapter || this.assist() === 'busy') return;
     this.assist.set('busy');
-    this.advice.set(await this.api.assist(chapter.id));
-    this.assist.set('done');
+    try {
+      this.advice.set(await this.api.assist(chapter.id));
+      this.assist.set('done');
+    } catch (e) {
+      // Whatever went wrong, the review itself keeps working (L2-052).
+      const notSetUp = e instanceof ApiError && e.type === 'assistant-unavailable';
+      this.assist.set(notSetUp ? 'unavailable' : 'failed');
+    }
   }
 
   protected useDraft() {

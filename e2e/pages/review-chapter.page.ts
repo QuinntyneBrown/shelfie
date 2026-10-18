@@ -91,6 +91,18 @@ export class ReviewChapterPage {
     await this.useDraftButton().click();
   }
 
+  assistFailed() {
+    return this.page.getByRole('alert').filter({ hasText: 'The assistant couldn’t help this time' });
+  }
+
+  async tryAgain() {
+    await this.assistFailed().getByRole('button', { name: 'Try again' }).click();
+  }
+
+  assistNotSetUp() {
+    return this.page.getByRole('status').filter({ hasText: 'The assistant isn’t set up' });
+  }
+
   private assists = 0;
 
   watchAssists() {

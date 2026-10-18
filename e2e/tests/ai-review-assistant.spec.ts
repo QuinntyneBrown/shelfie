@@ -1,6 +1,6 @@
 // Traces to: L2-049, L2-050, L2-051, L2-052, L2-053
 import { test, expect } from '../support/test';
-import { holdAssistant } from '../support/assistant';
+import { assistantFails, assistantNotSetUp, assistantWorks, holdAssistant } from '../support/assistant';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ChapterPage } from '../pages/chapter.page';
 import { ReviewChapterPage } from '../pages/review-chapter.page';
@@ -86,4 +86,49 @@ test('Given Dad has typed a note, when the assistant suggests one, then Use draf
   await chapter.noteField().fill('');
   await chapter.useDraft();
   await expect(chapter.noteField()).toHaveValue(DRAFT);
+});
+
+test('Given the assistant fails, when Dad asks for help, then he is told it couldn’t help, can try again, and can review on his own meanwhile', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c11');
+  assistantFails();
+
+  await chapter.askForHelp();
+  await expect(chapter.assistFailed()).toContainText('You can still review on your own.');
+  await chapter.noteField().fill('Lovely, Nia.');
+
+  assistantWorks();
+  await chapter.tryAgain();
+  await expect(chapter.flag(1)).toBeVisible();
+  await expect(chapter.assistFailed()).toHaveCount(0);
+  await expect(chapter.noteField()).toHaveValue('Lovely, Nia.');
+  await chapter.pickSticker('Star');
+  await chapter.send();
+  await expect(chapter.sentHeading()).toBeVisible();
+});
+
+test('Given the assistant is not set up, when Dad asks for help, then he is told so without a retry, and reviewing works as before', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c11');
+  assistantNotSetUp();
+
+  await chapter.askForHelp();
+
+  await expect(chapter.assistNotSetUp()).toContainText('You can still review on your own.');
+  await expect(chapter.helpButton()).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Try again' })).toHaveCount(0);
+  await chapter.pickSticker('Cookie');
+  await chapter.send();
+  await expect(chapter.sentHeading()).toBeVisible();
+});
+
+test('Given a chapter Dad already reviewed, when he opens it, then the assistant is not offered', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c9');
+
+  await expect(chapter.sentFeedback()).toContainText('You gave a Star');
+  await expect(chapter.helpButton()).toHaveCount(0);
 });
