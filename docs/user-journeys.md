@@ -29,5 +29,5 @@
 | 25 | Invite a parent | Parent e-mails a single-use invite link | 100% | 4 days |
 | 26 | Accept an invite | Invited parent joins the household from the link | 100% | 5 days |
 | 27 | Manage readers | Parent adds and edits reader profiles | 100% | 5 days |
-| 28 | AI review assistant | Parent asks for flagged answers and a draft note while reviewing | 0% | 2 days |
-| | **Total** | | **96%** | **60 days** |
+| 28 | AI review assistant | Parent asks for flagged answers and a draft note while reviewing | 100% | 2 days |
+| | **Total** | | **99%** | **60 days** |
