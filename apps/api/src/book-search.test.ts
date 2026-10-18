@@ -129,3 +129,183 @@ test('Given the catalogue answers with more than five rows and some that are mal
     assert.deepEqual(matches.map((m) => m.title).slice(3), ['Four', 'Five']);
   });
 });
+
+const DRAGON = [
+  { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: '999' },
+  { title: 'Dragon Rider: The Griffin’s Feather', author: 'Cornelia Funke', chapterCount: 40 },
+  { title: 'The Dragon Rider’s Handbook', chapterCount: 12 },
+  { title: 'A fourth guess', chapterCount: 3 },
+];
+
+test('Given the catalogue has nothing and an AI key is configured, when a title is searched, then the AI is asked the title only and at most three matches come back marked suggested, without covers', async () => {
+  const ai = fakeCatalogue({ 'Dragon Rider': DRAGON });
+  await withServer({ catalogue: fakeCatalogue({}).provider, ai: ai.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+
+    const response = await search(url, cookie, 'Dragon Rider');
+
+    assert.equal(response.status, 200);
+    const { matches } = (await response.json()) as { matches: BookMatch[] };
+    assert.deepEqual(ai.asked, ['Dragon Rider']);
+    assert.deepEqual(matches, [
+      { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56, coverId: null, suggested: true },
+      { title: 'Dragon Rider: The Griffin’s Feather', author: 'Cornelia Funke', chapterCount: 40, coverId: null, suggested: true },
+      { title: 'The Dragon Rider’s Handbook', author: null, chapterCount: 12, coverId: null, suggested: true },
+    ]);
+  });
+});
+
+test('Given the catalogue has matches, when a title is searched, then the AI is not asked', async () => {
+  const ai = fakeCatalogue({ Winn: DRAGON });
+  await withServer({ ai: ai.provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    const { matches } = (await (await search(url, cookie, 'Winn')).json()) as { matches: BookMatch[] };
+    assert.deepEqual(ai.asked, []);
+    assert.equal(matches.every((m) => !m.suggested), true);
+  });
+});
+
+const failing: Provider = async () => {
+  throw new Error('catalogue down');
+};
+
+test('Given the catalogue fails and the AI answers, then its suggestions come back', async () => {
+  await withServer({ catalogue: failing, ai: fakeCatalogue({ 'Dragon Rider': DRAGON }).provider }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    const response = await search(url, cookie, 'Dragon Rider');
+    assert.equal(response.status, 200);
+    assert.equal(((await response.json()) as { matches: BookMatch[] }).matches.length, 3);
+  });
+});
+
+test('Given the catalogue has nothing and no AI is configured, then the answer is an empty list', async () => {
+  await withServer({ catalogue: fakeCatalogue({}).provider, ai: null }, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    const response = await search(url, cookie, 'Dragon Rider');
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { matches: [] });
+  });
+});
+
+test('Given the catalogue fails and the AI is not configured or fails too, then the API answers 503 lookup-unavailable', async () => {
+  for (const ai of [null, failing]) {
+    await withServer({ catalogue: failing, ai }, async (url) => {
+      const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+      const response = await search(url, cookie, 'Dragon Rider');
+      assert.equal(response.status, 503);
+      assert.deepEqual(await response.json(), { type: 'lookup-unavailable' });
+    });
+  }
+});
+
+/** A provider that never answers until its signal aborts it. */
+const hanging: Provider = (_title, signal) =>
+  new Promise((_resolve, reject) => signal.addEventListener('abort', () => reject(signal.reason), { once: true }));
+
+test('Given the catalogue does not answer within its time, then the lookup moves on: to the AI when there is one, else to lookup-unavailable', async () => {
+  const { searchBooks } = await import('./book-search.service.ts');
+  const { Problem } = await import('./problem.ts');
+
+  const suggested = await searchBooks({ catalogue: hanging, ai: fakeCatalogue({ Win: DRAGON }).provider }, 'Win', { catalogueMs: 20, aiMs: 20 });
+  assert.equal(suggested.length, 3);
+  await assert.rejects(searchBooks({ catalogue: hanging, ai: hanging }, 'Win', { catalogueMs: 20, aiMs: 20 }), (e: unknown) => e instanceof Problem && e.status === 503);
+  await assert.rejects(searchBooks({ catalogue: hanging, ai: null }, 'Win', { catalogueMs: 20, aiMs: 20 }), (e: unknown) => e instanceof Problem && e.type === 'lookup-unavailable');
+});
+
+test('Given 60 lookups from one source in ten minutes, when a 61st is made, then it is answered 429 with Retry-After, and signing in is still allowed', async () => {
+  await withServer({}, async (url) => {
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    for (let i = 0; i < 60; i++) assert.equal((await search(url, cookie, 'Winn')).status, 200, `lookup ${i + 1}`);
+
+    const response = await search(url, cookie, 'Winn');
+
+    assert.equal(response.status, 429);
+    assert.deepEqual(await response.json(), { type: 'too-many-attempts' });
+    assert.ok(Number(response.headers.get('retry-after')) >= 1);
+    await signIn(url, SEED.parentUsername, SEED.parentPassword);
+  });
+});
+
+test('Given a lookup, then the log line carries the route, status and duration and never the title or the provider’s answer', async () => {
+  await seed(db.pool);
+  const lines: Record<string, unknown>[] = [];
+  const server = createApp(db.pool, { log: (line) => lines.push(line), catalogue: fakeCatalogue({ 'Secret Garden': [{ title: 'The Secret Garden', author: 'F. H. Burnett' }] }).provider, ai: null }).listen(0);
+  try {
+    const url = `http://localhost:${(server.address() as { port: number }).port}`;
+    const cookie = await signIn(url, SEED.readerUsername, SEED.readerPassword);
+    assert.equal((await search(url, cookie, 'Secret Garden')).status, 200);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    const text = JSON.stringify(lines);
+    assert.ok(text.includes('/api/books/search'));
+    assert.ok(!text.includes('Secret') && !text.includes('Burnett'));
+  } finally {
+    server.close();
+  }
+});
+
+// The real providers, exercised against a fake fetch so no network is needed.
+
+function fakeFetch(answer: { status?: number; body: unknown }) {
+  const calls: { url: string; init: RequestInit }[] = [];
+  const fetchFn = (async (url: string | URL, init?: RequestInit) => {
+    calls.push({ url: String(url), init: init ?? {} });
+    return new Response(JSON.stringify(answer.body), { status: answer.status ?? 200, headers: { 'Content-Type': 'application/json' } });
+  }) as typeof fetch;
+  return { fetchFn, calls };
+}
+
+test('Given Open Library answers, when the catalogue provider is asked, then it sent the title only and maps docs to matches without a chapter count', async () => {
+  const { openLibrary } = await import('./catalogue.ts');
+  const { fetchFn, calls } = fakeFetch({
+    body: { docs: [{ title: 'Because of Winn-Dixie', author_name: ['Kate DiCamillo', 'Someone Else'], cover_i: 8739161, number_of_pages_median: 182 }, { title: 'Winnie-the-Pooh', author_name: [] }, { title: 'No author or cover' }] },
+  });
+
+  const matches = await openLibrary(fetchFn)('Winn & co', AbortSignal.timeout(1000));
+
+  assert.equal(calls.length, 1);
+  const url = new URL(calls[0]!.url);
+  assert.equal(url.origin + url.pathname, 'https://openlibrary.org/search.json');
+  assert.equal(url.searchParams.get('title'), 'Winn & co');
+  assert.equal(url.searchParams.get('limit'), '5');
+  assert.deepEqual([...url.searchParams.keys()].sort(), ['fields', 'limit', 'title']);
+  assert.deepEqual(matches, [
+    { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', chapterCount: null, coverId: '8739161' },
+    { title: 'Winnie-the-Pooh', author: null, chapterCount: null, coverId: null },
+    { title: 'No author or cover', author: null, chapterCount: null, coverId: null },
+  ]);
+});
+
+test('Given Open Library answers with an error status, when the catalogue provider is asked, then it fails', async () => {
+  const { openLibrary } = await import('./catalogue.ts');
+  await assert.rejects(openLibrary(fakeFetch({ status: 503, body: {} }).fetchFn)('Winn', AbortSignal.timeout(1000)));
+});
+
+test('Given an AI key, when the AI provider is asked, then it posts the title as the only user content with the key in the header and parses the JSON in the reply', async () => {
+  const { claude } = await import('./ai.ts');
+  const { fetchFn, calls } = fakeFetch({
+    body: { content: [{ type: 'text', text: 'Here you go:\n```json\n{"matches":[{"title":"Dragon Rider","author":"Cornelia Funke","chapterCount":56},{"title":"Second","author":null,"chapterCount":"7"}],"note":"ignored"}\n```' }] },
+  });
+
+  const matches = await claude(fetchFn, 'sk-test-key')('Dragon Rider', AbortSignal.timeout(1000));
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0]!.url, 'https://api.anthropic.com/v1/messages');
+  const headers = calls[0]!.init.headers as Record<string, string>;
+  assert.equal(headers['x-api-key'], 'sk-test-key');
+  assert.equal(headers['anthropic-version'], '2023-06-01');
+  const body = JSON.parse(String(calls[0]!.init.body)) as { model: string; messages: { role: string; content: string }[] };
+  assert.equal(body.model, 'claude-opus-5-5');
+  assert.deepEqual(body.messages, [{ role: 'user', content: 'Dragon Rider' }]);
+  assert.deepEqual(matches, [
+    { title: 'Dragon Rider', author: 'Cornelia Funke', chapterCount: 56 },
+    { title: 'Second', author: null, chapterCount: '7' },
+  ]);
+});
+
+test('Given the AI answers with no JSON, with an error status, or the key is missing, then the AI provider fails or is not configured', async () => {
+  const { claude, configuredAi } = await import('./ai.ts');
+  await assert.rejects(claude(fakeFetch({ body: { content: [{ type: 'text', text: 'Sorry, I cannot help with that.' }] } }).fetchFn, 'k')('x', AbortSignal.timeout(1000)));
+  await assert.rejects(claude(fakeFetch({ status: 429, body: {} }).fetchFn, 'k')('x', AbortSignal.timeout(1000)));
+  assert.equal(configuredAi({}), null);
+  assert.notEqual(configuredAi({ ANTHROPIC_API_KEY: 'k' }), null);
+});

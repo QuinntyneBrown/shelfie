@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Problem } from './problem.ts';
 
 /** A book the lookup offers: what the catalogue or the AI helper said, bounded to what the form accepts. */
 export interface BookMatch {
@@ -62,9 +63,32 @@ export function boundMatches(rows: unknown, suggested: boolean, limit = MAX_MATC
   return matches;
 }
 
-const CATALOGUE_TIMEOUT_MS = 5000;
+const MAX_SUGGESTIONS = 3;
 
-/** Asks the catalogue for the title and returns its bounded matches. */
-export async function searchBooks(providers: Providers, title: string): Promise<BookMatch[]> {
-  return boundMatches(await providers.catalogue(title, AbortSignal.timeout(CATALOGUE_TIMEOUT_MS)), false);
+export interface LookupTimeouts {
+  catalogueMs?: number;
+  aiMs?: number;
+}
+
+/**
+ * Asks the catalogue first; when it has nothing, fails or times out, asks the AI helper, whose rows come back
+ * marked as suggested. Fails as `lookup-unavailable` only when the catalogue failed and no AI could answer.
+ */
+export async function searchBooks(providers: Providers, title: string, { catalogueMs = 5000, aiMs = 10_000 }: LookupTimeouts = {}): Promise<BookMatch[]> {
+  let catalogueFailed = false;
+  try {
+    const matches = boundMatches(await providers.catalogue(title, AbortSignal.timeout(catalogueMs)), false);
+    if (matches.length) return matches;
+  } catch {
+    catalogueFailed = true;
+  }
+  if (providers.ai) {
+    try {
+      return boundMatches(await providers.ai(title, AbortSignal.timeout(aiMs)), true, MAX_SUGGESTIONS).map((match) => ({ ...match, coverId: null }));
+    } catch {
+      // The helper is a fallback; its failure matters only when the catalogue failed too.
+    }
+  }
+  if (catalogueFailed) throw new Problem(503, 'lookup-unavailable');
+  return [];
 }

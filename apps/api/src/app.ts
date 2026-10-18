@@ -9,6 +9,8 @@ import type { Mail } from './mail.ts';
 import { booksRouter } from './books.router.ts';
 import { bookSearchRouter } from './book-search.router.ts';
 import type { Provider } from './book-search.service.ts';
+import { configuredAi } from './ai.ts';
+import { openLibrary } from './catalogue.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { coversRouter } from './covers.router.ts';
 import { questionsRouter } from './questions.router.ts';
@@ -50,7 +52,8 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db, options.suggest));
   app.use('/api', reviewRouter(db, options.assistant ?? anthropicAssistant));
-  app.use('/api/books', bookSearchRouter(db, { catalogue: options.catalogue ?? (async () => []), ai: options.ai ?? null }));
+  // The lookup's providers: Open Library and, with ANTHROPIC_API_KEY set, Claude; tests pass fakes.
+  app.use('/api/books', bookSearchRouter(db, { catalogue: options.catalogue ?? openLibrary(), ai: options.ai === undefined ? configuredAi() : options.ai }));
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
   app.use('/api/books', coversRouter(db));
