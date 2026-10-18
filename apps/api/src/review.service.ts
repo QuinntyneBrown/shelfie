@@ -28,7 +28,7 @@ export interface ActivityItem {
   bookTitle: string;
   chapterNumber: number | null;
   sticker: string | null;
-  byRole: 'reader' | 'grown_up';
+  byRole: 'reader' | 'parent';
 }
 
 const ACTIVITY_LIMIT = 20;
@@ -40,7 +40,7 @@ function recentActivity(db: DatabaseSync, householdId: string): ActivityItem[] {
          SELECT 'chapter-logged' AS kind, c.logged_at AS at, b.id AS bookId, b.title AS bookTitle, c.chapter_number AS chapterNumber, NULL AS sticker, 'reader' AS byRole
            FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ?
          UNION ALL
-         SELECT 'sticker-given', c.reviewed_at, b.id, b.title, c.chapter_number, c.sticker, 'grown_up'
+         SELECT 'sticker-given', c.reviewed_at, b.id, b.title, c.chapter_number, c.sticker, 'parent'
            FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = ? AND c.reviewed_at IS NOT NULL
          UNION ALL
          SELECT 'book-added', b.created_at, b.id, b.title, NULL, NULL, b.added_by_role FROM book b WHERE b.household_id = ?

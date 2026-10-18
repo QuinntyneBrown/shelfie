@@ -47,7 +47,7 @@ function refuseIfLogged(db: DatabaseSync, bookId: string, n: number) {
 export function getForm(db: DatabaseSync, householdId: string, bookId: string, n: number) {
   const book = findBook(db, householdId, bookId, n);
   refuseIfLogged(db, bookId, n);
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
   return {
     book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker },
     chapterNumber: n,
@@ -151,7 +151,7 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
   const next = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(log.book_id, log.chapter_number + 1) as
     | { id: string }
     | undefined;
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
   const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   return {
     id: log.id,

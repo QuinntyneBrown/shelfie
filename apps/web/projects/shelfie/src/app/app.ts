@@ -20,7 +20,7 @@ export class App {
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
   protected readonly navLinks = computed<NavLink[]>(() =>
-    this.session()?.role === 'grown_up'
+    this.session()?.role === 'parent'
       ? [
           {
             label: 'Review',
@@ -38,7 +38,7 @@ export class App {
     return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
   });
   protected readonly menuItems = computed<MenuItem[]>(() => [
-    ...(this.session()?.role === 'grown_up' ? [{ id: 'settings', label: 'Settings' }] : []),
+    ...(this.session()?.role === 'parent' ? [{ id: 'settings', label: 'Settings' }] : []),
     { id: 'switch-reader', label: 'Switch reader' },
     { id: 'sign-out', label: 'Sign out' },
   ]);
@@ -60,7 +60,7 @@ export class App {
     () => this.toasts.toasts().length - this.visibleToasts().length,
   );
   protected readonly home = computed(() =>
-    this.session()?.role === 'grown_up' ? '/review' : '/shelf',
+    this.session()?.role === 'parent' ? '/review' : '/shelf',
   );
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
@@ -68,7 +68,7 @@ export class App {
     // The grown-up's Review badge is kept fresh from every page, not only from Review itself.
     const reviews = inject(ReviewApi);
     effect(() => {
-      if (this.session()?.role !== 'grown_up') return;
+      if (this.session()?.role !== 'parent') return;
       reviews.load().then((overview) => this.status.queueCount.set(overview.queue.length));
     });
     // After moving to another page keyboard focus would be lost, so put it on the new page's content.

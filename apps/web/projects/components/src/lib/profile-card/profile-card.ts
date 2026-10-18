@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 })
 export class ProfileCard {
   readonly name = input.required<string>();
-  readonly role = input.required<'reader' | 'grown_up'>();
+  readonly role = input.required<'reader' | 'parent'>();
   readonly color = input.required<string>();
   readonly chosen = output<void>();
 }

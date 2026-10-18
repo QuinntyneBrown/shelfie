@@ -4,6 +4,6 @@ import { SessionService } from './session.service';
 
 /** Sends a reader to the grown-ups-only page; use after `authGuard`. */
 export const grownUpGuard: CanActivateFn = () =>
-  inject(SessionService).current()?.role === 'grown_up'
+  inject(SessionService).current()?.role === 'parent'
     ? true
     : inject(Router).createUrlTree(['/forbidden']);

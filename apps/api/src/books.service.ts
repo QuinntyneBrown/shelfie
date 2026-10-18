@@ -11,7 +11,7 @@ export interface NewBook {
   sticker: string;
 }
 
-export function createBook(db: DatabaseSync, householdId: string, role: 'reader' | 'grown_up', book: NewBook): { id: string } {
+export function createBook(db: DatabaseSync, householdId: string, role: 'reader' | 'parent', book: NewBook): { id: string } {
   const id = randomUUID();
   db.prepare(
     'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -54,7 +54,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
 
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
   const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
   const logs = db
     .prepare(

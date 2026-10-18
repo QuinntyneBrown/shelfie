@@ -20,7 +20,7 @@ const settingsPatchSchema = z.object({
 
 export function settingsRouter(db: DatabaseSync) {
   const router = Router();
-  router.use(requireSession(db), requireRole('grown_up'));
+  router.use(requireSession(db), requireRole('parent'));
 
   router.get('/', (_req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;

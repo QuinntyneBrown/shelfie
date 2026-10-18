@@ -10,7 +10,7 @@ const LOCK_MINUTES = 5;
 export interface ProfileSummary {
   id: string;
   name: string;
-  role: 'reader' | 'grown_up';
+  role: 'reader' | 'parent';
   color: string;
   email: string | null;
   theme: string;
@@ -20,7 +20,7 @@ export interface Session {
   id: string;
   profileId: string;
   name: string;
-  role: 'reader' | 'grown_up';
+  role: 'reader' | 'parent';
   color: string;
   email: string | null;
   theme: string;
@@ -33,7 +33,7 @@ const DUMMY_HASH = hashSecret('not-a-real-password');
 
 function createSession(
   db: DatabaseSync,
-  profile: { id: string; name: string; role: 'reader' | 'grown_up'; color: string; email: string | null },
+  profile: { id: string; name: string; role: 'reader' | 'parent'; color: string; email: string | null },
 ): Session {
   const id = randomBytes(32).toString('hex');
   const now = new Date();
@@ -58,8 +58,8 @@ export function listProfiles(db: DatabaseSync, householdId: string): ProfileSumm
 
 export function signInWithPassword(db: DatabaseSync, email: string, password: string): (Session & { householdId: string }) | null {
   const profile = db
-    .prepare("SELECT id, name, role, color, email, household_id, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
-    .get(email) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string; password_hash: string | null } | undefined;
+    .prepare("SELECT id, name, role, color, email, household_id, password_hash FROM profile WHERE email = ? AND role = 'parent'")
+    .get(email) as { id: string; name: string; role: 'parent'; color: string; email: string | null; household_id: string; password_hash: string | null } | undefined;
   const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
   return profile && valid ? { ...createSession(db, profile), householdId: profile.household_id } : null;
 }
@@ -104,7 +104,7 @@ const sha256 = (text: string) => createHash('sha256').update(text).digest('hex')
 
 /** Mails a reset link when the address belongs to a grown-up; says nothing either way. */
 export async function requestPasswordReset(db: DatabaseSync, email: string, mail: Mail = sendMail) {
-  const profile = db.prepare("SELECT id FROM profile WHERE email = ? AND role = 'grown_up'").get(email) as { id: string } | undefined;
+  const profile = db.prepare("SELECT id FROM profile WHERE email = ? AND role = 'parent'").get(email) as { id: string } | undefined;
   if (!profile) return;
   const token = randomBytes(32).toString('base64url');
   const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
@@ -121,7 +121,7 @@ export function resetPassword(db: DatabaseSync, token: string, password: string)
   if (!reset) return null;
   const profile = db
     .prepare('SELECT id, name, role, color, email, household_id FROM profile WHERE id = ?')
-    .get(reset.profile_id) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string };
+    .get(reset.profile_id) as { id: string; name: string; role: 'parent'; color: string; email: string | null; household_id: string };
 
   db.exec('BEGIN');
   try {

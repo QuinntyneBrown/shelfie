@@ -27,7 +27,7 @@ export interface ActivityItem {
   bookTitle: string;
   chapterNumber: number | null;
   sticker: string | null;
-  byRole: 'reader' | 'grown_up';
+  byRole: 'reader' | 'parent';
 }
 
 export interface ChapterLog {

@@ -12,7 +12,7 @@ export interface RequestSession {
   email: string | null;
   theme: string;
   householdId: string;
-  role: 'reader' | 'grown_up';
+  role: 'reader' | 'parent';
 }
 
 /** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */

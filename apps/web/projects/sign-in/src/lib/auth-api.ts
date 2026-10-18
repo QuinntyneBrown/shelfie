@@ -4,7 +4,7 @@ import { ApiClient, Session } from 'core';
 export interface ProfileSummary {
   id: string;
   name: string;
-  role: 'reader' | 'grown_up';
+  role: 'reader' | 'parent';
   color: string;
   email: string | null;
   theme: 'device' | 'light' | 'dark';

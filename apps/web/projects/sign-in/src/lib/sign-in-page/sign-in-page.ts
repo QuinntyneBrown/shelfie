@@ -40,7 +40,7 @@ export class SignInPage {
   );
   // With no device cookie there are no profiles to pick from, so the grown-up types his e-mail.
   protected readonly passwordStep = computed(
-    () => this.loaded() && (this.profiles().length === 0 || this.chosen()?.role === 'grown_up'),
+    () => this.loaded() && (this.profiles().length === 0 || this.chosen()?.role === 'parent'),
   );
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);

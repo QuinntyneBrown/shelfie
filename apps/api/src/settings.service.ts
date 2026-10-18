@@ -16,7 +16,7 @@ export function getSettings(db: DatabaseSync, householdId: string): SettingsView
       email: string;
     };
   const reader = profile('reader');
-  const grownUp = profile('grown_up');
+  const grownUp = profile('parent');
   const { theme } = db.prepare('SELECT theme FROM household WHERE id = ?').get(householdId) as { theme: string };
   return { reader: { name: reader.name, color: reader.color }, grownUp: { name: grownUp.name, email: grownUp.email }, theme };
 }
@@ -45,7 +45,7 @@ export function updateSettings(db: DatabaseSync, householdId: string, profileId:
   try {
     const update = db.prepare('UPDATE profile SET name = ?, color = COALESCE(?, color) WHERE household_id = ? AND role = ?');
     update.run(patch.reader.name, patch.reader.color, householdId, 'reader');
-    update.run(patch.grownUp.name, null, householdId, 'grown_up');
+    update.run(patch.grownUp.name, null, householdId, 'parent');
     db.prepare('UPDATE profile SET email = ? WHERE id = ?').run(patch.grownUp.email, profileId);
     if (patch.grownUp.newPassword) {
       db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(patch.grownUp.newPassword), profileId);

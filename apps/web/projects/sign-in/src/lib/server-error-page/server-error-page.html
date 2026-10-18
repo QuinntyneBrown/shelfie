@@ -13,7 +13,7 @@
     <button class="btn btn--primary" type="button" (click)="tryAgain()">Try again</button>
     @if (role === 'reader') {
       <a class="btn" routerLink="/shelf">Back to my shelf</a>
-    } @else if (role === 'grown_up') {
+    } @else if (role === 'parent') {
       <a class="btn" routerLink="/review">Go to Review</a>
     }
   </sh-error-state>
