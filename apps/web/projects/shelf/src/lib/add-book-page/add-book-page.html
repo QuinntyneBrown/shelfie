@@ -26,7 +26,17 @@
         </sh-banner>
       }
       <div class="card stack">
-        <sh-text-field label="Title" [error]="titleError()" [maxlength]="120" [(value)]="title" />
+        <sh-combobox
+          label="Title"
+          size="lg"
+          [error]="titleError()"
+          [maxlength]="120"
+          [(value)]="title"
+          [options]="matches()"
+          [status]="lookup()"
+          [note]="matchNote()"
+          (picked)="pick($event)"
+        />
         <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
         <sh-text-field
           label="Chapters"

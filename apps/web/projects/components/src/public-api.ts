@@ -26,3 +26,4 @@ export * from './lib/avatar/avatar';
 export * from './lib/photo-picker/photo-picker';
 export * from './lib/cover-picker/cover-picker';
 export * from './lib/suggestion/suggestion';
+export * from './lib/combobox/combobox';

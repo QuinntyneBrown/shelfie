@@ -1,0 +1,62 @@
+<div class="field combobox">
+  <label class="field__label" [for]="id">{{ label() }}</label>
+  <input
+    class="input"
+    [class.input--lg]="size() === 'lg'"
+    [id]="id"
+    type="text"
+    role="combobox"
+    aria-autocomplete="list"
+    autocomplete="off"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="listId"
+    [attr.aria-activedescendant]="activeId()"
+    [attr.maxlength]="maxlength()"
+    [attr.autofocus]="autofocus() ? '' : null"
+    [readonly]="readonly()"
+    [value]="value()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="error() ? id + '-error' : null"
+    (input)="edit($event)"
+    (keydown)="keydown($event)"
+    (focusout)="leave()"
+  />
+  @if (open()) {
+    <div class="combobox__panel">
+      @if (note(); as note) {
+        <p class="combobox__note">{{ note }}</p>
+      }
+      <ul class="combobox__list" [id]="listId" role="listbox" aria-label="Matching books">
+        @for (option of shown(); track option.id; let i = $index) {
+          <li
+            class="combobox__option"
+            [id]="optionId(i)"
+            role="option"
+            [attr.aria-selected]="i === active()"
+            (mousedown)="$event.preventDefault()"
+            (click)="pick(option)"
+          >
+            <sh-cover color="sage" sticker="📖" [image]="option.image" size="sm" />
+            <span class="combobox__text">
+              <span class="combobox__title">{{ option.title }}</span>
+              <span class="combobox__detail">{{ option.detail }}</span>
+            </span>
+            @if (option.suggested) {
+              <span class="badge badge--info">Suggested</span>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  } @else if (noteText(); as text) {
+    <div class="combobox__panel">
+      <p class="combobox__note" role="status" [attr.aria-busy]="status() === 'searching' || null">
+        {{ text }}
+      </p>
+    </div>
+  }
+  @if (error(); as message) {
+    <div class="field__error" [id]="id + '-error'">{{ message }}</div>
+  }
+  <p class="visually-hidden" role="status">{{ announcement() }}</p>
+</div>

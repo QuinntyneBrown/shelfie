@@ -3,8 +3,10 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -12,17 +14,36 @@ import {
   Button,
   COVER_COLORS,
   ColorPicker,
+  Combobox,
+  ComboboxOption,
+  ComboboxStatus,
   Cover,
   CoverPicker,
   StickerPicker,
   TextField,
 } from 'components';
 import { ApiError, ToastService } from 'core';
-import { ShelfApi } from '../shelf-api';
+import { BookMatch, ShelfApi, catalogueCoverUrl } from '../shelf-api';
+
+/** Typing pauses this long before a title is looked up, and needs this many characters first. */
+const LOOKUP_DELAY_MS = 300;
+const LOOKUP_MIN_CHARS = 3;
+const SUGGESTED_NOTE =
+  'Not in the book catalogue, so these are guesses. Check them before you add the book.';
 
 @Component({
   selector: 'sh-add-book-page',
-  imports: [Banner, Button, ColorPicker, Cover, CoverPicker, RouterLink, StickerPicker, TextField],
+  imports: [
+    Banner,
+    Button,
+    ColorPicker,
+    Combobox,
+    Cover,
+    CoverPicker,
+    RouterLink,
+    StickerPicker,
+    TextField,
+  ],
   templateUrl: './add-book-page.html',
   styleUrl: './add-book-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +70,17 @@ export class AddBookPage {
     ...(this.titleError() ? ['Title is missing'] : []),
     ...(this.chaptersError() ? ['Chapters is not a number from 1 to 200'] : []),
   ]);
+  /** The books found for the typed title, as rows for the combobox, and how the lookup stands. */
+  protected readonly matches = signal<ComboboxOption[]>([]);
+  protected readonly lookup = signal<ComboboxStatus>('idle');
+  protected readonly matchNote = computed(() =>
+    this.matches().some((match) => match.suggested) ? SUGGESTED_NOTE : null,
+  );
+  private found: BookMatch[] = [];
+  private lookupTimer: ReturnType<typeof setTimeout> | null = null;
+  private lookupController: AbortController | null = null;
+  /** The title the current rows answer, so a picked title is not looked up again. */
+  private lookedUp = '';
   protected readonly previewDetail = computed(() => {
     const chapters = Number(this.chapters());
     const count = chapters >= 1 ? `${chapters} chapter${chapters === 1 ? '' : 's'}` : null;
@@ -56,7 +88,68 @@ export class AddBookPage {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.choosePicture(null));
+    effect(() => {
+      const title = this.title();
+      untracked(() => this.scheduleLookup(title));
+    });
+    inject(DestroyRef).onDestroy(() => {
+      this.choosePicture(null);
+      this.cancelLookup();
+    });
+  }
+
+  private cancelLookup() {
+    if (this.lookupTimer) clearTimeout(this.lookupTimer);
+    this.lookupTimer = null;
+    this.lookupController?.abort();
+    this.lookupController = null;
+  }
+
+  /** Looks the title up after a pause; typing again starts over, so only the newest answer is shown. */
+  private scheduleLookup(title: string) {
+    const query = title.trim();
+    if (query === this.lookedUp) return;
+    this.cancelLookup();
+    if (query.length < LOOKUP_MIN_CHARS) {
+      this.lookedUp = '';
+      this.found = [];
+      this.matches.set([]);
+      this.lookup.set('idle');
+      return;
+    }
+    this.lookupTimer = setTimeout(() => this.runLookup(query), LOOKUP_DELAY_MS);
+  }
+
+  private async runLookup(query: string) {
+    const controller = new AbortController();
+    this.lookupController = controller;
+    this.lookedUp = query;
+    this.matches.set([]);
+    this.lookup.set('searching');
+    try {
+      const { matches } = await this.api.searchBooks(query, controller.signal);
+      if (controller.signal.aborted) return;
+      this.found = matches;
+      this.matches.set(matches.map(toOption));
+      this.lookup.set(matches.length ? 'idle' : 'empty');
+    } catch {
+      // A failed, timed-out or limited lookup is only a missed convenience: the form works by hand.
+      if (controller.signal.aborted) return;
+      this.found = [];
+      this.matches.set([]);
+      this.lookup.set('failed');
+    }
+  }
+
+  protected pick(option: ComboboxOption) {
+    const match = this.found[Number(option.id)];
+    if (!match) return;
+    this.cancelLookup();
+    this.lookedUp = match.title;
+    this.found = [];
+    this.matches.set([]);
+    this.lookup.set('idle');
+    this.title.set(match.title);
   }
 
   protected choosePicture(file: File | null) {
@@ -108,4 +201,16 @@ export class AddBookPage {
       this.saving.set(false);
     }
   }
+}
+
+/** A match as a row: its author and chapter count on one line, its cover through the API. */
+function toOption(match: BookMatch, index: number): ComboboxOption {
+  const chapters = match.chapterCount ? `${match.chapterCount} chapters` : null;
+  return {
+    id: String(index),
+    title: match.title,
+    detail: [match.author ?? 'Unknown author', chapters].filter(Boolean).join(' · '),
+    image: match.coverId ? catalogueCoverUrl(match.coverId) : null,
+    suggested: match.suggested,
+  };
 }

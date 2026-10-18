@@ -141,4 +141,77 @@ export class AddBookPage {
   async submit() {
     await this.page.getByRole('button', { name: 'Add to my shelf' }).click();
   }
+
+  // The title lookup: the Title field is a combobox whose matches drop down under it.
+
+  async typeTitle(text: string) {
+    await this.titleField().fill(text);
+  }
+
+  async pressInTitle(key: string) {
+    await this.titleField().press(key);
+  }
+
+  matchList() {
+    return this.page.getByRole('listbox', { name: 'Matching books' });
+  }
+
+  matches() {
+    return this.matchList().getByRole('option');
+  }
+
+  match(title: string) {
+    return this.matches().filter({ hasText: title });
+  }
+
+  activeMatch() {
+    return this.matchList().locator('[role="option"][aria-selected="true"]');
+  }
+
+  async pickMatch(title: string) {
+    await this.match(title).click();
+  }
+
+  matchPicture(title: string) {
+    return this.match(title).locator('img');
+  }
+
+  /** Whether the match's small cover has loaded and has pixels to show. */
+  async matchPictureLoaded(title: string) {
+    return this.matchPicture(title).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
+  suggestedBadge(title: string) {
+    return this.match(title).getByText('Suggested');
+  }
+
+  suggestedNote() {
+    return this.page.getByText('Not in the book catalogue, so these are guesses. Check them before you add the book.');
+  }
+
+  /** The note under the Title while looking up, with no matches, or when the lookup failed. */
+  lookupNote() {
+    return this.page.getByRole('status').filter({ hasText: /Looking that up|No matches|couldn’t look that up/ });
+  }
+
+  /** What a screen reader is told about the list: the count, or the fill after a pick. */
+  lookupAnnouncement() {
+    return this.page.getByRole('status').filter({ hasText: /matches\.|suggestions\.|Filled in from the match/ });
+  }
+
+  private lookups = 0;
+
+  watchLookups() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'GET' && request.url().includes('/api/books/search?')) this.lookups++;
+    });
+  }
+
+  lookupCount() {
+    return this.lookups;
+  }
+
+  async breakLookups() {
+    await this.page.route('**/api/books/search?*', (route) => route.abort());
+  }
 }
