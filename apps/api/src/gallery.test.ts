@@ -1,0 +1,135 @@
+// Traces to: L2-081, L2-082, L2-083, L2-084, L2-085, L2-087, L2-088, L2-089
+import { after, before, beforeEach, test } from 'node:test';
+import assert from 'node:assert/strict';
+import type { Server } from 'node:http';
+import { createApp } from './app.ts';
+import { seed, SEED } from './seed.ts';
+import { createTestDatabase } from './test-db.ts';
+
+const APP = { 'X-Requested-With': 'Shelfie' };
+let db: Awaited<ReturnType<typeof createTestDatabase>>;
+let server: Server;
+let url: string;
+const logged: string[] = [];
+
+before(async () => {
+  db = await createTestDatabase();
+  server = createApp(db.pool, { log: (line) => logged.push(JSON.stringify(line)) }).listen(0);
+  url = `http://localhost:${(server.address() as { port: number }).port}`;
+});
+
+after(async () => {
+  server.close();
+  await db.drop();
+});
+
+beforeEach(() => seed(db.pool));
+
+async function signIn(username: string, password: string) {
+  const response = await fetch(`${url}/api/auth/password`, {
+    method: 'POST',
+    headers: { ...APP, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, remember: true }),
+  });
+  assert.equal(response.status, 200);
+  return response.headers.get('set-cookie')!.split(';')[0]!;
+}
+
+const dad = () => signIn(SEED.parentUsername, SEED.parentPassword);
+const nia = () => signIn(SEED.readerUsername, SEED.readerPassword);
+const zedsDad = () => signIn('zedsdad', 'another-pass-99');
+
+function call(cookie: string | null, method: string, path: string, body?: unknown) {
+  return fetch(`${url}/api/gallery-rewards${path}`, {
+    method,
+    headers: { ...APP, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+}
+
+interface Gallery {
+  rewards: { id: string; name: string; target: number }[];
+  goal: { rewardId: string; name: string; target: number; finished: number; reached: boolean; bookId: string | null } | null;
+}
+
+async function gallery(cookie: string): Promise<Gallery> {
+  const response = await call(cookie, 'GET', '');
+  assert.equal(response.status, 200);
+  return (await response.json()) as Gallery;
+}
+
+async function add(cookie: string, name: string, target: number) {
+  const response = await call(cookie, 'POST', '', { name, target });
+  assert.equal(response.status, 201);
+  return (await response.json()) as { id: string; name: string; target: number };
+}
+
+test('Given Dad, when he adds a reward to the gallery, then it is created and listed for him and for Nia', async () => {
+  const cookie = await dad();
+
+  const response = await call(cookie, 'POST', '', { name: '  Trip to the zoo ', target: 3 });
+
+  assert.equal(response.status, 201);
+  const created = (await response.json()) as { id: string; name: string; target: number };
+  assert.deepEqual({ name: created.name, target: created.target }, { name: 'Trip to the zoo', target: 3 });
+  assert.deepEqual((await gallery(cookie)).rewards, [created]);
+  assert.deepEqual(await gallery(await nia()), { rewards: [created], goal: null });
+});
+
+test('Given a name that is empty or over 100 characters, or a target that is not a whole number from 1 to 20, then the API answers 400 and stores nothing', async () => {
+  const cookie = await dad();
+  const invalid = [
+    { name: '   ', target: 3 },
+    { name: 'x'.repeat(101), target: 3 },
+    { name: 'Trip to the zoo', target: 0 },
+    { name: 'Trip to the zoo', target: 21 },
+    { name: 'Trip to the zoo', target: 2.5 },
+    { name: 'Trip to the zoo', target: '3' },
+    { name: 'Trip to the zoo' },
+  ];
+
+  for (const body of invalid) {
+    const response = await call(cookie, 'POST', '', body);
+    assert.equal(response.status, 400, JSON.stringify(body));
+    assert.equal(((await response.json()) as { type: string }).type, 'validation');
+  }
+  assert.equal((await add(cookie, 'x'.repeat(100), 20)).target, 20);
+  assert.equal((await gallery(cookie)).rewards.length, 1);
+});
+
+test('Given Nia, when she tries to add a reward, then the API answers 403 and nothing is stored', async () => {
+  const cookie = await nia();
+
+  const response = await call(cookie, 'POST', '', { name: 'Pony', target: 1 });
+
+  assert.equal(response.status, 403);
+  assert.equal(((await response.json()) as { type: string }).type, 'grown-ups-only');
+  assert.deepEqual((await gallery(cookie)).rewards, []);
+});
+
+test('Given no session, when the gallery is read or changed, then the API answers 401', async () => {
+  assert.equal((await call(null, 'GET', '')).status, 401);
+  assert.equal((await call(null, 'POST', '', { name: 'Pony', target: 1 })).status, 401);
+});
+
+test('Given rewards in two households, when each reads the gallery, then it sees only its own', async () => {
+  await add(await dad(), 'Trip to the zoo', 3);
+  const theirs = await add(await zedsDad(), 'Kite', 2);
+
+  assert.deepEqual((await gallery(await zedsDad())).rewards, [theirs]);
+  assert.deepEqual(
+    (await gallery(await nia())).rewards.map((r) => r.name),
+    ['Trip to the zoo'],
+  );
+});
+
+test('Given gallery requests, then the log never holds a reward name', async () => {
+  const cookie = await dad();
+  logged.length = 0;
+
+  await add(cookie, 'Secret sleepover', 2);
+  await gallery(cookie);
+
+  assert.ok(logged.length >= 2);
+  assert.ok(logged.every((line) => !line.includes('Secret sleepover')));
+});

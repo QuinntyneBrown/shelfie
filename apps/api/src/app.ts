@@ -13,6 +13,7 @@ import { configuredAi } from './ai.ts';
 import { openLibrary } from './catalogue.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { coversRouter } from './covers.router.ts';
+import { galleryRouter } from './gallery.router.ts';
 import { questionsRouter } from './questions.router.ts';
 import { invitesRouter } from './invites.router.ts';
 import { readersRouter } from './readers.router.ts';
@@ -59,6 +60,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/books', coversRouter(db));
   app.use('/api/settings', settingsRouter(db));
   app.use('/api/readers', readersRouter(db));
+  app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/invites', invitesRouter(db, options.mail));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use('/api', photosRouter(db));
