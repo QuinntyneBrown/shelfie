@@ -12,7 +12,8 @@ skinparam class {
 title Class structure — Reward gallery
 
 class SettingsPage {
-  +gallery: WritableSignal<GalleryView | null>
+  +rewards: WritableSignal<GalleryReward[]>
+  +readerNames: Signal<string>
   +rewardDialogOpen: WritableSignal<boolean>
   +editingReward: WritableSignal<GalleryReward | null>
   +removingReward: WritableSignal<GalleryReward | null>
@@ -23,6 +24,7 @@ class SettingsPage {
 class GalleryRewardDialog {
   +open: boolean
   +editing: GalleryReward | null
+  +readerName: string
   +name: WritableSignal<string>
   +target: WritableSignal<string>
   +saved: OutputEmitter<GalleryReward>
@@ -31,7 +33,7 @@ class GalleryRewardDialog {
 }
 
 class GalleryRewardsApi {
-  +list(): Promise<GalleryView>
+  +list(): Promise<GalleryReward[]>
   +add(input: GalleryRewardInput): Promise<GalleryReward>
   +update(id: string, input: GalleryRewardInput): Promise<GalleryReward>
   +remove(id: string): Promise<void>
@@ -51,12 +53,13 @@ class ShelfApi {
 
 class ReviewPage {
   +rewarding: WritableSignal<FinishedBook | null>
-  +goalName(book: FinishedBook): string | null
+  +goalNameOf(overview: ReviewOverview, book: FinishedBook | null): string | null
 }
 
 class GiveRewardDialog {
   +book: FinishedBook | null
   +suggested: string
+  +readerName: string
   +give(): Promise<void>
 }
 

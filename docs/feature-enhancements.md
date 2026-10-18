@@ -10,7 +10,7 @@ Candidate enhancements beyond the current L1 scope, ordered by value add (highes
 | 4 | AI review assistant | Flags answers that show weak understanding and drafts an encouraging feedback note the parent can send or edit. | M |
 | 5 | Streak rewards | Parent-set rewards unlock at streak milestones (7, 30, 100 days), keeping daily reading motivated between finished books. | M |
 | 6 | Achievement badges | Earn badges for feats like two chapters in one day, first book, or a weekend of reading, shown on her shelf. | M |
-| 7 | Reward gallery | Parent curates a gallery of rewards; she picks the one she's reading toward and sees progress to it. | M |
+| 7 | Reward gallery | **Built** (L1-021, `docs/detailed-designs/review/reward-gallery`). Parent curates a gallery of rewards; she picks the one she's reading toward and sees progress to it. | M |
 | 8 | Voice answers | Dictate answers with speech-to-text so typing never slows her down; she can edit the text before sending. | S |
 | 9 | Next book recommendations | AI suggests next books from her finished books and ratings; parent adds one to the shelf in a tap. | M |
 | 10 | Book rating | On finishing, she rates the book with stars and an emoji reaction; feeds recommendations and her trophy shelf. | S |

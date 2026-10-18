@@ -64,7 +64,9 @@ export class GalleryRewardDialog {
     this.failed.set(false);
     const name = this.name().trim();
     const target = Number(this.target());
-    this.nameError.set(!name ? 'Name the reward.' : name.length > 100 ? 'Use 100 characters or fewer.' : null);
+    this.nameError.set(
+      !name ? 'Name the reward.' : name.length > 100 ? 'Use 100 characters or fewer.' : null,
+    );
     this.targetError.set(
       /^\d+$/.test(this.target().trim()) && target >= 1 && target <= 20
         ? null

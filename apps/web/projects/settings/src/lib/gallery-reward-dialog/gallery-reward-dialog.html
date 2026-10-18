@@ -1,5 +1,10 @@
 <sh-dialog [heading]="heading()" [open]="open()" (closed)="busy() || closed.emit()">
-  <form id="gallery-reward-form" class="stack" (submit)="$event.preventDefault(); save()" novalidate>
+  <form
+    id="gallery-reward-form"
+    class="stack"
+    (submit)="$event.preventDefault(); save()"
+    novalidate
+  >
     @if (problems().length) {
       <sh-banner
         severity="danger"
