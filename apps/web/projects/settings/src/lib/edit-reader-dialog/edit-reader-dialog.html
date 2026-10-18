@@ -1,0 +1,67 @@
+<sh-dialog [heading]="heading()" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="reader-form" class="stack" (submit)="$event.preventDefault(); save()" novalidate>
+    @if (problems().length) {
+      <sh-banner
+        severity="danger"
+        [summary]="true"
+        [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        [title]="(name().trim() || 'The reader') + (editing() ? ' wasn’t saved' : ' wasn’t added')"
+        message="Nothing changed."
+      >
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <div class="cluster name-and-colour">
+      <sh-text-field
+        class="name"
+        label="Name"
+        [maxlength]="40"
+        [autofocus]="true"
+        [error]="nameError()"
+        [(value)]="name"
+      />
+      <sh-color-picker label="Colour" [colors]="colors" [(value)]="color" />
+    </div>
+    <sh-text-field
+      label="Username"
+      autocomplete="off"
+      help="3–20 letters, numbers, . or _"
+      [maxlength]="20"
+      [error]="usernameError()"
+      [(value)]="username"
+    />
+    <sh-text-field
+      [label]="editing() ? 'New password (optional)' : 'Password'"
+      type="password"
+      autocomplete="new-password"
+      [help]="editing() ? 'Leave blank to keep it.' : 'At least 8 characters'"
+      [error]="passwordError()"
+      [(value)]="password"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="reader-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      {{ editing() ? 'Save changes' : 'Add reader' }}
+    </button>
+  </div>
+</sh-dialog>

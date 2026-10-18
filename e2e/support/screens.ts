@@ -128,6 +128,17 @@ export const screens: Screen[] = [
     },
   },
   {
+    name: 'add a reader dialog',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.addReader();
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
+    },
+  },
+  {
     name: 'give a reward dialog',
     open: async (page) => {
       await signInAsDad(page);

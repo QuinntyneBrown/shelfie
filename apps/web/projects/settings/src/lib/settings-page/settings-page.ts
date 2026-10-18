@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Banner, Button, ErrorState, Skeleton, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
-import { SettingsApi, SettingsView, Theme } from '../settings-api';
+import { ApiError, SessionService, ToastService } from 'core';
+import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
+import { ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
   selector: 'sh-settings-page',
-  imports: [Banner, Button, ErrorState, Skeleton, TextField],
+  imports: [Banner, Button, EditReaderDialog, ErrorState, Skeleton, TextField],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +16,7 @@ export class SettingsPage {
   private readonly api = inject(SettingsApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly toasts = inject(ToastService);
 
   protected readonly view = signal<SettingsView | null>(null);
   protected readonly loadFailed = signal(false);
@@ -33,6 +35,8 @@ export class SettingsPage {
       this.confirmError() && 'Passwords don’t match',
     ].filter((p): p is string => !!p),
   );
+  protected readonly readerDialogOpen = signal(false);
+  protected readonly editingReader = signal<ReaderView | null>(null);
   protected readonly theme = signal<Theme>('device');
   protected readonly name = signal('');
   protected readonly email = signal('');
@@ -56,6 +60,23 @@ export class SettingsPage {
     } catch {
       this.loadFailed.set(true);
     }
+  }
+
+  protected openReaderDialog(reader: ReaderView | null) {
+    this.editingReader.set(reader);
+    this.readerDialogOpen.set(true);
+  }
+
+  /** Puts the saved reader in the list, in place of the one edited or at the end. */
+  protected readerSaved(reader: ReaderView) {
+    this.readerDialogOpen.set(false);
+    const view = this.view()!;
+    const edited = this.editingReader();
+    const readers = edited
+      ? view.readers.map((r) => (r.id === reader.id ? reader : r))
+      : [...view.readers, reader];
+    this.view.set({ ...view, readers });
+    this.toasts.show({ title: edited ? `${reader.name} saved` : `${reader.name} added` });
   }
 
   protected initial(name: string) {

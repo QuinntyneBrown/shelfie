@@ -113,6 +113,18 @@ export class SettingsPage {
     return this.page.getByRole('region', { name: 'Parents' }).getByRole('listitem').filter({ hasText: text });
   }
 
+  async addReader() {
+    await this.page.getByRole('button', { name: 'Add a reader' }).click();
+  }
+
+  async editReader(name: string) {
+    await this.page.getByRole('button', { name: `Edit ${name}` }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
   reader(name: string) {
     return this.page.getByRole('region', { name: 'Readers' }).getByRole('listitem').filter({ hasText: name });
   }

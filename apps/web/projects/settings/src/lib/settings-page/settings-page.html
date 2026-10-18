@@ -68,6 +68,10 @@
       <section class="card card--flush people" aria-labelledby="readers-title">
         <div class="cluster cluster--between people__header">
           <h2 id="readers-title" class="section-title">Readers</h2>
+          <button class="btn btn--sm" type="button" (click)="openReaderDialog(null)">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            Add a reader
+          </button>
         </div>
         <ul class="list">
           @for (reader of view.readers; track reader.id) {
@@ -79,10 +83,27 @@
                 <div class="list__title">{{ reader.name }}</div>
                 <div class="list__meta">&#64;{{ reader.username }}</div>
               </div>
+              <button
+                class="btn btn--sm btn--ghost"
+                type="button"
+                [attr.aria-label]="'Edit ' + reader.name"
+                (click)="openReaderDialog(reader)"
+              >
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4" />
+                </svg>
+                Edit
+              </button>
             </li>
           }
         </ul>
       </section>
+      <sh-edit-reader-dialog
+        [open]="readerDialogOpen()"
+        [editing]="editingReader()"
+        (saved)="readerSaved($event)"
+        (closed)="readerDialogOpen.set(false)"
+      />
       <section class="card stack" aria-labelledby="account-title">
         <h2 id="account-title" class="section-title">Your account</h2>
         <sh-text-field label="Your name" [error]="nameError()" [(value)]="name" />
