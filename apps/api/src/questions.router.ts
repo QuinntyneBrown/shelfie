@@ -1,8 +1,9 @@
-import { Router, type Response } from 'express';
+import { Router, type NextFunction, type Request, type Response } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
+import { suggestionLimiter } from './rate-limit.ts';
 import { Problem } from './problem.ts';
 import { addQuestion, removeQuestion, updateQuestion } from './questions.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
@@ -41,9 +42,26 @@ export function questionsRouter(db: Pool, suggest?: SuggestQuestions) {
     await replying(res, () => removeQuestion(db, householdOf(res), String(req.params['id'])));
   });
 
-  router.post('/books/:id/question-suggestions', requireSession(db), requireRole('parent'), async (req, res) => {
-    await replying(res, () => suggestQuestions(db, householdOf(res), String(req.params['id']), suggest!));
-  });
+  const configured = (_req: Request, res: Response, next: NextFunction) =>
+    suggest ? next() : res.status(503).json({ type: 'suggestions-unavailable' });
+
+  router.post(
+    '/books/:id/question-suggestions',
+    requireSession(db),
+    requireRole('parent'),
+    configured,
+    suggestionLimiter(db),
+    async (req, res) => {
+      await replying(res, async () => {
+        try {
+          return await suggestQuestions(db, householdOf(res), String(req.params['id']), suggest!);
+        } catch (e) {
+          if (e instanceof Problem) throw e;
+          throw new Problem(502, 'suggestions-failed');
+        }
+      });
+    },
+  );
 
   return router;
 }

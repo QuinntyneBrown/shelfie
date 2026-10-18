@@ -5,7 +5,7 @@ import type { Server } from 'node:http';
 import { createApp } from './app.ts';
 import { get } from './db.ts';
 import { seed, SEED } from './seed.ts';
-import type { SuggestionInput } from './suggestions.ts';
+import { anthropicSuggester, type SuggestionInput } from './suggestions.ts';
 import { createTestDatabase } from './test-db.ts';
 
 const APP = { 'X-Requested-With': 'Shelfie' };
@@ -137,4 +137,99 @@ test('Given Nia, another household’s book, no session or no CSRF header, then 
   assert.equal((await askForSuggestions(dad, 'b-lion', {})).status, 403);
 
   assert.deepEqual(asked, []);
+});
+
+test('Given the provider fails or gives up, when Dad asks, then the API answers 502 suggestions-failed', async () => {
+  const cookie = await signInAsDad();
+  for (const failure of [new Error('provider said 500'), new DOMException('The operation timed out.', 'TimeoutError')]) {
+    answer = () => Promise.reject(failure);
+
+    const response = await askForSuggestions(cookie);
+
+    assert.equal(response.status, 502);
+    assert.deepEqual(await response.json(), { type: 'suggestions-failed' });
+  }
+});
+
+test('Given Dad has asked 5 times in 10 minutes, when he asks again, then the API answers 429 without asking the provider', async () => {
+  const cookie = await signInAsDad();
+  for (let i = 0; i < 5; i++) assert.equal((await askForSuggestions(cookie)).status, 200);
+
+  const response = await askForSuggestions(cookie);
+
+  assert.equal(response.status, 429);
+  assert.deepEqual(await response.json(), { type: 'too-many-attempts' });
+  assert.ok(Number(response.headers.get('retry-after')) > 0);
+  assert.equal(asked.length, 5);
+});
+
+test('Given no AI key is configured, when Dad asks, then the API answers 503 suggestions-unavailable', async () => {
+  const unconfigured = createApp(db.pool, { log: () => {}, suggest: anthropicSuggester(undefined) }).listen(0);
+  const base = `http://localhost:${(unconfigured.address() as { port: number }).port}`;
+  try {
+    const cookie = await signInAsDad();
+
+    const response = await fetch(`${base}/api/books/b-lion/question-suggestions`, { method: 'POST', headers: { ...APP, Cookie: cookie } });
+
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { type: 'suggestions-unavailable' });
+  } finally {
+    unconfigured.close();
+  }
+});
+
+const LION = { title: 'The Lion, the Witch and the Wardrobe', author: 'C. S. Lewis', chapter: 12, questions: DEFAULTS };
+
+/** A stand-in for the Anthropic Messages API: records the request and answers with `reply`. */
+function messagesApi(reply: () => Response | Promise<Response>) {
+  const requests: { url: string; init: RequestInit }[] = [];
+  const fetchFn = async (url: string | URL | Request, init?: RequestInit) => {
+    requests.push({ url: String(url), init: init! });
+    return reply();
+  };
+  return { requests, fetchFn: fetchFn as typeof fetch };
+}
+
+const message = (text: string, stop_reason = 'end_turn') =>
+  Response.json({ type: 'message', stop_reason, content: [{ type: 'text', text }] });
+
+test('Given a key, then the provider asks Claude once with the key in a header and only the book data as JSON, and reads the questions back', async () => {
+  const api = messagesApi(() => message(JSON.stringify({ questions: ['How did Edmund feel?', 'What clue shows winter is ending?'] })));
+  const suggest = anthropicSuggester('sk-test-key', { fetch: api.fetchFn })!;
+
+  const ideas = await suggest(LION);
+
+  assert.deepEqual(ideas, ['How did Edmund feel?', 'What clue shows winter is ending?']);
+  assert.equal(api.requests.length, 1);
+  const [{ url: called, init }] = api.requests;
+  assert.equal(called, 'https://api.anthropic.com/v1/messages');
+  const headers = init.headers as Record<string, string>;
+  assert.equal(headers['x-api-key'], 'sk-test-key');
+  assert.equal(headers['anthropic-version'], '2023-06-01');
+  const body = JSON.parse(String(init.body));
+  assert.equal(body.model, 'claude-opus-5-5');
+  assert.equal(body.output_config.format.type, 'json_schema');
+  assert.deepEqual(body.messages, [{ role: 'user', content: JSON.stringify(LION) }]);
+  assert.ok(!String(init.body).includes('sk-test-key'), 'the key travels only in the header');
+});
+
+test('Given Claude refuses, answers with an error, or with something that is not a list of questions, then the provider throws', async () => {
+  const replies = [
+    () => message('', 'refusal'),
+    () => Response.json({ type: 'error', error: { type: 'overloaded_error' } }, { status: 529 }),
+    () => message('Here are some questions: 1. Why?'),
+    () => message(JSON.stringify({ questions: 'Why?' })),
+  ];
+  for (const reply of replies) {
+    const suggest = anthropicSuggester('sk-test-key', { fetch: messagesApi(reply).fetchFn })!;
+    await assert.rejects(suggest(LION));
+  }
+});
+
+test('Given Claude does not answer in time, then the provider gives up', async () => {
+  const hanging = (async (_url: string | URL | Request, init?: RequestInit) =>
+    new Promise<Response>((_resolve, reject) => init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason)))) as typeof fetch;
+  const suggest = anthropicSuggester('sk-test-key', { fetch: hanging, timeoutMs: 50 })!;
+
+  await assert.rejects(suggest(LION), { name: 'TimeoutError' });
 });

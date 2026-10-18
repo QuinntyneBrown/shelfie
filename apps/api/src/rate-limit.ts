@@ -32,3 +32,7 @@ export const passwordSignInLimiter = (db: Db) => rateLimiter(db, 10, (req) => re
 /** At most five review-assistant requests per parent in ten minutes. Use after `requireSession`. */
 export const assistLimiter = (db: Db) =>
   rateLimiter(db, 5, (_req, res) => `assist:${(res.locals['session'] as RequestSession).profileId}`);
+
+/** At most five asks for suggested questions per household in ten minutes, since each one costs money. Use after `requireSession`. */
+export const suggestionLimiter = (db: Db) =>
+  rateLimiter(db, 5, (_req, res) => `suggest:${(res.locals['session'] as RequestSession).householdId}`);
