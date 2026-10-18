@@ -162,4 +162,34 @@ export class SettingsPage {
   getViaApi() {
     return this.page.request.get('/api/settings');
   }
+
+  rewards() {
+    return this.page.getByRole('region', { name: 'Rewards' });
+  }
+
+  /** A row of the Rewards list. */
+  galleryReward(name: string) {
+    return this.rewards().getByRole('listitem').filter({ hasText: name });
+  }
+
+  noRewardsMessage() {
+    return this.rewards().getByText('No rewards yet. Add one and Nia can pick it to read toward.');
+  }
+
+  async addGalleryReward() {
+    await this.page.getByRole('button', { name: 'Add a reward' }).click();
+  }
+
+  async editGalleryReward(name: string) {
+    await this.rewards().getByRole('button', { name: `Edit ${name}` }).click();
+  }
+
+  async removeGalleryReward(name: string) {
+    await this.rewards().getByRole('button', { name: `Remove ${name}` }).click();
+  }
+
+  /** True when the page is wider than the window, so it scrolls sideways. */
+  scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  }
 }

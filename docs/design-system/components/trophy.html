@@ -94,10 +94,10 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Shelfie</p>
       <h1>Trophy</h1>
-      <p class="ds-lead">A finished book on Nia's trophy shelf: the small cover, the title, the reward Dad gave, and a sticker for the reward. It is the payoff at the bottom of her shelf.</p>
+      <p class="ds-lead">A finished book on Nia's trophy shelf: the small cover, the title, the reward Dad gave, and a sticker for the reward. It is the payoff at the bottom of her shelf. The same row shows a reward from Dad's gallery that she can pick and read toward. In Angular it is <code>sh-reward-card</code>.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;li&gt;</code></span></div>
       <ul class="ds-toc">
-        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#gallery">Gallery reward</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
 
@@ -150,6 +150,31 @@
   &lt;/li&gt;
 &lt;/ul&gt;</code></pre></details>
       </div>
+    </section>
+
+    <section class="ds-section" id="gallery"><h2><a href="#gallery">Gallery reward</a></h2>
+      <p>The same row, with <code>.trophy--gallery</code>, shows a reward from Dad's gallery under "Reading toward" on her shelf (<code>sh-reward-card</code> with a <code>target</code>). A 🎁 sticker takes the cover's place, the second line says what it takes, and a small <code>.btn--sm</code> "Pick this" sits in <code>.trophy__actions</code>. The reward she picked gets <code>.trophy--goal</code> (accent border), a "Your goal" badge and a <a href="progress.html">progress</a> bar of the books she has finished since she picked it. At the target the badge reads "Ready!", and the page shows a <a href="celebration.html">celebration</a> above the list and hides the pick buttons.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">State</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Can be picked</th><td><ul class="list"><li class="trophy trophy--gallery"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">New art set</div><div class="trophy__reward">Finish 2 books</div></div><div class="trophy__actions"><button class="btn btn--sm" type="button" aria-label="Pick New art set">Pick this</button></div></li></ul></td></tr>
+          <tr><th scope="row">Her goal</th><td><ul class="list"><li class="trophy trophy--gallery trophy--goal"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Trip to the zoo <span class="badge badge--info">Your goal</span></div><div class="trophy__reward">1 of 3 books finished · 2 more to go!</div><div class="progress-row trophy__progress"><div class="progress" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3" aria-label="1 of 3 books finished"><div class="progress__bar" style="--value: 33%;"></div></div><span class="progress-row__label">1 of 3</span></div></div></li></ul></td></tr>
+          <tr><th scope="row">Goal reached</th><td><ul class="list"><li class="trophy trophy--gallery trophy--goal"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Trip to the zoo <span class="badge badge--success">Ready!</span></div><div class="trophy__reward">3 of 3 books finished · you did it!</div><div class="progress-row trophy__progress"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="3" aria-label="3 of 3 books finished"><div class="progress__bar" style="--value: 100%;"></div></div><span class="progress-row__label">3 of 3</span></div></div></li></ul></td></tr>
+          <tr><th scope="row">Reached, others</th><td><ul class="list"><li class="trophy trophy--gallery"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Sleepover with Ava</div><div class="trophy__reward">Finish 5 books</div></div></li></ul></td></tr>
+          <tr><th scope="row">Narrow column</th><td><ul class="list" style="max-width: 15rem;"><li class="trophy trophy--gallery"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Sleepover with Ava</div><div class="trophy__reward">Finish 5 books</div></div><div class="trophy__actions"><button class="btn btn--sm" type="button" aria-label="Pick Sleepover with Ava">Pick this</button></div></li></ul></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><ul class="list"><li class="trophy trophy--gallery trophy--goal"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Trip to the zoo <span class="badge badge--info">Your goal</span></div><div class="trophy__reward">1 of 3 books finished · 2 more to go!</div><div class="progress-row trophy__progress"><div class="progress" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3" aria-label="1 of 3 books finished"><div class="progress__bar" style="--value: 33%;"></div></div><span class="progress-row__label">1 of 3</span></div></div></li></ul></div>
+        <div data-theme="dark"><ul class="list"><li class="trophy trophy--gallery trophy--goal"><span class="sticker" aria-hidden="true">🎁</span><div class="trophy__body"><div class="trophy__title">Trip to the zoo <span class="badge badge--info">Your goal</span></div><div class="trophy__reward">1 of 3 books finished · 2 more to go!</div><div class="progress-row trophy__progress"><div class="progress" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3" aria-label="1 of 3 books finished"><div class="progress__bar" style="--value: 33%;"></div></div><span class="progress-row__label">1 of 3</span></div></div></li></ul></div>
+      </div>
+      <ul>
+        <li><b>Responsive</b>: the body takes at least 12rem, so under about 360px the pick button wraps under the text, right-aligned.</li>
+        <li><b>Accessibility</b>: the button's name includes the reward ("Pick Trip to the zoo") because every row says "Pick this". The progress bar is a <code>role="progressbar"</code> named "1 of 3 books finished"; the badge and note repeat it in text, so the state never rests on the border colour.</li>
+        <li><b>Content</b>: the name is exactly what Dad typed (1 to 100 characters); the note reads "Finish 3 books", then "1 of 3 books finished · 2 more to go!", then "3 of 3 books finished · you did it!".</li>
+        <li><b>Tokens</b>: the goal border is <code>--color-accent</code>, doubled with a hairline <code>box-shadow</code>; the bar is the progress bar's <code>--color-accent</code>. No new tokens.</li>
+      </ul>
     </section>
 
     <section class="ds-section" id="sizes" data-na="One size only"><h2><a href="#sizes">Sizes</a></h2>
@@ -262,6 +287,10 @@
         <tr><td><code>.trophy__body</code></td><td>Flexes and shrinks so the title can truncate.</td></tr>
         <tr><td><code>.trophy__title</code> + <code>.truncate</code></td><td>One-line title with ellipsis.</td></tr>
         <tr><td><code>.trophy__reward</code></td><td>Muted small text; wraps.</td></tr>
+        <tr><td><code>.trophy--gallery</code></td><td>A gallery reward: wraps, body at least 12rem.</td></tr>
+        <tr><td><code>.trophy--goal</code></td><td>The reward she is reading toward: accent border.</td></tr>
+        <tr><td><code>.trophy__progress</code></td><td>Space above the progress bar inside the body.</td></tr>
+        <tr><td><code>.trophy__actions</code></td><td>The pick button, pushed to the end of the row.</td></tr>
       </tbody></table>
     </section>
 
@@ -270,6 +299,7 @@
       <ul>
         <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (Finished: Matilda and Charlotte's Web)</li>
         <li><a href="../../mocks/pages/shelf/long.html">pages/shelf/long</a> (long titles truncate, the list grows newest first)</li>
+        <li><a href="../../mocks/pages/shelf/goal-none.html">pages/shelf/goal-none</a>, <a href="../../mocks/pages/shelf/goal-progress.html">goal-progress</a> and <a href="../../mocks/pages/shelf/goal-reached.html">goal-reached</a> (the gallery reward)</li>
         <li><a href="../../mocks/notifications/banner/success.html">notifications/banner/success</a> (the reward announcement that leads to the shelf)</li>
       </ul>
       <p>Drift fixed during extraction: D13, the small cover's sticker was snapped from 20px to 17.6px (40% of the tile) and cover sizes moved to <code>--size-cover-*</code>. The list's 8px gap is still set inline in the mocks; keep it as a layout nudge.</p>

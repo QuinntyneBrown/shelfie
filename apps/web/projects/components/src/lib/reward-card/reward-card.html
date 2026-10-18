@@ -1,10 +1,36 @@
-<div class="trophy">
-  <sh-cover [color]="coverColor()" [sticker]="sticker()" [image]="coverImage()" size="sm" />
-  <div class="trophy__body">
-    <div class="trophy__title truncate" [title]="title()">
-      <a [routerLink]="link()">{{ title() }}</a>
+@if (target(); as target) {
+  <div class="trophy trophy--gallery" [class.trophy--goal]="progress() !== null">
+    <span class="sticker" aria-hidden="true">🎁</span>
+    <div class="trophy__body">
+      <div class="trophy__title">
+        {{ title() }}
+        @if (progress() !== null) {
+          <span class="badge" [class.badge--success]="reached()" [class.badge--info]="!reached()">{{
+            reached() ? 'Ready!' : 'Your goal'
+          }}</span>
+        }
+      </div>
+      <div class="trophy__reward">{{ note() }}</div>
+      @if (progress() !== null) {
+        <sh-progress
+          class="trophy__progress"
+          [value]="progress()!"
+          [max]="target"
+          [label]="progress() + ' of ' + target + ' books finished'"
+        />
+      }
     </div>
-    <div class="trophy__reward">{{ note() }}</div>
+    <div class="trophy__actions"><ng-content /></div>
   </div>
-  <span class="sticker" aria-hidden="true">🏆</span>
-</div>
+} @else {
+  <div class="trophy">
+    <sh-cover [color]="coverColor()!" [sticker]="sticker()!" [image]="coverImage()" size="sm" />
+    <div class="trophy__body">
+      <div class="trophy__title truncate" [title]="title()">
+        <a [routerLink]="link()">{{ title() }}</a>
+      </div>
+      <div class="trophy__reward">{{ note() }}</div>
+    </div>
+    <span class="sticker" aria-hidden="true">🏆</span>
+  </div>
+}

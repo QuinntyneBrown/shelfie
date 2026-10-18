@@ -44,6 +44,11 @@ export class ReviewPage {
     return this.rewardDialog().locator('.cover img');
   }
 
+  /** The line on a finished book's card saying it reached Nia's goal. */
+  goalLine(title: string) {
+    return this.rewardCard(title).getByText(/reached her goal/);
+  }
+
   async openGiveReward(title: string) {
     await this.rewardCard(title).getByRole('button', { name: 'Give a reward' }).click();
   }

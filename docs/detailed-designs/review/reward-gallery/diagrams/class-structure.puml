@@ -1,0 +1,126 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Reward gallery
+
+class SettingsPage {
+  +rewards: WritableSignal<GalleryReward[]>
+  +readerNames: Signal<string>
+  +rewardDialogOpen: WritableSignal<boolean>
+  +editingReward: WritableSignal<GalleryReward | null>
+  +removingReward: WritableSignal<GalleryReward | null>
+  +rewardSaved(reward: GalleryReward): void
+  +removeReward(): Promise<void>
+}
+
+class GalleryRewardDialog {
+  +open: boolean
+  +editing: GalleryReward | null
+  +readerName: string
+  +name: WritableSignal<string>
+  +target: WritableSignal<string>
+  +saved: OutputEmitter<GalleryReward>
+  +closed: OutputEmitter<void>
+  +save(): Promise<void>
+}
+
+class GalleryRewardsApi {
+  +list(): Promise<GalleryReward[]>
+  +add(input: GalleryRewardInput): Promise<GalleryReward>
+  +update(id: string, input: GalleryRewardInput): Promise<GalleryReward>
+  +remove(id: string): Promise<void>
+}
+
+class ShelfPage {
+  +gallery: WritableSignal<GalleryView | null>
+  +galleryFailed: WritableSignal<boolean>
+  +loadGallery(): Promise<void>
+  +pick(reward: GalleryReward): Promise<void>
+}
+
+class ShelfApi {
+  +gallery(): Promise<GalleryView>
+  +pickGoal(id: string): Promise<GalleryView>
+}
+
+class ReviewPage {
+  +rewarding: WritableSignal<FinishedBook | null>
+  +goalNameOf(overview: ReviewOverview, book: FinishedBook | null): string | null
+}
+
+class GiveRewardDialog {
+  +book: FinishedBook | null
+  +suggested: string
+  +readerName: string
+  +give(): Promise<void>
+}
+
+class "sh-reward-card" as RewardCard {
+  +title: string
+  +note: string
+  +link: unknown[] | null
+  +coverColor: string | null
+  +sticker: string | null
+  +coverImage: string | null
+  +target: number | null
+  +progress: number | null
+}
+
+class GalleryView {
+  +rewards: GalleryReward[]
+  +goal: Goal | null
+}
+
+class GalleryReward {
+  +id: string
+  +name: string
+  +target: number
+}
+
+class Goal {
+  +rewardId: string
+  +name: string
+  +target: number
+  +finished: number
+  +reached: boolean
+  +bookId: string | null
+}
+
+class "gallery.router.ts" as Router {
+  +galleryRouter(db: Pool): Router
+  +galleryRewardSchema: ZodType
+}
+
+class "gallery.service.ts" as Service {
+  +getGallery(db, householdId): Promise<GalleryView>
+  +goalOf(db, householdId): Promise<Goal | null>
+  +addGalleryReward(db, householdId, input): Promise<GalleryReward>
+  +updateGalleryReward(db, householdId, id, input): Promise<GalleryReward>
+  +removeGalleryReward(db, householdId, id): Promise<void>
+  +pickGoal(pool, householdId, id): Promise<GalleryView>
+}
+
+class "review.service.ts" as ReviewService {
+  +overview(db, householdId): Promise<ReviewOverview>
+}
+
+SettingsPage *-- GalleryRewardDialog : add / edit
+SettingsPage ..> GalleryRewardsApi : list, remove
+GalleryRewardDialog ..> GalleryRewardsApi : add, update
+ShelfPage ..> ShelfApi : gallery, pickGoal
+ShelfPage *-- RewardCard : one per gallery reward
+ReviewPage *-- GiveRewardDialog : suggested = goal name
+GalleryView *-- GalleryReward
+GalleryView o-- Goal
+Router ..> Service
+ReviewService ..> Service : goalOf
+Service ..> GalleryView : returns
+@enduml

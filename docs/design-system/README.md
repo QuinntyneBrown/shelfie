@@ -62,7 +62,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Sticker](components/sticker.html) | Data display | md, lg, xl | — | review, shelf, chapter, book |
 | [Question and answer](components/question-answer.html) | Data display | answered, flagged (Dad only) | — | chapter, review-chapter, manage-book |
 | [Feedback note](components/feedback-note.html) | Data display | sticker + note | — | chapter, review-chapter |
-| [Trophy](components/trophy.html) | Data display | reward given, waiting | — | shelf, banner |
+| [Trophy](components/trophy.html) | Data display | reward given, waiting, gallery reward | gallery reward: can be picked, her goal, reached | shelf, banner |
 | [Toast](components/toast.html) | Feedback | info, success, warning, danger; with action; stacked | entering, timed, leaving | toast |
 | [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings, review-chapter |
 | [Inline message](components/inline-message.html) | Feedback | field error, saving, saved | — | add-book, log-chapter, sign-in, settings |

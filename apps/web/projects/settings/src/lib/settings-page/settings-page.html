@@ -108,6 +108,102 @@
           }
         </ul>
       </section>
+      <section class="card card--flush people" aria-labelledby="rewards-title">
+        <div class="cluster cluster--between people__header">
+          <h2 id="rewards-title" class="section-title">Rewards</h2>
+          <button class="btn btn--sm" type="button" (click)="openRewardDialog(null)">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            Add a reward
+          </button>
+        </div>
+        <p class="text-muted rewards__intro">
+          {{ readerNames() }} picks one to read toward. Finished books count from the day she picks it.
+        </p>
+        @if (rewards().length) {
+          <ul class="list">
+            @for (reward of rewards(); track reward.id) {
+              <li class="list__item">
+                <span class="sticker" aria-hidden="true">🎁</span>
+                <div class="list__body">
+                  <div class="list__title">{{ reward.name }}</div>
+                  <div class="list__meta">
+                    Finish {{ reward.target }} {{ reward.target === 1 ? 'book' : 'books' }}
+                  </div>
+                </div>
+                <button
+                  class="btn btn--ghost btn--icon"
+                  type="button"
+                  [attr.aria-label]="'Edit ' + reward.name"
+                  (click)="openRewardDialog(reward)"
+                >
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4" />
+                  </svg>
+                </button>
+                <button
+                  class="btn btn--ghost btn--icon"
+                  type="button"
+                  [attr.aria-label]="'Remove ' + reward.name"
+                  (click)="openRemoveReward(reward)"
+                >
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+                  </svg>
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted rewards__intro">
+            No rewards yet. Add one and {{ readerNames() }} can pick it to read toward.
+          </p>
+        }
+      </section>
+      <sh-gallery-reward-dialog
+        [open]="rewardDialogOpen()"
+        [editing]="editingReward()"
+        [readerName]="readerNames()"
+        (saved)="rewardSaved($event)"
+        (closed)="rewardDialogOpen.set(false)"
+      />
+      <sh-dialog
+        [heading]="'Remove “' + (removingReward()?.name ?? '') + '”?'"
+        [open]="removingReward() !== null"
+        (closed)="removeBusy() || removingReward.set(null)"
+      >
+        @if (removeFailed()) {
+          <sh-banner
+            severity="danger"
+            title="The reward wasn’t removed"
+            message="Shelfie couldn’t reach the server. Nothing has changed; try again."
+          />
+        }
+        <p>
+          {{ readerNames() }} won’t see it in her gallery any more. If it’s the reward she’s reading
+          toward, she’ll pick a new one.
+        </p>
+        <p class="text-muted">Rewards she was already given stay on her trophy shelf.</p>
+        <div dialog-actions class="cluster">
+          <button
+            class="btn"
+            type="button"
+            autofocus
+            [disabled]="removeBusy()"
+            (click)="removingReward.set(null)"
+          >
+            Keep it
+          </button>
+          <button
+            class="btn btn--danger"
+            type="button"
+            [disabled]="removeBusy()"
+            [attr.aria-busy]="removeBusy() ? true : null"
+            (click)="removeReward()"
+          >
+            Remove reward
+          </button>
+        </div>
+      </sh-dialog>
       <sh-profile-photo-dialog [open]="photoDialogOpen()" (closed)="photoDialogOpen.set(false)" />
       <sh-edit-reader-dialog
         [open]="readerDialogOpen()"

@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Reward gallery
+
+Person(grownUp, "Parent", "Settings and Review")
+Person(reader, "Reader", "My shelf")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "settings: Rewards card and dialogs; shelf: Reading toward; review: goal line and Give a reward prefilled; components: sh-reward-card gallery mode")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "/api/gallery-rewards routes; GET /api/review gains goal")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "gallery_reward (new); book and reward read for progress")
+}
+
+Rel(grownUp, web, "Manages the gallery; gives the reward", "HTTPS")
+Rel(reader, web, "Picks a goal", "HTTPS")
+Rel(web, api, "GET, POST, PATCH, DELETE /api/gallery-rewards; POST /api/gallery-rewards/:id/pick; GET /api/review; POST /api/books/:id/reward (unchanged)", "JSON/HTTPS")
+Rel(api, db, "Stores gallery rewards and the pick; counts finished books since the pick", "SQL")
+@enduml

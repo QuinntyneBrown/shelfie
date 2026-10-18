@@ -1,13 +1,21 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Banner, BookCard, EmptyState, FEEDBACK_STICKERS, RewardCard, Skeleton } from 'components';
-import { SessionService, ShellStatusService } from 'core';
-import { ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
+import {
+  Banner,
+  BookCard,
+  Celebration,
+  EmptyState,
+  FEEDBACK_STICKERS,
+  RewardCard,
+  Skeleton,
+} from 'components';
+import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
+import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
 
 @Component({
   selector: 'sh-shelf-page',
-  imports: [Banner, BookCard, DatePipe, EmptyState, RewardCard, RouterLink, Skeleton],
+  imports: [Banner, BookCard, Celebration, DatePipe, EmptyState, RewardCard, RouterLink, Skeleton],
   templateUrl: './shelf-page.html',
   styleUrl: './shelf-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +33,12 @@ export class ShelfPage {
   );
   private readonly api = inject(ShelfApi);
   private readonly status = inject(ShellStatusService);
+  private readonly toasts = inject(ToastService);
+
+  /** The reward gallery, loaded beside the shelf so a failure leaves the shelf usable. */
+  protected readonly gallery = signal<GalleryView | null>(null);
+  protected readonly galleryFailed = signal(false);
+  protected readonly goalReached = computed(() => this.gallery()?.goal?.reached ?? false);
 
   protected readonly isEmpty = computed(() => {
     const shelf = this.shelf();
@@ -35,6 +49,43 @@ export class ShelfPage {
 
   constructor() {
     this.load();
+    this.loadGallery();
+  }
+
+  protected async loadGallery() {
+    this.galleryFailed.set(false);
+    try {
+      this.gallery.set(await this.api.gallery());
+    } catch {
+      this.galleryFailed.set(true);
+    }
+  }
+
+  protected async pick(reward: GalleryReward) {
+    try {
+      this.gallery.set(await this.api.pickGoal(reward.id));
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({
+        severity: 'danger',
+        title: 'Your goal wasn’t picked',
+        text: 'Check your connection and try again.',
+      });
+    }
+  }
+
+  /** Books finished toward a reward, when it is her goal; null otherwise. */
+  protected progressOf(reward: GalleryReward) {
+    const goal = this.gallery()?.goal;
+    return goal?.rewardId === reward.id ? goal.finished : null;
+  }
+
+  protected noteOf(reward: GalleryReward) {
+    const books = (n: number) => `${n} ${n === 1 ? 'book' : 'books'}`;
+    const finished = this.progressOf(reward);
+    if (finished === null) return `Finish ${books(reward.target)}`;
+    const left = reward.target - finished;
+    return `${finished} of ${books(reward.target)} finished · ${left > 0 ? `${left} more to go!` : 'you did it!'}`;
   }
 
   protected async load() {

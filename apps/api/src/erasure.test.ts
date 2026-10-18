@@ -6,7 +6,7 @@ import { purgeExpired } from './purge.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
-const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover'];
+const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward'];
 
 test('Given two households, when one is erased, then every row it owned is gone and the other household is untouched', async () => {
   const db = await createTestDatabase();
@@ -22,13 +22,14 @@ test('Given two households, when one is erased, then every row it owned is gone 
     );
     await run(db.pool, "INSERT INTO profile_photo (profile_id, image, etag, updated_at) VALUES ($1, 'x', 'e1', '2026-10-18'), ($2, 'x', 'e2', '2026-10-18'), ('p-other-dad', 'x', 'e3', '2026-10-18')", [SEED.parentId, SEED.readerId]);
     await run(db.pool, "INSERT INTO book_cover (book_id, image, etag, updated_at) VALUES ('b-lion', 'x', 'e1', '2026-10-18'), ('b-other', 'x', 'e2', '2026-10-18')");
+    await run(db.pool, "INSERT INTO gallery_reward (id, household_id, name, target, created_at) VALUES ('g1', $1, 'Zoo', 3, '2026-10-18'), ('g2', 'h2', 'Kite', 2, '2026-10-18')", [SEED.householdId]);
     const countAll = async () => Object.fromEntries(await Promise.all(OWNED.map(async (t) => [t, (await get<{ n: number }>(db.pool, `SELECT COUNT(*) AS n FROM ${t}`))!.n])));
     const before = await countAll();
 
     await run(db.pool, 'DELETE FROM household WHERE id = $1', [SEED.householdId]);
 
     const after = await countAll();
-    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1 });
+    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1 });
     assert.ok(before.book > after.book && before.answer > 0, 'the erased household had books and answers');
     const remaining = await all<{ id: string }>(db.pool, 'SELECT id FROM profile ORDER BY id');
     assert.deepEqual(remaining.map((p) => p.id), ['p-other-dad', 'p-other-reader']);

@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Pick a goal and reach it
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+box "Frontend — Shelfie web (shelf and components libraries)" #E0F2FE
+  participant "ShelfPage" as page
+  participant "sh-reward-card" as card
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "gallery.router.ts\n+ requireSession" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "gallery.service.ts" as service
+end box
+box "Backend — infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+reader -> page : Open My shelf
+page -> client : shelf() and gallery()
+client -> router : GET /api/gallery-rewards
+router -> service : getGallery(householdId)
+service -> db : SELECT rewards; the row with picked_at
+service -> db : SELECT books WHERE finished_at >= picked_at ORDER BY finished_at
+service -> service : goalOf: finished = min(count, target);\ngoal book = row at position target;\nit has a reward → goal is null (ADR-0009)
+router --> client : 200 { rewards, goal }
+alt failed
+  page --> reader : "Your rewards didn’t load" + Try again (L2-086)
+else no rewards
+  page --> reader : "No rewards to pick yet" (L2-086)
+else
+  page -> card : one per reward: target; progress on the goal
+end
+reader -> card : "Pick this" on Trip to the zoo
+card -> page : pick(reward)
+page -> client : pickGoal(id)
+client -> router : POST /api/gallery-rewards/:id/pick
+router -> service : pickGoal — other household → 404 (L2-084)
+service -> db : BEGIN; clear picked_at in household;\nset picked_at = now on this row; COMMIT
+router --> client : 200 { rewards, goal: finished 0 }
+page --> reader : "Your goal", 0 of 3 (L2-087)
+note over reader, db : She finishes books; log-chapter sets book.finished_at as before.
+reader -> page : Open My shelf after the third book
+page --> reader : sh-celebration "You did it!"; "Ready!", 3 of 3;\npick buttons hidden (L2-088)
+@enduml

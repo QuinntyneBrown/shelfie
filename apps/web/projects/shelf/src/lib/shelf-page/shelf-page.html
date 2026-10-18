@@ -113,6 +113,72 @@
         </div>
       </section>
     }
+    <section class="section" aria-labelledby="goal-title">
+      <h2 id="goal-title" class="group-title">Reading toward</h2>
+      @if (galleryFailed()) {
+        <sh-empty-state
+          tone="error"
+          title="Your rewards didn’t load"
+          text="Shelfie couldn’t reach the server. Your goal is safe; try again in a moment."
+        >
+          <button class="btn btn--primary" type="button" (click)="loadGallery()">Try again</button>
+        </sh-empty-state>
+      } @else if (gallery(); as gallery) {
+        @if (!gallery.rewards.length) {
+          <sh-empty-state
+            title="No rewards to pick yet"
+            [text]="
+              'Ask ' +
+              data.grownUpName +
+              ' to add some rewards, then pick the one you’re reading toward.'
+            "
+          />
+        } @else {
+          @if (gallery.goal?.reached) {
+            <sh-celebration variant="book" class="goal-celebration">
+              <span class="sticker sticker--xl" aria-hidden="true">🎁</span>
+              <h3 class="goal-celebration__title">You did it! 🎉</h3>
+              <p class="text-muted">
+                You finished {{ gallery.goal!.target }}
+                {{ gallery.goal!.target === 1 ? 'book' : 'books' }}. {{ data.grownUpName }} is
+                getting your {{ gallery.goal!.name }} ready.
+              </p>
+            </sh-celebration>
+          } @else {
+            <p class="text-muted goal-intro">
+              {{
+                gallery.goal
+                  ? 'Every book you finish counts. Picking a different reward starts the count again.'
+                  : 'Pick a reward. Every book you finish from now on counts toward it.'
+              }}
+            </p>
+          }
+          <ul class="list goal-list">
+            @for (reward of gallery.rewards; track reward.id) {
+              <li>
+                <sh-reward-card
+                  [title]="reward.name"
+                  [note]="noteOf(reward)"
+                  [target]="reward.target"
+                  [progress]="progressOf(reward)"
+                >
+                  @if (!goalReached() && progressOf(reward) === null) {
+                    <button
+                      class="btn btn--sm"
+                      type="button"
+                      [attr.aria-label]="'Pick ' + reward.name"
+                      (click)="pick(reward)"
+                    >
+                      Pick this
+                    </button>
+                  }
+                </sh-reward-card>
+              </li>
+            }
+          </ul>
+        }
+      }
+    </section>
     @if (data.finished.length) {
       <section class="section" aria-labelledby="finished">
         <h2 id="finished" class="group-title">

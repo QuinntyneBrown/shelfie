@@ -128,12 +128,20 @@
         "loading",
         "empty",
         "error",
-        "long"
+        "long",
+        "goal-empty",
+        "goal-none",
+        "goal-progress",
+        "goal-reached",
+        "goal-error"
       ],
       "not_applicable": {},
       "requirements": [
         "L2-007",
-        "L2-047"
+        "L2-047",
+        "L2-086",
+        "L2-087",
+        "L2-088"
       ]
     },
     {
@@ -239,9 +247,14 @@
         "loading",
         "empty",
         "error",
-        "long"
+        "long",
+        "goal-reached"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-017",
+        "L2-089"
+      ]
     },
     {
       "id": "review-chapter",
@@ -331,7 +344,8 @@
         "invalid",
         "submitting",
         "success",
-        "photo"
+        "photo",
+        "rewards-empty"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -342,7 +356,10 @@
         "L2-034",
         "L2-036",
         "L2-042",
-        "L2-043"
+        "L2-043",
+        "L2-081",
+        "L2-082",
+        "L2-083"
       ]
     },
     {
@@ -410,9 +427,49 @@
         "default",
         "busy",
         "invalid",
+        "failed",
+        "goal"
+      ],
+      "not_applicable": {},
+      "requirements": [
+        "L2-017",
+        "L2-089"
+      ]
+    },
+    {
+      "id": "edit-gallery-reward",
+      "kind": "dialog",
+      "title": "Add a reward",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-081",
+        "L2-082"
+      ],
+      "states": [
+        "default",
+        "edit",
+        "invalid",
+        "busy",
         "failed"
       ],
       "not_applicable": {}
+    },
+    {
+      "id": "remove-gallery-reward",
+      "kind": "dialog",
+      "title": "Remove a reward",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-083"
+      ],
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "The dialog has no inputs; it only confirms."
+      }
     },
     {
       "id": "delete-book",

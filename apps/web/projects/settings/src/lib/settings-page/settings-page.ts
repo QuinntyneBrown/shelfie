@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Avatar, Banner, Button, ErrorState, Skeleton, TextField } from 'components';
+import { Avatar, Banner, Button, Dialog, ErrorState, Skeleton, TextField } from 'components';
 import { ApiError, SessionService, ToastService } from 'core';
 import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
+import { GalleryRewardDialog } from '../gallery-reward-dialog/gallery-reward-dialog';
+import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
 import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
 import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog';
 import { InvitesApi } from '../invites-api';
@@ -14,7 +16,9 @@ import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } 
     Avatar,
     Banner,
     Button,
+    Dialog,
     EditReaderDialog,
+    GalleryRewardDialog,
     ErrorState,
     InviteParentDialog,
     ProfilePhotoDialog,
@@ -31,8 +35,20 @@ export class SettingsPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
   private readonly invites = inject(InvitesApi);
+  private readonly galleryApi = inject(GalleryRewardsApi);
 
   protected readonly view = signal<SettingsView | null>(null);
+  /** The reward gallery, loaded with the settings. */
+  protected readonly rewards = signal<GalleryReward[]>([]);
+  protected readonly rewardDialogOpen = signal(false);
+  protected readonly editingReward = signal<GalleryReward | null>(null);
+  protected readonly removingReward = signal<GalleryReward | null>(null);
+  protected readonly removeBusy = signal(false);
+  protected readonly removeFailed = signal(false);
+  /** Who picks from the gallery, by name. */
+  protected readonly readerNames = computed(
+    () => this.view()?.readers.map((r) => r.name).join(' and ') || 'Your reader',
+  );
   protected readonly loadFailed = signal(false);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
@@ -70,7 +86,8 @@ export class SettingsPage {
     this.loadFailed.set(false);
     this.view.set(null);
     try {
-      const view = await this.api.get();
+      const [view, rewards] = await Promise.all([this.api.get(), this.galleryApi.list()]);
+      this.rewards.set(rewards);
       this.theme.set(view.theme);
       this.name.set(view.account.name);
       this.email.set(view.account.email);
@@ -111,6 +128,44 @@ export class SettingsPage {
       : [...view.readers, reader];
     this.view.set({ ...view, readers });
     this.toasts.show({ title: edited ? `${reader.name} saved` : `${reader.name} added` });
+  }
+
+  protected openRewardDialog(reward: GalleryReward | null) {
+    this.editingReward.set(reward);
+    this.rewardDialogOpen.set(true);
+  }
+
+  /** Puts the saved reward in the list, in place of the one edited or at the end. */
+  protected rewardSaved(reward: GalleryReward) {
+    this.rewardDialogOpen.set(false);
+    const edited = this.editingReward();
+    this.rewards.update((rewards) =>
+      edited ? rewards.map((r) => (r.id === reward.id ? reward : r)) : [...rewards, reward],
+    );
+    this.toasts.show({ title: edited ? `${reward.name} saved` : `${reward.name} added` });
+  }
+
+  protected openRemoveReward(reward: GalleryReward) {
+    this.removeFailed.set(false);
+    this.removingReward.set(reward);
+  }
+
+  protected async removeReward() {
+    const reward = this.removingReward();
+    if (!reward || this.removeBusy()) return;
+    this.removeBusy.set(true);
+    this.removeFailed.set(false);
+    try {
+      await this.galleryApi.remove(reward.id);
+      this.rewards.update((rewards) => rewards.filter((r) => r.id !== reward.id));
+      this.removingReward.set(null);
+      this.toasts.show({ title: `${reward.name} removed` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.removeFailed.set(true);
+    } finally {
+      this.removeBusy.set(false);
+    }
   }
 
   /** A parent's photo; your own comes from the session, so a change shows at once. */
