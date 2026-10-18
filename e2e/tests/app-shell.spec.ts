@@ -14,6 +14,14 @@ test('Given Nia is signed in, when her shelf shows, then the top bar has the bra
   await expect(shell.main()).toHaveCount(1);
 });
 
+test('Given Nia is signed in, when she scrolls down a long page, then the top bar stays at the top of the window', async ({ page }) => {
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
+  await expect(shell.brand()).toBeVisible();
+
+  expect(await shell.topBarOffsetAfterScrolling()).toBe(0);
+});
+
 test('Given nobody is signed in, when the sign-in page shows, then there is no top bar', async ({ page }) => {
   await new SignInPage(page).open();
 

@@ -21,6 +21,17 @@ export class ShellPage {
     return this.page.getByRole('button', { name: `Account menu for ${name}` });
   }
 
+  /** Makes the page taller than the window, scrolls to the bottom, and returns how far the top bar sits from the window's top edge. */
+  async topBarOffsetAfterScrolling() {
+    return this.page.evaluate(() => {
+      const spacer = document.createElement('div');
+      spacer.style.height = '3000px';
+      document.querySelector('main')!.append(spacer);
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return document.querySelector('header')!.getBoundingClientRect().top;
+    });
+  }
+
   async scrollsSideways() {
     return this.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   }
