@@ -1,0 +1,56 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Earn achievement badges
+
+class "sh-achievement-badge" as AchievementBadge {
+  +icon: string
+  +name: string
+  +hint: string
+  +earnedOn: string|null
+}
+
+class ShelfPage {
+  +shelf: Signal<ShelfView|null>
+}
+
+class ReviewPage {
+  +review: Signal<ReviewView|null>
+}
+
+class Badge {
+  +id: string
+  +icon: string
+  +name: string
+  +hint: string
+  +earned: boolean
+  +earnedOn: string|null
+}
+
+class BadgesModule {
+  {static} +computeBadges(readOnDays: string[], finishedDays: string[]): Badge[]
+  +badgesFor(db: Db, householdId: string): Badge[]
+}
+
+class ShelfService {
+  +getShelf(db, householdId): ShelfResponse
+}
+
+class ReviewService {
+  +overview(db, householdId): ReviewOverview
+}
+
+ShelfPage *-- AchievementBadge : four
+ReviewPage *-- AchievementBadge : four
+ShelfService --> BadgesModule : badgesFor
+ReviewService --> BadgesModule : badgesFor
+BadgesModule ..> Badge : returns
+@enduml

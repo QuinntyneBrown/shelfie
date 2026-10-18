@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Earn achievement badges
+
+Person(reader, "Reader", "Sees her badges on her shelf")
+Person(grownUp, "Parent", "Sees her badges on Review")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Opens her shelf", "HTTPS")
+Rel(grownUp, shelfie, "Opens Review", "HTTPS")
+@enduml
