@@ -1,30 +1,27 @@
-const MAILBOX = 'http://localhost:8025/messages';
-
 interface Mail {
-  to: string[];
-  raw: string;
+  to: string;
+  subject: string;
+  text: string;
 }
 
-export async function clearMailbox() {
-  await fetch(MAILBOX, { method: 'DELETE' });
+const outbox: Mail[] = [];
+
+/** Stands in for the API's mail sender: keeps every mail here instead of sending it. */
+export async function deliver(to: string, subject: string, text: string) {
+  outbox.push({ to, subject, text });
 }
 
-export async function mailFor(address: string): Promise<Mail[]> {
-  const all = (await (await fetch(MAILBOX)).json()) as Mail[];
-  return all.filter((mail) => mail.to.includes(address));
+export function clearMailbox() {
+  outbox.length = 0;
 }
 
-/** Undoes quoted-printable encoding, which mail servers use for long lines and '='. */
-const decode = (raw: string) =>
-  raw.replace(/=\r?\n/g, '').replace(/=([0-9A-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+export function mailFor(address: string): Mail[] {
+  return outbox.filter((mail) => mail.to === address);
+}
 
-/** The reset link in the newest mail sent to the address, once it has arrived. */
-export async function resetLinkFor(address: string): Promise<string> {
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const mails = await mailFor(address);
-    const link = decode(mails.at(-1)?.raw ?? '').match(/http:\/\/\S+\/reset-password\?\S+/);
-    if (link) return link[0];
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  throw new Error(`No reset mail arrived for ${address}`);
+/** The reset link in the newest mail sent to the address. */
+export function resetLinkFor(address: string): string {
+  const link = mailFor(address).at(-1)?.text.match(/http:\/\/\S+\/reset-password\?\S+/);
+  if (!link) throw new Error(`No reset mail arrived for ${address}`);
+  return link[0];
 }

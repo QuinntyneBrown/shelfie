@@ -6,6 +6,7 @@ import { DEVICE_COOKIE, deviceHousehold, readCookie, rememberDevice } from './de
 import { passwordSignInLimiter } from './rate-limit.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { listProfiles, requestPasswordReset, resetPassword, signInWithPassword, signInWithPin } from './auth.service.ts';
+import type { Mail } from './mail.ts';
 
 const pinSignInSchema = z.object({ profileId: z.string(), pin: z.string().regex(/^[0-9]{4}$/) });
 
@@ -17,7 +18,7 @@ const passwordSignInSchema = z.object({ email: z.email(), password: z.string().m
 
 const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const, maxAge: 30 * 24 * 60 * 60 * 1000 };
 
-export function authRouter(db: DatabaseSync) {
+export function authRouter(db: DatabaseSync, mail?: Mail) {
   const router = Router();
 
   /** A new sign-in always gets a new session id; the browser's previous one stops working. */
@@ -62,7 +63,7 @@ export function authRouter(db: DatabaseSync) {
   router.post('/forgot-password', async (req, res) => {
     const body = forgotPasswordSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    await requestPasswordReset(db, body.data.email);
+    await requestPasswordReset(db, body.data.email, mail);
     res.status(202).end();
   });
 

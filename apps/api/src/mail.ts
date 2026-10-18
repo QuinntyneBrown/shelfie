@@ -9,3 +9,5 @@ export async function sendMail(to: string, subject: string, text: string) {
   }
   await createTransport(url).sendMail({ from: process.env.MAIL_FROM ?? 'shelfie@localhost', to, subject, text });
 }
+
+export type Mail = typeof sendMail;
