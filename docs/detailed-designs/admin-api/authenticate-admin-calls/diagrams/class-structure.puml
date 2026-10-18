@@ -1,0 +1,73 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Authenticate admin calls
+
+class "admin_token (table)" as AdminTokenRow {
+  +id: TEXT  tok_ + 8 hex
+  +name: TEXT
+  +token_hash: TEXT  SHA-256, unique
+  +scopes: TEXT  "read" or "read write"
+  +created_at: TEXT
+  +expires_at: TEXT
+  +last_used_at: TEXT?
+  +revoked_at: TEXT?
+}
+class "admin_audit (table)" as AdminAuditRow {
+  +id: INTEGER
+  +at: TEXT
+  +token_id: TEXT?
+  +method: TEXT
+  +route: TEXT
+  +target_id: TEXT?
+  +dry_run: INTEGER
+  +status: INTEGER
+  +request_id: TEXT
+}
+class "admin-token.ts" as AdminTokenModule <<module>> {
+  +createAdminToken(db, {name, scopes, days}): {id, token, expiresAt}
+  +listAdminTokens(db): AdminTokenView[]
+  +revokeAdminToken(db, id): boolean
+}
+class AdminTokenView <<interface>> {
+  +id: string
+  +name: string
+  +scopes: Scope[]
+  +expiresAt: string
+  +lastUsedAt: string | null
+  +revokedAt: string | null
+}
+enum Scope {
+  read
+  write
+}
+class "admin-auth.ts" as AdminAuthModule <<module>> {
+  +requireAdminToken(db): RequestHandler
+  +requireScope(scope: Scope): RequestHandler
+  +adminRateLimit(): RequestHandler
+  +adminGuard(db): (scope) => RequestHandler[]
+  +refuse(res, status, type, extra?): void
+}
+class "admin-audit.ts" as AdminAuditModule <<module>> {
+  +adminAudit(db): RequestHandler
+}
+class "admin.router.ts" as AdminRouterModule <<module>> {
+  +adminRouter(db): Router
+}
+AdminTokenModule ..> AdminTokenRow : writes
+AdminTokenModule ..> AdminTokenView : returns
+AdminTokenView --> Scope
+AdminAuthModule ..> AdminTokenRow : reads by token_hash
+AdminAuthModule ..> AdminTokenView : puts on res.locals.adminToken
+AdminAuditModule ..> AdminAuditRow : inserts
+AdminRouterModule ..> AdminAuditModule : uses first
+AdminRouterModule ..> AdminAuthModule : uses
+@enduml

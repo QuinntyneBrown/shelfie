@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Authenticate admin calls
+
+Person(op, "Operator", "The parent who runs production")
+System_Boundary(machine, "Operator machine") {
+  Container(cli, "shelfie-admin", ".NET 10 global tool, System.CommandLine", "Commands, prompts, tables and JSON output")
+  ContainerDb(store, "OS credential store", "Credential Manager, Keychain, Secret Service", "One admin token per base URL")
+}
+System_Boundary(vm, "Shelfie VM (shelfie.kids)") {
+  Container(caddy, "Caddy", "Reverse proxy", "Terminates TLS, proxies /api/* to the API")
+  Container(api, "Shelfie API", "Node 24, Express 5", "Web API under /api and admin API under /api/admin/v1")
+  ContainerDb(db, "Shelfie database", "PostgreSQL", "Household data, admin_token, admin_audit")
+  Container(script, "admin-token script", "Node 24", "Creates, lists and revokes admin tokens")
+}
+Rel(op, cli, "Runs")
+Rel(cli, store, "Saves and reads the token")
+Rel(cli, caddy, "Calls /api/admin/v1", "HTTPS, Authorization: Bearer")
+Rel(caddy, api, "Proxies", "HTTP on 127.0.0.1:3000")
+Rel(api, db, "Reads and writes", "pg")
+Rel(op, script, "Runs over SSH")
+Rel(script, db, "Writes token hashes")
+@enduml

@@ -113,6 +113,80 @@ Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variab
 
 Edit `infra/main.bicep` and rerun `infra/bootstrap.sh`. The VM's cloud-init (`infra/cloud-init.yaml`) only runs at first boot, so a change there means deleting and recreating the VM: back up first, deploy, then restore.
 
+## Admin CLI
+
+`shelfie-admin` queries and changes production data through the admin API (`/api/admin/v1`, contract in `apps/api/admin-api.yaml`). It never touches the VM or the database; only token provisioning below uses SSH. Decisions: `docs/adr/0001`-`0006`.
+
+### Going live
+
+The admin API ships with the normal deploy: merge to `main`. On start the API adds the `admin_token` and `admin_audit` tables to the existing database. No Caddy, Bicep or settings change is needed. Check it after the deploy:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://shelfie.kids/api/admin/v1/whoami   # 401 means it is live
+```
+
+### Installing the CLI
+
+Needs the .NET 10 SDK. From a clone of the repository:
+
+```bash
+dotnet pack apps/admin-cli/src/ShelfieAdmin -c Release -o ~/shelfie-admin-pkg
+dotnet tool install --global ShelfieAdmin --add-source ~/shelfie-admin-pkg     # later: dotnet tool update --global ...
+shelfie-admin --version
+```
+
+On Linux the token store is the Secret Service (`secret-tool`, package `libsecret-tools`); Windows and macOS use Credential Manager and the Keychain.
+
+### Creating a token
+
+Run on the VM (the value is printed once; copy it straight into `login`):
+
+```bash
+ssh shelfie-admin@<public ip>
+sudo -u shelfie bash -c 'set -a; . /etc/shelfie/env; set +a; cd /opt/shelfie/current && \
+  node --disable-warning=ExperimentalWarning apps/api/src/admin-token.ts create --name laptop --scopes read,write --days 30'
+```
+
+Use `--scopes read` for a token that only queries. Then, on your machine:
+
+```bash
+shelfie-admin login        # paste the token at the hidden prompt
+shelfie-admin whoami
+```
+
+`list` and `revoke <id>` take the place of `create` in the same command. Revoke a token as soon as the machine holding it is lost; create a new one before the old one expires (`whoami` shows the expiry).
+
+### Before any write session
+
+Write commands change production directly. Take a backup first: `sudo -u shelfie /usr/local/bin/shelfie-backup` on the VM. Prefer `--dry-run` before the real command; `users reset-password` and `logs delete` also preview and ask `Continue? [y/N]`.
+
+### Commands
+
+| Command | Does |
+|---|---|
+| `login`, `logout`, `whoami` | Store, remove or show the token for the target |
+| `users list` | Every parent and reader |
+| `users reset-password <parent id>` | New password from hidden prompts; ends the parent's sessions |
+| `books list` | Every book with progress, finished time and reward |
+| `books finish <id>` | Mark a book finished now |
+| `books reward <id> --text <text> [--note <note>]` | Give the reward for a finished book |
+| `logs list --book <id>` | A book's logged chapters with review status |
+| `logs show <id>` | One chapter with its answers |
+| `logs correct <id> --read-on <yyyy-mm-dd>` | Fix the day a chapter was read |
+| `logs delete <id>` | Delete the newest logged chapter of a book |
+
+Every command takes `--json` and `--api-url`; writes take `--dry-run`, destructive ones `--yes`. Exit codes: 0 done, 1 refused or failed, 2 token problem, 3 aborted. For development, point it at the local API: `shelfie-admin login --api-url http://localhost:3000` with a token made by `DATABASE_URL=<local database> npm run admin-token -w apps/api -- create --name dev --scopes read,write`.
+
+### Reading the audit trail
+
+Every admin call, refused ones included, is a row in `admin_audit` (time, token id, method, route, target id, dry run, status, request id); no bodies or secrets. On the VM:
+
+```bash
+sudo bash -c 'set -a; . /etc/shelfie/env; psql "$DATABASE_URL" -c "SELECT * FROM admin_audit ORDER BY id DESC LIMIT 50"'
+```
+
+The request id matches the `requestId` in `journalctl -u shelfie`. The admin API allows 60 calls a minute; beyond that it answers 429.
+
 ## Still deferred
 
 Uptime monitoring, log shipping beyond journald and the production e-mail provider (AGENTS.md, Deferred work).

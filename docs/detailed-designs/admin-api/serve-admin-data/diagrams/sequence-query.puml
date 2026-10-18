@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — A query returns rows from every household
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "QueryCommands" as cmd
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "adminRouter\n(requireScope read)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "admin.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+actor -> cmd : shelfie-admin books list
+cmd -> client : GetAsync("books")
+client -> router : GET /api/admin/v1/books (audit, rate, token checks as in authenticate-admin-calls)
+router -> service : listBooks(db)
+service -> db : SELECT book LEFT JOIN reward, COUNT(chapter_log)\nORDER BY household_id, title
+db --> service : rows
+service --> router : AdminBook[] (L2-057)
+router --> client : 200 JSON array
+client --> cmd : raw JSON and parsed root
+alt ~--json
+  cmd --> actor : Raw JSON on stdout (L2-063)
+else
+  cmd --> actor : Aligned table: id, household, title, chapters, finished, reward
+end
+@enduml

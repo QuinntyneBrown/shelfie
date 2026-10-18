@@ -1,0 +1,58 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run admin commands
+
+class QueryCommands <<static>> {
+  +Users(): Command  list
+  +Books(): Command  list
+  +Logs(): Command  list ~--book, show <id>
+}
+class WriteCommands <<static>> {
+  +AddTo(users, books, logs: Command): void
+  -DryRun: Option<bool>
+  -Yes: Option<bool>
+  -WriteAsync(session, method, path, body, describe, destructive, dryRun, yes): Task<int>
+}
+class Output <<static>> {
+  +Table(rows: JsonElement, columns: Column[]): void
+  +Fields(pairs: (string, string)[]): void
+  +Json(raw: string): void
+}
+class Column <<record>> {
+  +Header: string
+  +Value: Func<JsonElement, string>
+}
+class Cli <<static>> {
+  +RunAsync(parse, needsToken, body): Task<int>
+}
+class Session <<record>> {
+  +Target: Target
+  +Client: AdminClient?
+  +Json: bool
+}
+class AdminClient {
+  +GetAsync(path): Task<ApiResult>
+  +SendAsync(method, path, body?, dryRun): Task<ApiResult>
+}
+class Prompt <<static>> {
+  +Secret(label): string
+  +Confirm(question): bool
+}
+QueryCommands ..> Cli
+WriteCommands ..> Cli
+QueryCommands ..> Output
+WriteCommands ..> Output
+WriteCommands ..> Prompt
+Output ..> Column
+Cli ..> Session
+Session --> AdminClient
+@enduml

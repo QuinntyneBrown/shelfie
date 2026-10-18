@@ -1,0 +1,82 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Sign in the CLI
+
+class Program {
+  +Main(args: string[]): Task<int>
+  +ApiUrl: Option<string?>  recursive
+  +Json: Option<bool>  recursive
+}
+class AuthCommands <<static>> {
+  +Create(): Command[]  login, logout, whoami
+}
+class Cli <<static>> {
+  +RunAsync(parse: ParseResult, needsToken: bool, body: Func<Session, Task<int>>): Task<int>
+}
+class Session <<record>> {
+  +Target: Target
+  +Client: AdminClient?
+  +Json: bool
+}
+class Target <<record>> {
+  +BaseUrl: Uri
+  +{static} Resolve(option: string?): Target
+}
+class AdminClient {
+  +AdminClient(target: Target, token: string)
+  +GetAsync(path: string): Task<ApiResult>
+  +SendAsync(method, path, body?, dryRun): Task<ApiResult>
+}
+class ApiResult <<record>> {
+  +Json: string
+  +Root: JsonElement
+}
+class AdminApiException {
+  +Status: int
+  +Type: string
+  +RequestId: string?
+  +Body: JsonElement
+}
+class CliException {
+  +ExitCode: int
+}
+class CredentialStore <<static>> {
+  +Save(baseUrl: string, token: string): void
+  +Load(baseUrl: string): string?
+  +Delete(baseUrl: string): void
+}
+class WindowsCredentials <<static>> {
+  -CredWriteW, CredReadW, CredDeleteW, CredFree
+}
+class Prompt <<static>> {
+  +Secret(label: string): string
+  +Confirm(question: string): bool
+}
+class ExitCode <<static>> {
+  +Ok = 0
+  +Failed = 1
+  +Auth = 2
+  +Aborted = 3
+}
+Program ..> AuthCommands
+AuthCommands ..> Cli
+AuthCommands ..> Prompt
+AuthCommands ..> CredentialStore
+Cli ..> Session : builds
+Session --> Target
+Session --> AdminClient
+AdminClient ..> ApiResult : returns
+AdminClient ..> AdminApiException : throws
+Cli ..> ExitCode
+Cli ..> CliException : catches
+CredentialStore ..> WindowsCredentials : on Windows
+@enduml

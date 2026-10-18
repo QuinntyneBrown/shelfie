@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — A write runs in a transaction that a dry run rolls back
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "adminRouter\n(requireScope write)" as router
+  participant "transaction" as tx
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "admin.service.ts\ndeleteLog" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+actor -> client : shelfie-admin logs delete b-bfg-c2 [~--dry-run]
+client -> router : DELETE /api/admin/v1/logs/b-bfg-c2?dryRun=true|false
+router -> router : Validate id (L2-053)
+alt id malformed
+  router --> client : 400 validation, errors[]
+else valid
+  router -> tx : transaction(db, dryRun, () => deleteLog(db, id))
+  tx -> db : BEGIN
+  tx -> service : deleteLog(db, id)
+  service -> db : SELECT log, book, newest chapter, reward
+  alt no such log
+    service --> tx : Problem 404 not-found
+  else not the newest chapter
+    service --> tx : Problem 400 log-not-latest (L2-060)
+  else book rewarded
+    service --> tx : Problem 400 book-rewarded (L2-060)
+  else allowed
+    service -> db : DELETE chapter_log (answers cascade);\nUPDATE book SET finished_at = NULL
+    service --> tx : {id, bookTitle, chapter, answersDeleted}
+  end
+  alt Problem thrown or dryRun
+    tx -> db : ROLLBACK (L2-062)
+  else
+    tx -> db : COMMIT
+  end
+  tx --> router : result or Problem
+  router --> client : 200 {..., dryRun} or problem {type, requestId}
+end
+@enduml

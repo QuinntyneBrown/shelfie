@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — A destructive write previews, asks and then applies
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "WriteCommands\nlogs delete" as cmd
+  participant "Prompt" as prompt
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "DELETE /logs/:id" as api
+end box
+actor -> cmd : shelfie-admin logs delete b-bfg-c2 [~--dry-run] [~--yes]
+cmd -> client : SendAsync(DELETE, "logs/b-bfg-c2", dryRun: true)
+client -> api : DELETE ...?dryRun=true
+alt refused
+  api --> client : 400 log-not-latest | book-rewarded, 404 not-found
+  cmd --> actor : stderr reason; exit 1; nothing asked (L2-062)
+else would succeed
+  api --> client : 200 {bookTitle, chapter, answersDeleted, dryRun: true}
+  cmd --> actor : "Dry run: would delete chapter 2 of The BFG and 1 answer"
+  alt ~--dry-run
+    cmd --> actor : exit 0 (L2-062)
+  else
+    opt no ~--yes
+      cmd -> prompt : Confirm("Continue? [y/N]")
+      prompt --> actor : question on stderr
+      actor -> prompt : answer or end of input
+      alt not y / yes
+        cmd --> actor : "Aborted"; exit 3; nothing changed (L2-062)
+      end
+    end
+    cmd -> client : SendAsync(DELETE, "logs/b-bfg-c2", dryRun: false)
+    client -> api : DELETE /api/admin/v1/logs/b-bfg-c2
+    api --> client : 200 {..., dryRun: false}
+    cmd --> actor : "Deleted chapter 2 of The BFG and 1 answer" or JSON; exit 0
+  end
+end
+@enduml

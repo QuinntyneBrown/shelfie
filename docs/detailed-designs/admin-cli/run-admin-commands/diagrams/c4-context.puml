@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Run admin commands
+
+Person(op, "Operator", "The parent who runs production")
+Person(family, "Reader and parents", "Use the web app")
+System(shelfie, "Shelfie", "Reading log web app and API at shelfie.kids")
+System_Ext(cli, "shelfie-admin CLI", ".NET global tool on the operator machine")
+System_Ext(store, "OS credential store", "Credential Manager, Keychain or Secret Service")
+Rel(family, shelfie, "Read, log and review using", "HTTPS")
+Rel(op, cli, "Runs commands in a terminal")
+Rel(cli, store, "Keeps the admin token in")
+Rel(cli, shelfie, "Calls the admin API", "HTTPS, bearer token")
+Rel(op, shelfie, "Creates and revokes tokens on the VM", "SSH")
+@enduml

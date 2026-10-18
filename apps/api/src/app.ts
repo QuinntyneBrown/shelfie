@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Pool } from 'pg';
+import { adminRouter } from './admin.router.ts';
 import { authRouter } from './auth.router.ts';
 import { csrfGuard } from './csrf.ts';
 import { problemDetailsHandler } from './errors.ts';
@@ -38,6 +39,8 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
       res.status(503).json({ status: 'unavailable' });
     }
   });
+  // Bearer-token only, no cookies: browsers never send the credential on their own, so no CSRF guard (ADR-0005).
+  app.use('/api/admin/v1', adminRouter(db));
   app.use('/api', csrfGuard);
   app.use('/api/auth', authRouter(db, options.mail));
   app.use('/api/shelf', shelfRouter(db));

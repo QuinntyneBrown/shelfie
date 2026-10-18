@@ -7,7 +7,7 @@ import { requireRole } from './authz.ts';
 import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
 import { giveReward } from './rewards.service.ts';
 
-const giveRewardSchema = z.object({
+export const giveRewardSchema = z.object({
   text: z.string().trim().min(1).max(100),
   note: z
     .string()

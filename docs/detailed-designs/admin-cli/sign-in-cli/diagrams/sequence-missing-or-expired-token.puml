@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — A command without a usable token fails clearly
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "Any command" as cmd
+  participant "Cli" as runner
+  participant "CredentialStore" as store
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "requireAdminToken" as api
+end box
+actor -> cmd : shelfie-admin books list
+cmd -> runner : RunAsync(needsToken: true)
+runner -> store : Load(baseUrl)
+alt no entry
+  store --> runner : null
+  runner --> actor : "No admin token for URL. Run shelfie-admin login." exit 2; no request (L2-055)
+else token found
+  runner -> client : new AdminClient(target, token)
+  client -> api : GET /api/admin/v1/books
+  alt expired
+    api --> client : 401 token-expired, expiresAt
+    client --> runner : AdminApiException
+    runner --> actor : "The admin token expired on .... Create a new token and run shelfie-admin login. (SHF-1A2B)" exit 2
+  else revoked
+    api --> client : 401 token-revoked
+    runner --> actor : "The admin token was revoked. ..." exit 2
+  else accepted
+    api --> client : 200
+    client --> cmd : ApiResult
+    cmd --> actor : table or JSON; exit 0
+  end
+end
+@enduml
