@@ -5,8 +5,8 @@
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [sign-in](sign-in.md) | 14 days | 100% |
 | [settings](settings.md) | 17 days | 71% |
+| [sign-in](sign-in.md) | 14 days | 100% |
 | [platform](platform.md) | 12 days | 86% |
 | [shell](shell.md) | 5 days | 96% |
 | [review](review.md) | 6 days | 97% |
