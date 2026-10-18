@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage readers
+
+Container(web, "Shelfie web", "Angular", "EditReaderDialog with sh-color-picker and sh-text-field; ReadersApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(authz, "requireRole('parent')", "Middleware", "401 without a session, 403 for a reader")
+  Component(router, "readers.router.ts", "Express Router", "POST /api/readers; PATCH /api/readers/:id validated with readerSchema")
+  Component(service, "readers.service.ts", "Service", "addReader, updateReader: case-insensitive username check, household scope, argon2id hashing")
+  Component(repo, "readers.repo.ts", "Repository", "findUserByUsername, findReader, insertReader, updateReader, deleteSessionsOf")
+  ComponentDb(db, "Shelfie database", "SQLite", "users, session")
+}
+Rel(web, router, "POST /api/readers, PATCH /api/readers/:id", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, service, "addReader(householdId, input), updateReader(householdId, id, input)")
+Rel(service, repo, "findUserByUsername, insertReader, updateReader, deleteSessionsOf")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

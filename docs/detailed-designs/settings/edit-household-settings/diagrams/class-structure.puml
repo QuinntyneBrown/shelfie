@@ -20,12 +20,6 @@ class SettingsPage {
   +save(): Promise<void>
 }
 
-class "sh-color-picker" as ColorPicker {
-  +colors: string[]
-  +value: string
-  +valueChange: EventEmitter<string>
-}
-
 class "sh-text-field" as TextField {
   +label: string
   +type: 'text' | 'email' | 'password'
@@ -43,68 +37,58 @@ class SessionService {
 }
 
 class SettingsView {
-  +reader: ReaderSettings
-  +grownUp: GrownUpSettings
+  +account: AccountSettings
   +theme: 'device' | 'light' | 'dark'
 }
 
 class SettingsPatch {
-  +reader: ReaderSettings
-  +grownUp: GrownUpSettings
+  +account: AccountPatch
   +theme: 'device' | 'light' | 'dark'
 }
 
-class ReaderSettings {
+class AccountSettings {
   +name: string
-  +color: string
-  +pin?: string
+  +username: string
+  +email: string
 }
 
-class GrownUpSettings {
+class AccountPatch {
   +name: string
   +email: string
   +newPassword?: string
   +currentPassword?: string
 }
 
-class Profile {
+class User {
   +id: string
   +householdId: string
-  +role: 'reader' | 'grown_up'
+  +role: 'parent' | 'reader'
   +name: string
-  +color: string
+  +username: string
   +email: string | null
-  +passwordHash: string | null
-  +pinHash: string | null
-  +pinFailedCount: number
-  +pinLockedUntil: Date | null
+  +passwordHash: string
 }
 
 class SettingsService {
-  +getSettings(householdId: string): SettingsView
-  +updateSettings(householdId: string, profileId: string, patch: SettingsPatch): SettingsView
+  +getSettings(householdId: string, userId: string): SettingsView
+  +updateSettings(householdId: string, userId: string, patch: SettingsPatch): SettingsView
 }
 
 class SettingsRepo {
-  +findHouseholdSettings(householdId: string): SettingsView
-  +findProfileByEmail(email: string): Profile | undefined
-  +updateReader(householdId: string, name: string, color: string, pinHash: string | null): void
-  +updateGrownUp(profileId: string, name: string, email: string, passwordHash: string | null): void
+  +findSettings(householdId: string, userId: string): SettingsView
+  +findUserByEmail(email: string): User | undefined
+  +updateParent(userId: string, name: string, email: string, passwordHash: string | null): void
   +updateTheme(householdId: string, theme: string): void
 }
 
-SettingsPage *-- ColorPicker : renders
 SettingsPage *-- TextField : renders
 SettingsPage ..> SettingsApi : calls
 SettingsPage ..> SessionService : updates
 SettingsApi ..> SettingsPatch : sends
 SettingsApi ..> SettingsView : returns
-SettingsView *-- ReaderSettings
-SettingsView *-- GrownUpSettings
-SettingsPatch *-- ReaderSettings
-SettingsPatch *-- GrownUpSettings
+SettingsView *-- AccountSettings
+SettingsPatch *-- AccountPatch
 SettingsService ..> SettingsPatch : receives
 SettingsService --> SettingsRepo : uses
-SettingsRepo --> Profile : reads / updates
-Profile "2" --> "1" SettingsView : projected into
+SettingsRepo --> User : reads / updates
 @enduml

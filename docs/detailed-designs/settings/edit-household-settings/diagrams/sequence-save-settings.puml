@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as parent
 box "Frontend — Shelfie web (settings library)" #E0F2FE
   participant "SettingsPage" as page
   participant "SettingsApi" as client
@@ -30,47 +30,47 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (SQLite)" as db
 end box
 
-grownUp -> page : Edit fields; tap Save settings
-page -> page : Client checks: PIN 4 digits, passwords equal and 8+,\nnames 1-40, e-mail format (L2-021)
+parent -> page : Edit fields; tap Save settings
+page -> page : Client checks: password 8+ and equal in both boxes,\nname 1-40, e-mail format (L2-021)
 alt a client check fails
-  page --> grownUp : Show "Fix N things" summary and field errors; keep values
+  page --> parent : Show "Fix N things" summary and field errors; keep values; send nothing
 else checks pass
   page -> page : Set submitting; disable form
   page -> client : save(patch)
-  client -> router : PATCH /api/settings {reader, grownUp, theme}
-  router -> router : Require grown-up role; validate body (400 errors[] on failure)
-  router -> service : updateSettings(householdId, profileId, patch)
-  service -> db : SELECT both profile rows WHERE household_id = ?
-  db --> service : reader row, grown-up row
+  client -> router : PATCH /api/settings {account, theme}
+  router -> router : Require parent role; validate body (400 errors[] on failure)
+  router -> service : updateSettings(householdId, userId, patch)
+  service -> db : SELECT user WHERE id = ?
+  db --> service : parent row
   alt e-mail or password changes and currentPassword missing or wrong
     service -> service : argon2id verify currentPassword against password_hash (L2-021)
     service --> router : CurrentPasswordInvalid
     router --> client : 400 problem type "current-password-invalid"
     client --> page : ApiError
-    page --> grownUp : Error under Current password; keep values (L2-021)
-  else e-mail already used by another profile
-    service -> db : SELECT profile WHERE email = ?
-    db --> service : other profile
+    page --> parent : Error under Current password; keep values (L2-021)
+  else e-mail already registered to another user
+    service -> db : SELECT user WHERE email = ?
+    db --> service : other user
     service --> router : EmailInUse
     router --> client : 409 problem type "email-in-use"
     client --> page : ApiError
-    page --> grownUp : Error under E-mail address; keep values
+    page --> parent : Error under E-mail address; keep values
   else all checks pass
-    service -> service : argon2id hash pin and newPassword when present (L2-021)
-    service -> db : BEGIN; UPDATE reader (name, color, pin_hash,\npin_failed_count = 0, pin_locked_until = NULL);\nUPDATE grown-up (name, email, password_hash);\nUPDATE household.theme; COMMIT
+    service -> service : argon2id hash newPassword when present
+    service -> db : BEGIN; UPDATE users (name, email, password_hash);\nUPDATE household.theme; COMMIT
     alt database failure
       db --> service : error
       service --> router : throws
       router --> client : 500 problem {requestId}
       client --> page : ApiError
-      page --> grownUp : Show danger banner; keep values (L2-021)
+      page --> parent : Show danger banner; keep values (L2-021)
     else committed
       db --> service : ok
       service --> router : SettingsView
-      router --> client : 200 {reader, grownUp, theme}
+      router --> client : 200 {account, theme}
       client --> page : SettingsView
-      page -> session : update({name, color}) for the grown-up (L2-021)
-      page --> grownUp : Show "Saved" banner; clear PIN and password boxes
+      page -> session : update(name, color) for the parent (L2-021)
+      page --> parent : Show "Saved" banner; clear password boxes
     end
   end
 end

@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Parent sign-up
+
+Container(web, "Shelfie web", "Angular", "SignUpPage; AuthApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "POST /api/auth/sign-up")
+  Component(validate, "validate()", "Middleware (zod)", "signUpSchema; 400 with field errors")
+  Component(service, "auth.service.ts", "Service", "signUp: uniqueness checks, argon2id hash, household, parent, session")
+  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over household, profile, session and device")
+  ComponentDb(db, "Shelfie database", "SQLite", "household, profile, session, device")
+}
+Rel(web, router, "POST sign-up", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "signUp(input, deviceId)")
+Rel(service, repo, "usernameExists, emailExists, createHousehold, createParent, createSession, createDevice")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

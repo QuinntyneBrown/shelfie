@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Manage and remove a book
 
-Person(grownUp, "Grown-up", "Lists books, edits details, removes a book")
+Person(grownUp, "Parent", "Lists books, edits details, removes a book")
 Person(reader, "Reader", "Sees the edited book on her shelf")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 

@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Add a reader
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (settings library)" #E0F2FE
+  participant "EditReaderDialog" as dialog
+  participant "ReadersApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "readers.router.ts\n+ validate(readerSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "readers.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+parent -> dialog : Fill in name, colour, username, password; tap Add reader
+dialog -> dialog : Client checks: name 1-40, username format,\npassword 8+ (L2-036)
+alt a client check fails
+  dialog --> parent : Show "Fix N things" and field errors; keep values; send nothing
+else checks pass
+  dialog -> dialog : Set busy; disable form
+  dialog -> client : add(input)
+  client -> router : POST /api/readers {name, color, username, password}
+  router -> router : Require parent role; validate body
+  router -> service : addReader(householdId, input)
+  service -> db : SELECT user WHERE lower(username) = lower(?)
+  alt username already held by a parent or reader
+    db --> service : existing user
+    service --> router : UsernameTaken
+    router --> client : 409 problem type "username-taken"
+    client --> dialog : ApiError
+    dialog --> parent : Show "Username is taken" under Username; keep values (L2-036)
+  else username free
+    db --> service : none
+    service -> service : argon2id hash password
+    service -> db : INSERT users (role = reader, household_id, name, color, username, password_hash)
+    alt database failure
+      db --> service : error
+      service --> router : throws
+      router --> client : 500 problem {requestId}
+      client --> dialog : ApiError
+      dialog --> parent : Show "{name} wasn't added" with Try again; keep values (L2-036)
+    else inserted
+      db --> service : ok
+      service --> router : ReaderView
+      router --> client : 201 {id, name, color, username}
+      client --> dialog : ReaderView
+      dialog --> parent : Close; add the row to Readers; show toast
+    end
+  end
+end
+@enduml

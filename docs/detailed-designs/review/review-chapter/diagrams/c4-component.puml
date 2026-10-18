@@ -6,7 +6,7 @@ title Components — Review a chapter
 Container(web, "Shelfie web", "Angular", "ReviewChapterPage + sh-sticker-picker; ReviewApi; ShelfPage + sh-banner")
 Container_Boundary(api, "Shelfie API") {
   Component(router, "review.router.ts", "Express Router", "POST /api/chapter-logs/:id/feedback; validates with feedbackSchema")
-  Component(authz, "requireRole('grown_up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(authz, "requireRole('parent')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
   Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400")
   Component(service, "review.service.ts", "Service", "sendFeedback: household check, 409 when reviewed, mark reviewed, next item")
   Component(repo, "review.repo.ts", "Repository", "findChapterLogForHousehold, markReviewed, pendingChapterLogs")

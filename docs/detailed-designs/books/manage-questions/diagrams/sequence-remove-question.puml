@@ -14,14 +14,14 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 actor "Reader" as reader
 box "Frontend — Shelfie web (books library)" #E0F2FE
   participant "ManageBookPage\n(Questions section)" as page
   participant "BooksApi" as client
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "questions.router.ts\n+ requireRole('grown-up')" as router
+  participant "questions.router.ts\n+ requireRole('parent')" as router
   participant "chapters.router.ts\n(reading-log/log-chapter)" as chaptersRouter
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
@@ -35,7 +35,7 @@ end box
 grownUp -> page : "Remove" on a custom question (defaults have no Remove — L2-013)
 page -> client : removeQuestion(id)
 client -> router : DELETE /api/questions/:id
-router -> router : Require grown-up session (401 / 403)
+router -> router : Require parent session (401 / 403)
 router -> service : removeQuestion(householdId, questionId)
 service -> db : SELECT question JOIN book WHERE question.id = ? AND household_id = ?
 db --> service : row (404 when none or already removed)

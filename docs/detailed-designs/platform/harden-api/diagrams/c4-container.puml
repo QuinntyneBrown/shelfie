@@ -3,8 +3,8 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Harden the API
 
-Person(reader, "Reader", "Signs in with a PIN")
-Person(grownUp, "Grown-up", "Signs in with e-mail and password")
+Person(reader, "Reader", "Signs in with username and password")
+Person(grownUp, "Parent", "Signs in with username and password")
 System_Ext(proxy, "Reverse proxy", "TLS termination; deferred until the Azure deployment")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Renders stored text through escaping interpolation; ApiClient sends X-Requested-With: Shelfie with credentials")

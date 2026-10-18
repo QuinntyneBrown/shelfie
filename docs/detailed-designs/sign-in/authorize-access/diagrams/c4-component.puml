@@ -5,20 +5,18 @@ title Components — Authorize access
 
 Container(web, "Shelfie web", "Angular", "authGuard, grownUpGuard, GlobalErrorHandler; NotFoundPage, ForbiddenPage, ServerErrorPage")
 Container_Boundary(api, "Shelfie API") {
-  Component(sessionMw, "session.ts", "Middleware", "sessionMiddleware: sets req.session from shelfie_session")
+  Component(sessionMw, "session.ts", "Middleware", "requireSession: sets the session (userId, householdId, role) from shelfie_session")
   Component(authz, "authz.ts", "Middleware", "requireRole(role): 401 without a session, 403 for the wrong role")
-  Component(routers, "*.router.ts", "Express Routers", "Apply requireRole per endpoint (R or G)")
-  Component(services, "*.service.ts", "Services", "Throw NotFoundError when the repository returns nothing")
-  Component(repos, "*.repo.ts", "Repositories", "Every query includes household_id = ?")
-  Component(errors, "errors.ts", "Middleware", "problemDetailsHandler: 404 not-found, 500 generic with requestId, no stack")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, question, chapter_log, answer, reward, profile")
+  Component(routers, "*.router.ts", "Express Routers", "Apply requireRole per endpoint (reader or parent)")
+  Component(services, "*.service.ts", "Services", "Every query includes household_id = ?; throw NotFoundError when it returns nothing")
+    Component(errors, "errors.ts", "Middleware", "problemDetailsHandler: 404 not-found, 500 generic with requestId, no stack")
+  ComponentDb(db, "Shelfie database", "SQLite", "book, question, chapter_log, answer, reward, users, session")
 }
 Rel(web, sessionMw, "Request with session cookie", "JSON/HTTPS")
-Rel(sessionMw, routers, "req.session or none")
+Rel(sessionMw, routers, "Session or none")
 Rel(routers, authz, "Applies requireRole")
-Rel(routers, services, "Call with req.session.householdId")
-Rel(services, repos, "Query by householdId and id")
-Rel(repos, db, "Parameterised SQL scoped by household_id", "SQL")
+Rel(routers, services, "Call with the session householdId")
+Rel(services, db, "Parameterised SQL scoped by household_id", "SQL")
 Rel(services, errors, "Thrown errors reach")
 Rel(errors, web, "Problem document 401, 403, 404 or 500 with requestId")
 @enduml

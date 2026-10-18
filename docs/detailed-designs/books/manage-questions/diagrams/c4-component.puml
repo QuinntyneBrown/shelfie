@@ -6,7 +6,7 @@ title Components — Manage questions
 Container(web, "Shelfie web", "Angular", "EditQuestionDialog on sh-dialog with sh-textarea; BooksApi question methods")
 Container_Boundary(api, "Shelfie API") {
   Component(router, "questions.router.ts", "Express Router", "POST /api/books/:id/questions, PATCH /api/questions/:id, DELETE /api/questions/:id")
-  Component(authz, "requireRole('grown-up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(authz, "requireRole('parent')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
   Component(validate, "validate(questionSchema)", "Middleware (zod)", "text 1-200; 400 with errors[]")
   Component(service, "questions.service.ts", "Service", "DEFAULT_QUESTIONS; addQuestion, updateQuestion, removeQuestion (soft), questionsForBook")
   Component(repo, "questions.repo.ts", "Repository", "insert, findWithBook, updateText, markRemoved, listActive")

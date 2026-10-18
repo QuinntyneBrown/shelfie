@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Add a book
 
 Person(reader, "Reader", "Adds a book")
-Person(grownUp, "Grown-up", "Adds a book")
+Person(grownUp, "Parent", "Adds a book")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "AddBookPage with colour and sticker pickers and live preview")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Validates and inserts the book")

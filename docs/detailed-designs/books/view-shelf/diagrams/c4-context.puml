@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — View the shelf
 
 Person(reader, "Reader", "Child who logs chapters; opens her shelf to pick the next chapter")
-Person(grownUp, "Grown-up", "Reviews chapters and gives rewards that appear on the shelf")
+Person(grownUp, "Parent", "Reviews chapters and gives rewards that appear on the shelf")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Opens her shelf, sees progress, streak and rewards", "HTTPS")

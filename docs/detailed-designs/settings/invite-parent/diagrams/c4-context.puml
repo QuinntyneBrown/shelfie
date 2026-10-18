@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Invite a parent
+
+Person(parent, "Parent", "Invites another parent from Settings")
+Person_Ext(invitee, "Invited person", "Receives the invite link by e-mail")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(mail, "SMTP server", "Mailpit locally; production provider is deferred")
+
+Rel(parent, shelfie, "Sends an invite using", "HTTPS")
+Rel(shelfie, mail, "Hands the invite e-mail to", "SMTP")
+Rel(mail, invitee, "Delivers the invite link to", "E-mail")
+@enduml

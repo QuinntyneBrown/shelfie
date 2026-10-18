@@ -2,7 +2,7 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. The grown-up is also the person who runs the service: there is no operations team, so the service has to tell him when it is unhealthy, keep a log he can search by a code the screen shows, back itself up every night, and stay fast on a phone.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. The parent is also the person who runs the service: there is no operations team, so the service has to tell him when it is unhealthy, keep a log he can search by a code the screen shows, back itself up every night, and stay fast on a phone.
 
 This feature is the operational half of the `platform` subsystem, beside `harden-api`. It has no screen of its own apart from the code shown on the "Something went wrong" page. It covers the health endpoint, structured request logging, the request id that ties a log line to what a user saw, write durability and the nightly backup, the performance budgets and the indexes and bundle layout that meet them, and the repository, test and continuous-integration setup every other feature is built on. The mocks' budget table counts this setup as "Platform setup: Angular app, Node API, database, auth middleware, Playwright, CI".
 
@@ -70,7 +70,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 ### System context
 
-The grown-up both uses Shelfie and operates it; GitHub Actions builds, checks and deploys every change to `main`, and cron on the VM runs the nightly backup.
+The parent both uses Shelfie and operates it; GitHub Actions builds, checks and deploys every change to `main`, and cron on the VM runs the nightly backup.
 
 ![C4 system context for operating the service](diagrams/c4-context.png)
 

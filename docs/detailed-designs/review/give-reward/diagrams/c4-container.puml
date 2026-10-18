@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Give a reward
 
-Person(grownUp, "Grown-up", "Gives a reward")
+Person(grownUp, "Parent", "Gives a reward")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "GiveRewardDialog on the Review page; reward shown on shelf, book and Manage book pages")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Checks the book is finished and unrewarded; inserts the reward")

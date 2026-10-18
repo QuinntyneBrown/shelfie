@@ -3,9 +3,9 @@
 LAYOUT_WITH_LEGEND()
 title Components — Navigate the shell
 
-Person(user, "Reader or Grown-up", "Navigates by touch, mouse or keyboard")
+Person(user, "Reader or Parent", "Navigates by touch, mouse or keyboard")
 Container_Boundary(web, "Shelfie web") {
-  Component(app, "AppComponent", "shelfie application", "Skip link, top bar, banner slot, main landmark, tab bar, toast stack; picks reader or grown-up shell")
+  Component(app, "AppComponent", "shelfie application", "Skip link, top bar, banner slot, main landmark, tab bar, toast stack; picks reader or parent shell")
   Component(router, "Angular Router", "@angular/router", "Renders the active page into main and marks the active link")
   Component(session, "SessionService", "core library", "Signal holding role, name and colour")
   Component(topBar, "sh-top-bar", "components library", "Brand, streak badge, primary links from 768 px, queue badge, avatar button")
@@ -18,7 +18,7 @@ Rel(user, app, "Uses", "Chromium")
 Rel(app, session, "Reads session()")
 Rel(app, router, "Hosts router-outlet in main")
 Rel(app, topBar, "Renders with streak, links, queueCount")
-Rel(app, tabBar, "Renders for grown-up below 768 px")
+Rel(app, tabBar, "Renders for parent below 768 px")
 Rel(topBar, menu, "Opens from the avatar button")
 Rel(menu, app, "select(id)")
 Rel(app, notify, "Renders slots")

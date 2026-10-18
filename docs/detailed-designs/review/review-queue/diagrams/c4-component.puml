@@ -6,7 +6,7 @@ title Components — Review queue
 Container(web, "Shelfie web", "Angular", "ReviewPage with sh-activity-item; ReviewApi publishes queueCount")
 Container_Boundary(api, "Shelfie API") {
   Component(router, "review.router.ts", "Express Router", "GET /api/review")
-  Component(authz, "requireRole('grown_up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(authz, "requireRole('parent')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
   Component(service, "review.service.ts", "Service", "overview: queue, finished books without reward, this-week stats, activity")
   Component(streak, "chapters module streak function", "Service (reading-log)", "Derives the streak from chapter_log.read_on")
   Component(repo, "review.repo.ts", "Repository", "Parameterised SQL over chapter_log, book, reward")

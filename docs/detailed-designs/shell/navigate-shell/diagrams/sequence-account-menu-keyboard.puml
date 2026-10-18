@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or Grown-up" as user
+actor "Reader or Parent" as user
 box "Frontend — Shelfie web (shelfie application)" #E0F2FE
   participant "AppComponent" as app
 end box
@@ -44,7 +44,7 @@ else Enter on an item
   menu -> menu : close(returnFocus = false)
   app -> session : Hand off to manage-session (L2-003)
   app --> user : Sign-in page
-else Enter on "Settings" (grown-up only)
+else Enter on "Settings" (parent only)
   user -> menu : Enter on "Settings"
   menu -> app : select("settings")
   app -> app : router.navigate(['/settings'])

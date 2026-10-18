@@ -14,14 +14,14 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 box "Frontend — Shelfie web (books library)" #E0F2FE
   participant "ManageBookPage\n(Questions section)" as page
   participant "EditQuestionDialog\n(sh-dialog, sh-textarea)" as dialog
   participant "BooksApi" as client
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "questions.router.ts\n+ requireRole('grown-up')\n+ validate(questionSchema)" as router
+  participant "questions.router.ts\n+ requireRole('parent')\n+ validate(questionSchema)" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "questions.service.ts" as service
@@ -45,7 +45,7 @@ else valid
     dialog -> client : updateQuestion(id, text)
     client -> router : PATCH /api/questions/:id {text}
   end
-  router -> router : Require grown-up session; validate body (L2-013)
+  router -> router : Require parent session; validate body (L2-013)
   router -> service : addQuestion / updateQuestion(householdId, …, text)
   service -> db : SELECT book (or question JOIN book) WHERE household_id = ?
   db --> service : row (404 when none or removed)

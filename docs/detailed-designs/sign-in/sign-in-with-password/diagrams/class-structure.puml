@@ -12,21 +12,18 @@ skinparam class {
 title Class structure — Sign in with a password
 
 class SignInPage {
-  +profiles: Signal<ProfileSummary[]>
-  +step: Signal<'pick' | 'pin' | 'password'>
   +state: Signal<'idle' | 'submitting' | 'invalid' | 'error'>
-  +email: FormControl<string>
+  +username: FormControl<string>
   +password: FormControl<string>
+  +remember: FormControl<boolean>
   +fieldErrors: Signal<Record<string, string>>
-  +choose(profile: ProfileSummary): void
-  +submitPassword(): Promise<void>
+  +submit(): Promise<void>
   +retry(): Promise<void>
 }
 
 class "sh-text-field" as TextField {
   +label: string
-  +type: 'text' | 'email' | 'password'
-  +help: string | null
+  +type: 'text' | 'password'
   +error: string | null
   +autocomplete: string
 }
@@ -38,8 +35,7 @@ class "sh-button" as Button {
 }
 
 class AuthApi {
-  +profiles(): Promise<ProfileSummary[]>
-  +signInWithPassword(email: string, password: string): Promise<Session>
+  +signInWithPassword(username: string, password: string, remember: boolean): Promise<Session>
 }
 
 class SessionService {
@@ -48,57 +44,35 @@ class SessionService {
 }
 
 class PasswordSignInRequest {
-  +email: string
+  +username: string
   +password: string
+  +remember: boolean
 }
 
-class ProfileSummary {
-  +id: string
-  +role: 'reader' | 'grown_up'
-  +name: string
-  +color: string
-  +email: string | null
-}
-
-class Profile {
+class User {
   +id: string
   +householdId: string
-  +role: 'reader' | 'grown_up'
+  +role: 'parent' | 'reader'
   +name: string
-  +color: string
-  +email: string | null
-  +passwordHash: string | null
+  +username: string
+  +passwordHash: string
 }
 
 class Session {
   +id: string
-  +profileId: string
+  +userId: string
+  +role: 'parent' | 'reader'
   +createdAt: Date
   +expiresAt: Date
 }
 
-class Device {
-  +id: string
-  +householdId: string
-  +createdAt: Date
-}
-
 class AuthService {
-  +listProfiles(deviceId: string | null): ProfileSummary[]
-  +signInWithPassword(email: string, password: string, deviceId: string | null): SignInResult
-}
-
-class SignInResult {
-  +session: Session
-  +device: Device | null
+  +signInWithPassword(username: string, password: string, remember: boolean): Session
 }
 
 class AuthRepo {
-  +findGrownUpByEmail(email: string): Profile | undefined
-  +findProfilesByHousehold(householdId: string): Profile[]
-  +createSession(profileId: string, expiresAt: Date): Session
-  +findDevice(id: string): Device | undefined
-  +createDevice(householdId: string): Device
+  +findUserByUsername(username: string): User | undefined
+  +createSession(userId: string, expiresAt: Date): Session
 }
 
 SignInPage *-- TextField : renders
@@ -106,12 +80,9 @@ SignInPage *-- Button : renders
 SignInPage ..> AuthApi : calls
 SignInPage ..> SessionService : sets
 AuthApi ..> PasswordSignInRequest : sends
-AuthApi ..> ProfileSummary : receives
 AuthService ..> PasswordSignInRequest : receives
-AuthService ..> SignInResult : returns
 AuthService --> AuthRepo : uses
-AuthRepo --> Profile : reads
+AuthRepo --> User : reads
 AuthRepo --> Session : creates
-AuthRepo --> Device : reads / creates
-Profile "1" --> "*" Session : owns
+User "1" --> "*" Session : owns
 @enduml

@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as actor
+actor "Parent" as actor
 box "Frontend — Shelfie web (shell and core libraries)" #E0F2FE
   participant "ReviewPage /\nserver-error page" as page
   participant "ApiClient" as client

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. Most of what either of them does ends in a small outcome that the application has to report: a chapter saved, a book added, feedback sent, a server that stopped answering, a connection that dropped.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. Most of what either of them does ends in a small outcome that the application has to report: a chapter saved, a book added, feedback sent, a server that stopped answering, a connection that dropped.
 
 This feature gives the application two ways to say so. A **toast** is a short message that appears at the bottom edge of the screen, says one thing about an action that just completed, and leaves on its own. A **banner** is a strip under the top bar that describes a condition rather than an event, such as being offline or having chapters waiting for review, and stays as long as the condition does. Toasts are for "that worked" and "that failed"; banners are for "this is still true".
 

@@ -28,7 +28,7 @@ class Session {
   +id: string
   +profileId: string
   +householdId: string
-  +role: 'reader' | 'grown_up'
+  +role: 'reader' | 'parent'
   +createdAt: Date
   +expiresAt: Date
 }
@@ -52,7 +52,7 @@ class Validate <<validate.ts>> {
 }
 
 class Authz <<authz.ts>> {
-  +requireRole(role: 'reader' | 'grown_up' | 'any'): RequestHandler
+  +requireRole(role: 'reader' | 'parent' | 'any'): RequestHandler
 }
 
 class Hashing <<hashing.ts>> {
@@ -89,7 +89,7 @@ class ProblemDetailsHandler <<errors.ts>> {
 
 class Logger <<logger.ts>> {
   +logger: pino.Logger
-  -redactPaths: cookie, authorization, password, currentPassword, newPassword, pin, token, text, answers
+  -redactPaths: cookie, authorization, password, currentPassword, newPassword, token, text, answers
 }
 
 App *-- SessionMiddleware : applies

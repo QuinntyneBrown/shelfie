@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Choose appearance
 
-Person(grownUp, "Grown-up", "Chooses the appearance")
+Person(grownUp, "Parent", "Chooses the appearance")
 Person(reader, "Reader", "Sees the theme at sign-in")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "ThemeService sets data-theme on the html element from the session; Appearance section of SettingsPage")
@@ -12,6 +12,6 @@ System_Boundary(shelfie, "Shelfie") {
 }
 Rel(grownUp, web, "Picks a setting and saves", "HTTPS")
 Rel(reader, web, "Signs in", "HTTPS")
-Rel(web, api, "PATCH /api/settings; GET /api/auth/session; POST /api/auth/pin; POST /api/auth/password", "JSON/HTTPS")
+Rel(web, api, "PATCH /api/settings; GET /api/auth/session; POST /api/auth/password", "JSON/HTTPS")
 Rel(api, db, "Reads and updates household.theme", "SQL")
 @enduml

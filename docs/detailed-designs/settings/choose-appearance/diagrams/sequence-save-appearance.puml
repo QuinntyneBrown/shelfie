@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 box "Frontend — Shelfie web (settings library)" #E0F2FE
   participant "SettingsPage" as page
   participant "SettingsApi" as client
@@ -34,7 +34,7 @@ grownUp -> page : Pick Match the device, Always light or Always dark
 grownUp -> page : Tap Save settings
 page -> client : save(patch with theme)
 client -> router : PATCH /api/settings {reader, grownUp, theme}
-router -> router : Require grown-up role; validate theme in device|light|dark
+router -> router : Require parent role; validate theme in device|light|dark
 router -> service : updateSettings(householdId, profileId, patch)
 service -> db : UPDATE household SET theme = ? WHERE id = ?\n(in the same transaction as the profile rows)
 alt database failure

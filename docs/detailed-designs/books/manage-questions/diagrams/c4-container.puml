@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Manage questions
 
-Person(grownUp, "Grown-up", "Manages questions")
+Person(grownUp, "Parent", "Manages questions")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Questions section of ManageBookPage; EditQuestionDialog")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "DEFAULT_QUESTIONS constant; custom question endpoints; composes the log form")

@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or Grown-up" as user
+actor "Reader or Parent" as user
 box "Frontend — Shelfie web (core library)" #E0F2FE
   participant "Caller\n(OfflineQueue, ReviewPage, ...)" as caller
   participant "BannerService" as svc

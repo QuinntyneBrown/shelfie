@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as parent
 box "Frontend — Shelfie web (sign-in library)" #E0F2FE
   participant "ForgotPasswordPage" as page
   participant "AuthApi" as client
@@ -30,20 +30,20 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   participant "E-mail provider (SMTP)" as mail
 end box
 
-grownUp -> page : Enter e-mail; press Send reset link
+parent -> page : Enter e-mail; press Send reset link
 page -> page : Validate e-mail format
 alt e-mail malformed
-  page --> grownUp : "Check one thing" summary and field error; no request (L2-004)
+  page --> parent : "Check one thing" summary and field error; no request (L2-004)
 else e-mail well-formed
   page -> client : forgotPassword(email)
   client -> router : POST /api/auth/forgot-password {email}
   router -> router : Validate body
   router -> service : requestPasswordReset(email)
-  service -> db : SELECT profile WHERE email = ? AND role = 'grown_up'
-  db --> service : profile row or none
-  opt profile found
+  service -> db : SELECT users WHERE email = ? AND role = 'parent'
+  db --> service : user row or none
+  opt parent found
     service -> service : token = 32 random bytes; tokenHash = SHA-256(token)
-    service -> db : INSERT password_reset (token_hash, profile_id, expires_at = now + 1 h)
+    service -> db : INSERT password_reset (token_hash, user_id, expires_at = now + 1 h)
     db --> service : ok
     service -> mail : Send "Reset your Shelfie password" with\n/reset-password?token=...&email=...
     mail --> service : accepted
@@ -52,11 +52,11 @@ else e-mail well-formed
   alt server unreachable or mail send failed
     router --> client : 5xx problem with requestId, or no response
     client --> page : ApiError or network failure
-    page --> grownUp : "The e-mail couldn't be sent" with Try again; address kept
+    page --> parent : "The e-mail couldn't be sent" with Try again; address kept
   else accepted
     router --> client : 202 (same body whether or not the account exists — L2-004)
     client --> page : done
-    page --> grownUp : "Check your e-mail ... works for 1 hour" with send it again (L2-004)
+    page --> parent : "Check your e-mail ... works for 1 hour" with send it again (L2-004)
   end
 end
 @enduml

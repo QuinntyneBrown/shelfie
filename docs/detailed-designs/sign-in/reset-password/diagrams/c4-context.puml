@@ -3,11 +3,11 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Reset a forgotten password
 
-Person(grownUp, "Grown-up", "Forgot his password; requests a reset link and chooses a new password")
-System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+Person(parent, "Parent", "Forgot the password; requests a reset link and chooses a new password")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for households of parents and readers")
 System_Ext(mail, "E-mail provider", "Delivers the reset link")
 
-Rel(grownUp, shelfie, "Requests a reset link and sets a new password", "HTTPS")
+Rel(parent, shelfie, "Requests a reset link and sets a new password", "HTTPS")
 Rel(shelfie, mail, "Sends the reset link", "SMTP")
-Rel(mail, grownUp, "Delivers the e-mail")
+Rel(mail, parent, "Delivers the e-mail")
 @enduml

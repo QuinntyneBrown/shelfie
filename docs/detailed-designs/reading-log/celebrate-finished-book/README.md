@@ -2,13 +2,13 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **book** has a fixed chapter count set when it is added; a book is **finished** when every one of its chapters has a chapter log (log-chapter).
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **book** has a fixed chapter count set when it is added; a book is **finished** when every one of its chapters has a chapter log (log-chapter).
 
-Finishing a book is the moment the whole loop is built around, so it gets its own screen. When the reader logs the last chapter, the log page shows the **finish-book celebration** instead of the ordinary success state: a trophy, "You finished the whole book!", a line that the grown-up will pick her reward, and the next moves "Back to my shelf" and "Add my next book". The book page then shows a finished hero ("You finished Matilda on Tuesday!") with the reward once it is given, and the shelf moves the book to the Finished row (books/shelf, `L2-018`).
+Finishing a book is the moment the whole loop is built around, so it gets its own screen. When the reader logs the last chapter, the log page shows the **finish-book celebration** instead of the ordinary success state: a trophy, "You finished the whole book!", a line that the parent will pick her reward, and the next moves "Back to my shelf" and "Add my next book". The book page then shows a finished hero ("You finished Matilda on Tuesday!") with the reward once it is given, and the shelf moves the book to the Finished row (books/shelf, `L2-018`).
 
 A **celebration** is a short confetti-style animation that runs once and stops. For a reader who has asked the operating system for reduced motion the celebration renders a static state, with no animation, so the moment is still marked.
 
-The server records the finish as `book.finished_at`, set in the same transaction as the last chapter log. The grown-up's review queue reads `finished_at` to show "finished, give a reward" (review/review-queue and review/give-reward); the reward itself is outside this feature. The feature sits in the `reading-log` subsystem beside log-chapter, view-chapter-answers and track-streak.
+The server records the finish as `book.finished_at`, set in the same transaction as the last chapter log. The parent's review queue reads `finished_at` to show "finished, give a reward" (review/review-queue and review/give-reward); the reward itself is outside this feature. The feature sits in the `reading-log` subsystem beside log-chapter, view-chapter-answers and track-streak.
 
 ## Description
 
@@ -35,7 +35,7 @@ The feature realizes the following level-2 (L2) requirement. It refines a level-
 
 ### System context
 
-The reader finishes a book in Shelfie and the grown-up later gives a reward for it.
+The reader finishes a book in Shelfie and the parent later gives a reward for it.
 
 ![C4 system context for celebrating a finished book](diagrams/c4-context.png)
 

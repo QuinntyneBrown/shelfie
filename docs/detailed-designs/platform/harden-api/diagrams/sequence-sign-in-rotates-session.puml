@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as actor
+actor "Parent" as actor
 box "Frontend — Shelfie web (sign-in library)" #E0F2FE
   participant "SignInPage" as page
   participant "AuthApi" as client
@@ -33,8 +33,8 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (SQLite)" as db
 end box
 
-actor -> page : Submit e-mail and password
-page -> client : signInWithPassword(email, password)
+actor -> page : Submit username and password
+page -> client : signInWithPassword(username, password)
 client -> mw : POST /api/auth/password\n(cookie shelfie_session may be present)
 mw -> db : SELECT session WHERE id = ?
 db --> mw : row or none
@@ -45,9 +45,9 @@ alt more than 10 attempts from this IP in 10 minutes
   page --> actor : "Too many tries" message
 else within the limit
   rate -> router : next()
-  router -> router : Validate body: email format, password non-empty (L2-028)
-  router -> service : signInWithPassword(email, password)
-  service -> db : SELECT profile WHERE email = ? AND role = 'grown_up'
+  router -> router : Validate body: username and password non-empty (L2-028)
+  router -> service : signInWithPassword(username, password)
+  service -> db : SELECT profile WHERE username = ? COLLATE NOCASE
   db --> service : profile row with password_hash
   service -> hashing : verifySecret(password_hash, password)
   hashing --> service : match or no match (argon2id — L2-027)
@@ -55,7 +55,7 @@ else within the limit
     service --> router : HttpError 401 type "credentials-invalid"
     router --> client : 401 Problem {requestId}
     client --> page : ApiError
-    page --> actor : Generic "e-mail or password is wrong"
+    page --> actor : Generic "username or password is wrong"
   else match
     service -> issue : issueSession(res, profileId)
     issue -> db : DELETE FROM session WHERE id = ? (old cookie id, if any)

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Parent sign-up
+
+Person(parent, "Parent", "Creates an account and starts a new household")
+System(shelfie, "Shelfie", "Reading log and comprehension questions")
+
+Rel(parent, shelfie, "Signs up with a display name, e-mail, username and password")
+@enduml

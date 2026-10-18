@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Manage questions
 
-Person(grownUp, "Grown-up", "Adds, edits and removes custom questions per book")
+Person(grownUp, "Parent", "Adds, edits and removes custom questions per book")
 Person(reader, "Reader", "Answers the default and custom questions when logging a chapter")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 

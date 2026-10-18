@@ -1,0 +1,81 @@
+@startuml
+title UML sequence behaviour — Edit a reader
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (settings library)" #E0F2FE
+  participant "EditReaderDialog" as dialog
+  participant "ReadersApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "readers.router.ts\n+ validate(readerSchema)" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "readers.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+parent -> dialog : Tap Edit on a reader; change fields; tap Save changes
+dialog -> dialog : Client checks: name 1-40, username format,\nnew password empty or 8+ (L2-036)
+alt a client check fails
+  dialog --> parent : Show "Fix N things" and field errors; keep values; send nothing
+else checks pass
+  dialog -> dialog : Set busy; disable form
+  dialog -> client : update(id, input)
+  client -> router : PATCH /api/readers/{id} {name, color, username, password?}
+  router -> router : Require parent role; validate body
+  router -> service : updateReader(householdId, id, input)
+  service -> db : SELECT reader WHERE id = ? AND household_id = ?
+  alt reader not in the parent's household
+    db --> service : none
+    service --> router : NotFound
+    router --> client : 404 problem
+    client --> dialog : ApiError
+    dialog --> parent : Show danger banner; keep values
+  else reader found
+    db --> service : reader row
+    service -> db : SELECT user WHERE lower(username) = lower(?) AND id <> ?
+    alt username held by another user
+      db --> service : other user
+      service --> router : UsernameTaken
+      router --> client : 409 problem type "username-taken"
+      client --> dialog : ApiError
+      dialog --> parent : Show "Username is taken" under Username; keep values (L2-036)
+    else username free
+      db --> service : none
+      service -> service : argon2id hash password when present
+      service -> db : UPDATE users (name, color, username, password_hash if present)
+      opt a new password was set
+        service -> db : DELETE session WHERE user_id = reader (L2-036: new password at next sign-in)
+      end
+      alt database failure
+        db --> service : error
+        service --> router : throws
+        router --> client : 500 problem {requestId}
+        client --> dialog : ApiError
+        dialog --> parent : Show failure banner with Try again; keep values (L2-036)
+      else updated
+        db --> service : ok
+        service --> router : ReaderView
+        router --> client : 200 {id, name, color, username}
+        client --> dialog : ReaderView
+        dialog --> parent : Close; update the row in Readers; show toast
+      end
+    end
+  end
+end
+@enduml

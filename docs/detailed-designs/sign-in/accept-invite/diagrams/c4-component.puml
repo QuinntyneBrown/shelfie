@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Accept an invite
+
+Container(web, "Shelfie web", "Angular", "AcceptInvitePage; AuthApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "GET /api/auth/invites/:token; POST /api/auth/accept-invite")
+  Component(validate, "validate()", "Middleware (zod)", "acceptInviteSchema; 400 with field errors")
+  Component(service, "auth.service.ts", "Service", "getInvite, acceptInvite: token hash, expiry and used checks, username uniqueness, argon2id, session")
+  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over invites, profile, household, session and device")
+  ComponentDb(db, "Shelfie database", "SQLite", "invites, household, profile, session, device")
+}
+Rel(web, router, "GET invite, POST accept-invite", "JSON/HTTPS")
+Rel(router, validate, "Applies")
+Rel(router, service, "getInvite(token), acceptInvite(input, deviceId)")
+Rel(service, repo, "findInviteByHash, usernameExists, createParent, markInviteUsed, createSession, createDevice")
+Rel(repo, db, "Reads and writes", "SQL")
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Parent sign-up
+
+Person(parent, "Parent", "Fills in the sign-up form")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Sign up page in the sign-in library")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Validates the body, creates the household and parent, opens a session")
+  ContainerDb(db, "Shelfie database", "SQLite", "household, profile, session and device tables")
+}
+Rel(parent, web, "Enters details", "HTTPS")
+Rel(web, api, "POST /api/auth/sign-up", "JSON/HTTPS")
+Rel(api, db, "Inserts household, profile, session and device in one transaction", "SQL")
+@enduml

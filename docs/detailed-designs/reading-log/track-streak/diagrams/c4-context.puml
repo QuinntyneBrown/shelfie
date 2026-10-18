@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Track the reading streak
 
 Person(reader, "Reader", "Sees her streak in the top bar and the shelf greeting")
-Person(grownUp, "Grown-up", "Sees the streak tile in Review")
+Person(grownUp, "Parent", "Sees the streak tile in Review")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Opens her shelf", "HTTPS")

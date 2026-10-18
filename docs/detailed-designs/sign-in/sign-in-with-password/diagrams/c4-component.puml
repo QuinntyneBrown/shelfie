@@ -5,17 +5,17 @@ title Components — Sign in with a password
 
 Container(web, "Shelfie web", "Angular", "SignInPage with sh-text-field and sh-button; AuthApi")
 Container_Boundary(api, "Shelfie API") {
-  Component(router, "auth.router.ts", "Express Router", "GET /api/auth/profiles; POST /api/auth/password; validates body with passwordSignInSchema")
-  Component(limiter, "rateLimit.ts", "Middleware (express-rate-limit)", "10 attempts in 10 minutes per source, then 429")
+  Component(router, "auth.router.ts", "Express Router", "POST /api/auth/password; validates body with passwordSignInSchema")
+  Component(limiter, "rate-limit.ts", "Middleware", "Rate limits sign-in failures per source, then 429")
   Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400")
-  Component(service, "auth.service.ts", "Service", "signInWithPassword: argon2id verify, generic failure, session and device creation")
-  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over profile, session and device")
-  ComponentDb(db, "Shelfie database", "SQLite", "profile, session, device")
+  Component(service, "auth.service.ts", "Service", "signInWithPassword: case-insensitive lookup, argon2id verify, generic failure, session creation")
+  Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over users and session")
+  ComponentDb(db, "Shelfie database", "SQLite", "users, session")
 }
-Rel(web, router, "GET /api/auth/profiles, POST /api/auth/password", "JSON/HTTPS")
-Rel(router, limiter, "Applies to POST /api/auth/password")
+Rel(web, router, "POST /api/auth/password", "JSON/HTTPS")
+Rel(router, limiter, "Applies")
 Rel(router, validate, "Applies")
-Rel(router, service, "listProfiles(deviceId), signInWithPassword(email, password, deviceId)")
-Rel(service, repo, "findGrownUpByEmail, createSession, findDevice, createDevice")
+Rel(router, service, "signInWithPassword(username, password, remember)")
+Rel(service, repo, "findUserByUsername, createSession")
 Rel(repo, db, "Reads and writes", "SQL")
 @enduml

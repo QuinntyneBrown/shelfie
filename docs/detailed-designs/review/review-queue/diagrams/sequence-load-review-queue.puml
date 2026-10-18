@@ -14,14 +14,14 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 box "Frontend — Shelfie web (review library)" #E0F2FE
   participant "ReviewPage" as page
   participant "ReviewApi" as client
   participant "sh-tab-bar / sh-top-bar\n(via AppComponent)" as bars
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "review.router.ts\n+ requireRole('grown_up')" as router
+  participant "review.router.ts\n+ requireRole('parent')" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "review.service.ts" as service
@@ -35,7 +35,7 @@ grownUp -> page : Open Review
 page -> page : Show sh-skeleton placeholders
 page -> client : load()
 client -> router : GET /api/review
-router -> router : Check session role is grown_up (401 / 403)
+router -> router : Check session role is parent (401 / 403)
 router -> service : overview(householdId, now)
 service -> db : SELECT pending chapter_log JOIN book\nWHERE reviewed_at IS NULL ORDER BY logged_at DESC
 db --> service : queue rows

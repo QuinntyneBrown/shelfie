@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Review a chapter
 
-Person(grownUp, "Grown-up", "Reads the reader's answers; sends a sticker and a note")
+Person(grownUp, "Parent", "Reads the reader's answers; sends a sticker and a note")
 Person(reader, "Reader", "Sees the feedback on her shelf and chapter page")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 

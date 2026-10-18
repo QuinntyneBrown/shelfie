@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Review queue
 
-Person(grownUp, "Grown-up", "Reviews the reader's chapters and gives rewards")
+Person(grownUp, "Parent", "Reviews the reader's chapters and gives rewards")
 Person(reader, "Reader", "Logs chapters that appear in the queue")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 

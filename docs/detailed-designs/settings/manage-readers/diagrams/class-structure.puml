@@ -1,0 +1,84 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage readers
+
+class EditReaderDialog {
+  +mode: 'add' | 'edit'
+  +state: Signal<'default' | 'edit' | 'busy' | 'invalid' | 'taken' | 'failed'>
+  +errors: Signal<FieldError[]>
+  +save(): Promise<void>
+}
+
+class "sh-color-picker" as ColorPicker {
+  +colors: string[]
+  +value: string
+  +valueChange: EventEmitter<string>
+}
+
+class "sh-text-field" as TextField {
+  +label: string
+  +type: 'text' | 'password'
+  +error: string | null
+}
+
+class ReadersApi {
+  +add(input: ReaderInput): Promise<ReaderView>
+  +update(id: string, input: ReaderInput): Promise<ReaderView>
+}
+
+class ReaderInput {
+  +name: string
+  +color: string
+  +username: string
+  +password?: string
+}
+
+class ReaderView {
+  +id: string
+  +name: string
+  +color: string
+  +username: string
+}
+
+class User {
+  +id: string
+  +householdId: string
+  +role: 'parent' | 'reader'
+  +name: string
+  +color: string
+  +username: string
+  +email: string | null
+  +passwordHash: string
+}
+
+class ReadersService {
+  +addReader(householdId: string, input: ReaderInput): ReaderView
+  +updateReader(householdId: string, id: string, input: ReaderInput): ReaderView
+}
+
+class ReadersRepo {
+  +findUserByUsername(username: string): User | undefined
+  +findReader(householdId: string, id: string): User | undefined
+  +insertReader(user: User): void
+  +updateReader(user: User): void
+  +deleteSessionsOf(userId: string): void
+}
+
+EditReaderDialog *-- ColorPicker : renders
+EditReaderDialog *-- TextField : renders
+EditReaderDialog ..> ReadersApi : calls
+ReadersApi ..> ReaderInput : sends
+ReadersApi ..> ReaderView : returns
+ReadersService ..> ReaderInput : receives
+ReadersService --> ReadersRepo : uses
+ReadersRepo --> User : reads / writes
+@enduml

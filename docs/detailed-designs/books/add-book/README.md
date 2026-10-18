@@ -2,11 +2,11 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: exactly one reader profile and one grown-up profile, sharing one bookshelf.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
 This feature puts a book on the shelf. A **book** is a title, an optional author, a **chapter count** (chapters are numbered, not titled, so the count is all the form asks about them) and a **cover**. Covers are made, not fetched: a cover is one of seven named pastel **cover colours** (Sage, Rose, Sky, Sun, Lilac, Mint, Peach) plus one of twelve named **stickers** (Lion, Robot, Dog, Books, Spider, Rabbit, Wizard, Rocket, Dragon, Tree, Elephant, Chocolate). There is no image upload and no online lookup.
 
-Either person in the household may add a book: the reader from the "Add a book" button on her shelf, the grown-up from the Books list. The same form serves both. A live **preview** shows the cover, title, author and chapter count as they are typed and picked. A new book has no logged chapters, so it appears on the shelf under "Up next".
+Either person in the household may add a book: the reader from the "Add a book" button on her shelf, the parent from the Books list. The same form serves both. A live **preview** shows the cover, title, author and chapter count as they are typed and picked. A new book has no logged chapters, so it appears on the shelf under "Up next".
 
 The feature sits in the `books` subsystem beside the shelf, the book page, managing a book and managing questions. The mock's chapter field accepts 1 to 200 while `L2-009` says 1 to 500; this design follows the mock.
 
@@ -34,7 +34,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-009` | `L1-003` | The reader or the grown-up supplies a title, an optional author, the chapter count, a cover colour and a sticker. Given valid input the book shall appear on the shelf as "up next" and a success toast shall be shown. An empty title, or a chapter count that is not an integer from 1 to 500, shall show inline errors and save nothing. Title and author input shall be limited to 120 characters. On a failure an error shall be shown and the entered values kept. A reader session shall see the same form from her shelf and the book she adds shall appear on her shelf. |
+| `L2-009` | `L1-003` | The reader or the parent supplies a title, an optional author, the chapter count, a cover colour and a sticker. Given valid input the book shall appear on the shelf as "up next" and a success toast shall be shown. An empty title, or a chapter count that is not an integer from 1 to 500, shall show inline errors and save nothing. Title and author input shall be limited to 120 characters. On a failure an error shall be shown and the entered values kept. A reader session shall see the same form from her shelf and the book she adds shall appear on her shelf. |
 
 ## Diagrams
 

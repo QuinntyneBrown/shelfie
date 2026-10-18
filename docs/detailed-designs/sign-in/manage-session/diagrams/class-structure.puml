@@ -12,22 +12,14 @@ skinparam class {
 title Class structure — Manage a session
 
 class SessionService {
-  +session: Signal<Session | null>
-  +restored: Promise<void>
+  +current: Signal<Session | null>
+  +expired: Signal<boolean>
   +restore(): Promise<void>
-  +set(session: Session): void
-  +clear(): void
-}
-
-class ApiClient {
-  +get<T>(path: string): Promise<T>
-  +post<T>(path: string, body: unknown): Promise<T>
-  -handleUnauthorized(problem: Problem): void
-}
-
-class AuthApi {
-  +session(): Promise<Session>
   +signOut(): Promise<void>
+}
+
+class sessionExpiredInterceptor <<HttpInterceptorFn>> {
+  +intercept(request, next): Observable
 }
 
 class "sh-menu" as Menu {
@@ -39,45 +31,39 @@ class "sh-menu" as Menu {
 
 class SignInPage {
   +reason: Signal<'expired' | null>
+  +rememberMe: FormControl<boolean>
 }
 
 class Session {
+  +userId: string
   +householdId: string
-  +profileId: string
-  +role: 'reader' | 'grown-up'
+  +role: 'reader' | 'parent'
   +name: string
   +color: string
 }
 
 class SessionRow {
   +id: string
-  +profileId: string
+  +userId: string
+  +remember: boolean
   +createdAt: Date
   +expiresAt: Date
 }
 
-class SessionMiddleware {
-  +handle(req: Request, res: Response, next: NextFunction): void
+class requireSession <<Express middleware>> {
+  +requireSession(db): RequestHandler
 }
 
-class AuthService {
-  +currentSession(sessionId: string): Session
-  +signOut(sessionId: string): void
+class AuthRouter {
+  +GET /session
+  +POST /sign-out
 }
 
-class AuthRepo {
-  +findSession(id: string): SessionRow | undefined
-  +deleteSession(id: string): void
-  +deleteExpiredSessions(now: Date): number
-}
-
-SessionService ..> AuthApi : restores through
-AuthApi --> ApiClient : uses
-ApiClient ..> SessionService : clears on 401
-ApiClient ..> SignInPage : navigates to with reason
-Menu ..> AuthApi : signOut on Sign out / Switch reader
 SessionService --> Session : holds
-SessionMiddleware --> AuthRepo : uses
-AuthService --> AuthRepo : uses
-AuthRepo --> SessionRow : reads / deletes
+sessionExpiredInterceptor ..> SessionService : clears, sets expired
+sessionExpiredInterceptor ..> SignInPage : navigates to with reason
+Menu ..> SessionService : signOut on Sign out
+requireSession --> SessionRow : reads / slides / deletes
+AuthRouter ..> requireSession : applies
+AuthRouter --> SessionRow : deletes on sign-out
 @enduml

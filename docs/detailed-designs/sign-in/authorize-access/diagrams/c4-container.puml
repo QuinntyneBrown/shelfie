@@ -4,14 +4,14 @@ LAYOUT_WITH_LEGEND()
 title Containers — Authorize access
 
 Person(reader, "Reader", "Opens pages by tap or URL")
-Person(grownUp, "Grown-up", "Opens pages by tap or URL")
+Person(parent, "Parent", "Opens pages by tap or URL")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "authGuard and grownUpGuard on routes; Not found, Grown-ups only and Something went wrong pages")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "requireRole() on every endpoint; household-scoped queries; 401, 403, 404 and 500 problems")
   ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "Every household-owned table carries household_id directly or through book")
 }
 Rel(reader, web, "Uses", "HTTPS")
-Rel(grownUp, web, "Uses", "HTTPS")
+Rel(parent, web, "Uses", "HTTPS")
 Rel(web, api, "Every /api request with the session cookie", "JSON/HTTPS")
 Rel(api, db, "Queries scoped by household_id", "SQL")
 @enduml

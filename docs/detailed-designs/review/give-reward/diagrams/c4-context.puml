@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Give a reward
 
-Person(grownUp, "Grown-up", "Gives one reward per finished book")
+Person(grownUp, "Parent", "Gives one reward per finished book")
 Person(reader, "Reader", "Sees the reward on her trophy shelf and book page")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 

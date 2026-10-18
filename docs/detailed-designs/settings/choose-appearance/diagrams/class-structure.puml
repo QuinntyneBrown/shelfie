@@ -34,7 +34,7 @@ class SessionService {
 class Session {
   +householdId: string
   +profileId: string
-  +role: 'reader' | 'grown-up'
+  +role: 'reader' | 'parent'
   +name: string
   +color: string
   +theme: Theme

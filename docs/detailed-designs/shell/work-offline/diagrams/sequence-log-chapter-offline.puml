@@ -60,7 +60,7 @@ bookPage -> queue : isPending(bookId, 12)
 queue --> bookPage : true
 bookPage --> reader : Chapter 12 row marked "will send" (L2-024)
 opt Navigation to a page with no cached data
-  reader -> browser : Open Review (grown-up) or Settings
+  reader -> browser : Open Review (parent) or Settings
   browser -> sw : GET /api/review
   sw --> browser : ApiError status 0 (not cached)
   browser -> browser : online() is false: navigate to /offline

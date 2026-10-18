@@ -3,10 +3,10 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Authorize access
 
-Person(reader, "Reader", "May open her shelf, books and chapters; never grown-up areas")
-Person(grownUp, "Grown-up", "May open Review, Books, Manage book and Settings")
-System(shelfie, "Shelfie", "Reading log and comprehension questions; one household per sign-in, isolated from every other")
+Person(reader, "Reader", "May open her shelf, books and chapters; never parent areas")
+Person(parent, "Parent", "May open Review, Books, Manage book and Settings of her household")
+System(shelfie, "Shelfie", "Reading log and comprehension questions; many parents and readers per household, each household isolated from every other")
 
-Rel(reader, shelfie, "Opens reader pages; refused from grown-up pages and other households", "HTTPS")
-Rel(grownUp, shelfie, "Opens grown-up pages; refused from other households", "HTTPS")
+Rel(reader, shelfie, "Opens reader pages; refused from parent pages and other households", "HTTPS")
+Rel(parent, shelfie, "Opens parent pages; refused from other households", "HTTPS")
 @enduml

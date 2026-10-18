@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Operate the service
 
-Person(grownUp, "Grown-up", "Operates the service")
+Person(grownUp, "Parent", "Operates the service")
 System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer; deferred with hosting")
 System_Ext(ci, "GitHub Actions", "lint, unit, api, build, e2e, lighthouse jobs")
 System_Boundary(shelfie, "Shelfie") {

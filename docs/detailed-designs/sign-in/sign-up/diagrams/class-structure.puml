@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Parent sign-up
+
+class SignUpPage {
+  +displayName: FormControl<string>
+  +email: FormControl<string>
+  +username: FormControl<string>
+  +password: FormControl<string>
+  +confirm: FormControl<string>
+  +state: Signal<'idle' | 'invalid' | 'submitting' | 'taken' | 'error'>
+  +fieldErrors: Signal<Record<string, string>>
+  +submit(): Promise<void>
+}
+class AuthApi {
+  +signUp(input: SignUpRequest): Promise<Session>
+}
+class SignUpRequest {
+  +displayName: string
+  +email: string
+  +username: string
+  +password: string
+  +confirm: string
+}
+class AuthService {
+  +signUp(input: SignUpRequest, deviceId: string): SignInResult
+}
+class Household {
+  +id: string
+}
+class Profile {
+  +id: string
+  +householdId: string
+  +role: parent | reader
+  +name: string
+  +username: string
+  +email: string
+  +passwordHash: string
+}
+class Session {
+  +id: string
+  +profileId: string
+  +createdAt: Date
+  +expiresAt: Date
+}
+
+SignUpPage ..> AuthApi : calls
+AuthApi ..> SignUpRequest : sends
+AuthService ..> SignUpRequest : handles
+AuthService --> Household : creates
+AuthService --> Profile : creates
+AuthService --> Session : creates
+Household "1" *-- "1..*" Profile : members
+Profile "1" --> "*" Session : has
+@enduml

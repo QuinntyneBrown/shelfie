@@ -2,13 +2,13 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: exactly one reader profile and one grown-up profile, sharing one bookshelf.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
 This feature is the reader's home page. The **shelf** is the list of the household's books, grouped by where each book stands: **reading** (at least one chapter logged and not finished), **up next** (no chapter logged yet) and **finished** (every chapter logged). Each book shows its made cover, a pastel colour plus a sticker chosen when the book was added, its title and its **progress**, the count of logged chapters out of the chapter count.
 
 Above the groups sits the **hero**, a larger card for the book the reader logged most recently, with a primary action for its next chapter. The page greeting carries the **streak**, the number of consecutive days with at least one chapter logged. The streak is derived from logged chapters and never stored; the `chapters` module computes it (reading-log/track-streak).
 
-The finished group doubles as the **trophy shelf**: each finished book shows the **reward** the grown-up gave for it (review/give-reward), or a line saying the reward is still being picked. When the grown-up has reviewed a chapter the reader has not yet opened, the shelf response names that **unseen feedback** so the shelf can show the feedback banner; the banner itself is owned by review/review-chapter.
+The finished group doubles as the **trophy shelf**: each finished book shows the **reward** the parent gave for it (review/give-reward), or a line saying the reward is still being picked. When the parent has reviewed a chapter the reader has not yet opened, the shelf response names that **unseen feedback** so the shelf can show the feedback banner; the banner itself is owned by review/review-chapter.
 
 The feature sits in the `books` subsystem beside the book page, adding a book, managing a book and managing questions. The "Add a book" button on the shelf opens add-book; a book card opens view-book; the hero and card actions open reading-log/log-chapter.
 
@@ -36,14 +36,14 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-007` | `L1-003` | The reader's shelf shall show reading, up-next and finished books with cover colour, sticker, title and progress. With no books it shall show an empty state telling her to ask a grown-up to add a book. While loading it shall show skeleton placeholders; on a load failure it shall show an error state with retry. At XS, MD and XL viewports the grid shall use 1-2, 3 and 4 or more columns with no horizontal scroll. A book card with 80 or more chapters shall render progress without overflow. |
+| `L2-007` | `L1-003` | The reader's shelf shall show reading, up-next and finished books with cover colour, sticker, title and progress. With no books it shall show an empty state telling her to ask a parent to add a book. While loading it shall show skeleton placeholders; on a load failure it shall show an error state with retry. At XS, MD and XL viewports the grid shall use 1-2, 3 and 4 or more columns with no horizontal scroll. A book card with 80 or more chapters shall render progress without overflow. |
 | `L2-018` | `L1-007` | The shelf shall show each reward given with its book and date. A finished book without a reward shall appear as finished without a reward. |
 
 ## Diagrams
 
 ### System context
 
-The reader opens her shelf; the grown-up's reviews and rewards appear on it.
+The reader opens her shelf; the parent's reviews and rewards appear on it.
 
 ![C4 system context for viewing the shelf](diagrams/c4-context.png)
 
