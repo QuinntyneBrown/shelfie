@@ -36,4 +36,21 @@ export class SuggestQuestionsDialog {
   async add() {
     await this.addButton().click();
   }
+
+
+  failure() {
+    return this.dialog().getByRole('alert');
+  }
+
+  /** Lets the first `saved` question through, then makes adding fail as a dropped connection would. */
+  async breakAddingAfter(saved: number) {
+    let adds = 0;
+    await this.page.route('**/api/books/*/questions', (route) =>
+      route.request().method() === 'POST' && ++adds > saved ? route.abort() : route.continue(),
+    );
+  }
+
+  async repairAdding() {
+    await this.page.unroute('**/api/books/*/questions');
+  }
 }

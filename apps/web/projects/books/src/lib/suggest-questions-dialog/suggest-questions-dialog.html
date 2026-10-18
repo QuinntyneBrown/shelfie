@@ -4,10 +4,19 @@
       Ideas for chapter {{ chapter() }} of {{ bookTitle() }}. Tick the ones to keep and change any
       wording. Nothing reaches {{ readerName() }} until you add it.
     </p>
+    @if (saveFailed()) {
+      <sh-banner
+        severity="danger"
+        title="The questions weren’t all added"
+        message="Shelfie couldn’t reach the server. The ones still ticked weren’t added; try again."
+      />
+    }
     <div class="suggestions" role="list" aria-label="Suggested questions">
       @for (row of rows(); track $index) {
         <sh-suggestion
           [number]="$index + 1"
+          [error]="row.error"
+          [disabled]="saving()"
           [chosen]="row.chosen"
           (chosenChange)="update($index, { chosen: $event })"
           [text]="row.text"
@@ -21,7 +30,13 @@
   </div>
   <div dialog-actions class="cluster">
     <button class="btn" type="button" (click)="closed.emit()">Cancel</button>
-    <button class="btn btn--primary" type="button" [disabled]="!chosenCount()">
+    <button
+      class="btn btn--primary"
+      type="button"
+      [disabled]="!chosenCount() || saving()"
+      [attr.aria-busy]="saving() ? true : null"
+      (click)="add()"
+    >
       @if (chosenCount()) {
         Add {{ chosenCount() }} {{ chosenCount() === 1 ? 'question' : 'questions' }}
       } @else {
