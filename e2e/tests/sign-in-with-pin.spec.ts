@@ -40,6 +40,15 @@ test('Given the PIN keypad is showing, when she types letters and digits, then o
   await expect(signIn.digitsEntered(1)).toBeVisible();
 });
 
+test('Given Nia has chosen her profile, when the keypad shows, then every digit key is the same round size', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.choose('Nia');
+
+  const sizes = await signIn.digitKeySizes();
+  for (const size of sizes) expect(size).toEqual({ width: sizes[0].height, height: sizes[0].height });
+});
+
 test('Given Nia has entered five wrong PINs, when the fifth fails, then the keypad locks for 5 minutes and shows the time left', async ({ page }) => {
   const signIn = new SignInPage(page);
   await signIn.open();
