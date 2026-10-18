@@ -42,6 +42,12 @@ export interface BookDetail {
   chapters: ChapterSummary[];
 }
 
+/** Ideas for the book's next chapter; nothing is saved until the parent adds them. */
+export interface QuestionSuggestions {
+  chapter: number;
+  suggestions: string[];
+}
+
 export interface BookPatch {
   title: string;
   author: string | null;
@@ -67,6 +73,10 @@ export class BooksApi {
 
   addQuestion(bookId: string, text: string) {
     return this.api.post<CustomQuestion>(`/books/${bookId}/questions`, { text });
+  }
+
+  suggestQuestions(bookId: string) {
+    return this.api.post<QuestionSuggestions>(`/books/${bookId}/question-suggestions`, {});
   }
 
   updateQuestion(id: string, text: string) {

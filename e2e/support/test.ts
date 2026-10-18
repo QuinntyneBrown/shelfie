@@ -8,6 +8,7 @@ import { createTestDatabase } from '../../apps/api/src/test-db.ts';
 import { useDatabase } from './database';
 import { fakeAssistant, resetAssistant } from './assistant';
 import { clearMailbox, deliver } from './mailbox';
+import { suggest, suggestIdeas } from './suggestions';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
 
@@ -23,7 +24,7 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { st
     async ({}, use) => {
       const db = await createTestDatabase();
       const app = express();
-      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest }));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
       const server = app.listen(0);
@@ -46,6 +47,7 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { st
       await seed(stack.db.pool, { books: shelf !== 'empty' });
       clearMailbox();
       resetAssistant();
+      suggestIdeas();
       await use();
     },
     { auto: true },
