@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video 24 Slides</title>
+<link rel="stylesheet" href="../assets/slides.css">
+</head>
+<body data-video-number="24" data-video-title="Operate the service" data-parts="Introduction|Health checks|Logs and backups|Recap">
+
+<section id="title" data-part="0">
+  <div class="kicker">Shelfie · Video 24</div>
+  <h1>Operate the service</h1>
+  <p class="lead">Health checks, logs and SQLite backups, for Dad as the operator.</p>
+</section>
+
+<section id="health" data-part="1" data-cue="The first question is always: is it up?" data-clip="operate-the-service-health">
+  <h2>GET /api/health in the browser</h2>
+</section>
+
+<section id="health-facts" data-part="1" data-cue="If the database cannot be reached">
+  <h2>Health answers, and the deploy waits for it</h2>
+  <ul>
+    <li><code>200 {"status":"ok"}</code> while the database is reachable</li>
+    <li><code>503 {"status":"unavailable"}</code> when it is not</li>
+  </ul>
+  <pre class="code" data-lang="sh">if ! healthy; then
+  echo "release $sha failed its health check" &gt;&amp;2
+  journalctl -u shelfie -n 20 --no-pager &gt;&amp;2 || true
+  if [[ -n $previous &amp;&amp; $previous != "$release" ]]; then
+    ln -sfn "$previous" "$root/current"
+    systemctl restart shelfie
+    echo "rolled back to $(basename "$previous")" &gt;&amp;2
+  fi
+  exit 1</pre>
+</section>
+
+<section id="logs" data-part="2" data-cue="The API writes one line of JSON per request">
+  <h2>Logs: one JSON line per request, in journald</h2>
+  <ul>
+    <li>requestId, method, route, status, durationMs</li>
+    <li>Never bodies, headers or URLs</li>
+  </ul>
+  <pre class="code" data-lang="sh">sudo journalctl -u shelfie -f          # API
+sudo journalctl -u caddy -n 100        # TLS, certificates, requests
+sudo journalctl -t shelfie-backup      # nightly backups</pre>
+</section>
+
+<section id="backups" data-part="2" data-cue="Every night at eight fifteen UTC">
+  <h2>Backups: nightly, verified, 30 days kept</h2>
+  <pre class="code" data-lang="sh"># Nightly database backup at 08:15 UTC (03:15 or 04:15 in Toronto). Installed to /etc/cron.d by deploy.sh.
+15 8 * * * shelfie /usr/local/bin/shelfie-backup 2&gt;&amp;1 | logger -t shelfie-backup</pre>
+  <ul>
+    <li><code>VACUUM INTO</code> a dated file, integrity check, prune after 30 days</li>
+    <li>A copy of each in the <code>backups</code> blob container</li>
+  </ul>
+</section>
+
+<section id="recap" data-part="3" data-cue="Things to remember">
+  <h2>Things to remember</h2>
+  <ul>
+    <li>Health answers ok or unavailable</li>
+    <li>Logs live in journald on the VM</li>
+    <li>The last three releases are kept, ready to roll back to</li>
+  </ul>
+</section>
+
+<script src="../assets/slides.js"></script>
+</body>
+</html>

@@ -138,6 +138,11 @@ export class AddBookPage {
     await this.page.route(coverPictureRoute, (route) => (route.request().method() === 'PUT' ? route.abort() : route.continue()));
   }
 
+  /** Picks a cover colour or sticker by pressing its swatch, as a finger would. */
+  async pick(name: string) {
+    await this.page.locator('label').filter({ has: this.page.getByRole('radio', { name, exact: true }) }).click();
+  }
+
   async submit() {
     await this.page.getByRole('button', { name: 'Add to my shelf' }).click();
   }

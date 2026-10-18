@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video 23 Slides</title>
+<link rel="stylesheet" href="../assets/slides.css">
+</head>
+<body data-video-number="23" data-video-title="Secure the API" data-parts="Introduction|Keeping strangers out|Keeping data safe|Recap">
+
+<section id="title" data-part="0">
+  <div class="kicker">Shelfie · Video 23</div>
+  <h1>Secure the API</h1>
+  <p class="lead">How the server turns away anyone who should not be there.</p>
+</section>
+
+<section id="signed-out" data-part="1" data-cue="Here is a browser tab that is not signed in" data-clip="secure-the-api-signed-out">
+  <h2>No session, no data; ten password tries, then wait</h2>
+</section>
+
+<section id="pin-lock" data-part="1" data-cue="Nia's keypad is guarded too" data-clip="secure-the-api-pin-lock">
+  <h2>Five wrong PINs lock the keypad for five minutes</h2>
+</section>
+
+<section id="signed-in" data-part="2" data-cue="Once Nia is signed in" data-clip="secure-the-api-signed-in">
+  <h2>Grown-up pages stay closed; answers stay plain text</h2>
+</section>
+
+<section id="recap" data-part="3" data-cue="Things to remember">
+  <h2>Things to remember</h2>
+  <ul>
+    <li>Changes from another site: refused with 403</li>
+    <li>Every response: content security policy, nosniff, HSTS</li>
+    <li>Bodies over 16 kB: 413; invalid input: 400 naming each field</li>
+    <li>Every sign-in starts a fresh session</li>
+  </ul>
+</section>
+
+<script src="../assets/slides.js"></script>
+</body>
+</html>

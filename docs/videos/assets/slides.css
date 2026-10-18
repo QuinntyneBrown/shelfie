@@ -1,0 +1,23 @@
+:root { --ink: #1c1b29; --muted: #5d5b72; --brand: #7c3aed; --soft: #f4f0ff; --bg: #fbfaff; }
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+header { position: fixed; top: 0; left: 0; right: 0; height: 64px; padding: 0 64px; display: flex; align-items: center; justify-content: space-between; font-size: 24px; color: var(--muted); }
+header strong { color: var(--brand); }
+.progress { position: fixed; top: 0; left: 0; height: 8px; background: var(--brand); transition: width .3s; }
+section { display: none; position: absolute; inset: 64px 0 0 0; padding: 48px 128px; }
+section.active { display: block; }
+.kicker { font-size: 30px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); margin-bottom: 24px; }
+h1 { font-size: 112px; line-height: 1.05; margin: 0 0 32px; }
+h2 { font-size: 64px; margin: 0 0 32px; }
+.lead { font-size: 48px; color: var(--muted); max-width: 1300px; }
+ul { font-size: 48px; line-height: 1.5; padding-left: 56px; }
+li { margin-bottom: 16px; }
+section[data-title] { display: none; }
+section.active[id="title"] { padding-top: 260px; }
+/* Screen-recording slides: heading strip, then the clip in a frame the builder fills. */
+section[data-clip] { padding: 0 0 0 0; }
+section[data-clip] h2 { position: absolute; top: 0; left: 128px; font-size: 44px; margin: 0; }
+.clip-frame { position: absolute; top: 56px; left: 256px; width: 1408px; height: 792px; border-radius: 12px; background: #222; box-shadow: 0 12px 48px rgba(60, 30, 120, .25); }
+.clip-frame.phone { left: 765px; width: 390px; }
+/* Short command or code excerpts copied from the repository. */
+pre.code { font: 30px/1.5 ui-monospace, 'SF Mono', Menlo, monospace; background: var(--soft); border-radius: 12px; padding: 28px 40px; margin: 0 0 32px; white-space: pre-wrap; }
