@@ -1,9 +1,13 @@
 import { Routes } from '@angular/router';
-import { authGuard, grownUpGuard } from 'core';
+import { authGuard, grownUpGuard, signedOutGuard } from 'core';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
-  { path: 'sign-in', loadComponent: () => import('sign-in').then((m) => m.SignInPage) },
+  {
+    path: 'sign-in',
+    canActivate: [signedOutGuard],
+    loadComponent: () => import('sign-in').then((m) => m.SignInPage),
+  },
   { path: 'sign-up', loadComponent: () => import('sign-in').then((m) => m.SignUpPage) },
   {
     path: 'accept-invite',
