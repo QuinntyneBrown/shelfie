@@ -48,13 +48,13 @@ test('Given Nia moves to another page, when it shows, then keyboard focus is on 
   await expect(new ShellPage(page).main()).toBeFocused();
 });
 
-test('Given Nia opens her account menu, then it names her and offers Switch reader and Sign out, and Escape closes it back to the avatar', async ({ page }) => {
+test('Given Nia opens her account menu, then it names her and offers Sign out, and Escape closes it back to the avatar', async ({ page }) => {
   await signInAsNia(page);
   const shell = new ShellPage(page);
 
   await shell.openAccountMenu('Nia');
-  await expect(shell.menu()).toContainText('Nia · Reader');
-  await expect(shell.menuItem('Switch reader')).toBeVisible();
+  await expect(shell.menu()).toContainText('Nia');
+  await expect(shell.menu()).toContainText('@nia');
   await expect(shell.menuItem('Sign out')).toBeVisible();
   await expect(shell.menuItem('Settings')).toBeHidden();
 
@@ -64,20 +64,20 @@ test('Given Nia opens her account menu, then it names her and offers Switch read
 });
 
 test('Given the avatar has keyboard focus, when ArrowDown is pressed, then the menu opens on its first item and the arrow keys move and wrap', async ({ page }) => {
-  await signInAsNia(page);
+  await signInAsDad(page);
   const shell = new ShellPage(page);
 
-  await shell.focusAccountMenuButton('Nia');
+  await shell.focusAccountMenuButton('Dad');
   await shell.press('ArrowDown');
-  await expect(shell.menuItem('Switch reader')).toBeFocused();
+  await expect(shell.menuItem('Settings')).toBeFocused();
   await shell.press('ArrowDown');
   await expect(shell.menuItem('Sign out')).toBeFocused();
   await shell.press('ArrowDown');
-  await expect(shell.menuItem('Switch reader')).toBeFocused();
+  await expect(shell.menuItem('Settings')).toBeFocused();
   await shell.press('ArrowUp');
   await expect(shell.menuItem('Sign out')).toBeFocused();
   await shell.press('Home');
-  await expect(shell.menuItem('Switch reader')).toBeFocused();
+  await expect(shell.menuItem('Settings')).toBeFocused();
   await shell.press('End');
   await expect(shell.menuItem('Sign out')).toBeFocused();
 });
@@ -104,27 +104,26 @@ test('Given the menu is open, when she clicks elsewhere, then it closes', async 
   await expect(shell.menu()).toBeHidden();
 });
 
-for (const item of ['Sign out', 'Switch reader']) {
-  test(`Given Nia is signed in, when she chooses ${item}, then her session ends and she sees the profile picker`, async ({ page }) => {
-    await signInAsNia(page);
-    const shell = new ShellPage(page);
+test('Given Nia is signed in, when she chooses Sign out, then her session ends and she sees the sign-in page', async ({ page }) => {
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
 
-    await shell.openAccountMenu('Nia');
-    await shell.menuItem(item).click();
+  await shell.openAccountMenu('Nia');
+  await shell.menuItem('Sign out').click();
 
-    await expect(new SignInPage(page).pickerHeading()).toBeVisible();
-    await page.goto('/shelf');
-    await expect(page).toHaveURL(/\/sign-in$/);
-  });
-}
+  await expect(new SignInPage(page).heading()).toHaveText('Welcome back');
+  await page.goto('/shelf');
+  await expect(page).toHaveURL(/\/sign-in$/);
+});
 
-test('Given Dad is signed in, when he opens his account menu, then it shows his e-mail and offers Switch reader and Sign out', async ({ page }) => {
+test('Given Dad is signed in, when he opens his account menu, then it shows his username and role and offers Settings and Sign out', async ({ page }) => {
   await signInAsDad(page);
   const shell = new ShellPage(page);
 
   await shell.openAccountMenu('Dad');
 
-  await expect(shell.menu()).toContainText('dad@example.com');
+  await expect(shell.menu()).toContainText('@dad · parent');
+  await expect(shell.menuItem('Settings')).toBeVisible();
   await expect(shell.menuItem('Sign out')).toBeVisible();
 });
 

@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 import { signInAsDad, signInAsNia } from './signed-in';
-import { rememberDevice } from './remember-device';
 import { ErrorPage } from '../pages/error.page';
 import { AddBookPage } from '../pages/add-book.page';
 import { BooksPage } from '../pages/books.page';
@@ -17,29 +16,15 @@ export interface Screen {
 /** Every screen built so far, for checks that must hold on all of them. */
 export const screens: Screen[] = [
   {
-    name: 'sign-in profile picker',
-    open: async (page) => {
-      await rememberDevice(page.context());
-      const signIn = new SignInPage(page);
-      await signIn.open();
-      await signIn.pickerHeading().waitFor();
-    },
-  },
-  {
-    name: 'sign-in PIN keypad',
-    open: async (page) => {
-      await rememberDevice(page.context());
-      const signIn = new SignInPage(page);
-      await signIn.open();
-      await signIn.choose('Nia');
-    },
-  },
-  {
-    name: 'sign-in password form',
+    name: 'sign-in',
     open: async (page) => {
       const signIn = new SignInPage(page);
       await signIn.open();
-      await signIn.emailField().waitFor();
+      await signIn.usernameField().waitFor();
+      // Measure the card at rest, not part-way through its entrance animation; the logo bobs forever.
+      await page.evaluate(() =>
+        Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)),
+      );
     },
   },
   {

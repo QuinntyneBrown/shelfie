@@ -1,22 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient, Session } from 'core';
 
-export interface ProfileSummary {
-  id: string;
-  name: string;
-  role: 'reader' | 'parent';
-  color: string;
-  email: string | null;
-  theme: 'device' | 'light' | 'dark';
-}
-
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   private readonly api = inject(ApiClient);
-
-  profiles() {
-    return this.api.get<ProfileSummary[]>('/auth/profiles');
-  }
 
   forgotPassword(email: string) {
     return this.api.post<void>('/auth/forgot-password', { email });
@@ -26,11 +13,7 @@ export class AuthApi {
     return this.api.post<Session>('/auth/reset-password', { token, password });
   }
 
-  signInWithPassword(email: string, password: string) {
-    return this.api.post<Session>('/auth/password', { email, password });
-  }
-
-  signInWithPin(profileId: string, pin: string) {
-    return this.api.post<Session>('/auth/pin', { profileId, pin });
+  signInWithPassword(username: string, password: string, remember: boolean) {
+    return this.api.post<Session>('/auth/password', { username, password, remember });
   }
 }

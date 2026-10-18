@@ -39,13 +39,14 @@ export class App {
   });
   protected readonly menuItems = computed<MenuItem[]>(() => [
     ...(this.session()?.role === 'parent' ? [{ id: 'settings', label: 'Settings' }] : []),
-    { id: 'switch-reader', label: 'Switch reader' },
     { id: 'sign-out', label: 'Sign out' },
   ]);
   protected readonly menuHeader = computed(() => {
     const s = this.session();
     if (!s) return '';
-    return s.role === 'reader' ? `${s.name} · Reader` : `${s.name} · ${s.email} · grown-up`;
+    if (s.role === 'parent') return `${s.name} · @${s.username} · parent`;
+    const streak = this.status.streak();
+    return `${s.name} · @${s.username}` + (streak ? ` · 🔥 ${streak}-day streak` : '');
   });
   protected readonly toasts = inject(ToastService);
   protected readonly status = inject(ShellStatusService);
@@ -82,7 +83,7 @@ export class App {
       .subscribe(() => this.main().nativeElement.focus());
   }
 
-  /** Switch reader and Sign out both end the session and return to the profile picker. */
+  /** Sign out ends the session and returns to the sign-in page. */
   protected async chooseFromMenu(id: string) {
     if (id === 'settings') {
       await this.router.navigateByUrl('/settings');

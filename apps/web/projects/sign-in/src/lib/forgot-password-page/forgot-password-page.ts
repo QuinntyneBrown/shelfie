@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { Banner, Button, TextField } from 'components';
 import { ApiError } from 'core';
 import { AuthApi } from '../auth-api';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-forgot-password-page',
-  imports: [Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
   templateUrl: './forgot-password-page.html',
   styleUrl: './forgot-password-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

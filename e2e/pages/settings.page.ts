@@ -60,20 +60,20 @@ export class SettingsPage {
   }
 
   async setNewPassword(password: string, again = password) {
-    await this.page.getByLabel('New password').fill(password);
-    await this.page.getByLabel('Type it again').fill(again);
+    await this.newPasswordField().fill(password);
+    await this.page.getByRole('textbox', { name: 'Type it again' }).fill(again);
   }
 
   async setCurrentPassword(password: string) {
-    await this.page.getByLabel('Current password').fill(password);
+    await this.page.getByRole('textbox', { name: 'Current password' }).fill(password);
   }
 
   newPasswordField() {
-    return this.page.getByLabel('New password');
+    return this.page.getByRole('textbox', { name: 'New password' });
   }
 
   confirmField() {
-    return this.page.getByLabel('Type it again');
+    return this.page.getByRole('textbox', { name: 'Type it again' });
   }
 
   failureBanner() {

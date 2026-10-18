@@ -1,22 +1,7 @@
 .centred {
   text-align: center;
 }
-.centred-item {
-  margin-inline: auto;
-}
-.form-left {
-  text-align: left;
-}
 .summary-list {
   margin: 0;
   padding-left: 1.2em;
-}
-.link-button {
-  background: none;
-  border: 0;
-  padding: 0;
-  color: var(--color-fg-link, inherit);
-  text-decoration: underline;
-  cursor: pointer;
-  font: inherit;
 }

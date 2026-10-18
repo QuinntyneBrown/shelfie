@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { Banner, Button, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-reset-password-page',
-  imports: [Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
   templateUrl: './reset-password-page.html',
   styleUrl: './reset-password-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

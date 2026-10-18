@@ -35,7 +35,7 @@ export class ErrorPage {
     await this.page.getByRole('link', { name: 'Back to my shelf' }).click();
   }
 
-  async switchReader() {
-    await this.page.getByRole('button', { name: 'Switch reader' }).click();
+  async signOut() {
+    await this.page.getByRole('button', { name: 'Sign out' }).click();
   }
 }
