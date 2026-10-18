@@ -26,7 +26,7 @@ export class ReviewChapterPage {
   }
 
   async pickSticker(name: string) {
-    await this.page.getByRole('radio', { name, exact: true }).check({ force: true });
+    await this.page.getByRole('radio', { name, exact: true }).check();
   }
 
   noteField() {
