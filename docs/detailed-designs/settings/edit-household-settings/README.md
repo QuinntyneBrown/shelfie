@@ -29,6 +29,8 @@ The slice runs from the Settings page to the `users` table.
 
 On success the page shows an `sh-banner` (`success`) headed `Saved` and keeps the form on screen with the password boxes cleared. On a 500 or a network failure it shows an `sh-banner` (`danger`) and keeps every value (`L2-021` criterion 4). Avatar initials derive from the display name (first letter of up to two words).
 
+- **Profile photo** — every row of the Parents list draws `sh-avatar` from `ParentView.photo`, and Your account starts with a "Your photo" row (`sh-avatar` lg and "Add a photo" / "Change photo") that opens `ProfilePhotoDialog`. The photo is saved by that dialog, not by Save settings. See `settings/upload-profile-photo` (`L2-042`, `L2-043`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

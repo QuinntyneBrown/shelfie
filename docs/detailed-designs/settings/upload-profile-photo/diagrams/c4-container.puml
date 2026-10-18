@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Upload a profile photo
+
+Person(person, "Parent or reader", "Manages their own photo")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ProfilePhotoDialog, sh-photo-picker, sh-avatar in the top bar and Settings")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript, sharp", "Validates, re-encodes to 256 x 256 WebP without metadata, serves photos within the household")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile_photo (bytea), profile, session")
+}
+Rel(person, web, "Chooses or removes a photo", "HTTPS")
+Rel(web, api, "PUT and DELETE /api/profile/photo; GET /api/photos/{profileId}", "HTTPS")
+Rel(api, db, "Upserts, deletes and reads photo rows", "SQL")
+@enduml

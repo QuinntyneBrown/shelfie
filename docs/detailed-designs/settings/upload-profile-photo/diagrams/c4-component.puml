@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Upload a profile photo
+
+Container(web, "Shelfie web", "Angular", "ProfilePhotoDialog with sh-photo-picker; ProfilePhotoApi; sh-avatar everywhere")
+Container_Boundary(api, "Shelfie API") {
+  Component(csrf, "csrfGuard", "Middleware", "403 cross-site for PUT and DELETE without X-Requested-With or from another origin")
+  Component(session, "requireSession", "Middleware", "401 without a session; adds the photo URL to the session")
+  Component(router, "photos.router.ts", "Express Router", "PUT /api/profile/photo (raw body, 5 MB); DELETE /api/profile/photo; GET /api/photos/:profileId with ETag")
+  Component(service, "photos.service.ts", "Service", "processPhoto (sharp: type check, 40 MP limit, rotate, 256 x 256 WebP); savePhoto; removePhoto; readPhoto")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "profile_photo, profile")
+}
+Rel(web, router, "PUT, DELETE, GET", "HTTPS")
+Rel(router, csrf, "Applies")
+Rel(router, session, "Applies")
+Rel(router, service, "processPhoto, savePhoto(profileId), removePhoto(profileId), readPhoto(householdId, profileId)")
+Rel(service, db, "Reads and writes", "SQL")
+@enduml
