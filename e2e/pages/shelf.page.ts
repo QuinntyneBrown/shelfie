@@ -31,6 +31,20 @@ export class ShelfPage {
     return this.group(group).getByRole('article').filter({ hasText: title });
   }
 
+  /** A book card's cover: its sticker on its colour, with its picture over them when it has one. */
+  cover(group: 'On the go' | 'Up next', title: string) {
+    return this.book(group, title).locator('.cover');
+  }
+
+  coverPicture(group: 'On the go' | 'Up next', title: string) {
+    return this.cover(group, title).locator('img');
+  }
+
+  /** Whether the cover picture has loaded and has pixels to show. */
+  async coverPictureLoaded(group: 'On the go' | 'Up next', title: string) {
+    return this.coverPicture(group, title).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
   async openBook(group: 'On the go' | 'Up next', title: string) {
     await this.book(group, title).getByRole('link', { name: title, exact: true }).click();
   }

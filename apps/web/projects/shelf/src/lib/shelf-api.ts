@@ -17,6 +17,7 @@ export interface BookResponse {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   finishedAt: string | null;
   finishedOn: string | null;
@@ -41,6 +42,7 @@ export interface ShelfBook {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   nextChapter: number;
 }
@@ -50,6 +52,7 @@ export interface FinishedBook {
   title: string;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   finishedOn: string;
   reward: { text: string; givenOn: string } | null;
 }

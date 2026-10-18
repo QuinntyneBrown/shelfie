@@ -17,6 +17,7 @@ export class BookCard {
   readonly author = input<string | null>(null);
   readonly coverColor = input.required<string>();
   readonly sticker = input.required<string>();
+  readonly coverImage = input<string | null>(null);
   /** Chapters logged; progress is hidden for a book not yet started. */
   readonly logged = input.required<number>();
   readonly chapters = input.required<number>();
