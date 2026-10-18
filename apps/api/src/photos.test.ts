@@ -1,4 +1,4 @@
-// Traces to: L2-042, L2-044, L2-045
+// Traces to: L2-005, L2-006, L2-027, L2-029, L2-042, L2-044, L2-045
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -137,4 +137,61 @@ test('Given an image over 40 megapixels, when it is uploaded, then it is refused
   const response = await upload(cookie, huge, 'image/png');
 
   assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [400, 'photo-type']);
+});
+
+test('Given no session, when a photo is read, uploaded or removed, then the API answers 401', async () => {
+  await seed(db.pool);
+  const jpeg = await phonePhoto();
+
+  const read = await fetch(`${url}/api/photos/${SEED.parentId}`);
+  const put = await fetch(`${url}/api/profile/photo`, { method: 'PUT', headers: { ...APP, 'Content-Type': 'image/jpeg' }, body: new Uint8Array(jpeg) });
+  const remove = await fetch(`${url}/api/profile/photo`, { method: 'DELETE', headers: APP });
+
+  assert.deepEqual([read.status, put.status, remove.status], [401, 401, 401]);
+});
+
+test('Given another household’s photo, when Dad asks for it, then it is not found and no image comes back', async () => {
+  await seed(db.pool);
+  const zedsDad = await signIn('zedsdad', 'another-pass-99');
+  await upload(zedsDad, await phonePhoto());
+  const cookie = await signInAsDad();
+
+  const response = await fetch(`${url}/api/photos/p-other-dad`, { headers: { Cookie: cookie } });
+
+  assert.equal(response.status, 404);
+  assert.notEqual(response.headers.get('content-type'), 'image/webp');
+});
+
+test('Given an upload or removal that did not come from the app, then it is refused and the photo is unchanged', async () => {
+  await seed(db.pool);
+  const cookie = await signInAsDad();
+  const { photo } = (await (await upload(cookie, await phonePhoto())).json()) as { photo: string };
+
+  const put = await fetch(`${url}/api/profile/photo`, { method: 'PUT', headers: { Cookie: cookie, 'Content-Type': 'image/jpeg' }, body: new Uint8Array(await phonePhoto()) });
+  const remove = await fetch(`${url}/api/profile/photo`, { method: 'DELETE', headers: { ...APP, Cookie: cookie, Origin: 'https://evil.example' } });
+
+  assert.deepEqual([put.status, remove.status], [403, 403]);
+  assert.equal(await sessionPhoto(cookie), photo);
+});
+
+test('Given a photo is uploaded, then no log line carries the image', async () => {
+  await seed(db.pool);
+  const lines: Record<string, unknown>[] = [];
+  const logged = createApp(db.pool, { log: (line) => lines.push(line) }).listen(0);
+  try {
+    const at = `http://localhost:${(logged.address() as { port: number }).port}`;
+    const cookie = await signInAsDad();
+    const jpeg = await phonePhoto();
+
+    const response = await fetch(`${at}/api/profile/photo`, { method: 'PUT', headers: { ...APP, Cookie: cookie, 'Content-Type': 'image/jpeg' }, body: new Uint8Array(jpeg) });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    assert.equal(response.status, 200);
+    const text = JSON.stringify(lines);
+    assert.ok(lines.length > 0);
+    assert.ok(text.length < 1000, 'a log line is a summary, not a body');
+    assert.ok(!text.includes('Pear') && !text.includes(jpeg.subarray(0, 64).toString('base64')));
+  } finally {
+    logged.close();
+  }
 });
