@@ -177,8 +177,9 @@ test('Given a gallery reward of another household, or an unknown id, when it is 
   assert.deepEqual((await gallery(await dad())).rewards, [reward]);
 });
 
-/** Marks a book of Nia's finished now, as logging its last chapter does. */
-const finish = (bookId: string) => db.pool.query('UPDATE book SET finished_at = $1 WHERE id = $2', [new Date().toISOString(), bookId]);
+let finishes = 0;
+/** Marks a book of Nia's finished now, as logging its last chapter does; each one a millisecond after the last. */
+const finish = (bookId: string) => db.pool.query('UPDATE book SET finished_at = $1 WHERE id = $2', [new Date(Date.now() + ++finishes).toISOString(), bookId]);
 
 async function pick(cookie: string, id: string) {
   const response = await call(cookie, 'POST', `/${id}/pick`);
