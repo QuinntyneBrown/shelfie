@@ -64,6 +64,7 @@
       <li><a href="../components/cover.html">Book cover</a></li>
       <li><a href="../components/cover-picker.html">Cover picker</a></li>
       <li><a href="../components/cover-gallery.html">Cover gallery</a></li>
+      <li><a href="../components/picture-list.html">Picture list</a></li>
       <li><a href="../components/book-card.html">Book card</a></li>
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
@@ -137,6 +138,17 @@
         </div>
         <div class="ds-example__caption"><span>The six stickers Dad gives, then the feed's event marks.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="sticker" aria-hidden="true"&gt;🌟&lt;/span&gt;</code></pre></details>
+      </div>
+      <h3>With a picture</h3>
+      <p>A gallery reward's featured picture fills the sticker's circle (<code>.sticker__img</code>) over its 🎁. The 🎁 shows while the picture loads and stays when there is none or it fails to load: the image is removed, never shown broken. In Angular this is <code>&lt;sh-sticker emoji="🎁" [image]="reward.featuredPicture" /&gt;</code>; Settings → Rewards uses it at medium and the shelf's gallery card at large.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas" style="align-items: flex-end;">
+          <span class="sticker" aria-hidden="true">🎁<img class="sticker__img" src="../assets/rewards/zoo-penguins.jpg" alt=""></span>
+          <span class="sticker sticker--lg" aria-hidden="true">🎁<img class="sticker__img" src="../assets/rewards/art-set.jpg" alt=""></span>
+          <span class="sticker sticker--lg" aria-hidden="true">🎁</span>
+        </div>
+        <div class="ds-example__caption"><span>A picture at medium (Settings row) and large (shelf card), then the 🎁 for a reward with no picture or one that failed to load.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="sticker sticker--lg" aria-hidden="true"&gt;🎁&lt;img class="sticker__img" src="/api/gallery-rewards/r1/pictures/p1?v=3f2a" alt=""&gt;&lt;/span&gt;</code></pre></details>
       </div>
     </section>
 
@@ -231,10 +243,14 @@
     </section>
 
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
-      <pre><code>&lt;span class="sticker sticker--lg" aria-hidden="true"&gt;🌟&lt;/span&gt;</code></pre>
+      <pre><code>&lt;span class="sticker sticker--lg" aria-hidden="true"&gt;🌟&lt;/span&gt;
+
+&lt;!-- Angular (components library): an emoji, or a picture over it that falls back to the emoji --&gt;
+&lt;sh-sticker emoji="🎁" size="lg" [image]="reward.featuredPicture" /&gt;</code></pre>
       <table class="ds-table"><thead><tr><th scope="col">Class / property</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.sticker</code></td><td>40px accent circle, emoji at half its width.</td></tr>
         <tr><td><code>.sticker--lg</code></td><td>64px.</td></tr>
+        <tr><td><code>.sticker__img</code></td><td>A picture filling the circle over the emoji; removed if it fails to load.</td></tr>
         <tr><td><code>.sticker--xl</code></td><td>96px, emoji at 54%.</td></tr>
         <tr><td><code>--sticker-size</code></td><td>Set by the modifiers; do not set it inline.</td></tr>
       </tbody></table>

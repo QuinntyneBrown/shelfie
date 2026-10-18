@@ -58,6 +58,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Book cover](components/cover.html) | Data display | 7 colours · sm/md/lg/xl; picture; skeleton | picture loading, picture failed | shelf, book, books, add-book, manage-book |
 | [Cover picker](components/cover-picker.html) | Input | no picture, with picture | focus, uploading, too large, wrong type | add-book, manage-book |
 | [Cover gallery](components/cover-gallery.html) | Input | radio grid of covers | loading, empty, failed, selected, focus | add-book |
+| [Picture list](components/picture-list.html) | Input | thumbnail grid with a featured mark, per-picture actions and Add a picture | empty, several, uploading, failed, wrong file, too large, full, disabled, focus | edit-gallery-reward |
 | [Book card](components/book-card.html) | Data display | reading, up next, finished | — | shelf, book, log-chapter, give-reward |
 | [Chapter row](components/chapter-row.html) | Data display | done, next, future | default, hover, focus | book |
 | [Sticker](components/sticker.html) | Data display | md, lg, xl | — | review, shelf, chapter, book |
