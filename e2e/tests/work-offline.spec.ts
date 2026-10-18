@@ -51,7 +51,7 @@ test('Given Nia logs a chapter while offline, then it is kept on her device and 
   await expect(log.toast('We saved Chapter 12 on this device and will send it when you’re back online.')).toBeVisible();
   await expect(book.heading()).toHaveText(LION);
   await expect(book.chapterRow(12)).toContainText('Will send');
-  expect(readOnOf('b-lion', 12)).toBeUndefined();
+  expect(await readOnOf('b-lion', 12)).toBeUndefined();
 });
 
 /** Arranges chapters already kept on the device, as if logged offline earlier. */
@@ -78,7 +78,7 @@ test('Given two chapters kept on the device, when the app starts online, then th
   await page.reload();
 
   await expect(new LogChapterPage(page).toast('Everything you logged has been sent.')).toBeVisible();
-  const [lion, robot] = [loggedAtOf('b-lion', 12), loggedAtOf('b-robot', 4)];
+  const [lion, robot] = await Promise.all([loggedAtOf('b-lion', 12), loggedAtOf('b-robot', 4)]);
   expect(lion && robot && lion < robot).toBe(true);
 });
 

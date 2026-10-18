@@ -78,7 +78,7 @@ test('Given she did not change the day, when she logs a chapter, then it is save
   await log.done();
 
   await expect(log.heading()).toHaveText('Chapter 12 done!');
-  expect(readOnOf('b-lion', 12)).toBe(householdDay());
+  expect(await readOnOf('b-lion', 12)).toBe(householdDay());
 });
 
 test('Given she chooses Yesterday, when she logs a chapter, then it is saved as read yesterday', async ({ page }) => {
@@ -91,7 +91,7 @@ test('Given she chooses Yesterday, when she logs a chapter, then it is saved as 
   await log.done();
 
   await expect(log.heading()).toHaveText('Chapter 12 done!');
-  expect(readOnOf('b-lion', 12)).toBe(householdDay(-1));
+  expect(await readOnOf('b-lion', 12)).toBe(householdDay(-1));
 });
 
 test('Given she chooses Another day, when she picks a past day and logs, then that day is saved', async ({ page }) => {
@@ -105,7 +105,7 @@ test('Given she chooses Another day, when she picks a past day and logs, then th
   await log.done();
 
   await expect(log.heading()).toHaveText('Chapter 12 done!');
-  expect(readOnOf('b-lion', 12)).toBe(householdDay(-5));
+  expect(await readOnOf('b-lion', 12)).toBe(householdDay(-5));
 });
 
 test('Given she picks a day in the future, when she presses I’m done!, then she is asked for today or earlier and nothing is saved', async ({ page }) => {
@@ -120,7 +120,7 @@ test('Given she picks a day in the future, when she presses I’m done!, then sh
 
   await expect(log.dayError()).toBeVisible();
   await expect(log.heading()).toHaveText('Chapter 12');
-  expect(readOnOf('b-lion', 12)).toBeUndefined();
+  expect(await readOnOf('b-lion', 12)).toBeUndefined();
 });
 
 test('Given a request that skips the form, when the day is in the future, then the API refuses it', async ({ page }) => {
@@ -130,7 +130,7 @@ test('Given a request that skips the form, when the day is in the future, then t
   const response = await log.postLog('b-lion', 12, { readOn: householdDay(2), answers: [{ position: 1, text: 'He said sorry.' }] });
 
   expect(response.status()).toBe(400);
-  expect(readOnOf('b-lion', 12)).toBeUndefined();
+  expect(await readOnOf('b-lion', 12)).toBeUndefined();
 });
 
 const answers = [{ position: 1, text: 'He said sorry.' }];
@@ -155,7 +155,7 @@ test('Given chapter 12 is next, when a later chapter is logged, then the API ref
   const skipped = await log.postLog('b-lion', 14, { readOn: householdDay(), answers });
 
   expect([skipped.status(), (await skipped.json()).type]).toEqual([409, 'chapter-out-of-order']);
-  expect(readOnOf('b-lion', 14)).toBeUndefined();
+  expect(await readOnOf('b-lion', 14)).toBeUndefined();
 });
 
 test('Given a chapter that does not exist, when its form is asked for, then the API says not found', async ({ page }) => {
@@ -222,7 +222,7 @@ test('Given she has just logged a chapter, when she presses Undo on the toast, t
 
   await expect(log.heading()).toHaveText('Chapter 12');
   await expect(log.answerBox(1)).toHaveValue('Edmund said sorry');
-  expect(readOnOf('b-lion', 12)).toBeUndefined();
+  expect(await readOnOf('b-lion', 12)).toBeUndefined();
 });
 
 test('Given she has moved on to her shelf, when she presses Undo on the toast, then she is taken back to the chapter with her answers', async ({ page }) => {
@@ -313,5 +313,5 @@ test('Given Nia logged chapters 12 and 13 just now, when an undo of chapter 12 i
   const undo = await log.undoViaApi((await twelve.json()).chapterLogId);
 
   expect([undo.status(), (await undo.json()).type]).toEqual([409, 'undo-not-latest']);
-  expect(readOnOf('b-lion', 12)).toBeDefined();
+  expect(await readOnOf('b-lion', 12)).toBeDefined();
 });
