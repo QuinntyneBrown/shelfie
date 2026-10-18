@@ -71,3 +71,15 @@ test('Given the server cannot be reached, when Nia picks a goal, then a toast sa
   await expect(shelf.toast('Your goal wasn’t picked')).toBeVisible();
   await expect(shelf.goalProgress('Trip to the zoo')).toHaveCount(0);
 });
+
+test('Given a phone, when Nia sees her goal, then the shelf does not scroll sideways', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await addGalleryReward('A very long reward name that keeps going for quite a while to test wrapping', 20);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await shelf.pickGoal('A very long reward name that keeps going for quite a while to test wrapping');
+
+  await expect(shelf.goalProgress('A very long reward name')).toBeVisible();
+  expect(await shelf.scrollsSideways()).toBe(false);
+});

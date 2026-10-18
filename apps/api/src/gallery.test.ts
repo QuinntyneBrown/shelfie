@@ -156,6 +156,8 @@ test('Given a gallery reward, when Dad removes it, then it leaves the gallery', 
 
   assert.equal(response.status, 204);
   assert.deepEqual((await gallery(cookie)).rewards, [kept]);
+  const shelf = (await (await fetch(`${url}/api/shelf`, { headers: { Cookie: cookie } })).json()) as { finished: { id: string; reward: { text: string } | null }[] };
+  assert.equal(shelf.finished.find((b) => b.id === 'b-web')?.reward?.text, 'Movie night with popcorn');
 });
 
 test('Given Nia, when she edits or removes a gallery reward, then the API answers 403 and nothing changes', async () => {
