@@ -28,3 +28,5 @@ export * from './lib/cover-picker/cover-picker';
 export * from './lib/cover-gallery/cover-gallery';
 export * from './lib/suggestion/suggestion';
 export * from './lib/combobox/combobox';
+export * from './lib/sticker/sticker';
+export * from './lib/picture-list/picture-list';

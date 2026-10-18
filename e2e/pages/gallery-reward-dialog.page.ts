@@ -34,6 +34,38 @@ export class GalleryRewardDialog {
     return this.dialog().getByRole('spinbutton', { name: 'Books to finish' });
   }
 
+  /** The Pictures group: thumbnails, their buttons and Add a picture. */
+  pictures() {
+    return this.dialog().getByRole('group', { name: /^Pictures/ });
+  }
+
+  /** Every thumbnail, in order. */
+  pictureItems() {
+    return this.pictures().getByRole('listitem');
+  }
+
+  /** The nth thumbnail, counting from 1. */
+  picture(n: number) {
+    return this.pictureItems().nth(n - 1);
+  }
+
+  pictureImage(n: number) {
+    return this.picture(n).getByRole('img');
+  }
+
+  /** The thumbnail marked Featured. */
+  featuredPicture() {
+    return this.pictureItems().filter({ hasText: 'Featured' });
+  }
+
+  pictureChooser() {
+    return this.pictures().getByLabel('Add a picture');
+  }
+
+  async choosePicture(file: string) {
+    await this.pictureChooser().setInputFiles(file);
+  }
+
   async fill(reward: { name?: string; description?: string; target?: string }) {
     if (reward.name !== undefined) await this.nameField().fill(reward.name);
     if (reward.description !== undefined) await this.descriptionField().fill(reward.description);

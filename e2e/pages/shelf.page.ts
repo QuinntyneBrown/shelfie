@@ -136,6 +136,15 @@ export class ShelfPage {
     return this.gallery().getByRole('listitem').filter({ hasText: name });
   }
 
+  /** The featured picture on a gallery reward's card, when it has one. */
+  galleryRewardPicture(name: string) {
+    return this.galleryReward(name).locator('img');
+  }
+
+  async galleryRewardPictureLoaded(name: string) {
+    return this.galleryRewardPicture(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
   /** The description under a gallery reward, when it has one. */
   galleryRewardDescription(name: string) {
     return this.galleryReward(name).locator('.trophy__description');

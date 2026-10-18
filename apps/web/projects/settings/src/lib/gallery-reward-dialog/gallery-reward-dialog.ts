@@ -8,14 +8,27 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { Banner, Dialog, TextField, Textarea } from 'components';
+import { Banner, Dialog, PictureItem, PictureList, TextField, Textarea } from 'components';
 import { ApiError } from 'core';
 import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
 
-/** Adds a reward to the gallery, or edits one; saves through the API and reports the saved reward. */
+/** A thumbnail in the dialog: a stored picture, or a chosen file not stored yet. */
+interface DialogPicture extends PictureItem {
+  /** The stored picture's id; null until it is stored. */
+  id: string | null;
+  file?: File;
+}
+
+const pictureOf = (reward: GalleryReward): DialogPicture[] =>
+  reward.pictures.map((p) => ({ id: p.id, url: p.url, featured: p.url === reward.featuredPicture }));
+
+/**
+ * Adds a reward to the gallery, or edits one; saves through the API and reports the saved reward.
+ * Editing, each picture change is stored at once and reported as `changed` (ADR-0010).
+ */
 @Component({
   selector: 'sh-gallery-reward-dialog',
-  imports: [Banner, Dialog, TextField, Textarea],
+  imports: [Banner, Dialog, PictureList, TextField, Textarea],
   templateUrl: './gallery-reward-dialog.html',
   styleUrl: './gallery-reward-dialog.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +42,8 @@ export class GalleryRewardDialog {
   /** Who picks from the gallery, for the help text. */
   readonly readerName = input.required<string>();
   readonly saved = output<GalleryReward>();
+  /** The reward after a picture change, which is stored before any save. */
+  readonly changed = output<GalleryReward>();
   readonly closed = output<void>();
 
   protected readonly name = signal('');
@@ -44,6 +59,10 @@ export class GalleryRewardDialog {
       this.descriptionError() && 'Shorten the description',
     ].filter((p): p is string => !!p),
   );
+  protected readonly pictures = signal<DialogPicture[]>([]);
+  protected readonly pictureHelp = computed(
+    () => 'Up to 6. The featured one shows on ' + this.readerName() + '’s shelf. JPEG, PNG or WebP, up to 5 MB each.',
+  );
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
   protected readonly heading = computed(() => {
@@ -57,12 +76,22 @@ export class GalleryRewardDialog {
       const reward = this.editing();
       this.name.set(reward?.name ?? '');
       this.description.set(reward?.description ?? '');
+      this.pictures.set(reward ? pictureOf(reward) : []);
       this.target.set(reward ? String(reward.target) : '');
       this.nameError.set(null);
       this.descriptionError.set(null);
       this.targetError.set(null);
       this.failed.set(false);
     });
+  }
+
+  protected async addPicture(file: File) {
+    const reward = this.editing();
+    if (!reward) return;
+    this.pictures.update((list) => [...list, { id: null, url: URL.createObjectURL(file), featured: false, file }]);
+    const stored = await this.api.addPicture(reward.id, file);
+    this.pictures.set(pictureOf(stored));
+    this.changed.emit(stored);
   }
 
   protected async save() {

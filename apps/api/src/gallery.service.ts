@@ -1,6 +1,7 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { all, get, run, transaction, type Db } from './db.ts';
+import { processImage } from './photos.service.ts';
 import { Problem } from './problem.ts';
 
 export interface RewardPicture {
@@ -132,4 +133,51 @@ export async function pickGoal(pool: Pool, householdId: string, id: string): Pro
     await run(db, 'UPDATE gallery_reward SET picked_at = $1 WHERE id = $2', [new Date().toISOString(), id]);
   });
   return getGallery(pool, householdId);
+}
+
+export interface RewardImage {
+  image: Buffer;
+  etag: string;
+}
+
+/** A reward picture: centre-cropped to 480 × 480, room to spare for the 64 px sticker. */
+export function processRewardPicture(bytes: Buffer): Promise<Buffer> {
+  return processImage(bytes, 480, 480);
+}
+
+/** Locks the household's reward for a change to its pictures, so changes to one reward run one at a time (ADR-0010). */
+async function lockReward(db: Db, householdId: string, id: string): Promise<RewardRow> {
+  const reward = await get<RewardRow>(db, 'SELECT id, name, target, description FROM gallery_reward WHERE id = $1 AND household_id = $2 FOR UPDATE', [
+    id,
+    householdId,
+  ]);
+  if (!reward) throw new Problem(404, 'not-found');
+  return reward;
+}
+
+/** Adds a picture after the reward's others; the first one is featured. */
+export async function addRewardPicture(pool: Pool, householdId: string, id: string, image: Buffer): Promise<GalleryReward> {
+  return transaction(pool, async (db) => {
+    const reward = await lockReward(db, householdId, id);
+    const count = (await get<{ n: number }>(db, 'SELECT COUNT(*)::int AS n FROM reward_picture WHERE reward_id = $1', [id]))!.n;
+    await run(db, 'INSERT INTO reward_picture (id, reward_id, image, etag, featured, created_at) VALUES ($1, $2, $3, $4, $5, $6)', [
+      randomUUID(),
+      id,
+      image,
+      createHash('sha256').update(image).digest('hex').slice(0, 16),
+      count === 0,
+      new Date().toISOString(),
+    ]);
+    return (await withPictures(db, [reward]))[0]!;
+  });
+}
+
+/** A picture of a reward in the household; another household's picture reads as absent. */
+export function readRewardPicture(db: Db, householdId: string, id: string, pictureId: string): Promise<RewardImage | undefined> {
+  return get<RewardImage>(
+    db,
+    `SELECT rp.image, rp.etag FROM reward_picture rp JOIN gallery_reward g ON g.id = rp.reward_id
+      WHERE rp.id = $1 AND rp.reward_id = $2 AND g.household_id = $3`,
+    [pictureId, id, householdId],
+  );
 }

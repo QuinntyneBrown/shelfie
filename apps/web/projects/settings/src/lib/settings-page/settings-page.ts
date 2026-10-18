@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Avatar, Banner, Button, Dialog, ErrorState, Skeleton, TextField } from 'components';
+import { Avatar, Banner, Button, Dialog, ErrorState, Skeleton, Sticker, TextField } from 'components';
 import { ApiError, SessionService, ToastService } from 'core';
 import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
 import { GalleryRewardDialog } from '../gallery-reward-dialog/gallery-reward-dialog';
@@ -23,6 +23,7 @@ import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } 
     InviteParentDialog,
     ProfilePhotoDialog,
     Skeleton,
+    Sticker,
     TextField,
   ],
   templateUrl: './settings-page.html',
@@ -138,11 +139,17 @@ export class SettingsPage {
   /** Puts the saved reward in the list, in place of the one edited or at the end. */
   protected rewardSaved(reward: GalleryReward) {
     this.rewardDialogOpen.set(false);
-    const edited = this.editingReward();
+    this.rewardChanged(reward);
+    this.toasts.show({ title: this.editingReward() ? `${reward.name} saved` : `${reward.name} added` });
+  }
+
+  /** Keeps a reward's row in step with its pictures, which change in the dialog before any save. */
+  protected rewardChanged(reward: GalleryReward) {
     this.rewards.update((rewards) =>
-      edited ? rewards.map((r) => (r.id === reward.id ? reward : r)) : [...rewards, reward],
+      rewards.some((r) => r.id === reward.id)
+        ? rewards.map((r) => (r.id === reward.id ? reward : r))
+        : [...rewards, reward],
     );
-    this.toasts.show({ title: edited ? `${reward.name} saved` : `${reward.name} added` });
   }
 
   protected openRemoveReward(reward: GalleryReward) {

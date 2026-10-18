@@ -1,0 +1,6 @@
+<span class="sticker" [class.sticker--lg]="size() === 'lg'" aria-hidden="true"
+  >{{ emoji() }}
+  @if (image() && !broken()) {
+    <img class="sticker__img" [src]="image()" alt="" (error)="broken.set(true)" />
+  }
+</span>

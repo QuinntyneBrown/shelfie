@@ -38,4 +38,9 @@ export class GalleryRewardsApi {
   remove(id: string) {
     return this.api.delete(`/gallery-rewards/${id}`);
   }
+
+  /** Uploads one picture after the reward's others and answers the reward as it now is. */
+  addPicture(id: string, file: File) {
+    return this.api.post<GalleryReward>(`/gallery-rewards/${id}/pictures`, file);
+  }
 }
