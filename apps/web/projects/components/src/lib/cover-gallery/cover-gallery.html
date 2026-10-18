@@ -1,0 +1,24 @@
+@if (loading()) {
+  <div class="gallery" role="status" aria-busy="true">
+    <span class="visually-hidden">Getting covers…</span>
+    @for (placeholder of placeholders; track placeholder) {
+      <sh-skeleton variant="cover" />
+    }
+  </div>
+} @else {
+  <div class="gallery" role="radiogroup" [attr.aria-label]="label()">
+    @for (url of options(); track url; let i = $index) {
+      <label class="cover-choice">
+        <input
+          type="radio"
+          [name]="group"
+          [value]="url"
+          [checked]="value() === url"
+          (change)="value.set(url)"
+        />
+        <span class="visually-hidden">Cover {{ i + 1 }} of {{ options().length }}</span>
+        <sh-cover color="sage" sticker="📖" [image]="url" />
+      </label>
+    }
+  </div>
+}

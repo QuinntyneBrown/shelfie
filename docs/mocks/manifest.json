@@ -183,7 +183,11 @@
         "error",
         "picture",
         "wrong-file",
-        "too-large"
+        "too-large",
+        "covers-loading",
+        "covers",
+        "covers-empty",
+        "covers-failed"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
@@ -201,7 +205,10 @@
         "L2-077",
         "L2-078",
         "L2-079",
-        "L2-080"
+        "L2-080",
+        "L2-090",
+        "L2-091",
+        "L2-092"
       ]
     },
     {

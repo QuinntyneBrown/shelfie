@@ -1,4 +1,4 @@
-import type { Provider } from './book-search.service.ts';
+import { WORK_KEY, type Provider, type WorkCoversProvider } from './book-search.service.ts';
 import { processCover } from './covers.service.ts';
 import { Problem } from './problem.ts';
 
@@ -14,17 +14,33 @@ export const openLibrary =
   async (title, signal) => {
     const url = new URL(SEARCH_URL);
     url.searchParams.set('title', title);
-    url.searchParams.set('fields', 'title,author_name,cover_i');
+    url.searchParams.set('fields', 'key,title,author_name,cover_i');
     url.searchParams.set('limit', '5');
     const response = await fetchFn(url, { signal, headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error(`Open Library answered ${response.status}`);
-    const { docs } = (await response.json()) as { docs?: { title?: unknown; author_name?: unknown; cover_i?: unknown }[] };
+    const { docs } = (await response.json()) as { docs?: { key?: unknown; title?: unknown; author_name?: unknown; cover_i?: unknown }[] };
     return (docs ?? []).map((doc) => ({
       title: doc.title,
       author: Array.isArray(doc.author_name) ? (doc.author_name[0] ?? null) : null,
       chapterCount: null,
       coverId: doc.cover_i == null ? null : String(doc.cover_i),
+      workKey: typeof doc.key === 'string' ? doc.key.replace(/^\/works\//, '') : null,
     }));
+  };
+
+const WORKS_URL = 'https://openlibrary.org/works/';
+
+/**
+ * The cover ids Open Library holds for one work. The URL is fixed and the key must be a work key, so no caller can
+ * point the fetch anywhere else; only the work's `covers` list is read.
+ */
+export const openLibraryWorkCovers =
+  (fetchFn: typeof fetch = fetch): WorkCoversProvider =>
+  async (workKey, signal) => {
+    if (!WORK_KEY.test(workKey)) throw new Error('Not a work key');
+    const response = await fetchFn(`${WORKS_URL}${workKey}.json`, { signal, redirect: 'error', headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error(`Open Library answered ${response.status}`);
+    return ((await response.json()) as { covers?: unknown }).covers;
   };
 
 const COVER_HOST = 'https://covers.openlibrary.org/b/id/';

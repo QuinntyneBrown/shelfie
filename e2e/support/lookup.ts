@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { Provider } from '../../apps/api/src/book-search.service.ts';
+import type { Provider, WorkCoversProvider } from '../../apps/api/src/book-search.service.ts';
 import { coverFixture } from './covers';
 
 /**
@@ -10,16 +10,20 @@ interface Entry {
   title: string;
   author: string | null;
   coverId: string | null;
+  workKey?: string;
 }
 
 /** Cover ids the fake cover host serves; every other id is missing. */
 export const COVER_IDS = { winnDixie: '8739161', hobbit: '1937', missing: '404404' };
 
+/** Work keys whose covers the fake catalogue lists: the Hobbit has three (the last is missing), Winn-Dixie none, Pooh fails. */
+export const WORK_KEYS = { hobbit: 'OL262758W', winnDixie: 'OL18020194W', pooh: 'OL262460W' };
+
 const CATALOGUE: Entry[] = [
-  { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', coverId: COVER_IDS.winnDixie },
+  { title: 'Because of Winn-Dixie', author: 'Kate DiCamillo', coverId: COVER_IDS.winnDixie, workKey: WORK_KEYS.winnDixie },
   { title: 'Because of Winn-Dixie: Read-Along Edition', author: 'Kate DiCamillo', coverId: null },
-  { title: 'Winnie-the-Pooh', author: 'A. A. Milne', coverId: COVER_IDS.missing },
-  { title: 'The Hobbit', author: 'J. R. R. Tolkien', coverId: COVER_IDS.hobbit },
+  { title: 'Winnie-the-Pooh', author: 'A. A. Milne', coverId: COVER_IDS.missing, workKey: WORK_KEYS.pooh },
+  { title: 'The Hobbit', author: 'J. R. R. Tolkien', coverId: COVER_IDS.hobbit, workKey: WORK_KEYS.hobbit },
   { title: 'Winter Holiday', author: 'Arthur Ransome', coverId: null },
   { title: 'The Winter Fox', author: null, coverId: null },
   { title: 'Wintering Owl', author: 'Ada Lark', coverId: null },
@@ -44,6 +48,13 @@ export const fakeCatalogue: Provider = async (title) => {
   if (q.startsWith('fail')) throw new Error('catalogue down');
   if (q.startsWith('slow')) await delay(1500);
   return CATALOGUE.filter((entry) => entry.title.toLowerCase().includes(q)).map((entry) => ({ ...entry, chapterCount: null }));
+};
+
+/** The cover lists of the works above; any other work, and Pooh, fail. */
+export const fakeWorkCovers: WorkCoversProvider = async (workKey) => {
+  if (workKey === WORK_KEYS.hobbit) return [Number(COVER_IDS.hobbit), Number(COVER_IDS.winnDixie), Number(COVER_IDS.missing)];
+  if (workKey === WORK_KEYS.winnDixie) return [];
+  throw new Error('catalogue down');
 };
 
 /** The AI helper: guesses for "dragon…", nothing for anything else, and broken for "fail…". */
