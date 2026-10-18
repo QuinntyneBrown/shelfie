@@ -36,6 +36,10 @@ export class ShellPage {
     return this.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   }
 
+  async scrollsDown() {
+    return this.page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight);
+  }
+
   /** Controls a finger could miss: anything interactive smaller than 44 × 44 CSS px. */
   async undersizedControls() {
     return this.page.evaluate(() =>

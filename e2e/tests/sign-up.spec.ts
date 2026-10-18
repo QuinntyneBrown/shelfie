@@ -1,4 +1,4 @@
-// Traces to: L2-033
+// Traces to: L2-033, L2-025
 import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
 import { SignUpPage } from '../pages/sign-up.page';
@@ -85,4 +85,13 @@ test('Given the server cannot be reached, when submitted, then an error with Try
   await signUp.tryAgain();
 
   await expect(page).toHaveURL(/\/review$/);
+});
+
+test('Given a window tall enough for the whole form, when sign-up shows, then the page does not scroll', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1400 });
+  const signUp = new SignUpPage(page);
+  await signUp.open();
+  await expect(signUp.heading()).toBeVisible();
+
+  expect(await new ShellPage(page).scrollsDown()).toBe(false);
 });
