@@ -33,7 +33,12 @@
         [error]="nameError()"
         [(value)]="name"
       />
-      <sh-color-picker label="Colour" [colors]="colors" [(value)]="color" />
+      <sh-color-picker
+        label="Colour"
+        [colors]="colors"
+        [help]="editing()?.photo ? 'Shows when ' + editing()!.name + ' has no photo.' : null"
+        [(value)]="color"
+      />
     </div>
     <sh-text-field
       label="Username"

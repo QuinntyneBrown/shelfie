@@ -3,6 +3,7 @@
   <sh-top-bar
     [name]="current.name"
     [color]="current.color"
+    [photo]="current.photo"
     [home]="home()"
     [links]="navLinks()"
     [streak]="current.role === 'reader' ? status.streak() : null"
@@ -25,6 +26,7 @@
 @if (navLinks().length) {
   <sh-tab-bar [links]="navLinks()" />
 }
+<sh-profile-photo-dialog [open]="photoDialogOpen()" (closed)="photoDialogOpen.set(false)" />
 <div class="toast-region" role="status" aria-live="polite">
   @if (hiddenToasts() > 0) {
     <button class="btn btn--sm more-toasts" type="button" (click)="showAllToasts.set(true)">

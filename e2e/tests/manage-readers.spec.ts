@@ -28,7 +28,7 @@ test('Given Dad adds a reader, when he saves, then Theo is listed with his usern
   const signIn = new SignInPage(page);
   await signIn.signInWithPassword(THEO.username, THEO.password);
   await expect(new ShelfPage(page).greeting()).toHaveText('Hi Theo');
-  await expect(new ShellPage(page).accountMenuButton('Theo')).toHaveClass(/avatar--mint/);
+  await expect.poll(() => new ShellPage(page).accountColour('Theo')).toBe('mint');
 });
 
 test('Given Dad edits Nia’s name and colour, when he saves, then the list and her next sign-in show them', async ({ page }) => {
@@ -48,7 +48,7 @@ test('Given Dad edits Nia’s name and colour, when he saves, then the list and 
   await settings.signOut();
   await new SignInPage(page).signInWithPassword(NIA.username, NIA.password);
   await expect(new ShelfPage(page).greeting()).toHaveText('Hi Nina');
-  await expect(new ShellPage(page).accountMenuButton('Nina')).toHaveClass(/avatar--sun/);
+  await expect.poll(() => new ShellPage(page).accountColour('Nina')).toBe('sun');
 });
 
 test('Given Dad sets a new password for Nia, when he saves, then only the new password signs her in', async ({ page }) => {

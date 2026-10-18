@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Upload a profile photo
+
+Person(parent, "Parent", "Uploads, replaces and removes their own photo in Settings")
+Person(reader, "Reader", "Uploads, replaces and removes her own photo from My photo")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(parent, shelfie, "Manages own photo; sees the household's photos", "HTTPS")
+Rel(reader, shelfie, "Manages own photo; sees the household's photos", "HTTPS")
+@enduml

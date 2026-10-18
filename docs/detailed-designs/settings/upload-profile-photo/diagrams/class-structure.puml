@@ -1,0 +1,84 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Upload a profile photo
+
+class "sh-avatar" as Avatar {
+  +name: string
+  +color: string
+  +photo: string | null
+  +size: 'sm' | 'md' | 'lg' | 'xl'
+  +busy: boolean
+  +label: string | null
+  -broken: Signal<boolean>
+}
+
+class "sh-photo-picker" as PhotoPicker {
+  +name: string
+  +color: string
+  +photo: string | null
+  +busy: boolean
+  +error: string | null
+  +picked: EventEmitter<File>
+  +removed: EventEmitter<void>
+}
+
+class "sh-top-bar" as TopBar {
+  +name: string
+  +color: string
+  +photo: string | null
+}
+
+class ProfilePhotoDialog {
+  +open: boolean
+  +closed: EventEmitter<void>
+  -busy: Signal<boolean>
+  -error: Signal<string | null>
+  -failed: Signal<boolean>
+  -uploaded: Signal<boolean>
+  +upload(file: File): Promise<void>
+  +remove(): Promise<void>
+}
+
+class ProfilePhotoApi {
+  +upload(file: File): Promise<{photo: string}>
+  +remove(): Promise<void>
+}
+
+class Session {
+  +profileId: string
+  +name: string
+  +color: string
+  +photo: string | null
+}
+
+class PhotosService {
+  +processPhoto(bytes: Buffer): Promise<Buffer>
+  +savePhoto(db, profileId, image): Promise<string>
+  +removePhoto(db, profileId): Promise<void>
+  +readPhoto(db, householdId, profileId): Promise<ProfilePhoto | undefined>
+  +photoUrl(profileId, etag): string
+}
+
+class ProfilePhoto {
+  +profileId: string
+  +image: Buffer
+  +etag: string
+  +updatedAt: string
+}
+
+PhotoPicker *-- Avatar : preview
+TopBar *-- Avatar : account trigger
+ProfilePhotoDialog *-- PhotoPicker : renders
+ProfilePhotoDialog ..> ProfilePhotoApi : calls
+ProfilePhotoDialog ..> Session : update(photo)
+PhotosService --> ProfilePhoto : reads / writes
+@enduml

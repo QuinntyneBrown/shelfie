@@ -21,6 +21,31 @@ export class ShellPage {
     return this.page.getByRole('button', { name: `Account menu for ${name}` });
   }
 
+  /** The colour of the avatar on the account menu button, such as "mint". */
+  async accountColour(name: string) {
+    const classes = (await this.accountMenuButton(name).locator('.avatar').getAttribute('class')) ?? '';
+    return classes.split(' ').map((c) => /^avatar--(\w+)$/.exec(c)?.[1]).find((c) => c && !['sm', 'lg', 'xl'].includes(c));
+  }
+
+  /** The photo on the account menu button, when there is one. */
+  accountPhoto(name: string) {
+    return this.accountMenuButton(name).locator('img');
+  }
+
+  accountPhotoUrl(name: string) {
+    return this.accountPhoto(name).getAttribute('src');
+  }
+
+  /** Whether the account photo has loaded and has pixels to show. */
+  async accountPhotoLoaded(name: string) {
+    return this.accountPhoto(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
+  /** Makes every photo request fail, as a dropped connection would. */
+  async breakPhotos() {
+    await this.page.route('**/api/photos/**', (route) => route.abort());
+  }
+
   /** Makes the page taller than the window, scrolls to the bottom, and returns how far the top bar sits from the window's top edge. */
   async topBarOffsetAfterScrolling() {
     return this.page.evaluate(() => {
@@ -45,8 +70,8 @@ export class ShellPage {
     return this.page.evaluate(() =>
       [...document.querySelectorAll<HTMLElement>('button, a.btn, [role=menuitem], input, textarea, select, .chip')]
         .filter((el) => el.offsetParent !== null)
-        // A radio or checkbox is hit through its label, so that is the target to measure.
-        .map((el) => ({ el, box: (el.matches('input[type=radio], input[type=checkbox]') ? (el.closest('label') ?? el) : el).getBoundingClientRect() }))
+        // A radio, checkbox or file input is hit through its label, so that is the target to measure.
+        .map((el) => ({ el, box: (el.matches('input[type=radio], input[type=checkbox], input[type=file]') ? (el.closest('label') ?? el) : el).getBoundingClientRect() }))
         .filter(({ box }) => box.width < 44 || box.height < 44)
         .map(({ el, box }) => `${el.tagName.toLowerCase()}.${el.className} "${(el.textContent ?? '').trim().slice(0, 20)}" ${Math.round(box.width)}x${Math.round(box.height)}`),
     );
@@ -127,6 +152,12 @@ export class ShellPage {
 
   async openAccountMenu(name: string) {
     await this.accountMenuButton(name).click();
+  }
+
+  /** Opens "My photo" from a reader's account menu. */
+  async openMyPhoto(name: string) {
+    await this.openAccountMenu(name);
+    await this.menuItem('My photo').click();
   }
 
   async focusAccountMenuButton(name: string) {

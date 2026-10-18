@@ -47,9 +47,7 @@
         <ul class="list">
           @for (parent of view.parents; track parent.id) {
             <li class="list__item">
-              <span class="avatar" [class]="'avatar--' + parent.color" aria-hidden="true">{{
-                initial(parent.name)
-              }}</span>
+              <sh-avatar [name]="parent.name" [color]="parent.color" [photo]="photoOf(parent)" />
               <div class="list__body">
                 <div class="list__title">{{ parent.name }}</div>
                 <div class="list__meta">
@@ -60,7 +58,7 @@
           }
           @for (invite of view.invites; track invite.id) {
             <li class="list__item">
-              <span class="avatar avatar--lilac" aria-hidden="true">{{ initial(invite.email) }}</span>
+              <sh-avatar [name]="invite.email" color="lilac" />
               <div class="list__body">
                 <div class="list__title">
                   {{ invite.email }} <span class="badge badge--info">Invited</span>
@@ -90,9 +88,7 @@
         <ul class="list">
           @for (reader of view.readers; track reader.id) {
             <li class="list__item">
-              <span class="avatar" [class]="'avatar--' + reader.color" aria-hidden="true">{{
-                initial(reader.name)
-              }}</span>
+              <sh-avatar [name]="reader.name" [color]="reader.color" [photo]="reader.photo" />
               <div class="list__body">
                 <div class="list__title">{{ reader.name }}</div>
                 <div class="list__meta">&#64;{{ reader.username }}</div>
@@ -112,6 +108,7 @@
           }
         </ul>
       </section>
+      <sh-profile-photo-dialog [open]="photoDialogOpen()" (closed)="photoDialogOpen.set(false)" />
       <sh-edit-reader-dialog
         [open]="readerDialogOpen()"
         [editing]="editingReader()"
@@ -120,6 +117,21 @@
       />
       <section class="card stack" aria-labelledby="account-title">
         <h2 id="account-title" class="section-title">Your account</h2>
+        @if (me(); as me) {
+          <div class="cluster">
+            <sh-avatar size="lg" [name]="me.name" [color]="me.color" [photo]="me.photo" />
+            <div class="stack photo-row">
+              <span class="field__label">Your photo</span>
+              <button class="btn btn--sm" type="button" (click)="photoDialogOpen.set(true)">
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+                  <circle cx="12" cy="13" r="3.5" />
+                </svg>
+                {{ me.photo ? 'Change photo' : 'Add a photo' }}
+              </button>
+            </div>
+          </div>
+        }
         <sh-text-field label="Your name" [error]="nameError()" [(value)]="name" />
         <sh-text-field label="Username" [readonly]="true" [value]="view.account.username" />
         <sh-text-field

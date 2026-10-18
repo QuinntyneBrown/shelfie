@@ -9,6 +9,8 @@ export interface Session {
   color: string;
   email: string | null;
   theme: 'device' | 'light' | 'dark';
+  /** The URL of the person's own photo, or null when they have none. */
+  photo: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +21,7 @@ export class SessionService {
   readonly expired = signal(false);
 
   /** Shows changed details straight away, without another sign-in. */
-  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color'>>) {
+  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color' | 'photo'>>) {
     this.current.update((session) => (session ? { ...session, ...changes } : session));
   }
 

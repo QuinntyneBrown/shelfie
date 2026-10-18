@@ -8,6 +8,7 @@ export interface ParentView {
   name: string;
   username: string;
   color: string;
+  photo: string | null;
 }
 
 export interface InviteView {
@@ -22,6 +23,7 @@ export interface ReaderView {
   name: string;
   color: string;
   username: string;
+  photo: string | null;
 }
 
 export interface SettingsPatch {

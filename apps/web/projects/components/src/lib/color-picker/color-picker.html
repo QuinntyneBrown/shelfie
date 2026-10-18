@@ -1,6 +1,14 @@
 <div class="field">
   <span class="field__label" [id]="group + '-label'">{{ label() }}</span>
-  <div class="swatches" role="radiogroup" [attr.aria-labelledby]="group + '-label'">
+  @if (help(); as help) {
+    <span class="field__help" [id]="group + '-help'">{{ help }}</span>
+  }
+  <div
+    class="swatches"
+    role="radiogroup"
+    [attr.aria-labelledby]="group + '-label'"
+    [attr.aria-describedby]="help() ? group + '-help' : null"
+  >
     @for (color of colors(); track color) {
       <label class="swatch" [style.--cover]="'var(--color-cover-' + color + ')'">
         <input

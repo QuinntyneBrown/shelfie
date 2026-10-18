@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — Show a photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Household member" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "sh-avatar\n(top bar, Settings lists)" as avatar
+  participant "Browser image cache" as cache
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "photos.router.ts\n+ requireSession" as router
+  participant "photos.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+person -> avatar : Open a page with avatars
+avatar --> person : Initial on the person's colour
+alt photo is null
+  avatar --> person : The initial stays (L2-043)
+else photo URL from the session or a view
+  avatar -> cache : GET /api/photos/{profileId}?v={etag}
+  cache -> router : GET (If-None-Match when cached)
+  router -> router : Session required (401)
+  router -> service : readPhoto(session.householdId, profileId)
+  service -> db : SELECT image, etag FROM profile_photo JOIN profile WHERE household_id = ?
+  alt other household or no photo
+    router --> cache : 404 (L2-045)
+    cache --> avatar : error event
+    avatar --> person : Image removed; the initial stays
+  else If-None-Match matches
+    router --> cache : 304, no body (L2-044)
+    cache --> avatar : cached image
+    avatar --> person : Photo over the initial
+  else photo found
+    router --> cache : 200 image/webp, ETag, private no-cache, nosniff, CSP sandbox
+    cache --> avatar : image
+    avatar --> person : Photo fades in over the initial
+  end
+end
+@enduml

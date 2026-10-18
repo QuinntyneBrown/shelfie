@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="dialog">
 <meta name="mock:screen" content="account-menu">
 <meta name="mock:state" content="default">
-<meta name="mock:requirements" content="L2-003">
+<meta name="mock:requirements" content="L2-003 L2-042 L2-043">
 <meta name="description" content="Nia’s menu under her avatar: sign out.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
@@ -105,12 +105,13 @@
 <ul class="menu" role="menu" aria-label="Account menu for Nia" style="position: fixed; top: calc(var(--layout-topbar-height) - var(--space-2)); right: var(--layout-margin); min-width: 14rem;" data-dismiss-on-escape>
   <li role="none" style="padding: var(--space-2) var(--space-3);"><div style="font: var(--text-label);">Nia</div><div class="text-caption">@nia · 🔥 5-day streak</div></li>
   <li role="none" class="menu__divider" aria-hidden="true"></li>
+  <li role="none"><a class="menu__item" role="menuitem" href="../../dialogs/profile-photo/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>My photo</a></li>
   <li role="none"><a class="menu__item" role="menuitem" href="../../pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg>Sign out</a></li>
 </ul><p class="mock-note" style="top: 10rem; right: 1rem;">Opens with Enter, Space or ArrowDown; arrows move, Escape closes and returns focus to the avatar.</p>
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Account menu</span>
-  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="parent.html">parent</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="parent.html">parent</a></li><li><a href="photo.html">photo</a></li><li><a href="parent-photo.html">parent-photo</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>

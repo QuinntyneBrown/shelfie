@@ -103,7 +103,7 @@ psql "$DATABASE_URL" -c "SELECT h.id, p.name, p.email FROM household h JOIN prof
 psql "$DATABASE_URL" -c "DELETE FROM household WHERE id = '<id from above>'"
 ```
 
-The one `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions and rewards; other households are untouched. The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
+The one `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions, rewards and profile photos; other households are untouched. The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
 
 ## Changing settings
 

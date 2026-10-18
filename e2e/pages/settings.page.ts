@@ -139,6 +139,25 @@ export class SettingsPage {
     return this.page.getByRole('region', { name: 'Readers' }).getByRole('listitem').filter({ hasText: name });
   }
 
+  /** "Add a photo", or "Change photo" once there is one, in Your account. */
+  photoButton() {
+    return this.page.getByRole('region', { name: 'Your account' }).getByRole('button', { name: /Add a photo|Change photo/ });
+  }
+
+  async openPhotoDialog() {
+    await this.photoButton().click();
+  }
+
+  /** The photo in the Your account row, when there is one. */
+  ownPhoto() {
+    return this.page.getByRole('region', { name: 'Your account' }).locator('img');
+  }
+
+  /** The photo in a reader's row, when she has one. */
+  readerPhoto(name: string) {
+    return this.reader(name).locator('img');
+  }
+
   /** Asks the API for the settings, as a client that skips the page would. */
   getViaApi() {
     return this.page.request.get('/api/settings');

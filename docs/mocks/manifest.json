@@ -272,7 +272,8 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "photo"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -281,7 +282,9 @@
         "L2-021",
         "L2-022",
         "L2-034",
-        "L2-036"
+        "L2-036",
+        "L2-042",
+        "L2-043"
       ]
     },
     {
@@ -386,7 +389,8 @@
       "title": "Add a reader",
       "opens_from": "settings",
       "requirements": [
-        "L2-036"
+        "L2-036",
+        "L2-043"
       ],
       "states": [
         "default",
@@ -394,7 +398,8 @@
         "busy",
         "invalid",
         "taken",
-        "failed"
+        "failed",
+        "photo"
       ],
       "not_applicable": {}
     },
@@ -422,15 +427,43 @@
       "opens_from": "shelf",
       "states": [
         "default",
-        "parent"
+        "parent",
+        "photo",
+        "parent-photo"
       ],
       "not_applicable": {
         "busy": "The menu only navigates; nothing is submitted.",
         "invalid": "The menu has no inputs."
       },
       "requirements": [
-        "L2-003"
+        "L2-003",
+        "L2-042",
+        "L2-043"
       ]
+    },
+    {
+      "id": "profile-photo",
+      "kind": "dialog",
+      "title": "Your photo",
+      "opens_from": "shelf",
+      "requirements": [
+        "L2-042",
+        "L2-044"
+      ],
+      "states": [
+        "default",
+        "parent",
+        "choosing",
+        "busy",
+        "success",
+        "photo",
+        "too-large",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {
+        "remove-confirmation": "Removing a photo takes effect at once and brings the letter back; choosing a photo again is one tap away, so no confirmation is asked."
+      }
     },
     {
       "id": "toast",

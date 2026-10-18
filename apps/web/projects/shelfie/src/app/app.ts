@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Banner, MenuItem, NavLink, TabBar } from 'components';
 import { ReviewApi } from 'review';
+import { ProfilePhotoDialog } from 'settings';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
 import { BannerService, SessionService, ShellStatusService, ToastService } from 'core';
@@ -10,7 +11,7 @@ import { BannerService, SessionService, ShellStatusService, ToastService } from 
 const MAX_VISIBLE_TOASTS = 3;
 
 @Component({
-  imports: [Banner, RouterOutlet, TabBar, Toast, TopBar],
+  imports: [Banner, ProfilePhotoDialog, RouterOutlet, TabBar, Toast, TopBar],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -38,7 +39,7 @@ export class App {
     return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
   });
   protected readonly menuItems = computed<MenuItem[]>(() => [
-    ...(this.session()?.role === 'parent' ? [{ id: 'settings', label: 'Settings' }] : []),
+    this.session()?.role === 'parent' ? { id: 'settings', label: 'Settings' } : { id: 'photo', label: 'My photo' },
     { id: 'sign-out', label: 'Sign out' },
   ]);
   protected readonly menuHeader = computed(() => {
@@ -52,6 +53,8 @@ export class App {
   protected readonly status = inject(ShellStatusService);
   protected readonly banners = inject(BannerService);
   protected readonly showAllToasts = signal(false);
+  /** The reader's Your photo dialog, opened from My photo; a parent's opens from Settings. */
+  protected readonly photoDialogOpen = signal(false);
   /** The newest toasts; older ones collapse into a "+N more" line so the stack never covers the page. */
   protected readonly visibleToasts = computed(() => {
     const all = this.toasts.toasts();
@@ -85,6 +88,10 @@ export class App {
 
   /** Sign out ends the session and returns to the sign-in page. */
   protected async chooseFromMenu(id: string) {
+    if (id === 'photo') {
+      this.photoDialogOpen.set(true);
+      return;
+    }
     if (id === 'settings') {
       await this.router.navigateByUrl('/settings');
       return;

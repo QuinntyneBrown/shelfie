@@ -22,3 +22,5 @@ export * from './lib/textarea/textarea';
 export * from './lib/streak-badge/streak-badge';
 export * from './lib/celebration/celebration';
 export * from './lib/activity-item/activity-item';
+export * from './lib/avatar/avatar';
+export * from './lib/photo-picker/photo-picker';
