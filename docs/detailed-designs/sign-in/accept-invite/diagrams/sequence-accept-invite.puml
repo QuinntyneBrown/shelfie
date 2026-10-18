@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Accept an invite
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Invited person" as invitee
+box "Frontend — Shelfie web (sign-in library)" #E0F2FE
+  participant "AcceptInvitePage" as page
+  participant "AuthApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "auth.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "auth.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+invitee -> page : Fill name, username and password twice; press Join
+page -> page : Validate username 3-20 of letters, digits, "." and "_",\npassword >= 8, passwords equal (L2-035)
+alt invalid
+  page --> invitee : "Fix N things" summary and inline errors; no request (L2-035)
+else valid
+  page -> client : acceptInvite(input)
+  client -> router : POST /api/auth/accept-invite
+  router -> service : acceptInvite(input, deviceId)
+  service -> db : SELECT invite by SHA-256(token), unused and unexpired
+  db --> service : row or none
+  alt no row
+    service --> router : InviteInvalid
+    router --> client : 400 "invite-invalid"
+    client --> page : ApiError
+    page --> invitee : "This invite has expired" state (L2-035)
+  else row found
+    service -> db : SELECT username (case-insensitive)
+    db --> service : match or none
+    alt username taken
+      service --> router : UsernameTaken
+      router --> client : 409 "username-taken"
+      client --> page : ApiError with field
+      page --> invitee : "Username is taken"; values kept; nothing created (L2-035)
+    else username free
+      service -> service : passwordHash = argon2id(password)
+      service -> db : BEGIN; INSERT profile (role parent, invite household and e-mail);\nUPDATE invites SET used_at = now; INSERT session; ensure device; COMMIT
+      db --> service : session row
+      service --> router : SignInResult {session, device}
+      router --> client : 201 {session} + Set-Cookie shelfie_session
+      client --> page : Session
+      page --> invitee : Navigate to Review (L2-035)
+    end
+  end
+end
+@enduml

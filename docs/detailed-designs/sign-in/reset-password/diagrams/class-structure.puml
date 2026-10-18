@@ -45,28 +45,31 @@ class ResetPasswordRequest {
 
 class PasswordReset {
   +tokenHash: string
-  +profileId: string
+  +userId: string
   +expiresAt: Date
   +usedAt: Date | null
 }
 
-class Profile {
+class User {
   +id: string
+  +username: string
+  +role: 'parent'
   +householdId: string
-  +email: string | null
-  +passwordHash: string | null
+  +email: string
+  +passwordHash: string
 }
 
 class Session {
   +id: string
-  +profileId: string
+  +userId: string
+  +remember: boolean
   +createdAt: Date
   +expiresAt: Date
 }
 
 class AuthService {
   +requestPasswordReset(email: string): void
-  +resetPassword(token: string, password: string, deviceId: string | null): SignInResult
+  +resetPassword(token: string, password: string): SignInResult
   -hashToken(token: string): string
 }
 
@@ -75,13 +78,13 @@ class MailTransport {
 }
 
 class AuthRepo {
-  +findGrownUpByEmail(email: string): Profile | undefined
-  +createPasswordReset(tokenHash: string, profileId: string, expiresAt: Date): void
+  +findParentByEmail(email: string): User | undefined
+  +createPasswordReset(tokenHash: string, userId: string, expiresAt: Date): void
   +findPasswordResetByHash(tokenHash: string): PasswordReset | undefined
   +markPasswordResetUsed(tokenHash: string, usedAt: Date): void
-  +updatePasswordHash(profileId: string, passwordHash: string): void
-  +deleteSessionsForProfile(profileId: string): number
-  +createSession(profileId: string, expiresAt: Date): Session
+  +updatePasswordHash(userId: string, passwordHash: string): void
+  +deleteSessionsForUser(userId: string): number
+  +createSession(userId: string, expiresAt: Date): Session
 }
 
 ForgotPasswordPage ..> AuthApi : calls
@@ -93,8 +96,8 @@ AuthService ..> ResetPasswordRequest : receives
 AuthService --> AuthRepo : uses
 AuthService --> MailTransport : sends link through
 AuthRepo --> PasswordReset : creates / consumes
-AuthRepo --> Profile : reads / updates
+AuthRepo --> User : reads / updates
 AuthRepo --> Session : deletes / creates
-Profile "1" --> "*" PasswordReset : owns
-Profile "1" --> "*" Session : owns
+User "1" --> "*" PasswordReset : owns
+User "1" --> "*" Session : owns
 @enduml

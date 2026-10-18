@@ -3,10 +3,10 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Manage a session
 
-Person(reader, "Reader", "Holds a session after PIN sign-in; switches reader or signs out from the account menu")
-Person(grownUp, "Grown-up", "Holds a session after password sign-in; signs out from the account menu")
-System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+Person(parent, "Parent", "Holds a session after sign-in; signs out from the account menu")
+Person(reader, "Reader", "Holds a session after sign-in; signs out from the account menu")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for households of parents and readers")
 
+Rel(parent, shelfie, "Uses Review until the session expires or the parent signs out", "HTTPS")
 Rel(reader, shelfie, "Uses her shelf until the session expires or she signs out", "HTTPS")
-Rel(grownUp, shelfie, "Uses Review until the session expires or he signs out", "HTTPS")
 @enduml

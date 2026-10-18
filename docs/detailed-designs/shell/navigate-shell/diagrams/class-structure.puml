@@ -13,7 +13,7 @@ title Class structure — Navigate the shell
 
 class AppComponent {
   +session: Signal<Session | null>
-  +variant: Signal<'reader' | 'grown-up' | 'none'>
+  +variant: Signal<'reader' | 'parent' | 'none'>
   +links: NavLink[]
   +menuItems: Signal<MenuItem[]>
   +streak: Signal<number | null>
@@ -28,7 +28,7 @@ class SessionService {
 class Session {
   +householdId: string
   +profileId: string
-  +role: 'reader' | 'grown-up'
+  +role: 'reader' | 'parent'
   +name: string
   +color: string
 }
@@ -40,13 +40,13 @@ class NavLink {
 }
 
 class MenuItem {
-  +id: 'settings' | 'switch-reader' | 'sign-out'
+  +id: 'settings' | 'sign-out'
   +label: string
 }
 
 class "sh-top-bar" as TopBar {
   +brand: string
-  +variant: 'reader' | 'grown-up'
+  +variant: 'reader' | 'parent'
   +name: string
   +color: string
   +initials: string
@@ -85,7 +85,7 @@ class "sh-dialog" as Dialog {
 AppComponent ..> SessionService : reads
 SessionService --> Session : holds
 AppComponent *-- TopBar : renders
-AppComponent *-- TabBar : renders (grown-up, < 768 px)
+AppComponent *-- TabBar : renders (parent, < 768 px)
 AppComponent --> "*" NavLink : passes
 AppComponent --> "*" MenuItem : passes
 TopBar *-- Menu : opens from avatar

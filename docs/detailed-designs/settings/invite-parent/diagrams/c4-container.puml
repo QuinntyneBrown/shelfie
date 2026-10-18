@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Invite a parent
+
+Person(parent, "Parent", "Invites another parent")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Settings page and InviteParentDialog")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Creates the invite, stores its hash, sends the link")
+  ContainerDb(db, "Shelfie database", "SQLite", "invites table")
+}
+System_Ext(mail, "SMTP server", "Mailpit locally; production provider is deferred")
+
+Rel(parent, web, "Enters an e-mail and sends", "HTTPS")
+Rel(web, api, "POST /api/invites", "JSON/HTTPS")
+Rel(api, db, "Inserts and deletes invite rows", "SQL")
+Rel(api, mail, "Sends the invite e-mail", "SMTP")
+@enduml

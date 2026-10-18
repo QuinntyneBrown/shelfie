@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Sign up
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (sign-in library)" #E0F2FE
+  participant "SignUpPage" as page
+  participant "AuthApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "auth.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "auth.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+parent -> page : Fill the form; press Create my account
+page -> page : Validate name, e-mail, username 3-20 of letters, digits, "." and "_",\npassword >= 8, passwords equal (L2-033)
+page -> client : signUp(input)
+client -> router : POST /api/auth/sign-up
+router -> router : Validate with signUpSchema; read shelfie_device cookie
+router -> service : signUp(input, deviceId)
+service -> db : SELECT username (case-insensitive) and e-mail
+db --> service : none found
+service -> service : passwordHash = argon2id(password)
+service -> db : BEGIN; INSERT household; INSERT profile (role parent);\nINSERT session; ensure device; COMMIT (L2-033)
+db --> service : session row
+service --> router : SignInResult {session, device}
+router --> client : 201 {session} + Set-Cookie shelfie_session\n(+ shelfie_device when absent)
+client --> page : Session
+page -> page : SessionService.set(session)
+page --> parent : Navigate to Review (L2-033)
+@enduml

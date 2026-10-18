@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Manage and remove a book
 
-Person(grownUp, "Grown-up", "Manages books")
+Person(grownUp, "Parent", "Manages books")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "BooksPage, ManageBookPage, DeleteBookDialog")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Lists, updates and deletes books; enforces the chapter-count floor")

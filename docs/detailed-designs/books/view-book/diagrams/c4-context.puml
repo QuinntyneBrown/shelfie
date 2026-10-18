@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — View a book
 
 Person(reader, "Reader", "Opens a book to see its chapters and log the next one")
-Person(grownUp, "Grown-up", "Reviews chapters; the sticker and reward show on the book page")
+Person(grownUp, "Parent", "Reviews chapters; the sticker and reward show on the book page")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Opens a book, sees chapter states and review status", "HTTPS")

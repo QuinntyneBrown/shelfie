@@ -2,13 +2,13 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: exactly one reader profile and one grown-up profile, sharing one bookshelf.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
-This feature is the **book page**: one book's cover, progress and the full list of its chapters. Chapters are numbered, not titled; a book added with 17 chapters has rows 1 to 17. A **chapter log** is the record that the reader read a chapter on a date, together with her answers. A chapter row is in one of three states: **logged** (a chapter log exists), **next** (the lowest unlogged chapter) or **future** (every later chapter). A logged row shows the date it was read, the first line of her first answer in place of a title, and its **review status**: "Waiting for Dad" until the grown-up sends feedback, then the sticker the grown-up gave. A logged row opens her sent answers (reading-log/view-chapter-answers); the next row and the page's primary action open the log form (reading-log/log-chapter); future rows are not tappable.
+This feature is the **book page**: one book's cover, progress and the full list of its chapters. Chapters are numbered, not titled; a book added with 17 chapters has rows 1 to 17. A **chapter log** is the record that the reader read a chapter on a date, together with her answers. A chapter row is in one of three states: **logged** (a chapter log exists), **next** (the lowest unlogged chapter) or **future** (every later chapter). A logged row shows the date it was read, the first line of her first answer in place of a title, and its **review status**: "Waiting for Dad" until the parent sends feedback, then the sticker the parent gave. A logged row opens her sent answers (reading-log/view-chapter-answers); the next row and the page's primary action open the log form (reading-log/log-chapter); future rows are not tappable.
 
-A **finished** book, one whose every chapter is logged, shows a trophy card instead of the primary action: the reward the grown-up gave (review/give-reward), or a line saying the reward is being picked.
+A **finished** book, one whose every chapter is logged, shows a trophy card instead of the primary action: the reward the parent gave (review/give-reward), or a line saying the reward is being picked.
 
-The feature sits in the `books` subsystem beside the shelf, adding a book, managing a book and managing questions. The same read endpoint serves the grown-up's manage page (manage-book).
+The feature sits in the `books` subsystem beside the shelf, adding a book, managing a book and managing questions. The same read endpoint serves the parent's manage page (manage-book).
 
 ## Description
 
@@ -36,7 +36,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 ### System context
 
-The reader opens a book from her shelf to see its chapters and pick the next one; the grown-up's feedback and reward show on the same page.
+The reader opens a book from her shelf to see its chapters and pick the next one; the parent's feedback and reward show on the same page.
 
 ![C4 system context for viewing a book](diagrams/c4-context.png)
 

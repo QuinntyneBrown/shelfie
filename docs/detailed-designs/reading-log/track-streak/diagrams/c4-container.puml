@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Track the reading streak
 
 Person(reader, "Reader", "Opens her shelf")
-Person(grownUp, "Grown-up", "Opens Review")
+Person(grownUp, "Parent", "Opens Review")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "sh-streak-badge in the top bar, shelf hero line, Review streak tile")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Derives the streak from read_on days in the household time zone inside the shelf and review responses")

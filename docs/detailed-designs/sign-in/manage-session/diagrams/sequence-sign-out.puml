@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Sign out or switch reader
+title UML sequence behaviour — Sign out
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,10 +14,10 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or grown-up" as person
+actor "Reader or parent" as person
 box "Frontend — Shelfie web (components, core and sign-in libraries)" #E0F2FE
   participant "sh-menu\n(account menu)" as menu
-  participant "AuthApi" as client
+  participant "ApiClient" as client
   participant "SessionService" as sessionSvc
   participant "authGuard" as guard
   participant "SignInPage" as page
@@ -25,33 +25,27 @@ end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
   participant "auth.router.ts\n+ csrfGuard" as router
 end box
-box "Backend — Shelfie API (services)" #ECFDF3
-  participant "auth.service.ts" as service
-end box
 box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (SQLite)" as db
 end box
 
 person -> menu : Open avatar menu (Enter, Space or ArrowDown)
-person -> menu : Choose "Switch reader" or "Sign out"
-menu -> client : signOut()
-client -> router : POST /api/auth/sign-out (X-Requested-With: Shelfie)
-router -> router : csrfGuard; require session
-router -> service : signOut(sessionId)
-service -> db : DELETE session WHERE id = ? (L2-003)
-db --> service : ok
-service --> router : done
-router --> client : 204 + expired Set-Cookie shelfie_session\n(Cache-Control: no-store)
-alt sign-out failed (network or 5xx)
-  client --> menu : ApiError
-  menu --> person : Danger toast; session kept
-else signed out
-  client --> menu : done
-  menu -> sessionSvc : clear()
-  menu -> page : Navigate to /sign-in
-  page --> person : Profile picker (L2-003)
-  person -> guard : Press Back to the previous protected route
-  guard -> sessionSvc : session() is null
-  guard -> page : Redirect to /sign-in; no protected data shown (L2-003)
-end
+person -> menu : Choose "Sign out"
+menu -> sessionSvc : signOut()
+sessionSvc -> client : POST /api/auth/sign-out
+client -> router : Request with shelfie_session cookie
+router -> router : csrfGuard
+router -> db : DELETE session WHERE id = ? (L2-003)
+db --> router : ok
+router --> client : 204 + cleared shelfie_session cookie
+(Cache-Control: no-store)
+client --> sessionSvc : done
+note right of sessionSvc : The in-memory session is cleared
+even when the call fails
+sessionSvc -> sessionSvc : current = null
+menu -> page : Navigate to /sign-in
+page --> person : Sign-in form (L2-003)
+person -> guard : Press Back to the previous protected route
+guard -> sessionSvc : current() is null
+guard -> page : Redirect to /sign-in; no protected data shown (L2-003)
 @enduml

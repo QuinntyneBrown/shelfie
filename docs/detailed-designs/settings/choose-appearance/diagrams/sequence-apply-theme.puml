@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or Grown-up" as person
+actor "Reader or Parent" as person
 box "Frontend — Shelfie web (core and sign-in libraries)" #E0F2FE
   participant "AuthApi" as client
   participant "SessionService" as session
@@ -32,7 +32,7 @@ box "Backend — Shelfie infrastructure" #FFF4E5
 end box
 
 person -> client : Sign in, or open the app with a session cookie
-client -> router : POST /api/auth/pin, POST /api/auth/password\nor GET /api/auth/session
+client -> router : POST /api/auth/password\nor GET /api/auth/session
 router -> service : sessionPayload(session)
 service -> db : SELECT profile JOIN household WHERE profile.id = ?
 db --> service : profile row with household.theme

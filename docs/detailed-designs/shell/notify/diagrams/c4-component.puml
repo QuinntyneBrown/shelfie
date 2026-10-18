@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Components — Notify with toasts and banners
 
-Person(user, "Reader or Grown-up", "Hovers, focuses, dismisses, presses the action")
+Person(user, "Reader or Parent", "Hovers, focuses, dismisses, presses the action")
 Container_Boundary(web, "Shelfie web") {
   Component(page, "Feature page or dialog", "feature libraries", "Calls show() after an action completes or a condition begins")
   Component(toastSvc, "ToastService", "core library", "Signal queue of toasts; 8 s timers; pause and resume")

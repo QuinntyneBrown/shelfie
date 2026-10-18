@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Sign up rejected
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (sign-in library)" #E0F2FE
+  participant "SignUpPage" as page
+  participant "AuthApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "auth.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "auth.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (SQLite)" as db
+end box
+
+parent -> page : Press Create my account
+page -> page : Validate fields
+alt invalid username, e-mail, password length or mismatch
+  page --> parent : "Fix N things" summary and inline errors; no request (L2-033)
+else fields valid
+  page -> client : signUp(input)
+  client -> router : POST /api/auth/sign-up
+  router -> service : signUp(input, deviceId)
+  service -> db : SELECT username (case-insensitive) and e-mail
+  db --> service : match or none
+  alt username used by any parent or reader, or e-mail registered
+    service --> router : UsernameTaken or EmailTaken
+    router --> client : 409 problem type "username-taken" or "email-taken"
+    client --> page : ApiError with field
+    page --> parent : "Username is taken" / "E-mail is taken" on the field;\nvalues kept; nothing created (L2-033)
+  else server unreachable or 5xx
+    client --> page : ApiError or network failure
+    page --> parent : Error summary with Try again; values kept (L2-033)
+  end
+end
+@enduml

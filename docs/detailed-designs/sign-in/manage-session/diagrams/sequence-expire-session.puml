@@ -14,46 +14,44 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or grown-up" as person
+actor "Reader or parent" as person
 box "Frontend — Shelfie web (core and sign-in libraries)" #E0F2FE
   participant "SessionService" as sessionSvc
   participant "ApiClient" as client
   participant "SignInPage" as page
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "sessionMiddleware" as mw
+  participant "requireSession" as mw
   participant "auth.router.ts" as router
-end box
-box "Backend — Shelfie API (services)" #ECFDF3
-  participant "auth.service.ts" as service
 end box
 box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (SQLite)" as db
 end box
 
-person -> sessionSvc : Open the app (provideAppInitializer runs restore())
+person -> sessionSvc : Open the app (restore() runs at start)
+note over person, sessionSvc : An unremembered session cookie is discarded when the browser closes,\nso reopening sends no cookie (L2-003)
 sessionSvc -> client : GET /api/auth/session
 client -> mw : Request with shelfie_session cookie
-mw -> db : SELECT session WHERE id = ?
+mw -> db : SELECT session JOIN users WHERE id = ?
 db --> mw : session row or none
 alt no cookie or no row
   mw --> client : 401 problem type "no-session" (Cache-Control: no-store)
   client -> sessionSvc : clear()
-  sessionSvc --> person : Protected routes redirect to /sign-in
-else expires_at in the past (30 days without activity, L2-003)
+  sessionSvc --> person : Protected routes redirect to /sign-in (L2-003)
+else expires_at in the past (30 days without activity on a remembered session, L2-003)
   mw -> db : DELETE session WHERE id = ?
   db --> mw : ok
-  mw --> client : 401 problem type "session-expired" + expired Set-Cookie
+  mw --> client : 401 problem type "session-expired" + cleared cookie
   client -> sessionSvc : clear()
   client -> page : Navigate to /sign-in?reason=expired
-  page --> person : Picker with "You were signed out" banner (L2-003)
+  page --> person : Form with "You were signed out" banner (L2-003)
 else session valid
-  mw -> router : req.session set
-  router -> service : currentSession(sessionId)
-  service -> db : SELECT profile WHERE id = ?
-  db --> service : profile row
-  service --> router : Session summary
-  router --> client : 200 {householdId, profileId, role, name, color}
+  opt remembered session
+    mw -> db : UPDATE session SET expires_at = now + 30 days
+    db --> mw : ok
+  end
+  mw -> router : session on res.locals
+  router --> client : 200 {userId, householdId, role, name, color}
   client --> sessionSvc : Session
   sessionSvc --> person : Requested page renders
 end

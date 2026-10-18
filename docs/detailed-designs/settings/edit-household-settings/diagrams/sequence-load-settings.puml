@@ -14,13 +14,13 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as parent
 box "Frontend — Shelfie web (settings library)" #E0F2FE
   participant "SettingsPage" as page
   participant "SettingsApi" as client
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "settings.router.ts\n+ requireRole('grown-up')" as router
+  participant "settings.router.ts\n+ requireRole('parent')" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "settings.service.ts" as service
@@ -29,26 +29,26 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (SQLite)" as db
 end box
 
-grownUp -> page : Open /settings (grownUpGuard)
+parent -> page : Open /settings (parent guard)
 page -> page : Show loading skeleton
 page -> client : get()
 client -> router : GET /api/settings
-router -> router : Load session; require grown-up role
-router -> service : getSettings(householdId)
-service -> db : SELECT profile rows and household.theme WHERE household_id = ?
+router -> router : Load session; require parent role
+router -> service : getSettings(householdId, userId)
+service -> db : SELECT user row and household.theme WHERE household_id = ?
 alt database or network failure
   db --> service : error
   service --> router : throws
   router --> client : 500 problem {requestId}
   client --> page : ApiError
-  page --> grownUp : Show error state "Settings did not load" with Try again
-  grownUp -> page : Try again
+  page --> parent : Show error state "Settings did not load" with Try again
+  parent -> page : Try again
   page -> client : get()
 else rows found
-  db --> service : reader row, grown-up row, theme
+  db --> service : parent row, theme
   service --> router : SettingsView
-  router --> client : 200 {reader, grownUp, theme}
+  router --> client : 200 {account, theme}
   client --> page : SettingsView
-  page --> grownUp : Render Reader, Grown-up and Appearance sections (L2-021)
+  page --> parent : Render Your account and Appearance sections (L2-021)
 end
 @enduml

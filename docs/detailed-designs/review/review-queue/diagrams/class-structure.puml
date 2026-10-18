@@ -68,7 +68,7 @@ class ActivityItem {
   +bookTitle: string
   +chapterNumber: number | null
   +sticker: string | null
-  +byRole: 'reader' | 'grown_up'
+  +byRole: 'reader' | 'parent'
 }
 
 class ReviewService {

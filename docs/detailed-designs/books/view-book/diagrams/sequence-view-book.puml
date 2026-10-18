@@ -21,7 +21,7 @@ box "Frontend — Shelfie web (shelf library)" #E0F2FE
   participant "ShelfApi" as client
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "books.router.ts\n+ requireRole(reader | grown-up)" as router
+  participant "books.router.ts\n+ requireRole(reader | parent)" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "books.service.ts" as service

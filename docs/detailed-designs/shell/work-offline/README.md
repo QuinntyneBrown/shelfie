@@ -2,7 +2,7 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. The reader often reads where the connection is poor: a car, a bedroom at the edge of the Wi-Fi, a tablet with no SIM. Losing a chapter log because the network dropped would turn the one thing she is asked to do into a chore.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. The reader often reads where the connection is poor: a car, a bedroom at the edge of the Wi-Fi, a tablet with no SIM. Losing a chapter log because the network dropped would turn the one thing she is asked to do into a chore.
 
 This feature keeps the application usable without a connection. **Offline** means the browser reports no network (`navigator.onLine` is false) or a request fails before a response arrives. While offline, three things hold. The **app shell** (the HTML, JavaScript, CSS and fonts of the Angular application) still loads, because a **service worker**, a script the browser runs beside the page, has cached it. The reader's shelf still shows, because the service worker also keeps the last successful shelf response. A chapter she logs is not lost: it is written to an **offline queue**, a store in the browser's IndexedDB, marked "will send" on the book page, and sent in order when the connection returns.
 
@@ -38,7 +38,7 @@ The feature realizes the following level-2 (L2) requirement. It refines a level-
 
 ### System context
 
-The reader logs chapters on a device that loses and regains its connection; the grown-up sees the replayed chapters in Review once they arrive.
+The reader logs chapters on a device that loses and regains its connection; the parent sees the replayed chapters in Review once they arrive.
 
 ![C4 system context for working offline](diagrams/c4-context.png)
 

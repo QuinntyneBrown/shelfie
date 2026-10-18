@@ -2,9 +2,9 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: exactly one reader profile and one grown-up profile, sharing one bookshelf.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
-This feature decides which questions the reader answers when she logs a chapter. Every book has the three **default questions**, in a fixed order: "What happened in this chapter?", "Who was your favourite character in this chapter, and why?" and "What do you think will happen next?". They are constants in the API, not rows, so nobody can edit or remove them. The grown-up may add **custom questions** to one book from the Questions section of its manage page (manage-book), and may edit or remove a custom question later.
+This feature decides which questions the reader answers when she logs a chapter. Every book has the three **default questions**, in a fixed order: "What happened in this chapter?", "Who was your favourite character in this chapter, and why?" and "What do you think will happen next?". They are constants in the API, not rows, so nobody can edit or remove them. The parent may add **custom questions** to one book from the Questions section of its manage page (manage-book), and may edit or remove a custom question later.
 
 A question change never rewrites history. When the reader logs a chapter, each answer stores a copy of the question text it answered; this **snapshot** is what the chapter page and the review page show. Editing a custom question changes what later chapters ask; removing one hides it from later chapters. Earlier answers keep the wording they were written against. Removal is a **soft delete**: the row stays with a `removed_at` timestamp so the question's identity survives for any later audit.
 
@@ -18,7 +18,7 @@ The slice runs from the Questions section of `ManageBookPage` and `EditQuestionD
 - **`EditQuestionDialog`** — dialog component in the `books` library built on `sh-dialog` (manage-book), in `add` or `edit` mode; the title is "Add a question" or "Edit question" and the primary action "Add question" or "Save". It renders `sh-textarea` labelled "Question" with the help "Nia answers it for every chapter of {title}. Chapters she has already logged keep their old questions." and a 200-character limit, and the placement choice from the mock. It owns the `default`, `busy`, `invalid` and `failed` states in `docs/mocks/dialogs/edit-question/`. The `invalid` state shows "Finish the question — at least a few words, ending in a question mark helps." for an empty or over-length question and sends nothing (`L2-013`); the mock's example rejects a one-word question, so the minimum is 5 characters. The `busy` state disables the actions. The `failed` state shows "The question wasn't saved … Your wording is still here." and keeps the text (`L2-013`).
 - **`sh-textarea`** — component in the `components` library: labelled multi-line field with help, error slot and a character limit.
 - **`BooksApi`** — `addQuestion(bookId, text)`, `updateQuestion(id, text)`, `removeQuestion(id)` on `ApiClient`.
-- **`questions.router.ts`** — Express router. `POST /api/books/:id/questions`, `PATCH /api/questions/:id` and `DELETE /api/questions/:id` require `requireRole('grown-up')` from `authz.ts`; the two writes with a body validate it with `questionSchema` through `validate()`.
+- **`questions.router.ts`** — Express router. `POST /api/books/:id/questions`, `PATCH /api/questions/:id` and `DELETE /api/questions/:id` require `requireRole('parent')` from `authz.ts`; the two writes with a body validate it with `questionSchema` through `validate()`.
 - **`questions.schemas.ts`** — `questionSchema`: `text` trimmed string 5 to 200 (`L2-013`).
 - **`questions.service.ts`** — exports `DEFAULT_QUESTIONS`, a readonly tuple of the three default texts. `addQuestion(householdId, bookId, text)` loads the book (404 outside the household) and inserts the row. `updateQuestion(householdId, questionId, text)` and `removeQuestion(householdId, questionId)` load the question joined to its book (404 outside the household, 404 when already removed), then update `text` or set `removed_at`. `questionsForBook(bookId)` returns `DEFAULT_QUESTIONS` followed by the active custom texts in `created_at` order; `listCustomQuestions(bookId)` returns the active rows for `BookResponse.questions`.
 - **`questions.repo.ts`** — parameterised SQL over `question`: `insert`, `findWithBook`, `updateText`, `markRemoved`, `listActive(bookId)` (`WHERE removed_at IS NULL ORDER BY created_at`).
@@ -32,13 +32,13 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-013` | `L1-005` | When a chapter of any book is logged, the three default questions shall be shown in order and shall not be editable or removable. From Manage book the grown-up shall add a question of 5 to 200 characters to that book. A question shorter than 5 or longer than 200 characters shall show an inline error on save. When a custom question is edited or removed, only chapters logged afterwards shall use the change and earlier answers shall keep their original question text. A save failure shall show an error in the dialog and keep the text. |
+| `L2-013` | `L1-005` | When a chapter of any book is logged, the three default questions shall be shown in order and shall not be editable or removable. From Manage book the parent shall add a question of 5 to 200 characters to that book. A question shorter than 5 or longer than 200 characters shall show an inline error on save. When a custom question is edited or removed, only chapters logged afterwards shall use the change and earlier answers shall keep their original question text. A save failure shall show an error in the dialog and keep the text. |
 
 ## Diagrams
 
 ### System context
 
-The grown-up shapes the questions for a book; the reader answers them when she logs a chapter.
+The parent shapes the questions for a book; the reader answers them when she logs a chapter.
 
 ![C4 system context for managing questions](diagrams/c4-context.png)
 

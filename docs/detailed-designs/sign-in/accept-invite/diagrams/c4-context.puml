@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Accept an invite
+
+Person(invitee, "Invited person", "Receives an invite link by e-mail and joins a household as a parent")
+System(shelfie, "Shelfie", "Reading log and comprehension questions")
+
+Rel(invitee, shelfie, "Opens the invite link and creates a parent account in")
+@enduml

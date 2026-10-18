@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Operate the service
 
 Person(reader, "Reader", "Child who logs chapters on a phone")
-Person(grownUp, "Grown-up", "Parent who reviews answers and operates the service")
+Person(grownUp, "Parent", "Parent who reviews answers and operates the service")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 System_Ext(ci, "GitHub Actions", "Runs lint, unit, API, Playwright and Lighthouse CI checks on every change")
 System_Ext(scheduler, "Nightly scheduler", "cron or systemd timer on the host; deferred with hosting")

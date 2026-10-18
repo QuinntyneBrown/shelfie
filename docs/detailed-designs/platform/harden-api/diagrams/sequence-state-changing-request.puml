@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as actor
+actor "Parent" as actor
 box "Frontend — Shelfie web (core library)" #E0F2FE
   participant "Feature page" as page
   participant "ApiClient" as client
@@ -62,7 +62,7 @@ else same-site request with X-Requested-With: Shelfie
     problem --> client : 400 Problem {requestId, errors[]}
     client --> page : ApiError
     page --> actor : Inline field errors
-  else valid body and grown-up session
+  else valid body and parent session
     router -> service : update(householdId, input)
     service -> db : Prepared statement with ? placeholders (L2-028)
     db --> service : ok

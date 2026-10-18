@@ -3,10 +3,10 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Sign in with a password
 
-Person(grownUp, "Grown-up", "Parent who reviews answers; signs in with e-mail and password")
-Person(reader, "Reader", "Child whose profile appears in the picker once the device is known")
+Person(parent, "Parent", "Reviews answers; signs in with username and password")
+Person(reader, "Reader", "Child; signs in with the username and password a parent set")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
-Rel(grownUp, shelfie, "Signs in with e-mail and password and opens Review", "HTTPS")
-Rel(reader, shelfie, "Picks her profile on a device the grown-up signed in on", "HTTPS")
+Rel(parent, shelfie, "Signs in and lands on Review", "HTTPS")
+Rel(reader, shelfie, "Signs in and lands on her shelf", "HTTPS")
 @enduml

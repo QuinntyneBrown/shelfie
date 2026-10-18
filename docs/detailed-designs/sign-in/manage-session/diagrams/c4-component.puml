@@ -3,20 +3,16 @@
 LAYOUT_WITH_LEGEND()
 title Components — Manage a session
 
-Container(web, "Shelfie web", "Angular", "SessionService, ApiClient, sh-menu account menu; AuthApi")
+Container(web, "Shelfie web", "Angular", "SessionService, sessionExpiredInterceptor, sh-menu account menu")
 Container_Boundary(api, "Shelfie API") {
-  Component(sessionMw, "session.ts", "Middleware", "sessionMiddleware: resolves shelfie_session to a row; deletes expired rows and flags req.sessionExpired")
+  Component(app, "app.ts", "Express app", "Sets Cache-Control: no-store on /api responses")
+  Component(sessionMw, "session.ts", "Middleware", "requireSession: resolves shelfie_session to a row; slides a remembered session; deletes an expired row and answers 401 session-expired")
   Component(router, "auth.router.ts", "Express Router", "GET /api/auth/session; POST /api/auth/sign-out")
-  Component(app, "app.ts", "Express app", "Sets Cache-Control: no-store on every /api response")
-  Component(service, "auth.service.ts", "Service", "currentSession, signOut")
-  Component(repo, "auth.repo.ts", "Repository", "findSession, deleteSession, deleteExpiredSessions")
-  ComponentDb(db, "Shelfie database", "SQLite", "session, profile")
+  ComponentDb(db, "Shelfie database", "SQLite", "session, users")
 }
 Rel(web, app, "Every /api request", "JSON/HTTPS")
-Rel(app, sessionMw, "Applies before routers")
-Rel(sessionMw, repo, "findSession, deleteSession")
 Rel(app, router, "Routes /api/auth")
-Rel(router, service, "currentSession(sessionId), signOut(sessionId)")
-Rel(service, repo, "findSession, deleteSession")
-Rel(repo, db, "Reads and writes", "SQL")
+Rel(router, sessionMw, "Applies requireSession to GET /session")
+Rel(sessionMw, db, "Selects, updates expires_at, deletes expired rows", "SQL")
+Rel(router, db, "Deletes the session row on sign-out", "SQL")
 @enduml

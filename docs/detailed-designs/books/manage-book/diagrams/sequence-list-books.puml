@@ -14,13 +14,13 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 box "Frontend — Shelfie web (books library)" #E0F2FE
   participant "BooksPage" as page
   participant "BooksApi" as client
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "books.router.ts\n+ requireRole('grown-up')" as router
+  participant "books.router.ts\n+ requireRole('parent')" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "books.service.ts" as service
@@ -33,7 +33,7 @@ grownUp -> page : Open /books
 page -> page : Show sh-skeleton rows
 page -> client : list()
 client -> router : GET /api/books
-router -> router : Require grown-up session (401 / 403)
+router -> router : Require parent session (401 / 403)
 router -> service : listBooks(householdId)
 service -> db : SELECT book + COUNT(chapter_log), reward\nWHERE household_id = ?
 db --> service : rows

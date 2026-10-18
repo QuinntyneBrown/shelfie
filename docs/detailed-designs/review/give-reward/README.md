@@ -2,11 +2,11 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a grown-up in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: exactly one reader profile and one grown-up profile, sharing one bookshelf.
+Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
-A **finished book** is a book whose last numbered chapter has been logged; the reading-log subsystem sets `book.finished_at` at that moment and celebrates it for the reader. A **reward** is the prize the grown-up gives for a finished book: free text of up to 100 characters ("Movie night with popcorn") with an optional note. Each book takes at most one reward, and giving it is the grown-up's only "finish" step; there is no separate approval of the book. The **trophy shelf** is the finished section of the reader's shelf, where each finished book shows its reward, or "Dad is picking your reward" while none has been given.
+A **finished book** is a book whose last numbered chapter has been logged; the reading-log subsystem sets `book.finished_at` at that moment and celebrates it for the reader. A **reward** is the prize the parent gives for a finished book: free text of up to 100 characters ("Movie night with popcorn") with an optional note. Each book takes at most one reward, and giving it is the parent's only "finish" step; there is no separate approval of the book. The **trophy shelf** is the finished section of the reader's shelf, where each finished book shows its reward, or "Dad is picking your reward" while none has been given.
 
-This feature is the **Give a reward** dialog and the endpoint behind it. The Review page (review-queue) shows a card for each finished book without a reward; its "Give a reward" button opens the dialog over the page. The dialog offers four **quick picks**, preset reward texts that fill the field with one tap (Ice cream Saturday, Movie night, Stay up 30 min later, Trip to the bookshop), beside a free-text field and an optional note. Once saved, the reward appears on the reader's shelf and book page (books subsystem) and on the grown-up's Manage book page.
+This feature is the **Give a reward** dialog and the endpoint behind it. The Review page (review-queue) shows a card for each finished book without a reward; its "Give a reward" button opens the dialog over the page. The dialog offers four **quick picks**, preset reward texts that fill the field with one tap (Ice cream Saturday, Movie night, Stay up 30 min later, Trip to the bookshop), beside a free-text field and an optional note. Once saved, the reward appears on the reader's shelf and book page (books subsystem) and on the parent's Manage book page.
 
 The feature sits in the `review` subsystem beside review-queue and review-chapter.
 
@@ -18,7 +18,7 @@ The slice runs from the dialog on the Review page to the `reward` table and back
 - **`ReviewPage`** (review-queue) — on `given` it removes the finished-book card, lowers the "reward to give" count in the heading and shows a success toast through `ToastService` with the copy "Reward given!" (the mocks have no success state for this dialog).
 - **`ReviewApi`** — service in the `review` library built on `ApiClient`. `giveReward(bookId, body)` POSTs `/api/books/:id/reward` and returns the created `Reward`, or throws `ApiError`.
 - **`GiveRewardRequest`** — `text: string`, `note?: string`. **`Reward`** — `id`, `bookId`, `text`, `note`, `givenAt`.
-- **`rewards.router.ts`** — Express router in the `rewards` module. `POST /api/books/:id/reward` applies `requireRole('grown_up')`, validates the body with `giveRewardSchema` (`text: z.string().trim().min(1).max(100)`, `note: z.string().trim().max(300).optional()`) through `validate()`, then calls the service. It answers 201 with the reward.
+- **`rewards.router.ts`** — Express router in the `rewards` module. `POST /api/books/:id/reward` applies `requireRole('parent')`, validates the body with `giveRewardSchema` (`text: z.string().trim().min(1).max(100)`, `note: z.string().trim().max(300).optional()`) through `validate()`, then calls the service. It answers 201 with the reward.
 - **`rewards.service.ts`** — `giveReward(householdId, bookId, text, note, now)`: loads the book and answers 404 when it is missing or belongs to another household (`L2-006`); answers 400 problem `type: "book-not-finished"` when `finished_at` is null; answers 409 problem `type: "reward-exists"` when a reward row already exists for the book; otherwise inserts the reward. The `UNIQUE(book_id)` constraint backs the pre-check, and a constraint violation on insert is mapped to the same 409, so two concurrent submissions cannot both succeed.
 - **`rewards.repo.ts`** — parameterised SQL: `findBookForHousehold(bookId, householdId)`, `findRewardByBook(bookId)`, `insertReward(bookId, text, note, now)`.
 - **`reward`** table, created by this feature's migration: `id`, `book_id` (`UNIQUE`, references `book.id`), `text`, `note NULL`, `given_at`. Removing a book (books/manage-book) removes its reward with it.
@@ -38,7 +38,7 @@ The feature realizes the following level-2 (L2) requirement. It refines a level-
 
 ### System context
 
-The grown-up gives the reward through Shelfie; the reader sees it on her trophy shelf.
+The parent gives the reward through Shelfie; the reader sees it on her trophy shelf.
 
 ![C4 system context for giving a reward](diagrams/c4-context.png)
 

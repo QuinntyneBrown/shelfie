@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Invite a parent
+
+class InviteParentDialog {
+  +state: Signal<'default' | 'invalid' | 'busy' | 'failed' | 'sent'>
+  +email: Signal<string>
+  +send(): Promise<void>
+}
+
+class InvitesApi {
+  +send(email: string): Promise<InviteView>
+}
+
+class InviteView {
+  +id: string
+  +email: string
+  +sentAt: string
+  +expiresAt: string
+}
+
+class InvitesService {
+  +createInvite(householdId: string, invitedBy: string, email: string, mail: Mail): Promise<InviteView>
+}
+
+class InvitesRepo {
+  +insertInvite(invite: Invite): void
+  +deleteInvite(tokenHash: string): void
+  +listPendingInvites(householdId: string): InviteView[]
+}
+
+class Invite {
+  +tokenHash: string
+  +email: string
+  +householdId: string
+  +invitedBy: string
+  +expiresAt: Date
+  +usedAt: Date | null
+}
+
+class Mail <<function>> {
+  +sendMail(to: string, subject: string, text: string): Promise<void>
+}
+
+InviteParentDialog ..> InvitesApi : calls
+InvitesApi ..> InviteView : returns
+InvitesService --> InvitesRepo : uses
+InvitesService ..> Mail : sends link through
+InvitesRepo --> Invite : stores
+InvitesService ..> InviteView : returns
+@enduml

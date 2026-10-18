@@ -64,7 +64,7 @@ class ShelfBook {
   +loggedCount: number
   +nextChapter: number
   +lastLoggedAt: string | null
-  +addedByRole: 'reader' | 'grown_up'
+  +addedByRole: 'reader' | 'parent'
   +createdAt: string
 }
 

@@ -12,8 +12,8 @@ skinparam class {
 title Class structure — Authorize access
 
 class SessionService {
-  +session: Signal<Session | null>
-  +restored: Promise<void>
+  +current: Signal<Session | null>
+  +expired: Signal<boolean>
 }
 
 class authGuard <<CanActivateFn>> {
@@ -52,7 +52,7 @@ class NotFoundPage {
 }
 
 class ForbiddenPage {
-  +switchReader(): Promise<void>
+  +signOut(): Promise<void>
 }
 
 class ServerErrorPage {
@@ -62,14 +62,13 @@ class ServerErrorPage {
 }
 
 class requireRole <<Express middleware>> {
-  +requireRole(role: 'reader' | 'grown_up'): RequestHandler
+  +requireRole(role: 'reader' | 'parent'): RequestHandler
 }
 
 class RequestSession {
-  +id: string
-  +profileId: string
+  +userId: string
   +householdId: string
-  +role: 'reader' | 'grown_up'
+  +role: 'reader' | 'parent'
 }
 
 class NotFoundError {
@@ -80,7 +79,7 @@ class problemDetailsHandler <<Express error handler>> {
   +handle(err: unknown, req: Request, res: Response): void
 }
 
-class BooksRepo <<example repository>> {
+class BooksService <<example service>> {
   +findBook(householdId: string, id: string): Book | undefined
   +findChapterLog(householdId: string, id: string): ChapterLog | undefined
 }
@@ -93,8 +92,8 @@ NotFoundPage *-- ErrorState : renders
 ForbiddenPage *-- ErrorState : renders
 ServerErrorPage *-- ErrorState : renders
 GlobalErrorHandler ..> ServerErrorPage : navigates to
-requireRole ..> RequestSession : reads req.session
-BooksRepo ..> RequestSession : scoped by householdId
+requireRole ..> RequestSession : reads the session
+BooksService ..> RequestSession : scoped by householdId
 problemDetailsHandler ..> NotFoundError : maps to 404
 problemDetailsHandler ..> Problem : writes
 @enduml

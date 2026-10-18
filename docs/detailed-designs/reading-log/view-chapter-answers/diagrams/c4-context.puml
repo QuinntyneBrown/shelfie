@@ -3,8 +3,8 @@
 LAYOUT_WITH_LEGEND()
 title System Context — View chapter answers
 
-Person(reader, "Reader", "Reads back the answers she sent and the grown-up's feedback")
-Person(grownUp, "Grown-up", "Sends a sticker and a note on a logged chapter")
+Person(reader, "Reader", "Reads back the answers she sent and the parent's feedback")
+Person(grownUp, "Parent", "Sends a sticker and a note on a logged chapter")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Opens a logged chapter", "HTTPS")

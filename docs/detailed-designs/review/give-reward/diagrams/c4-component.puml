@@ -6,7 +6,7 @@ title Components — Give a reward
 Container(web, "Shelfie web", "Angular", "ReviewPage opens GiveRewardDialog (sh-dialog); ReviewApi.giveReward")
 Container_Boundary(api, "Shelfie API") {
   Component(router, "rewards.router.ts", "Express Router", "POST /api/books/:id/reward; validates with giveRewardSchema")
-  Component(authz, "requireRole('grown_up')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
+  Component(authz, "requireRole('parent')", "Middleware (authz.ts)", "401 without a session, 403 for a reader")
   Component(validate, "validate()", "Middleware (zod)", "Rejects empty or over-length text with 400")
   Component(service, "rewards.service.ts", "Service", "giveReward: 404 other household, 400 not finished, 409 reward exists, insert")
   Component(repo, "rewards.repo.ts", "Repository", "findBookForHousehold, findRewardByBook, insertReward")

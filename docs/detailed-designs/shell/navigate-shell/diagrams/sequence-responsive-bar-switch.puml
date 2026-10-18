@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Switch the grown-up's bars at 768 px
+title UML sequence behaviour — Switch the parent's bars at 768 px
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as user
+actor "Parent" as user
 participant "Browser (Chromium)" as browser
 box "Frontend — Shelfie web (shelfie application)" #E0F2FE
   participant "AppComponent" as app
@@ -25,7 +25,7 @@ box "Frontend — Shelfie web (components library)" #E0F2FE
 end box
 
 user -> browser : Open Review at 360 px wide
-browser -> app : Render shell (session role = grown-up)
+browser -> app : Render shell (session role = parent)
 app -> topBar : Render brand, avatar; links hidden below 48 rem
 app -> tabBar : Render Review (badge 2) / Books / Settings\nwith aria-current="page" on Review
 app -> app : main gets padding-bottom = tab bar height;\n16 px side gutter (L2-025)

@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Add a book
 
 Person(reader, "Reader", "Adds the book she is reading from her shelf")
-Person(grownUp, "Grown-up", "Adds books from the Books list")
+Person(grownUp, "Parent", "Adds books from the Books list")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Adds a book with a made cover", "HTTPS")

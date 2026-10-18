@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage readers
+
+Person(parent, "Parent", "Adds and edits reader profiles in Settings")
+Person(reader, "Reader", "Signs in with the username and password a parent set")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(parent, shelfie, "Adds and edits readers using", "HTTPS")
+Rel(reader, shelfie, "Signs in using the set credentials", "HTTPS")
+@enduml

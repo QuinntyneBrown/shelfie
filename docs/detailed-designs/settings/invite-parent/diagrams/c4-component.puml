@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Invite a parent
+
+Container(web, "Shelfie web", "Angular", "InviteParentDialog; InvitesApi")
+System_Ext(smtp, "SMTP server", "Mailpit locally; production provider is deferred")
+Container_Boundary(api, "Shelfie API") {
+  Component(authz, "requireRole('parent')", "Middleware", "401 without a session, 403 for a reader")
+  Component(router, "invites.router.ts", "Express Router", "POST /api/invites validated with inviteSchema")
+  Component(service, "invites.service.ts", "Service", "createInvite: token, SHA-256 hash, link, rollback on mail failure")
+  Component(repo, "invites.repo.ts", "Repository", "insertInvite, deleteInvite, listPendingInvites")
+  Component(mailer, "mail.ts", "Module", "sendMail(to, subject, text); shared with reset-password")
+  ComponentDb(db, "Shelfie database", "SQLite", "invites")
+}
+Rel(web, router, "POST /api/invites", "JSON/HTTPS")
+Rel(router, authz, "Applies")
+Rel(router, service, "createInvite(householdId, invitedBy, email)")
+Rel(service, repo, "insertInvite, deleteInvite")
+Rel(service, mailer, "sendMail(email, subject, text)")
+Rel(repo, db, "Reads and writes", "SQL")
+Rel(mailer, smtp, "Sends", "SMTP")
+@enduml

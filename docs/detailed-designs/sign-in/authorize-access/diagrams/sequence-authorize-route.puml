@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Reader or grown-up" as person
+actor "Reader or parent" as person
 box "Frontend — Shelfie web (shelfie application and core library)" #E0F2FE
   participant "Angular Router\n(app.routes.ts)" as routerFe
   participant "authGuard" as authGuard
@@ -24,7 +24,7 @@ box "Frontend — Shelfie web (shelfie application and core library)" #E0F2FE
   participant "Target page /\nerror pages" as pages
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "sessionMiddleware\n+ requireRole()" as api
+  participant "requireSession\n+ requireRole()" as api
 end box
 
 person -> routerFe : Open URL
@@ -33,18 +33,18 @@ alt URL matches no route
   pages --> person : "We can't find that page" with home link (L2-005)
 else URL matches a protected route
   routerFe -> authGuard : canActivate
-  authGuard -> sessionSvc : await restored; read session
+  authGuard -> sessionSvc : read session (restored at start)
   alt no session
     authGuard --> routerFe : UrlTree /sign-in
     routerFe --> person : Sign-in page (L2-005)
   else session present
     authGuard --> routerFe : true
-    routerFe -> roleGuard : canActivate (grown-up-only routes)
+    routerFe -> roleGuard : canActivate (parent-only routes)
     roleGuard -> sessionSvc : read role
-    alt grown-up-only route and role is reader
+    alt parent-only route and role is reader
       roleGuard --> routerFe : UrlTree /forbidden
       routerFe -> pages : Render ForbiddenPage
-      pages --> person : "This part is for grown-ups" with Back to my shelf and Switch reader (L2-005)
+      pages --> person : "This part is for grown-ups" with Back to my shelf and Sign out (L2-005)
     else route admitted
       roleGuard --> routerFe : true
       routerFe -> pages : Render target page

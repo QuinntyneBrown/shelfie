@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Grown-up" as grownUp
+actor "Parent" as grownUp
 box "Frontend — Shelfie web (books library)" #E0F2FE
   participant "ManageBookPage" as page
   participant "DeleteBookDialog\n(sh-dialog)" as dialog
@@ -22,7 +22,7 @@ box "Frontend — Shelfie web (books library)" #E0F2FE
   participant "ToastService" as toast
 end box
 box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
-  participant "books.router.ts\n+ requireRole('grown-up')" as router
+  participant "books.router.ts\n+ requireRole('parent')" as router
 end box
 box "Backend — Shelfie API (services)" #ECFDF3
   participant "books.service.ts" as service
@@ -43,7 +43,7 @@ else Remove book and answers
   dialog -> dialog : Set busy; disable actions
   dialog -> client : remove(id)
   client -> router : DELETE /api/books/:id
-  router -> router : Require grown-up session (401 / 403)
+  router -> router : Require parent session (401 / 403)
   router -> service : deleteBook(householdId, bookId)
   service -> db : SELECT book WHERE id = ? AND household_id = ?
   db --> service : book row (404 when none)

@@ -1,0 +1,79 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Accept an invite
+
+class AcceptInvitePage {
+  +token: string
+  +invite: Signal<InviteSummary>
+  +displayName: FormControl<string>
+  +username: FormControl<string>
+  +password: FormControl<string>
+  +confirm: FormControl<string>
+  +state: Signal<loading | idle | invalid | submitting | taken | expired | error>
+  +fieldErrors: Signal<Record<string, string>>
+  +submit(): Promise<void>
+}
+class AuthApi {
+  +getInvite(token: string): Promise<InviteSummary>
+  +acceptInvite(input: AcceptInviteRequest): Promise<Session>
+}
+class InviteSummary {
+  +email: string
+  +householdName: string
+  +invitedBy: string
+}
+class AcceptInviteRequest {
+  +token: string
+  +displayName: string
+  +username: string
+  +password: string
+  +confirm: string
+}
+class AuthService {
+  +getInvite(token: string): InviteSummary
+  +acceptInvite(input: AcceptInviteRequest, deviceId: string): SignInResult
+}
+class Invite {
+  +tokenHash: string
+  +email: string
+  +householdId: string
+  +invitedBy: string
+  +expiresAt: Date
+  +usedAt: Date
+}
+class Household {
+  +id: string
+}
+class Profile {
+  +id: string
+  +householdId: string
+  +role: parent | reader
+  +username: string
+  +email: string
+  +passwordHash: string
+}
+class Session {
+  +id: string
+  +profileId: string
+  +expiresAt: Date
+}
+
+AcceptInvitePage ..> AuthApi : calls
+AuthApi ..> AcceptInviteRequest : sends
+AuthApi ..> InviteSummary : returns
+AuthService ..> Invite : reads / marks used
+AuthService --> Profile : creates
+AuthService --> Session : creates
+Invite "*" --> "1" Household : joins
+Household "1" *-- "1..*" Profile : members
+Profile "1" --> "*" Session : has
+@enduml
