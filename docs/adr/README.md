@@ -10,3 +10,4 @@ Each record states one decision, its context and its consequences (Nygard format
 | [0004](0004-command-framework.md) | Commands are built with System.CommandLine 2.0 | Accepted |
 | [0005](0005-admin-api-exposure.md) | The admin API is versioned under `/api/admin/v1`, served through the existing Caddy TLS endpoint, with no IP allow-list | Accepted |
 | [0006](0006-audit-logging.md) | Every admin call writes one row to the `admin_audit` table | Accepted |
+| [0007](0007-suggest-questions-with-claude.md) | Suggested questions come from Claude (`claude-opus-5-5`) through one `fetch` on the API server; nothing is saved until a parent adds it | Accepted |

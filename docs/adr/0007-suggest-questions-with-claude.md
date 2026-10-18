@@ -1,8 +1,8 @@
-# ADR-001: Suggest questions with Claude from the API
+# ADR-0007: Suggest questions with Claude from the API
 
-## Status
-
-Accepted, 18 October 2026.
+- Status: Accepted
+- Date: 2026-10-18
+- Requirements: L2-064, L2-066, L2-067, L2-068
 
 ## Context
 

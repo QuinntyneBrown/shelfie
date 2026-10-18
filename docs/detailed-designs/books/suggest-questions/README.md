@@ -65,7 +65,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 ## Decisions
 
-- **Claude through a plain `fetch`, server-side, nothing saved without the parent** — see [ADR-001](adr-001-suggest-questions-with-claude-from-the-api.md).
+- **Claude through a plain `fetch`, server-side, nothing saved without the parent** — see [ADR-0007](../../../adr/0007-suggest-questions-with-claude.md).
 - **Suggestions are for the next chapter** — custom questions apply to every later chapter of the book, so the most useful hint is where the reader is. No chapter picker.
 - **Ideas arrive unticked** — the parent has to read each one before it can reach the reader.
 - **Save through the existing route, one request per question** — one set of rules (`L2-013`) and one code path; at most five requests.
