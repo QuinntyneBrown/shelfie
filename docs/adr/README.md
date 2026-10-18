@@ -12,3 +12,4 @@ Each record states one decision, its context and its consequences (Nygard format
 | [0006](0006-audit-logging.md) | Every admin call writes one row to the `admin_audit` table | Accepted |
 | [0007](0007-suggest-questions-with-claude.md) | Suggested questions come from Claude (`claude-opus-5-5`) through one `fetch` on the API server; nothing is saved until a parent adds it | Accepted |
 | [0008](0008-look-books-up-through-the-api.md) | Book titles are looked up by the API only, in Open Library first and Claude as a labelled fallback; no chapter count is derived from the catalogue; covers come through a proxy route into the existing picture path | Accepted |
+| [0009](0009-reward-gallery-goal-and-progress.md) | The reward gallery has one goal per household, counted from the pick, reached at the target-th finished book and completed when that book gets its reward through the unchanged Give a reward flow | Accepted |

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Reward gallery
+
+Person(grownUp, "Parent", "Keeps the gallery in Settings; gives the reward on Review")
+Person(reader, "Reader", "Picks a goal on her shelf and watches her progress")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(grownUp, shelfie, "Adds, edits and removes gallery rewards; gives the reached goal", "HTTPS")
+Rel(reader, shelfie, "Picks a goal; sees progress and the celebration", "HTTPS")
+@enduml

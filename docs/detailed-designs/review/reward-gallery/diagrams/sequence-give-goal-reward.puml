@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Give the reached goal
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web (review library)" #E0F2FE
+  participant "ReviewPage" as page
+  participant "GiveRewardDialog" as dialog
+  participant "ReviewApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "review.router.ts\n+ requireRole('parent')" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "review.service.ts" as review
+  participant "gallery.service.ts" as gallery
+  participant "rewards.service.ts\n(unchanged)" as rewards
+end box
+box "Backend — infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> page : Open Review
+page -> client : load()
+client -> router : GET /api/review
+router -> review : overview(householdId)
+review -> gallery : goalOf(householdId)
+gallery -> db : goal row, books finished since the pick, the goal book's reward
+review --> router : { …, finishedUnrewarded, goal }
+router --> client : 200
+page --> parent : Matilda's card: "Nia reached her goal: Trip to the zoo" (L2-089)
+parent -> page : Give a reward on that card
+page -> dialog : book = Matilda; suggested = "Trip to the zoo"
+dialog --> parent : The usual dialog, reward field "Trip to the zoo"
+parent -> dialog : Give the reward
+dialog -> client : giveReward(bookId, { text, note })
+client -> router : POST /api/books/:id/reward (L2-017, unchanged)
+router -> rewards : giveReward
+rewards -> db : INSERT reward (one per book)
+router --> client : 201
+page --> parent : Card removed; toast "Reward given!"
+note over gallery, db : The goal book now has a reward, so goalOf answers null:\nthe reader's gallery shows no goal and she picks her next one.
+@enduml
