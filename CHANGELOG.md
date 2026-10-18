@@ -18,4 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Agent skills for requirements, mocks, design system, detailed designs and estimates.
 - Shelfie favicon: three pastel books on a shelf on the violet brand tile, replacing the Angular default.
 
+### Fixed
+
+- PIN keypad keys are now equal round circles; a long "Not <name>?" label no longer stretches the first column.
+
 [Unreleased]: https://github.com/QuinntyneBrown/shelfie/commits/main

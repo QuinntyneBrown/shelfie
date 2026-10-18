@@ -136,6 +136,13 @@ export class SignInPage {
     return this.page.getByRole('group', { name: 'PIN keypad' }).getByRole('button', { name: digit, exact: true });
   }
 
+  /** Width and height of every digit key on the keypad, in key order. */
+  async digitKeySizes() {
+    const sizes = [];
+    for (const digit of '1234567890') sizes.push(await this.digitButton(digit).boundingBox());
+    return sizes.map((box) => ({ width: Math.round(box!.width), height: Math.round(box!.height) }));
+  }
+
   /** Posts a PIN straight to the API, as a client that skips the keypad would. */
   async postPin(profileName: string, pin: string) {
     const profiles = await (await this.page.request.get('/api/auth/profiles')).json();

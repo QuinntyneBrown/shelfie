@@ -417,9 +417,9 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .pin-dots span[data-filled] { background: var(--color-accent); border-color: var(--color-accent); }
 .pin-dots[aria-invalid="true"] span { border-color: var(--color-danger-solid); }
 .pin-dots[aria-invalid="true"] span[data-filled] { background: var(--color-danger-solid); }
-.pinpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); max-width: 16rem; margin-inline: auto; }
-.pinpad .btn { --btn-height: calc(var(--control-height-lg) + var(--space-1)); --btn-font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); border-radius: var(--radius-full); }
-.pinpad .btn--ghost { --btn-font-size: var(--font-size-md); }
+.pinpad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-items: center; gap: var(--space-3); max-width: 16rem; margin-inline: auto; }
+.pinpad .btn { --btn-height: calc(var(--control-height-lg) + var(--space-1)); --btn-font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); width: var(--btn-height); padding: 0; border-radius: var(--radius-full); }
+.pinpad .btn--ghost { --btn-font-size: var(--font-size-md); width: auto; min-width: var(--btn-height); padding: 0 var(--space-2); white-space: normal; line-height: var(--line-height-tight); }
 
 /* ---------- Shelfie: profile tile ------------------------------------------------------------ */
 .profiles { display: flex; justify-content: center; gap: var(--space-6); flex-wrap: wrap; }
