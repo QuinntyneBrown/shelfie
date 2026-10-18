@@ -3,19 +3,21 @@
 LAYOUT_WITH_LEGEND()
 title Components — Reward gallery
 
-Container(web, "Shelfie web", "Angular", "SettingsPage, GalleryRewardDialog, ShelfPage, ReviewPage, GiveRewardDialog, sh-reward-card")
+Container(web, "Shelfie web", "Angular", "SettingsPage, GalleryRewardDialog, ShelfPage, ReviewPage, GiveRewardDialog, sh-reward-card, sh-sticker, sh-picture-list")
 Container_Boundary(api, "Shelfie API") {
-  Component(router, "gallery.router.ts", "Express Router", "requireSession on every route; requireRole('parent') on POST, PATCH, DELETE; galleryRewardSchema")
-  Component(service, "gallery.service.ts", "Service", "getGallery, goalOf, addGalleryReward, updateGalleryReward, removeGalleryReward, pickGoal")
+  Component(router, "gallery.router.ts", "Express Router", "requireSession on every route; requireRole('parent') on POST, PATCH, DELETE and the picture changes; galleryRewardSchema; readImage (5 MB raw body)")
+  Component(service, "gallery.service.ts", "Service", "getGallery, goalOf, addGalleryReward, updateGalleryReward, removeGalleryReward, pickGoal, add/remove/feature/readRewardPicture")
   Component(review, "review.router.ts / review.service.ts", "Router and service (existing)", "overview() adds goal: goalOf(householdId)")
   Component(rewards, "rewards.service.ts", "Service (unchanged)", "giveReward: one reward per finished book")
+  Component(photos, "photos.service.ts", "Service (existing)", "processImage: type by content, 40 MP limit, WebP without metadata")
   Component(logging, "logging.ts", "Middleware (existing)", "One line per request: method, route, status, duration")
-  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "gallery_reward, book, reward")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "gallery_reward, reward_picture, book, reward")
 }
 
 Rel(web, router, "/api/gallery-rewards…", "JSON/HTTPS")
 Rel(web, review, "GET /api/review; POST /api/books/:id/reward", "JSON/HTTPS")
 Rel(router, service, "Calls")
+Rel(service, photos, "processImage(bytes, 480, 480)")
 Rel(review, service, "goalOf(db, householdId)")
 Rel(review, rewards, "giveReward (unchanged)")
 Rel(service, db, "gallery_reward rows; books finished since picked_at; the goal book's reward", "SQL")

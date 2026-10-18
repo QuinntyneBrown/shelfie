@@ -28,14 +28,19 @@ router -> service : getGallery(householdId) (L2-084)
 service -> db : SELECT gallery_reward WHERE household_id
 router --> client : 200 { rewards, goal }
 page --> parent : Rewards card: rows, or "No rewards yet" (L2-081)
-parent -> dialog : Add a reward: "Trip to the zoo", 3
-dialog -> dialog : name 1–100 after trim, target whole 1–20;\nelse "Fix N things", nothing sent (L2-081)
-dialog -> client : add({ name, target })
+parent -> dialog : Add a reward: "Trip to the zoo",\n"We'll see the penguins…", 3
+dialog -> dialog : name 1–100 after trim, description 0–500 after trim,\ntarget whole 1–20; else "Fix N things", nothing sent (L2-081, L2-093)
+dialog -> client : add({ name, description, target })
 client -> router : POST /api/gallery-rewards
 router -> router : reader → 403 grown-ups-only (L2-084);\nschema fails → 400 validation
 router -> service : addGalleryReward
 service -> db : INSERT gallery_reward
-router --> client : 201 { id, name, target }
+router --> client : 201 { id, name, target, description,\npictures: [], featuredPicture: null }
+opt pictures chosen before Add reward (ADR-0010)
+  dialog -> client : addPicture(id, file) for each, in order;\nfeaturePicture if another was made featured
+  client -> router : POST /api/gallery-rewards/:id/pictures
+  router --> client : 201 reward
+end
 dialog --> page : saved(reward)
 page --> parent : Row added; toast "Trip to the zoo added"
 alt edit
@@ -51,7 +56,7 @@ else remove
   page -> client : remove(id)
   client -> router : DELETE /api/gallery-rewards/:id
   router -> service : removeGalleryReward
-  service -> db : DELETE … WHERE id AND household_id (goal goes with the row)
+  service -> db : DELETE … WHERE id AND household_id\n(goal and reward_picture rows go with it: ON DELETE CASCADE)
   router --> client : 204
   page --> parent : Row gone; toast "… removed" (L2-083)
 else server unreachable

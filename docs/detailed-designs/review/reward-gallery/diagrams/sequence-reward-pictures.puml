@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Add a reward picture and make another featured
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web (settings library, components library)" #E0F2FE
+  participant "GalleryRewardDialog\n+ sh-picture-list" as dialog
+  participant "GalleryRewardsApi" as client
+  participant "SettingsPage" as page
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "gallery.router.ts\n+ requireSession\n+ requireRole('parent')\n+ readImage" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "gallery.service.ts" as service
+  participant "photos.service.ts" as photos
+end box
+box "Backend — infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> dialog : Edit "Trip to the zoo" → Add a picture → penguins.jpg
+dialog -> dialog : sh-picture-list: JPEG, PNG or WebP and ≤ 5 MB,\nelse PHOTO_ERRORS words, nothing sent (L2-097)
+dialog -> dialog : thumbnail "Uploading…", Add a picture disabled (L2-098)
+dialog -> client : addPicture(id, file)
+client -> router : POST /api/gallery-rewards/:id/pictures (raw body)
+router -> router : no session → 401; reader → 403 grown-ups-only;\nover 5 MB → 413 photo-too-large (L2-097)
+router -> photos : processImage(bytes, 480, 480)
+photos --> router : WebP, no EXIF/GPS/XMP/ICC; not an image or > 40 MP → 400 photo-type
+router -> service : addRewardPicture(householdId, id, image)
+service -> db : BEGIN; SELECT gallery_reward WHERE id AND household_id FOR UPDATE\n(none → 404, L2-097)
+service -> db : COUNT reward_picture (6 → 409 too-many-pictures, L2-094)
+service -> db : INSERT reward_picture (featured = it is the first, L2-094); COMMIT
+router --> client : 201 GalleryReward { pictures, featuredPicture }
+dialog -> page : changed(reward)
+page --> parent : Row shows the featured picture in place of the gift sticker (L2-096)
+alt upload fails (status 0 or 5xx)
+  client --> dialog : ApiError
+  dialog --> parent : thumbnail "Didn't upload." with Try again;\nname, description, target and other pictures kept (L2-098)
+end
+parent -> dialog : Make picture 2 featured
+dialog -> client : featurePicture(id, pictureId)
+client -> router : POST /api/gallery-rewards/:id/pictures/:pictureId/feature
+router -> service : featureRewardPicture(householdId, id, pictureId)
+service -> db : BEGIN; lock the reward row; picture not the reward's → 404
+service -> db : UPDATE SET featured = false WHERE reward_id AND featured;\nUPDATE SET featured = true WHERE id; COMMIT\n(unique index: at most one featured, L2-095)
+router --> client : 200 GalleryReward
+dialog -> page : changed(reward)
+page --> parent : Featured badge moves; row shows picture 2
+note over router : The log line carries method, route, status and duration only:\nno name, description or image bytes (L2-085, L2-097)
+@enduml
