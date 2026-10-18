@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The breadcrumb on the review chapter, chapter and book pages no longer sits flush against the top bar; it now has 16px of space above it.
 - Opening Shelfie (or the sign-in page) while still signed in now goes straight to Review or the shelf, instead of showing the sign-in form under the signed-in top bar and photo.
 - Sign-in, sign-up and the other pages outside the shell no longer show a vertical scrollbar when everything fits in the window.
+- The Appearance heading on Settings, and the card headings on Log a chapter, no longer sit on the card border on iPhone; a card legend now stays inside the card in every browser engine.
 
 ### Removed
 
