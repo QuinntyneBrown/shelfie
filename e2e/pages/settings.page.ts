@@ -101,6 +101,14 @@ export class SettingsPage {
     await this.page.getByRole('button', { name: 'Save settings' }).click();
   }
 
+  appearanceChoice(label: 'Match the device' | 'Always light' | 'Always dark') {
+    return this.page.getByRole('radio', { name: label });
+  }
+
+  saveButton() {
+    return this.page.getByRole('button', { name: 'Save settings' });
+  }
+
   banner() {
     return this.page.getByRole('status').filter({ hasText: 'Saved' });
   }

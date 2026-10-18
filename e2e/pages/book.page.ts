@@ -56,6 +56,10 @@ export class BookPage {
     return this.page.getByRole('region', { name: 'Reward' });
   }
 
+  async backToShelf() {
+    await this.page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'My shelf' }).click();
+  }
+
   primaryAction(chapter: number) {
     return this.page.getByRole('link', { name: `I read Chapter ${chapter}` });
   }

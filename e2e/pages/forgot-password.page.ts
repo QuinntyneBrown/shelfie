@@ -20,6 +20,10 @@ export class ForgotPasswordPage {
     await this.page.getByRole('button', { name: 'Send reset link' }).click();
   }
 
+  async sendLink() {
+    await this.page.getByRole('button', { name: 'Send reset link' }).click();
+  }
+
   confirmation() {
     return this.page.getByRole('status').filter({ hasText: 'a reset link is on its way' });
   }
