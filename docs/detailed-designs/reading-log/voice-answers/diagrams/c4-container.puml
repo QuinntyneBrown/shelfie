@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Voice answers
+
+Person(reader, "Reader", "Dictates answers on Log a chapter")
+System_Ext(speech, "Browser speech recognition", "SpeechRecognition in Chrome; audio never reaches Shelfie")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "sh-question-field with the Speak your answer button; LogChapterPage")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Unchanged: receives the logged chapter with typed or dictated text")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "Unchanged")
+}
+Rel(reader, web, "Chooses Speak your answer", "HTTPS")
+Rel(web, speech, "start, stop; receives result and error events", "Browser API")
+Rel(web, api, "POST /api/books/:id/chapters/:n", "JSON/HTTPS")
+Rel(api, db, "Stores the answers", "SQL")
+@enduml
