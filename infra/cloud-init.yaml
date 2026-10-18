@@ -1,6 +1,7 @@
 #cloud-config
 # First-boot configuration of the Shelfie VM. Everything that changes per release lives in infra/host
-# and is installed by deploy.sh, so this file only prepares the operating system.
+# and is installed by deploy.sh, so this file only prepares the operating system. DATABASE_URL is
+# appended to /etc/shelfie/env by infra/bootstrap.sh once the database server exists.
 package_update: true
 package_upgrade: true
 packages:
@@ -8,6 +9,7 @@ packages:
   - curl
   - gnupg
   - jq
+  - postgresql-client
   - unattended-upgrades
 
 users:
@@ -29,8 +31,6 @@ write_files:
     content: |
       NODE_ENV=production
       PORT=3000
-      SHELFIE_DB=/var/lib/shelfie/shelfie.db
-      SHELFIE_BACKUP_DIR=/var/lib/shelfie/backups
       APP_URL=https://__HOSTNAME__
       STORAGE_ACCOUNT=__STORAGE_ACCOUNT__
   - path: /etc/apt/apt.conf.d/52shelfie-unattended-upgrades
@@ -40,7 +40,7 @@ write_files:
       Unattended-Upgrade::Automatic-Reboot-Time "09:00";
 
 runcmd:
-  - mkdir -p /opt/shelfie/releases /var/lib/shelfie/backups
+  - mkdir -p /opt/shelfie/releases /var/lib/shelfie
   - chown -R shelfie:shelfie /var/lib/shelfie
   - chgrp shelfie /etc/shelfie/env
   # Node.js 24 (matches .node-version; the release tarball is built for this major version)

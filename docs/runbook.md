@@ -9,13 +9,13 @@ How Shelfie runs in production and what to do when something needs a hand. A par
 | Host | One Ubuntu 24.04 VM (`Standard_B2ats_v2`) in Canada Central, resource group `shelfie-prod` |
 | TLS and static files | Caddy, `/etc/caddy/Caddyfile`, serves `https://shelfie.kids`, redirects `www`, proxies `/api/*` to the API |
 | API | systemd unit `shelfie`, runs `node apps/api/src/main.ts` from `/opt/shelfie/current` as user `shelfie` |
-| Database | SQLite at `/var/lib/shelfie/shelfie.db` |
-| Backups | `/var/lib/shelfie/backups/shelfie-YYYY-MM-DD.sqlite`, 30 days kept; a copy of each in the `backups` blob container |
+| Database | Azure Database for PostgreSQL Flexible Server 16 (`Standard_B1ms`, 32 GiB, encrypted, TLS only), in the `database` subnet with no public endpoint; database `shelfie` owned by role `shelfie_app` |
+| Backups | 7 days of automated backups with point-in-time restore on the server; a nightly `pg_dump` in the `backups` blob container as `shelfie-YYYY-MM-DD.dump`, deleted after 30 days by a lifecycle rule |
 | Releases | `/opt/shelfie/releases/<git sha>`; `current` is a symlink to the live one; the last three are kept |
-| Settings | `/etc/shelfie/env` |
+| Settings | `/etc/shelfie/env` (holds `DATABASE_URL`); `/etc/shelfie/db-admin` (root only) holds the administrator credential |
 | Logs | journald: `journalctl -u shelfie`, `journalctl -u caddy`, `journalctl -t shelfie-backup` |
 
-Monthly cost (CAD retail): VM 10.88 + 32 GiB SSD 3.74 + static IP 5.18 + storage ≈ 0.10, about **$20**.
+Monthly cost (CAD retail): VM 10.88 + 32 GiB SSD 3.74 + static IP 5.18 + storage ≈ 0.10 + PostgreSQL B1ms ≈ 17 + 32 GiB database storage ≈ 5, about **$42**.
 
 ## First-time set-up
 
@@ -25,7 +25,9 @@ Run once as the subscription owner, signed in with `az login` and `gh auth login
 SSH_KEY=~/.ssh/qbs.pub bash infra/bootstrap.sh
 ```
 
-It creates the resource group, deploys `infra/main.bicep`, creates the `shelfie-github` identity that GitHub Actions uses through OpenID Connect, assigns roles, and fills the GitHub `production` environment with `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` and the `AZURE_RESOURCE_GROUP`, `AZURE_VM_NAME`, `AZURE_STORAGE_ACCOUNT` variables. It ends by printing the DNS records.
+It creates the resource group, deploys `infra/main.bicep` (VM, network, PostgreSQL server, storage), creates the database role `shelfie_app` from the VM and writes `DATABASE_URL` into `/etc/shelfie/env`, creates the `shelfie-github` identity that GitHub Actions uses through OpenID Connect, assigns roles, and fills the GitHub `production` environment with `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` and the `AZURE_RESOURCE_GROUP`, `AZURE_VM_NAME`, `AZURE_STORAGE_ACCOUNT` variables. It ends by printing the DNS records. The database passwords are generated on the first run and kept only on the VM; a re-run reads them back from `/etc/shelfie/db-admin`.
+
+Moving an existing installation off SQLite: run bootstrap (it adds the server and `DATABASE_URL` to the existing VM), then on the VM copy the first release's data once with `sudo -u shelfie env $(sudo cat /etc/shelfie/env | xargs) SHELFIE_DB=/var/lib/shelfie/shelfie.db node --disable-warning=ExperimentalWarning /opt/shelfie/current/apps/api/src/import-sqlite.ts` from `/opt/shelfie/current`, and restart the API. The import refuses a database that already holds a household.
 
 Then at Namecheap (Advanced DNS for `shelfie.kids`):
 
@@ -40,7 +42,7 @@ SSH is allowed only from the IP you ran bootstrap from. If yours changes, rerun 
 
 ## Deploying
 
-Merging a pull request into `main` runs `.github/workflows/deploy.yml`: CI, then a release tarball is built, uploaded to the `releases` container, unpacked on the VM and activated by `infra/host/deploy.sh`, which restarts the API, waits for `GET /api/health`, rolls back on failure and reloads Caddy. The job ends by checking `https://shelfie.kids/api/health`.
+Merging a pull request into `main` runs `.github/workflows/deploy.yml`: CI, then a release tarball is built, uploaded to the `releases` container, unpacked on the VM and activated by `infra/host/deploy.sh`, which restarts the API (it applies any new `apps/api/migrations/*.sql` before it listens), waits for `GET /api/health`, rolls back on failure and reloads Caddy. The job ends by checking `https://shelfie.kids/api/health`.
 
 To redeploy the same commit, re-run the workflow from the Actions tab.
 
@@ -64,29 +66,48 @@ sudo journalctl -u caddy -n 100        # TLS, certificates, requests
 sudo journalctl -t shelfie-backup      # nightly backups
 ```
 
-## Backups
+## Backups and nightly maintenance
 
-`/etc/cron.d/shelfie-backup` runs `/usr/local/bin/shelfie-backup` at 08:15 UTC. It calls the API's backup job (`VACUUM INTO` a dated file, integrity check, prune older than 30 days) and uploads the file to Blob Storage with the VM's managed identity.
+The server keeps 7 days of automated backups and can be restored to any minute in that window (Azure portal, the server's **Backup and restore** blade, or `az postgres flexible-server restore`).
+
+`/etc/cron.d/shelfie-backup` runs `/usr/local/bin/shelfie-backup` at 08:15 UTC. It deletes expired sessions, spent reset tokens and old sign-in attempts (`apps/api/src/purge.ts`), then writes a `pg_dump` of the whole database and uploads it to Blob Storage with the VM's managed identity. The `backups` container's lifecycle rule deletes dumps after 30 days.
 
 ```bash
 az storage blob list --auth-mode login --account-name <storage account> -c backups -o table
 az storage blob download --auth-mode login --account-name <storage account> -c backups \
-  -n shelfie-2026-10-17.sqlite -f shelfie-2026-10-17.sqlite
+  -n shelfie-2026-10-17.dump -f shelfie-2026-10-17.dump
 ```
 
-To run a backup by hand: `sudo -u shelfie /usr/local/bin/shelfie-backup` on the VM.
+To run the job by hand: `sudo -u shelfie /usr/local/bin/shelfie-backup` on the VM.
 
 ## Restoring the database
 
+For a wrong deletion or a corrupted table, point-in-time restore is quickest: restore the server to a new server from the portal, then put the new host name into `DATABASE_URL` in `/etc/shelfie/env` and `sudo systemctl restart shelfie`.
+
+To restore a dump into the existing server (the server is private, so run this on the VM):
+
 1. `sudo systemctl stop shelfie`
-2. Move the live file and its siblings aside: `sudo mv /var/lib/shelfie/shelfie.db{,.broken}` and the same for `shelfie.db-wal` and `shelfie.db-shm` if present.
-3. Copy the chosen backup to `/var/lib/shelfie/shelfie.db` (from `/var/lib/shelfie/backups/` or downloaded from the `backups` container) and `sudo chown shelfie:shelfie /var/lib/shelfie/shelfie.db`.
-4. `sudo systemctl start shelfie`
-5. `curl -fsS https://shelfie.kids/api/health`
+2. Load the credentials: `set -a; . /etc/shelfie/db-admin; set +a; export PGPASSWORD=$DB_ADMIN_PASSWORD PGSSLMODE=require`
+3. Recreate the empty database: `psql "host=$DB_HOST user=shelfie_admin dbname=postgres" -c 'DROP DATABASE shelfie' -c 'CREATE DATABASE shelfie OWNER shelfie_app'`
+4. `pg_restore --no-owner --no-privileges --role=shelfie_app -d "host=$DB_HOST user=shelfie_admin dbname=shelfie" shelfie-2026-10-17.dump` (download the dump first, see above)
+5. `sudo systemctl start shelfie`
+6. `curl -fsS https://shelfie.kids/api/health`
+
+## Erasing a household
+
+A household owns everything created for it, and every table cascades from it. On the VM, as the operator:
+
+```bash
+set -a; . /etc/shelfie/env; set +a
+psql "$DATABASE_URL" -c "SELECT h.id, p.name, p.email FROM household h JOIN profile p ON p.household_id = h.id WHERE p.email = 'parent@example.com'"
+psql "$DATABASE_URL" -c "DELETE FROM household WHERE id = '<id from above>'"
+```
+
+The one `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions and rewards; other households are untouched. The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
 
 ## Changing settings
 
-Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `SHELFIE_DB`, `SHELFIE_BACKUP_DIR`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work).
+Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work).
 
 ## Changing the infrastructure
 
@@ -98,6 +119,6 @@ Uptime monitoring, log shipping beyond journald and the production e-mail provid
 
 ## Health and logs
 
-- `GET /api/health` answers `200 {"status":"ok"}` while the database is reachable and `503 {"status":"unavailable"}` when it is not.
+- `GET /api/health` answers `200 {"status":"ok"}` while the database is reachable and `503 {"status":"unavailable"}` when it is not. If the API cannot reach the database when it starts, it logs one error line and exits; systemd restarts it every 2 s until the server answers.
 - The API writes one JSON line per request to stdout: `requestId`, `method`, `route`, `status`, `durationMs`. Bodies, headers and URLs are never logged.
 - When someone reports "something went wrong" with a code such as `SHF-4F2A`, search the log for that `requestId`; the matching `level: "error"` line holds the full error.
