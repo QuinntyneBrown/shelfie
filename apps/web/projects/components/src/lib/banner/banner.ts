@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, input, viewChild } from '@angular/core';
 
 @Component({
   selector: 'sh-banner',
@@ -10,4 +10,12 @@ export class Banner {
   readonly severity = input<'info' | 'success' | 'warning' | 'danger'>('success');
   readonly title = input.required<string>();
   readonly message = input<string | null>(null);
+  /** A form summary: marked at the edge and focusable, so a failed submit can announce itself. */
+  readonly summary = input(false);
+
+  private readonly alert = viewChild.required<ElementRef<HTMLElement>>('alert');
+
+  focus() {
+    this.alert().nativeElement.focus();
+  }
 }

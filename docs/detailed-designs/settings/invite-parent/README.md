@@ -23,9 +23,9 @@ The slice runs from the Settings page to the `invites` table and the mailer.
 - **`invites.service.ts`** — `createInvite(householdId, invitedBy, email, mail)`. It generates a 32-byte random token, computes its SHA-256 hash, inserts the invite row, builds the link `{APP_URL}/accept-invite?token={token}` and calls the shared `sendMail` function. The mail states that the link works once for 7 days. If `sendMail` throws, the service deletes the row and rethrows, so a failed send leaves no pending invite. The plain token appears only in the mail.
 - **`invites.repo.ts`** — parameterised SQL over `invites`: `insertInvite`, `deleteInvite`, `listPendingInvites`.
 - **`mail.ts`** — the existing `sendMail(to, subject, text)` function that the reset-password feature uses. It sends through the SMTP server named by `SMTP_URL`; locally that is Mailpit.
-- **`invites`** table — `token_hash` (primary key), `email`, `household_id`, `invited_by`, `expires_at`, `used_at`. `expires_at` is the creation time plus 7 days. `used_at` is set by accept-invite and is NULL while the invite is unused. The migration is <TO SUPPLY>.
+- **`invites`** table — `token_hash` (primary key), `email`, `household_id`, `invited_by`, `expires_at`, `used_at`. `expires_at` is the creation time plus 7 days. `used_at` is set by accept-invite and is NULL while the invite is unused. The table is created by `schema.sql` on start-up like every other.
 
-The "Send again" action shown in the Parents list mock re-sends a pending invite. `L2-034` does not describe it, so its behaviour is <TO SUPPLY>. The response to an address that already belongs to a user is <TO SUPPLY>.
+The "Send again" action shown in the Parents list mock re-sends a pending invite. It posts the same address again: the API replaces the household's unused invite to that address with a fresh token and mails the new link, and the page shows a toast. An address that already belongs to a user is refused with 409 problem type `email-in-use`, shown on the field as "That e-mail already has an account.".
 
 ## Requirements
 

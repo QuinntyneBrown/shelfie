@@ -7,7 +7,7 @@ import { openDb } from './db.ts';
 test('Given 100 books of 80 chapters, then 95% of shelf, review and book reads answer within 300 ms', async () => {
   const db = openDb(':memory:');
   db.exec(`INSERT INTO household (id, time_zone) VALUES ('h1', 'UTC');
-    INSERT INTO profile (id, household_id, role, name, color) VALUES ('p-r', 'h1', 'reader', 'Nia', 'rose'), ('p-g', 'h1', 'grown_up', 'Dad', 'sky');
+    INSERT INTO profile (id, household_id, role, name, color, username) VALUES ('p-r', 'h1', 'reader', 'Nia', 'rose', 'nia'), ('p-g', 'h1', 'parent', 'Dad', 'sky', 'dad');
     INSERT INTO session (id, profile_id, created_at, expires_at) VALUES ('s-r', 'p-r', '2026-01-01', '2999-01-01'), ('s-g', 'p-g', '2026-01-01', '2999-01-01');`);
   const book = db.prepare(
     "INSERT INTO book (id, household_id, title, chapter_count, cover_color, sticker, created_at) VALUES (?, 'h1', ?, 80, 'sage', '🦁', '2026-01-01')",

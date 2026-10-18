@@ -46,11 +46,11 @@ test('Given a sign-in with a password and a cookie, then nothing secret reaches 
   await call(app, '/api/auth/password', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-requested-with': 'Shelfie', cookie: 'shelfie_session=secret-session-id' },
-    body: JSON.stringify({ email: 'dad@example.com', password: 'my-secret-password', pin: '1234' }),
+    body: JSON.stringify({ username: 'dad', password: 'my-secret-password', remember: true }),
   });
 
   const logged = JSON.stringify(lines);
-  for (const secret of ['my-secret-password', 'secret-session-id', '1234', 'dad@example.com']) {
+  for (const secret of ['my-secret-password', 'secret-session-id']) {
     assert.ok(!logged.includes(secret), `${secret} must not be logged`);
   }
 });

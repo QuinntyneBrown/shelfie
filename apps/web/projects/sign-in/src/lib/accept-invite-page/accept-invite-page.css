@@ -1,0 +1,16 @@
+.centred {
+  text-align: center;
+}
+.centred-item {
+  margin-inline: auto;
+}
+.centred-cluster {
+  justify-content: center;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.passwords {
+  gap: var(--space-4);
+}

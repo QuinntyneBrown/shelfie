@@ -1,7 +1,0 @@
-<button class="profile-tile" type="button" (click)="chosen.emit()">
-  <span class="avatar" [class]="'avatar--' + color()" aria-hidden="true">{{
-    name().charAt(0)
-  }}</span>
-  {{ name() }}
-  <small>{{ role() === 'reader' ? 'Reader' : 'Grown-up' }}</small>
-</button>

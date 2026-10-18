@@ -7,36 +7,25 @@ export class SettingsPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
-  readerName() {
-    return this.page.getByLabel('Name', { exact: true });
+  yourName() {
+    return this.page.getByLabel('Your name');
   }
 
-  grownUpName() {
-    return this.page.getByLabel('Name Nia sees');
+  // Role queries, so the fields of a closed (hidden) dialog never match.
+  username() {
+    return this.page.getByRole('textbox', { name: 'Username' });
   }
 
   email() {
-    return this.page.getByLabel('E-mail address');
+    return this.page.getByRole('textbox', { name: 'E-mail address', exact: true });
   }
 
   async open() {
     await this.page.goto('/settings');
   }
 
-  async setReaderName(name: string) {
-    await this.readerName().fill(name);
-  }
-
-  async chooseReaderColour(colour: string) {
-    await this.page.getByRole('radio', { name: colour }).check({ force: true });
-  }
-
-  async setGrownUpName(name: string) {
-    await this.grownUpName().fill(name);
-  }
-
-  async setPin(pin: string) {
-    await this.page.getByLabel('New 4-digit PIN').fill(pin);
+  async setYourName(name: string) {
+    await this.yourName().fill(name);
   }
 
   private saveRequests = 0;
@@ -55,25 +44,21 @@ export class SettingsPage {
     return this.page.getByRole('alert').filter({ hasText: /Fix \d+ thing/ });
   }
 
-  pinField() {
-    return this.page.getByLabel('New 4-digit PIN');
-  }
-
   async setNewPassword(password: string, again = password) {
-    await this.page.getByLabel('New password').fill(password);
-    await this.page.getByLabel('Type it again').fill(again);
+    await this.newPasswordField().fill(password);
+    await this.confirmField().fill(again);
   }
 
   async setCurrentPassword(password: string) {
-    await this.page.getByLabel('Current password').fill(password);
+    await this.page.getByRole('textbox', { name: 'Current password' }).fill(password);
   }
 
   newPasswordField() {
-    return this.page.getByLabel('New password');
+    return this.page.getByRole('textbox', { name: 'New password' });
   }
 
   confirmField() {
-    return this.page.getByLabel('Type it again');
+    return this.page.getByRole('textbox', { name: 'Type it again' });
   }
 
   failureBanner() {
@@ -92,6 +77,22 @@ export class SettingsPage {
     await this.page.unroute('**/api/settings');
   }
 
+  async breakLoading() {
+    await this.page.route('**/api/settings', (route) => (route.request().method() === 'GET' ? route.abort() : route.continue()));
+  }
+
+  async repairLoading() {
+    await this.page.unroute('**/api/settings');
+  }
+
+  loadFailure() {
+    return this.page.getByRole('heading', { name: 'Settings didn’t load' });
+  }
+
+  async tryLoadingAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
   async chooseAppearance(label: 'Match the device' | 'Always light' | 'Always dark') {
     await this.page.getByRole('radio', { name: label }).check();
   }
@@ -102,6 +103,40 @@ export class SettingsPage {
 
   banner() {
     return this.page.getByRole('status').filter({ hasText: 'Saved' });
+  }
+
+  async signOut() {
+    await this.page.getByRole('button', { name: 'Sign out' }).click();
+    await this.page.waitForURL('**/sign-in');
+  }
+
+  /** A row of the Parents list: a parent or a pending invite. */
+  parent(text: string) {
+    return this.page.getByRole('region', { name: 'Parents' }).getByRole('listitem').filter({ hasText: text });
+  }
+
+  async inviteParent() {
+    await this.page.getByRole('button', { name: 'Invite a parent' }).click();
+  }
+
+  async sendInviteAgain(email: string) {
+    await this.parent(email).getByRole('button', { name: 'Send again' }).click();
+  }
+
+  async addReader() {
+    await this.page.getByRole('button', { name: 'Add a reader' }).click();
+  }
+
+  async editReader(name: string) {
+    await this.page.getByRole('button', { name: `Edit ${name}` }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
+  reader(name: string) {
+    return this.page.getByRole('region', { name: 'Readers' }).getByRole('listitem').filter({ hasText: name });
   }
 
   /** Asks the API for the settings, as a client that skips the page would. */

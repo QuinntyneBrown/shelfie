@@ -20,7 +20,7 @@ export class App {
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
   protected readonly navLinks = computed<NavLink[]>(() =>
-    this.session()?.role === 'grown_up'
+    this.session()?.role === 'parent'
       ? [
           {
             label: 'Review',
@@ -38,14 +38,15 @@ export class App {
     return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
   });
   protected readonly menuItems = computed<MenuItem[]>(() => [
-    ...(this.session()?.role === 'grown_up' ? [{ id: 'settings', label: 'Settings' }] : []),
-    { id: 'switch-reader', label: 'Switch reader' },
+    ...(this.session()?.role === 'parent' ? [{ id: 'settings', label: 'Settings' }] : []),
     { id: 'sign-out', label: 'Sign out' },
   ]);
   protected readonly menuHeader = computed(() => {
     const s = this.session();
     if (!s) return '';
-    return s.role === 'reader' ? `${s.name} · Reader` : `${s.name} · ${s.email} · grown-up`;
+    if (s.role === 'parent') return `${s.name} · @${s.username} · parent`;
+    const streak = this.status.streak();
+    return `${s.name} · @${s.username}` + (streak ? ` · 🔥 ${streak}-day streak` : '');
   });
   protected readonly toasts = inject(ToastService);
   protected readonly status = inject(ShellStatusService);
@@ -60,7 +61,7 @@ export class App {
     () => this.toasts.toasts().length - this.visibleToasts().length,
   );
   protected readonly home = computed(() =>
-    this.session()?.role === 'grown_up' ? '/review' : '/shelf',
+    this.session()?.role === 'parent' ? '/review' : '/shelf',
   );
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
@@ -68,7 +69,7 @@ export class App {
     // The grown-up's Review badge is kept fresh from every page, not only from Review itself.
     const reviews = inject(ReviewApi);
     effect(() => {
-      if (this.session()?.role !== 'grown_up') return;
+      if (this.session()?.role !== 'parent') return;
       reviews.load().then((overview) => this.status.queueCount.set(overview.queue.length));
     });
     // After moving to another page keyboard focus would be lost, so put it on the new page's content.
@@ -82,7 +83,7 @@ export class App {
       .subscribe(() => this.main().nativeElement.focus());
   }
 
-  /** Switch reader and Sign out both end the session and return to the profile picker. */
+  /** Sign out ends the session and returns to the sign-in page. */
   protected async chooseFromMenu(id: string) {
     if (id === 'settings') {
       await this.router.navigateByUrl('/settings');

@@ -1,22 +1,36 @@
-import { Router } from 'express';
+import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
-import { DEVICE_COOKIE, deviceHousehold, readCookie, rememberDevice } from './device.ts';
 import { passwordSignInLimiter } from './rate-limit.ts';
-import { requireSession, type RequestSession } from './session.ts';
-import { listProfiles, requestPasswordReset, resetPassword, signInWithPassword, signInWithPin } from './auth.service.ts';
+import { readCookie, requireSession, type RequestSession } from './session.ts';
+import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type Session } from './auth.service.ts';
+import { Problem } from './problem.ts';
+import { acceptInvite, getInvite } from './invites.service.ts';
 import type { Mail } from './mail.ts';
-
-const pinSignInSchema = z.object({ profileId: z.string(), pin: z.string().regex(/^[0-9]{4}$/) });
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
 const resetPasswordSchema = z.object({ token: z.string(), password: z.string().min(8) });
 
-const passwordSignInSchema = z.object({ email: z.email(), password: z.string().min(1) });
+const passwordSignInSchema = z.object({ username: z.string().trim().min(1), password: z.string().min(1), remember: z.boolean() });
 
-const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const, maxAge: 30 * 24 * 60 * 60 * 1000 };
+export const username = z.string().regex(/^[A-Za-z0-9._]{3,20}$/);
+export const password = z.string().min(8);
+const signUpSchema = z.object({ name: z.string().trim().min(1).max(40), email: z.email(), username, password });
+const acceptInviteSchema = z.object({ token: z.string().min(1), name: z.string().trim().min(1).max(40), username, password });
+
+const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const };
+const REMEMBERED_FOR_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** Sets the session cookie; a remembered session's cookie outlives the browser, the other ends with it. */
+export function setSessionCookie(res: Response, session: Session) {
+  res.cookie('shelfie_session', session.id, session.remember ? { ...SESSION_COOKIE, maxAge: REMEMBERED_FOR_MS } : SESSION_COOKIE);
+}
+
+export function sessionSummary({ id, remember, ...summary }: Session) {
+  return summary;
+}
 
 export function authRouter(db: DatabaseSync, mail?: Mail) {
   const router = Router();
@@ -28,8 +42,8 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, role, color, email, theme } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, role, color, email, theme });
+    const { profileId, name, username, role, color, email, theme } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme });
   });
 
   router.post('/sign-out', (req, res) => {
@@ -37,27 +51,6 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     if (id) db.prepare('DELETE FROM session WHERE id = ?').run(id);
     res.clearCookie('shelfie_session');
     res.status(204).end();
-  });
-
-  router.get('/profiles', (req, res) => {
-    const householdId = deviceHousehold(db, req.headers.cookie);
-    res.json(householdId ? listProfiles(db, householdId) : []);
-  });
-
-  router.post('/pin', (req, res) => {
-    const householdId = deviceHousehold(db, req.headers.cookie);
-    const body = pinSignInSchema.safeParse(req.body);
-    if (!body.success) return res.status(400).json(validationProblem(body.error));
-    if (!householdId) return res.status(401).json({ type: 'no-device' });
-
-    const result = signInWithPin(db, householdId, body.data.profileId, body.data.pin);
-    if ('lockedUntil' in result) return res.status(423).json({ type: 'pin-locked', lockedUntil: result.lockedUntil });
-    if ('triesLeft' in result) return res.status(401).json({ type: 'pin-invalid', triesLeft: result.triesLeft });
-
-    const { id, ...summary } = result.session;
-    endPreviousSession(req.headers.cookie);
-    res.cookie('shelfie_session', id, SESSION_COOKIE);
-    res.json(summary);
   });
 
   router.post('/forgot-password', async (req, res) => {
@@ -74,27 +67,58 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     const session = resetPassword(db, body.data.token, body.data.password);
     if (!session) return res.status(400).json({ type: 'reset-token-invalid' });
 
-    const { id, householdId, ...summary } = session;
-    const newDevice = rememberDevice(db, householdId, req.headers.cookie);
-    if (newDevice) res.cookie('shelfie_device', newDevice, DEVICE_COOKIE);
     endPreviousSession(req.headers.cookie);
-    res.cookie('shelfie_session', id, SESSION_COOKIE);
-    res.json(summary);
+    setSessionCookie(res, session);
+    res.json(sessionSummary(session));
+  });
+
+  router.post('/sign-up', (req, res) => {
+    const body = signUpSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    try {
+      const session = signUp(db, body.data);
+      endPreviousSession(req.headers.cookie);
+      setSessionCookie(res, session);
+      res.status(201).json(sessionSummary(session));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
+    }
+  });
+
+  router.get('/invites/:token', (req, res) => {
+    try {
+      res.json(getInvite(db, String(req.params['token'])));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
+    }
+  });
+
+  router.post('/accept-invite', (req, res) => {
+    const body = acceptInviteSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    try {
+      const session = acceptInvite(db, body.data);
+      endPreviousSession(req.headers.cookie);
+      setSessionCookie(res, session);
+      res.status(201).json(sessionSummary(session));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
+    }
   });
 
   router.post('/password', passwordSignInLimiter(db), (req, res) => {
     const body = passwordSignInSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
 
-    const session = signInWithPassword(db, body.data.email, body.data.password);
+    const session = signInWithPassword(db, body.data.username, body.data.password, body.data.remember);
     if (!session) return res.status(401).json({ type: 'credentials-invalid' });
 
-    const { id, householdId, ...summary } = session;
-    const newDevice = rememberDevice(db, householdId, req.headers.cookie);
-    if (newDevice) res.cookie('shelfie_device', newDevice, DEVICE_COOKIE);
     endPreviousSession(req.headers.cookie);
-    res.cookie('shelfie_session', id, SESSION_COOKIE);
-    res.json(summary);
+    setSessionCookie(res, session);
+    res.json(sessionSummary(session));
   });
 
   return router;

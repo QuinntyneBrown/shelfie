@@ -65,9 +65,9 @@ test('Given a reset link, when Dad chooses a new password, then he is signed in 
   const other = await elsewhere.newPage();
   const signIn = new SignInPage(other);
   await signIn.open();
-  await signIn.signInWithPassword(DAD.email, DAD.password);
+  await signIn.signInWithPassword(DAD.username, DAD.password);
   await expect(signIn.failureSummary()).toBeVisible();
-  await signIn.signInWithPassword(DAD.email, 'a-fresh-password-7');
+  await signIn.signInWithPassword(DAD.username, 'a-fresh-password-7');
   await expect(other).toHaveURL(/\/review$/);
   await elsewhere.close();
 });
@@ -122,7 +122,7 @@ test('Given a reset link older than an hour, when Dad submits a new password, th
   await expect(reset.heading()).toHaveText('This link has expired');
   const signIn = new SignInPage(page);
   await signIn.open();
-  await signIn.signInWithPassword(DAD.email, DAD.password);
+  await signIn.signInWithPassword(DAD.username, DAD.password);
   await expect(page).toHaveURL(/\/review$/);
 });
 

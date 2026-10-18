@@ -11,8 +11,6 @@ Which `components` library parts build each page, dialog, notification and shell
 
 | Selector | Class | In `public-api.ts` | Introduced by |
 |---|---|---|---|
-| `sh-profile-card` | `ProfileCard` | yes | none: no screen uses it since PIN sign-in was removed (L2-001) |
-| `sh-pin-keypad` | `PinKeypad` | yes | none: no screen uses it since PIN sign-in was removed (L2-001) |
 | `sh-button` | `Button` | no | sign-in/sign-in-with-password |
 | `sh-text-field` | `TextField` | no | sign-in/sign-in-with-password |
 | `sh-textarea` | `Textarea` | no | reading-log/log-chapter |
@@ -39,7 +37,7 @@ Which `components` library parts build each page, dialog, notification and shell
 | `sh-toast` | `Toast` | no | shell/notify |
 | `sh-toast-stack` | `ToastStack` | no | shell/notify |
 
-Class names follow the existing `PinKeypad` / `ProfileCard` convention (no `Component` suffix); only those two exist so far. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`.
+Class names carry no `Component` suffix. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`. `sh-text-field` with `type: 'password'` draws the Show password button and accepts `readonly`; `sh-banner` with `summary` is the focusable "Fix N things" summary.
 
 Composition rules that hold on every screen:
 
@@ -67,7 +65,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 | Item | Used by | Notes |
 |---|---|---|
-| Auth layout | sign-in, sign-up, accept-invite, forgot-password, reset-password | centred card, logo, sticker |
+| Auth layout | sign-in, sign-up, accept-invite, forgot-password, reset-password | `sh-auth-layout` in the `sign-in` library: centred card and logo mark |
 | Avatar | settings (Parents and Readers lists), accept-invite header, edit-reader | `avatar` circle with initial and colour. `sh-top-bar` draws its own avatar; this one is for the lists and the invite header |
 | Switch | sign-in ("Keep me signed in") | `switch`: checkbox with label, checked by default. The catalogue has no checkbox or switch |
 | Person list row | settings (Parents, Readers) | `list__item`: avatar, name, `@username` or e-mail, optional "Invited" badge, trailing action ("Edit", "Send again") |
@@ -199,11 +197,9 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 ## Inferred, not read from a mock
 
-- Class names for all `sh-*` components except `ProfileCard` and `PinKeypad` (only those exist in code).
 - Mock `alert` blocks map to `sh-banner`, and mock `empty` blocks on the four error pages map to `sh-error-state`, because the detailed designs say so.
 - The log-chapter "Another day" date input is local, since `sh-segmented` is described only as a group of chips.
-- `sh-text-field` with `type: 'password'` is assumed to include the Show password button the sign-in, sign-up, accept-invite, settings and edit-reader mocks draw inside the input.
+- `sh-text-field` with `type: 'password'` includes the Show password button the sign-in, sign-up, accept-invite, settings and edit-reader mocks draw inside the input.
 - The accept-invite `error` state is a message with a sticker and a link, as the mock shows, not `sh-error-state`. The rule that load failure uses `sh-error-state` does not apply, because nothing failed to load.
 - The sign-in switch reads "Keep me signed in" in the mock; L2-003 calls it "Remember me". The mock wording is used.
-- `sh-profile-card` and `sh-pin-keypad` still exist in the library but no screen uses them now. Removing them is a code decision, not made here.
 - The mocks carry no requirement IDs, so none are listed here; see each feature's detailed design.

@@ -8,3 +8,15 @@
   margin: 0;
   padding-left: 1.2em;
 }
+.people {
+  gap: 0;
+}
+.people__header {
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+.passwords {
+  gap: var(--space-4);
+}
+.form-actions--between {
+  justify-content: space-between;
+}

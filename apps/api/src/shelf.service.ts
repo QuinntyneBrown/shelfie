@@ -67,7 +67,7 @@ export function getShelf(db: DatabaseSync, householdId: string): ShelfResponse {
     .all(householdId) as unknown as BookRow[];
 
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
   const dayOf = (iso: string) => dayFormat.format(new Date(iso));
 

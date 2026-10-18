@@ -40,6 +40,11 @@ export function expireResetLinks() {
   db.exec("UPDATE password_reset SET expires_at = '2020-01-01T00:00:00.000Z'");
 }
 
+/** Makes every invite link older than its 7 days. */
+export function expireInvites() {
+  db.exec("UPDATE invites SET expires_at = '2020-01-01T00:00:00.000Z'");
+}
+
 /** The question texts stored with a logged chapter's answers, in order. */
 export function questionsAnswered(bookId: string, chapter: number): string[] {
   const rows = db

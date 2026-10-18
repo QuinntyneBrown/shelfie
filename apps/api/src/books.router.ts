@@ -45,7 +45,7 @@ export function booksRouter(db: DatabaseSync) {
     res.status(201).json(createBook(db, householdId, role, body.data));
   });
 
-  router.get('/', requireSession(db), requireRole('grown_up'), (_req, res) => {
+  router.get('/', requireSession(db), requireRole('parent'), (_req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     res.json(listBooks(db, householdId));
   });
@@ -60,7 +60,7 @@ export function booksRouter(db: DatabaseSync) {
     }
   });
 
-  router.patch('/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.patch('/:id', requireSession(db), requireRole('parent'), (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = updateBookSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
@@ -72,7 +72,7 @@ export function booksRouter(db: DatabaseSync) {
     }
   });
 
-  router.delete('/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.delete('/:id', requireSession(db), requireRole('parent'), (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     try {
       deleteBook(db, householdId, String(req.params['id']));

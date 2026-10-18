@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
-import { readCookie } from './device.ts';
 
 /** A session lasts this long after its last request. */
 export const SESSION_DAYS = 30;
@@ -8,11 +7,20 @@ export const SESSION_DAYS = 30;
 export interface RequestSession {
   profileId: string;
   name: string;
+  username: string;
   color: string;
   email: string | null;
   theme: string;
   householdId: string;
-  role: 'reader' | 'grown_up';
+  role: 'reader' | 'parent';
+}
+
+export function readCookie(header: string | undefined, name: string): string | null {
+  for (const part of (header ?? '').split(';')) {
+    const [key, ...rest] = part.trim().split('=');
+    if (key === name) return rest.join('=');
+  }
+  return null;
 }
 
 /** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */
@@ -22,7 +30,7 @@ export function requireSession(db: DatabaseSync) {
     const row = id
       ? (db
           .prepare(
-            'SELECT p.id AS profileId, p.name AS name, p.color AS color, p.email AS email, h.theme AS theme, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = ?',
+            'SELECT p.id AS profileId, p.name AS name, p.username AS username, p.color AS color, p.email AS email, h.theme AS theme, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = ?',
           )
           .get(id) as (RequestSession & { expiresAt: string }) | undefined)
       : undefined;
@@ -34,7 +42,8 @@ export function requireSession(db: DatabaseSync) {
     }
     const slidTo = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
     db.prepare('UPDATE session SET expires_at = ? WHERE id = ?').run(slidTo, id);
-    res.locals['session'] = row;
+    const { expiresAt, ...session } = row;
+    res.locals['session'] = session;
     next();
   };
 }

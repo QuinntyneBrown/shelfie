@@ -14,7 +14,7 @@ export class ForbiddenPage {
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
-  protected async switchReader() {
+  protected async signOut() {
     await this.session.signOut();
     await this.router.navigateByUrl('/sign-in');
   }

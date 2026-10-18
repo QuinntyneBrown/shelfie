@@ -1,144 +1,70 @@
-<div class="auth-layout">
-  <div class="auth-card stack">
-    <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
-    @if (reason() === 'expired') {
-      <div class="alert alert--info" role="status">
-        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 11v5M12 8h.01" />
-        </svg>
-        <div class="alert__body">
-          <div class="alert__title">You were signed out</div>
-          <div>
-            Shelfie signs out after 30 days of quiet, to keep the answers private. Pick your name to
-            carry on.
-          </div>
-        </div>
-      </div>
+<sh-auth-layout>
+  @if (reason() === 'expired') {
+    <sh-banner severity="info" title="You were signed out" message="Sign in to carry on." />
+  }
+  <div class="card stack">
+    <h1 class="centred">Welcome back</h1>
+    @if (missing().length) {
+      <sh-banner
+        #summary
+        severity="danger"
+        [summary]="true"
+        [title]="'Fill in ' + missing().length + (missing().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of missing(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    } @else if (credentialsWrong() || tooManyTries()) {
+      <sh-banner #summary severity="danger" [summary]="true" title="We couldn’t sign you in">
+        <ul class="summary-list">
+          <li>
+            {{
+              tooManyTries()
+                ? 'Too many tries. Wait 10 minutes and try again.'
+                : 'Username or password is wrong'
+            }}
+          </li>
+        </ul>
+      </sh-banner>
     }
-    <div class="card stack centred">
-      @if (pinProfile(); as profile) {
-        <span
-          class="avatar avatar--lg centred-item"
-          [class]="'avatar--' + profile.color"
-          aria-hidden="true"
-          >{{ profile.name.charAt(0) }}</span
-        >
-        <h1>Hi {{ profile.name }}!</h1>
-        <p class="text-muted centred-item">Tap your 4-digit PIN.</p>
-        <sh-pin-keypad
-          [name]="profile.name"
-          [error]="pinError()"
-          [lockedUntil]="lockedUntil()"
-          (complete)="submit($event)"
-          (switchReader)="chosen.set(null); pinError.set(null); lockedUntil.set(null)"
-        />
-      } @else if (passwordStep()) {
-        @if (chosen(); as grownUp) {
-          <span
-            class="avatar avatar--lg centred-item"
-            [class]="'avatar--' + grownUp.color"
-            aria-hidden="true"
-            >{{ grownUp.name.charAt(0) }}</span
-          >
-          <h1>Hi {{ grownUp.name }}!</h1>
-          <p class="text-muted centred-item">
-            Signing in as <strong>{{ grownUp.email }}</strong> ·
-            <button
-              class="link-button"
-              type="button"
-              (click)="chosen.set(null); credentialsWrong.set(false)"
-            >
-              Not {{ grownUp.name }}?
-            </button>
-          </p>
-        } @else {
-          <h1>Welcome back</h1>
-          <p class="text-muted centred-item">Sign in to see how the reading is going.</p>
-        }
-        @if (credentialsWrong() || tooManyTries()) {
-          <div
-            #summary
-            class="alert alert--danger form-summary form-left"
-            role="alert"
-            tabindex="-1"
-          >
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8v4M12 16h.01" />
-            </svg>
-            <div class="alert__body">
-              <div class="alert__title">We couldn’t sign you in</div>
-              <ul class="summary-list">
-                <li>
-                  {{
-                    tooManyTries()
-                      ? 'Too many tries. Wait 10 minutes and try again.'
-                      : 'E-mail or password is wrong'
-                  }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        }
-        @if (unreachable()) {
-          <div class="alert alert--danger form-left" role="alert">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8v4M12 16h.01" />
-            </svg>
-            <div class="alert__body">
-              <div class="alert__title">Shelfie isn’t reachable right now</div>
-              <div>
-                Your password wasn’t checked because the server didn’t answer. Check your connection
-                and try again.
-              </div>
-              <div class="alert__actions">
-                <button class="btn btn--sm" type="button" (click)="submitPassword()">
-                  Try again
-                </button>
-              </div>
-            </div>
-          </div>
-        }
-        <form
-          class="stack form-left"
-          (submit)="$event.preventDefault(); submitPassword()"
-          novalidate
-        >
-          @if (!chosen()) {
-            <sh-text-field
-              label="Email"
-              type="email"
-              autocomplete="username"
-              [error]="emailError()"
-              [(value)]="email"
-            />
-          }
-          <sh-text-field
-            label="Password"
-            type="password"
-            autocomplete="current-password"
-            [error]="passwordError()"
-            [(value)]="password"
-          />
-          <sh-button [large]="true" [block]="true" [busy]="submitting()">Sign in</sh-button>
-          <p class="centred"><a routerLink="/forgot-password">Forgot your password?</a></p>
-        </form>
-      } @else {
-        <h1>Who’s reading today?</h1>
-        <p class="text-muted centred-item">Pick your name to open your shelf.</p>
-        <div class="profiles">
-          @for (profile of profiles(); track profile.id) {
-            <sh-profile-card
-              [name]="profile.name"
-              [role]="profile.role"
-              [color]="profile.color"
-              (chosen)="chosen.set(profile)"
-            />
-          }
+    @if (unreachable()) {
+      <sh-banner severity="danger" title="Can’t reach Shelfie" message="Check your connection.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
         </div>
-      }
-    </div>
+      </sh-banner>
+    }
+    <form class="stack stagger" (submit)="$event.preventDefault(); submit()" novalidate>
+      <sh-text-field
+        style="--i: 0"
+        label="Username"
+        autocomplete="username"
+        [autofocus]="true"
+        [error]="usernameError()"
+        [(value)]="username"
+      />
+      <sh-text-field
+        style="--i: 1"
+        label="Password"
+        type="password"
+        autocomplete="current-password"
+        [error]="passwordError()"
+        [(value)]="password"
+      />
+      <label class="switch" style="--i: 2">
+        <input
+          type="checkbox"
+          [checked]="remember()"
+          (change)="remember.set($any($event.target).checked)"
+        />
+        <span class="switch__text">Keep me signed in</span>
+      </label>
+      <sh-button style="--i: 3" [large]="true" [block]="true" [busy]="submitting()">Sign in</sh-button>
+      <p class="centred" style="--i: 4"><a routerLink="/forgot-password">Forgot your password?</a></p>
+    </form>
   </div>
-</div>
+  <p class="text-caption centred">New here? <a routerLink="/sign-up">Create a parent account</a></p>
+</sh-auth-layout>

@@ -1,0 +1,11 @@
+:host {
+  display: contents;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.sent {
+  text-align: center;
+  align-items: center;
+}

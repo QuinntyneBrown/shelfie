@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Banner, Button, ColorPicker, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
-import { SettingsApi, Theme } from '../settings-api';
-
-const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
+import { Router } from '@angular/router';
+import { Banner, Button, ErrorState, Skeleton, TextField } from 'components';
+import { ApiError, SessionService, ToastService } from 'core';
+import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
+import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
+import { InvitesApi } from '../invites-api';
+import { InviteView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
   selector: 'sh-settings-page',
-  imports: [Banner, Button, ColorPicker, TextField],
+  imports: [Banner, Button, EditReaderDialog, ErrorState, InviteParentDialog, Skeleton, TextField],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,64 +17,105 @@ const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
 export class SettingsPage {
   private readonly api = inject(SettingsApi);
   private readonly session = inject(SessionService);
+  private readonly router = inject(Router);
+  private readonly toasts = inject(ToastService);
+  private readonly invites = inject(InvitesApi);
 
-  protected readonly colors = COLORS;
-  protected readonly loaded = signal(false);
+  protected readonly view = signal<SettingsView | null>(null);
+  protected readonly loadFailed = signal(false);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly failure = signal<string | null>(null);
-  protected readonly readerNameError = signal<string | null>(null);
-  protected readonly grownUpNameError = signal<string | null>(null);
+  protected readonly nameError = signal<string | null>(null);
   protected readonly emailError = signal<string | null>(null);
-  protected readonly pinError = signal<string | null>(null);
   protected readonly newPasswordError = signal<string | null>(null);
   protected readonly confirmError = signal<string | null>(null);
   protected readonly problems = computed(() =>
     [
-      this.readerNameError(),
-      this.grownUpNameError(),
-      this.emailError(),
-      this.pinError(),
-      this.newPasswordError(),
-      this.confirmError(),
-    ].filter((p): p is string => p !== null),
+      this.nameError() && 'Fix your name',
+      this.emailError() && 'E-mail needs an @ and a dot',
+      this.newPasswordError() && 'Use 8+ characters',
+      this.confirmError() && 'Passwords don’t match',
+    ].filter((p): p is string => !!p),
   );
+  protected readonly inviteDialogOpen = signal(false);
+  protected readonly readerDialogOpen = signal(false);
+  protected readonly editingReader = signal<ReaderView | null>(null);
   protected readonly theme = signal<Theme>('device');
-  protected readonly readerName = signal('');
-  protected readonly readerColor = signal('rose');
-  protected readonly pin = signal('');
-  protected readonly grownUpName = signal('');
+  protected readonly name = signal('');
   protected readonly email = signal('');
   protected readonly newPassword = signal('');
   protected readonly confirmPassword = signal('');
   protected readonly currentPassword = signal('');
 
   constructor() {
-    this.api.get().then((view) => {
+    this.load();
+  }
+
+  protected async load() {
+    this.loadFailed.set(false);
+    this.view.set(null);
+    try {
+      const view = await this.api.get();
       this.theme.set(view.theme);
-      this.readerName.set(view.reader.name);
-      this.readerColor.set(view.reader.color);
-      this.grownUpName.set(view.grownUp.name);
-      this.email.set(view.grownUp.email);
-      this.loaded.set(true);
-    });
+      this.name.set(view.account.name);
+      this.email.set(view.account.email);
+      this.view.set(view);
+    } catch {
+      this.loadFailed.set(true);
+    }
+  }
+
+  /** Lists the pending invite, in place of an earlier one to the same address. */
+  protected inviteSent(invite: InviteView) {
+    const view = this.view()!;
+    this.view.set({ ...view, invites: [...view.invites.filter((i) => i.email !== invite.email), invite] });
+  }
+
+  protected async sendAgain(invite: InviteView) {
+    try {
+      this.inviteSent(await this.invites.send(invite.email));
+      this.toasts.show({ title: `Invite sent again to ${invite.email}` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ severity: 'danger', title: 'The invite wasn’t sent', text: 'Check your connection and try again.' });
+    }
+  }
+
+  protected openReaderDialog(reader: ReaderView | null) {
+    this.editingReader.set(reader);
+    this.readerDialogOpen.set(true);
+  }
+
+  /** Puts the saved reader in the list, in place of the one edited or at the end. */
+  protected readerSaved(reader: ReaderView) {
+    this.readerDialogOpen.set(false);
+    const view = this.view()!;
+    const edited = this.editingReader();
+    const readers = edited
+      ? view.readers.map((r) => (r.id === reader.id ? reader : r))
+      : [...view.readers, reader];
+    this.view.set({ ...view, readers });
+    this.toasts.show({ title: edited ? `${reader.name} saved` : `${reader.name} added` });
+  }
+
+  protected initial(name: string) {
+    return name.charAt(0).toUpperCase();
+  }
+
+  protected async signOut() {
+    await this.session.signOut();
+    await this.router.navigateByUrl('/sign-in');
   }
 
   protected async save() {
     if (this.saving()) return;
-    const nameProblem = (name: string) =>
-      !name.trim()
-        ? 'Enter a name.'
-        : name.trim().length > 40
-          ? 'Use 40 characters or fewer.'
-          : null;
-    this.readerNameError.set(nameProblem(this.readerName()));
-    this.grownUpNameError.set(nameProblem(this.grownUpName()));
+    const name = this.name().trim();
+    this.nameError.set(!name ? 'Enter a name.' : name.length > 40 ? 'Use 40 characters or fewer.' : null);
     this.emailError.set(
-      /^\S+@\S+\.\S+$/.test(this.email().trim()) ? null : 'Enter a valid e-mail.',
-    );
-    this.pinError.set(
-      this.pin() && !/^[0-9]{4}$/.test(this.pin()) ? 'Use exactly 4 digits.' : null,
+      /^\S+@\S+\.\S+$/.test(this.email().trim())
+        ? null
+        : 'Enter an e-mail address like name@example.com.',
     );
     const newPassword = this.newPassword();
     this.newPasswordError.set(
@@ -90,20 +133,15 @@ export class SettingsPage {
     try {
       const view = await this.api.save({
         theme: this.theme(),
-        reader: {
-          name: this.readerName(),
-          color: this.readerColor(),
-          ...(this.pin() ? { pin: this.pin() } : {}),
-        },
-        grownUp: {
-          name: this.grownUpName(),
-          email: this.email(),
-          ...(this.newPassword() ? { newPassword: this.newPassword() } : {}),
+        account: {
+          name,
+          email: this.email().trim(),
+          ...(newPassword ? { newPassword } : {}),
           ...(this.currentPassword() ? { currentPassword: this.currentPassword() } : {}),
         },
       });
-      this.session.update({ name: view.grownUp.name, theme: view.theme });
-      this.pin.set('');
+      this.view.set(view);
+      this.session.update({ name: view.account.name, theme: view.theme });
       this.newPassword.set('');
       this.confirmPassword.set('');
       this.currentPassword.set('');

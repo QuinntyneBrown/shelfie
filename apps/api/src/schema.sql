@@ -6,20 +6,19 @@ CREATE TABLE IF NOT EXISTS household (
 CREATE TABLE IF NOT EXISTS profile (
   id TEXT PRIMARY KEY,
   household_id TEXT NOT NULL REFERENCES household(id),
-  role TEXT NOT NULL CHECK (role IN ('reader','grown_up')),
+  role TEXT NOT NULL CHECK (role IN ('reader','parent')),
   name TEXT NOT NULL,
   color TEXT NOT NULL,
+  username TEXT NOT NULL,
   email TEXT,
-  password_hash TEXT,
-  pin_hash TEXT,
-  pin_failed_count INTEGER NOT NULL DEFAULT 0,
-  pin_locked_until TEXT
+  password_hash TEXT
 );
 CREATE TABLE IF NOT EXISTS session (
   id TEXT PRIMARY KEY,
   profile_id TEXT NOT NULL REFERENCES profile(id),
   created_at TEXT NOT NULL,
-  expires_at TEXT NOT NULL
+  expires_at TEXT NOT NULL,
+  remember INTEGER NOT NULL DEFAULT 1
 );
 CREATE TABLE IF NOT EXISTS book (
   id TEXT PRIMARY KEY,
@@ -29,7 +28,7 @@ CREATE TABLE IF NOT EXISTS book (
   chapter_count INTEGER NOT NULL CHECK (chapter_count >= 1),
   cover_color TEXT NOT NULL,
   sticker TEXT NOT NULL,
-  added_by_role TEXT NOT NULL DEFAULT 'grown_up',
+  added_by_role TEXT NOT NULL DEFAULT 'parent',
   created_at TEXT NOT NULL,
   finished_at TEXT
 );
@@ -59,11 +58,6 @@ CREATE TABLE IF NOT EXISTS answer (
   question_text TEXT NOT NULL,
   text TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS device (
-  id TEXT PRIMARY KEY,
-  household_id TEXT NOT NULL REFERENCES household(id),
-  created_at TEXT NOT NULL
-);
 CREATE TABLE IF NOT EXISTS password_reset (
   token_hash TEXT PRIMARY KEY,
   profile_id TEXT NOT NULL REFERENCES profile(id),
@@ -77,6 +71,14 @@ CREATE TABLE IF NOT EXISTS question (
   created_at TEXT NOT NULL,
   removed_at TEXT
 );
+CREATE TABLE IF NOT EXISTS invites (
+  token_hash TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  household_id TEXT NOT NULL REFERENCES household(id),
+  invited_by TEXT NOT NULL REFERENCES profile(id),
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
 CREATE TABLE IF NOT EXISTS sign_in_attempt (
   source TEXT NOT NULL,
   at TEXT NOT NULL
@@ -84,3 +86,4 @@ CREATE TABLE IF NOT EXISTS sign_in_attempt (
 CREATE INDEX IF NOT EXISTS book_household ON book (household_id);
 CREATE INDEX IF NOT EXISTS chapter_log_reviewed ON chapter_log (reviewed_at);
 CREATE UNIQUE INDEX IF NOT EXISTS profile_email ON profile (email);
+CREATE UNIQUE INDEX IF NOT EXISTS profile_username ON profile (lower(username));

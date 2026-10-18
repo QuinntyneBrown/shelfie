@@ -4,7 +4,8 @@ import { ApiClient } from '../api/api-client';
 export interface Session {
   profileId: string;
   name: string;
-  role: 'reader' | 'grown_up';
+  username: string;
+  role: 'reader' | 'parent';
   color: string;
   email: string | null;
   theme: 'device' | 'light' | 'dark';
@@ -18,7 +19,7 @@ export class SessionService {
   readonly expired = signal(false);
 
   /** Shows changed details straight away, without another sign-in. */
-  update(changes: Partial<Pick<Session, 'name' | 'theme'>>) {
+  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color'>>) {
     this.current.update((session) => (session ? { ...session, ...changes } : session));
   }
 

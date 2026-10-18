@@ -1,12 +1,15 @@
 import type { Page } from '@playwright/test';
 import { signInAsDad, signInAsNia } from './signed-in';
-import { rememberDevice } from './remember-device';
 import { ErrorPage } from '../pages/error.page';
 import { AddBookPage } from '../pages/add-book.page';
 import { BooksPage } from '../pages/books.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
+import { SignUpPage } from '../pages/sign-up.page';
+import { AcceptInvitePage } from '../pages/accept-invite.page';
+import { InviteParentDialog } from '../pages/invite-parent-dialog.page';
+import { inviteLinkFor } from './mailbox';
 
 export interface Screen {
   name: string;
@@ -14,32 +17,31 @@ export interface Screen {
   open: (page: Page) => Promise<void>;
 }
 
+/** Waits for the entrance animations to finish, so a card is measured at rest; the logo bobs forever and is left alone. */
+async function settled(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)),
+  );
+}
+
 /** Every screen built so far, for checks that must hold on all of them. */
 export const screens: Screen[] = [
   {
-    name: 'sign-in profile picker',
+    name: 'sign-in',
     open: async (page) => {
-      await rememberDevice(page.context());
       const signIn = new SignInPage(page);
       await signIn.open();
-      await signIn.pickerHeading().waitFor();
+      await signIn.usernameField().waitFor();
+      await settled(page);
     },
   },
   {
-    name: 'sign-in PIN keypad',
+    name: 'sign-up',
     open: async (page) => {
-      await rememberDevice(page.context());
-      const signIn = new SignInPage(page);
-      await signIn.open();
-      await signIn.choose('Nia');
-    },
-  },
-  {
-    name: 'sign-in password form',
-    open: async (page) => {
-      const signIn = new SignInPage(page);
-      await signIn.open();
-      await signIn.emailField().waitFor();
+      const signUp = new SignUpPage(page);
+      await signUp.open();
+      await signUp.nameField().waitFor();
+      await settled(page);
     },
   },
   {
@@ -84,7 +86,7 @@ export const screens: Screen[] = [
     open: async (page) => {
       await signInAsDad(page);
       await page.goto('/settings');
-      await new SettingsPage(page).readerName().waitFor();
+      await new SettingsPage(page).yourName().waitFor();
     },
   },
   {
@@ -126,6 +128,46 @@ export const screens: Screen[] = [
       await signInAsDad(page);
       await page.goto('/review/chapters/b-lion-c11');
       await page.getByRole('button', { name: 'Send to Nia' }).waitFor();
+    },
+  },
+  {
+    name: 'invite a parent dialog',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.inviteParent();
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
+    },
+  },
+  {
+    name: 'accept an invite',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.inviteParent();
+      const dialog = new InviteParentDialog(page);
+      await dialog.send('priya@example.com');
+      await dialog.done();
+      await settings.signOut();
+      const accept = new AcceptInvitePage(page);
+      await accept.openLink(inviteLinkFor('priya@example.com'));
+      await accept.nameField().waitFor();
+      await settled(page);
+    },
+  },
+  {
+    name: 'add a reader dialog',
+    open: async (page) => {
+      await signInAsDad(page);
+      await page.goto('/settings');
+      const settings = new SettingsPage(page);
+      await settings.yourName().waitFor();
+      await settings.addReader();
+      await page.getByRole('dialog').evaluate((dialog) => Promise.all(dialog.getAnimations({ subtree: true }).map((a) => a.finished)));
     },
   },
   {
