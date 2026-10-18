@@ -1,0 +1,32 @@
+1
+00:00:00,400 --> 00:00:03,644
+Writing good questions for every book takes time.
+
+2
+00:00:03,644 --> 00:00:05,564
+Now Shelfie can suggest them.
+
+3
+00:00:05,564 --> 00:00:08,609
+On Manage book, Dad presses Suggest questions.
+
+4
+00:00:09,439 --> 00:00:12,288
+A short list of ideas for this book appears.
+
+5
+00:00:12,288 --> 00:00:17,079
+Nothing is added until Dad ticks it, and every idea can be reworded first.
+
+6
+00:00:17,919 --> 00:00:21,356
+He ticks two, changes the wording of one, and adds them.
+
+7
+00:00:21,356 --> 00:00:25,959
+They join the book's questions, and Nia answers them from her next chapter.
+
+8
+00:00:26,799 --> 00:00:33,649
+If the assistant is ever unavailable, Dad is told plainly, and he can still write his own questions as before.
+
