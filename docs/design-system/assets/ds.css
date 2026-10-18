@@ -171,3 +171,6 @@ pre code { background: none; padding: 0; }
 .ds-card span { color: var(--color-fg-muted); font: var(--text-body-sm); }
 .ds-card__preview { height: 4.5rem; display: grid; place-items: center; background: var(--color-bg-canvas); border-radius: var(--radius-md); margin-bottom: var(--space-3); overflow: hidden; }
 @media print { .ds-nav, .ds-theme-toggle, .ds-copy { display: none !important; } .ds-shell { display: block; } }
+
+/* Long inline paths wrap instead of widening the page on phones. */
+.ds-main p code, .ds-main li code, .ds-main td code { overflow-wrap: anywhere; }

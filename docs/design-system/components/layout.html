@@ -36,8 +36,8 @@
       <li><a href="../components/text-field.html">Text field</a></li>
       <li><a href="../components/textarea.html">Textarea</a></li>
       <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
       <li><a href="../components/form-layout.html">Form layout</a></li>
-      <li><a href="../components/pin-entry.html">PIN entry</a></li>
       <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
       <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
       <li><a href="../components/top-bar.html">Top bar</a></li>
@@ -53,6 +53,7 @@
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/feed.html">Activity feed</a></li>
       <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/logo-mark.html">Logo mark</a></li>
       <li><a href="../components/badge.html">Badge</a></li>
       <li><a href="../components/chip.html">Chip</a></li>
       <li><a href="../components/streak.html">Streak</a></li>
@@ -64,7 +65,6 @@
       <li><a href="../components/question-answer.html">Question and answer</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
-      <li><a href="../components/profile-tile.html">Profile tile</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -90,7 +90,7 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Layout</p>
       <h1>Layout primitives</h1>
-      <p class="ds-lead">A small set of classes that place everything else: the page container, vertical stacks, wrapping rows, the 4/8/12-column grid and its spans, the sticky aside, the page header and the centred sign-in card.</p>
+      <p class="ds-lead">A small set of classes that place everything else: the page container, vertical stacks, wrapping rows, the 4/8/12-column grid and its spans, the sticky aside, the page header and the centred auth card.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">CSS only, no ARIA</span></div>
       <ul class="ds-toc">
         <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
@@ -106,7 +106,7 @@
         <li><b><code>.grid</code></b>: the column grid. <b><code>.grid--auto</code></b> fills with 18rem-minimum cards instead (book cards on the shelf).</li>
         <li><b><code>.span-4/5/7/8/full</code></b>: column spans, full width until 1024px. <b><code>.sticky-aside</code></b>: sticks below the top bar from 1024px.</li>
         <li><b><code>.page-header</code></b> (title, subtitle, action) and <b><code>.section</code></b> (vertical rhythm between page sections).</li>
-        <li><b><code>.auth-layout</code></b> + <b><code>.auth-card</code></b>: the centred card on sign-in, forgot and reset password.</li>
+        <li><b><code>.auth-layout</code></b> + <b><code>.auth-card</code></b>: the centred card on sign in, sign up, accept invite, forgot and reset password. The <a href="logo-mark.html">logo mark</a> sits above the card and the background is the aurora (<a href="../foundations/motion.html#auth-effects">auth effects</a>).</li>
       </ul>
     </section>
 
@@ -195,16 +195,15 @@
         <div class="ds-example__canvas ds-example__canvas--canvas" style="padding: 0; display: block;">
           <div class="auth-layout" style="min-height: auto;">
             <div class="auth-card stack">
-              <div class="logo" aria-hidden="true"><span class="sticker sticker--lg">📖</span></div>
+              <div class="logo" aria-hidden="true"><span class="logo-mark"><img src="../../mocks/assets/logo.png" alt="" width="64" height="64"></span></div>
               <div class="card stack">
-                <div class="cluster" style="justify-content: center;"><span class="avatar avatar--lg avatar--sky" aria-hidden="true">MB</span></div>
-                <span class="hero__title" style="text-align: center;">Hi Dad!</span>
-                <p class="text-muted" style="text-align: center; margin-inline: auto;">Signing in as <strong>marcus@example.com</strong></p>
+                <span class="hero__title" style="text-align: center;">Welcome back</span>
+                <div class="field"><label class="field__label" for="lay-user">Username</label><input class="input" id="lay-user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="ds-example__caption"><span><code>main.auth-layout</code> centres a 26rem <code>.auth-card</code> in the viewport (<code>min-height</code> is shortened here).</span></div>
+        <div class="ds-example__caption"><span><code>main.auth-layout</code> centres a 26rem <code>.auth-card</code> in the viewport, with the logo mark above it (<code>min-height</code> is shortened here, and the aurora canvas is left out).</span></div>
       </div>
     </section>
 
@@ -324,7 +323,7 @@
         <li><a href="../../mocks/pages/review-chapter/default.html">pages/review-chapter/default</a> (7 + 5 grid, sticky feedback form)</li>
         <li><a href="../../mocks/pages/add-book/default.html">pages/add-book/default</a> (8 + 4 grid with preview aside)</li>
         <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (page header with action, section, auto grid)</li>
-        <li><a href="../../mocks/pages/sign-in/password.html">pages/sign-in/password</a> (auth layout and card)</li>
+        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (auth layout and card)</li>
       </ul>
       <p>Drift fixed during extraction:</p>
       <ul>

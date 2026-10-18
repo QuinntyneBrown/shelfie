@@ -30,8 +30,8 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Text field](components/text-field.html) | Inputs | text, e-mail, password · sm/md/lg | default, hover, focus, disabled, read-only, invalid | sign-in, add-book, settings, log-chapter |
 | [Textarea](components/textarea.html) | Inputs | answer, note | default, hover, focus, disabled, read-only, invalid | log-chapter, review-chapter, give-reward, edit-question |
 | [Radio group](components/radio-group.html) | Inputs | vertical with description | default, hover, focus, checked, disabled, invalid | settings, edit-question, add-book |
+| [Switch](components/switch.html) | Inputs | on/off with label | off, on, hover, focus, disabled | sign-in |
 | [Form layout](components/form-layout.html) | Inputs | actions bar, error summary, danger zone | default, submitting, invalid | manage-book, settings, add-book, sign-in |
-| [PIN entry](components/pin-entry.html) | Inputs | dots + keypad | empty, partly filled, invalid, locked | sign-in, settings |
 | [Swatch picker](components/swatch-picker.html) | Inputs | cover colour, cover sticker | default, hover, focus, checked | add-book, settings |
 | [Sticker picker](components/sticker-picker.html) | Inputs | sticker choice | default, hover, focus, active, pressed, disabled, invalid | review-chapter, give-reward |
 | [Top bar](components/top-bar.html) | Navigation | reader, grown-up | link hover, focus, current | shelf, book, add-book, review |
@@ -46,7 +46,8 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [List](components/list.html) | Data display | title + meta, with cover/avatar | — | review, books, manage-book |
 | [Table](components/table.html) | Data display | in a card (flush) | row hover | manage-book, delete-book |
 | [Activity feed](components/feed.html) | Data display | activity | — | review, give-reward |
-| [Avatar](components/avatar.html) | Data display | rose, sky; button · sm/md/lg | hover, focus (button) | shelf, review, sign-in, account-menu |
+| [Avatar](components/avatar.html) | Data display | rose, sky, sun, mint, lilac, sage, peach; button · sm/md/lg | hover, focus (button) | shelf, review, sign-in, account-menu |
+| [Logo mark](components/logo-mark.html) | Identity | 64px tile | default | sign-in, sign-up, accept-invite, forgot-password, reset-password |
 | [Badge](components/badge.html) | Data display | neutral, info, success, warning, count | — | books, manage-book, review, shelf |
 | [Chip](components/chip.html) | Data display | toggle | default, hover, focus, pressed, disabled | log-chapter, give-reward |
 | [Streak](components/streak.html) | Data display | pill | — | shelf, book, log-chapter, review |
@@ -58,7 +59,6 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Question and answer](components/question-answer.html) | Data display | answered | — | chapter, review-chapter, manage-book |
 | [Feedback note](components/feedback-note.html) | Data display | sticker + note | — | chapter, review-chapter |
 | [Trophy](components/trophy.html) | Data display | reward given, waiting | — | shelf, banner |
-| [Profile tile](components/profile-tile.html) | Data display | reader, grown-up | default, hover, focus, active | sign-in |
 | [Toast](components/toast.html) | Feedback | info, success, warning, danger; with action; stacked | entering, timed, leaving | toast |
 | [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings |
 | [Inline message](components/inline-message.html) | Feedback | field error, saving, saved | — | add-book, log-chapter, sign-in, settings |
@@ -117,6 +117,9 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | D19 | `assets/ui.css` | `.table-wrap` scrolled its table, but the table's visually-hidden `<caption>` (absolutely positioned) escaped the scroll box and widened the whole page on phones | `.table-wrap { position: relative }` so the caption is clipped with the table |
 | D20 | `assets/ui.css` | Sticker-choice emoji at 1.75rem (28px), off the type scale | `--font-size-3xl` (30px); the picker grows by 2px per row |
 | D21 | `assets/ui.css` | Radio inputs, accent bubbles and similar raw `1.25rem`/`0.5rem` literals | `--size-icon-md`, `--space-2` |
+| D22 | auth mocks (logo) | The 📖 emoji inside a round sticker sat off-centre: emoji glyph metrics are not symmetric | `.logo-mark` shows the app icon as its own tile, centred by grid (new component page) |
+| D23 | sign-in, sign-up, accept-invite (first draft) | Help text under nearly every field, a two-line switch explanation, multi-sentence alerts | Help only for the username rule and password minimum; one-line switch label; alert = title + one sentence (see Content foundation, "less is more") |
+| D24 | sign-in (first draft) | PIN keypad and profile picker for the reader | Retired with the new accounts model: `.pin-dots`, `.pinpad`, `.profiles`, `.profile-tile` removed, pages `pin-entry` and `profile-tile` deleted |
 
 ### Open issues in the mocks (not fixed by this extraction)
 
@@ -126,16 +129,26 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
+## Changelog
+
+### 2026-10-18: accounts and profiles
+
+- **Added:** [Switch](components/switch.html) (Keep me signed in), [Logo mark](components/logo-mark.html) (the app icon as a centred tile), the "with trailing button" variant of [Text field](components/text-field.html) (show/hide password), avatar colours sun, mint, lilac, sage and peach, and the "Auth page effects" section of [Motion](foundations/motion.html#auth-effects): card entrance, field stagger, logo sway and the WebGPU aurora with its CSS fallback (`assets/aurora.js`, `assets/logo.png`).
+- **Removed:** PIN entry and Profile tile (pages, CSS, nav, index, README rows). Every PIN, profile-picker and "Switch reader" example, caption and mock link in the remaining pages.
+- **Changed:** [Menu](components/menu.html) (no Switch reader; username in the header), [Error page](components/error-page.html) (Grown-ups only offers Sign out), [Layout](components/layout.html) (auth card with logo and aurora), [Forms](patterns/forms.html) and [Content](foundations/content.html) (shorter copy rules), sign-in sources now point at the single sign-in mock.
+- **Tokens:** none added or changed.
+
+
 ## Verification
 
-Run on 2026-10-17 from the repository root.
+Run on 2026-10-18 from the repository root, after the accounts-and-profiles update.
 
 | Check | Command | Result |
 |---|---|---|
-| Mocks structure | `python3 .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 23 screens, 101 mocks, 0 errors, 0 warnings (before and after pointing the mocks at this system) |
+| Mocks structure | `python3 .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 27 screens, 119 mocks, 0 errors, 0 warnings |
 | Contrast, both themes | `python3 .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 158 passed, 0 failed, 0 unresolved |
 | Token export | `tokens_to_json.py docs/design-system/tokens/tokens.css` | 302 tokens written to `tokens/tokens.json` |
-| Structure | `python3 .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 65 pages (12 foundations, 44 components, 8 patterns, index), 0 errors, 0 warnings |
+| Structure | `python3 .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 65 pages (12 foundations, 44 components, 8 patterns, index), 0 errors, 0 warnings (PIN entry and Profile tile out, Switch and Logo mark in) |
 | Token coverage | script over `tokens.css` | All 245 custom properties appear in a `data-token` cell on exactly one foundation page |
 | Layout and live values | headless Chrome over all 65 pages at 360 px (light, dark) and 1280 px (dark) | No horizontal page scroll, no failing live contrast ratio, no empty token cell, no script error |
 | Screenshots | `screenshot_mocks.py` at 360×800 and 1280×800, both themes | 256 design-system and 404 mock shots captured. Looked at by eye: the colour, button, toast and dialog pages, and three changed mocks (books, review chapter, toast with action). The other pages were covered by the automated layout audit only |

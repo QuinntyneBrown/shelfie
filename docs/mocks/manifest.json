@@ -27,18 +27,61 @@
       "route": "/sign-in",
       "states": [
         "default",
-        "pin",
-        "pin-invalid",
-        "locked",
-        "password",
+        "missing",
         "invalid",
         "submitting",
         "error",
         "expired"
       ],
       "not_applicable": {
-        "loading": "The sign-in screen loads no data; profiles are part of the household and render instantly.",
-        "empty": "A household always has one reader and one grown-up, so there is nothing to be empty."
+        "loading": "The sign-in form needs no data before it renders.",
+        "empty": "A single form; there is no collection to be empty."
+      },
+      "requirements": [
+        "L2-002",
+        "L2-003"
+      ]
+    },
+    {
+      "id": "sign-up",
+      "kind": "page",
+      "title": "Create a parent account",
+      "route": "/sign-up",
+      "requirements": [
+        "L2-033"
+      ],
+      "states": [
+        "default",
+        "invalid",
+        "taken",
+        "submitting",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The form needs no data before it renders.",
+        "empty": "A single form; there is no collection to be empty.",
+        "success": "Success signs the parent in and opens Review (pages/review/empty.html)."
+      }
+    },
+    {
+      "id": "accept-invite",
+      "kind": "page",
+      "title": "Join a household",
+      "route": "/accept-invite?token=…",
+      "requirements": [
+        "L2-035"
+      ],
+      "states": [
+        "default",
+        "invalid",
+        "taken",
+        "submitting",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The token is checked when the page opens; a bad token shows the error state directly.",
+        "empty": "A single form; there is no collection to be empty.",
+        "success": "Success signs the parent in and opens Review."
       }
     },
     {
@@ -233,7 +276,13 @@
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
-      }
+      },
+      "requirements": [
+        "L2-021",
+        "L2-022",
+        "L2-034",
+        "L2-036"
+      ]
     },
     {
       "id": "not-found",
@@ -332,6 +381,41 @@
       "not_applicable": {}
     },
     {
+      "id": "edit-reader",
+      "kind": "dialog",
+      "title": "Add a reader",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-036"
+      ],
+      "states": [
+        "default",
+        "edit",
+        "busy",
+        "invalid",
+        "taken",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "invite-parent",
+      "kind": "dialog",
+      "title": "Invite a parent",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-034"
+      ],
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "sent"
+      ],
+      "not_applicable": {}
+    },
+    {
       "id": "account-menu",
       "kind": "dialog",
       "title": "Account menu",
@@ -343,7 +427,10 @@
       "not_applicable": {
         "busy": "The menu only navigates; nothing is submitted.",
         "invalid": "The menu has no inputs."
-      }
+      },
+      "requirements": [
+        "L2-003"
+      ]
     },
     {
       "id": "toast",

@@ -411,24 +411,6 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .feedback__from { font: var(--text-label); color: var(--color-fg-accent); }
 .feedback__meta { font: var(--text-caption); color: var(--color-fg-muted); }
 
-/* ---------- Shelfie: PIN entry ------------------------------------------------------------- */
-.pin-dots { display: flex; justify-content: center; gap: var(--space-3); margin-block: var(--space-4); }
-.pin-dots span { width: var(--space-4); height: var(--space-4); border-radius: var(--radius-full); border: var(--border-width-thick) solid var(--color-border-strong); background: transparent; transition: background-color var(--duration-fast) var(--ease-standard); }
-.pin-dots span[data-filled] { background: var(--color-accent); border-color: var(--color-accent); }
-.pin-dots[aria-invalid="true"] span { border-color: var(--color-danger-solid); }
-.pin-dots[aria-invalid="true"] span[data-filled] { background: var(--color-danger-solid); }
-.pinpad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-items: center; gap: var(--space-3); max-width: 16rem; margin-inline: auto; }
-.pinpad .btn { --btn-height: calc(var(--control-height-lg) + var(--space-1)); --btn-font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); width: var(--btn-height); padding: 0; border-radius: var(--radius-full); }
-.pinpad .btn--ghost { --btn-font-size: var(--font-size-md); width: auto; min-width: var(--btn-height); padding: 0 var(--space-2); white-space: normal; line-height: var(--line-height-tight); }
-
-/* ---------- Shelfie: profile tile ------------------------------------------------------------ */
-.profiles { display: flex; justify-content: center; gap: var(--space-6); flex-wrap: wrap; }
-.profile-tile { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); min-width: 8rem; padding: var(--space-6) var(--space-4); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-h4); cursor: pointer; transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard); }
-.profile-tile:hover, .profile-tile[data-state="hover"] { transform: translateY(calc(-1 * var(--space-0-5))); box-shadow: var(--shadow-2); border-color: var(--color-border-strong); }
-.profile-tile:active, .profile-tile[data-state="active"] { transform: none; box-shadow: var(--shadow-1); }
-.profile-tile .avatar { --avatar-size: var(--size-avatar-xl); font-size: var(--font-size-xl); }
-.profile-tile small { font: var(--text-body-sm); color: var(--color-fg-muted); }
-
 /* ---------- Shelfie: swatch picker (cover colour, cover sticker) ------------------------------ */
 .swatches { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .swatch { position: relative; width: var(--target-comfortable); height: var(--target-comfortable); border-radius: var(--radius-full); cursor: pointer; display: grid; place-items: center; }
@@ -464,13 +446,70 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 @keyframes confetti-fall { 0% { translate: 0 0; rotate: 0deg; } 100% { translate: 0 110vh; rotate: 540deg; } }
+/* ---------- Shelfie: accounts and profiles ------------------------------------------------ */
+/* Avatar colours for every reader colour (rose and sky above). */
+.avatar--sun { background: var(--color-cover-sun); color: var(--color-fg-on-cover); }
+.avatar--mint { background: var(--color-cover-mint); color: var(--color-fg-on-cover); }
+.avatar--lilac { background: var(--color-cover-lilac); color: var(--color-fg-on-cover); }
+.avatar--sage { background: var(--color-cover-sage); color: var(--color-fg-on-cover); }
+.avatar--peach { background: var(--color-cover-peach); color: var(--color-fg-on-cover); }
+
+/* Switch: a checkbox drawn as a toggle (Keep me signed in). Thumb springs across. */
+.switch { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; font: var(--text-body); padding-block: var(--space-1); min-height: var(--target-min); }
+.switch input { appearance: none; flex: none; position: relative; width: calc(var(--size-icon-md) * 1.75); height: var(--size-icon-md); margin: var(--space-0-5) 0 0; border: 0; border-radius: var(--radius-full); background: var(--color-border-strong); cursor: pointer; transition: background-color var(--duration-base) var(--ease-standard); }
+.switch input::before { content: ""; position: absolute; top: var(--space-0-5); left: var(--space-0-5); width: calc(var(--size-icon-md) - var(--space-1)); height: calc(var(--size-icon-md) - var(--space-1)); border-radius: var(--radius-full); background: var(--color-bg-surface); box-shadow: var(--shadow-1); transition: translate var(--duration-base) var(--ease-spring); }
+.switch input:hover, .switch input[data-state="hover"] { background: var(--color-fg-muted); }
+.switch input:checked, .switch input[data-state="checked"] { background: var(--color-accent); }
+.switch input:checked:hover, .switch input[data-state="checked"]:hover { background: var(--color-accent-hover); }
+.switch input:checked::before, .switch input[data-state="checked"]::before { translate: calc(var(--size-icon-md) * 0.75) 0; }
+.switch input:focus-visible, .switch input[data-state="focus"] { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--space-0-5); }
+.switch input:disabled, .switch input[data-state="disabled"] { background: var(--color-border-default); cursor: not-allowed; }
+.switch input:disabled + * { color: var(--color-fg-disabled); }
+.switch__text { display: flex; flex-direction: column; gap: var(--space-0-5); }
+.switch__text small { color: var(--color-fg-muted); }
+
+/* Input group: a text field with a trailing icon button (show/hide password). */
+.input-group { position: relative; display: flex; }
+.input-group .input { flex: 1; padding-right: calc(var(--control-height-md) + var(--space-1)); }
+.input-group__btn { position: absolute; top: 50%; right: var(--space-1); translate: 0 -50%; --btn-height: calc(var(--control-height-md) - var(--space-2)); }
+.input-group__btn[aria-pressed="true"] { color: var(--color-fg-accent); }
+
+/* Stagger: children rise in one after another (auth forms). Zeroed by reduced motion like everything else. */
+.stagger > * { animation: slide-up var(--duration-slow) var(--ease-enter) both; animation-delay: calc(var(--i, 0) * var(--duration-fast) / 3); }
+
+/* Sticker bob: the logo sticker sways gently, once under reduced motion. */
+.sticker--bob { display: inline-block; animation: bob calc(var(--duration-loop) * 3) var(--ease-standard) infinite; transform-origin: 50% 100%; }
+
+/* Aurora: a full-bleed canvas behind the auth card. WebGPU paints it (aurora.js); .aurora--css is the fallback. */
+.auth-layout { position: relative; isolation: isolate; }
+.auth-card { position: relative; z-index: var(--z-raised); }
+.auth-card .card { animation: scale-in var(--duration-slow) var(--ease-enter) both; }
+.aurora { position: fixed; inset: 0; width: 100%; height: 100%; z-index: var(--z-base); pointer-events: none; }
+.aurora--css {
+  background:
+    radial-gradient(40% 45% at 18% 25%, color-mix(in oklab, var(--color-cover-rose) 55%, transparent), transparent 70%),
+    radial-gradient(45% 40% at 82% 22%, color-mix(in oklab, var(--color-cover-sky) 55%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 70% 85%, color-mix(in oklab, var(--color-cover-mint) 50%, transparent), transparent 70%),
+    radial-gradient(35% 40% at 20% 85%, color-mix(in oklab, var(--color-cover-lilac) 50%, transparent), transparent 70%),
+    radial-gradient(30% 30% at 50% 50%, color-mix(in oklab, var(--color-cover-sun) 40%, transparent), transparent 70%);
+  background-size: 160% 160%;
+  animation: aurora-drift calc(var(--duration-loop) * 12) var(--ease-standard) infinite alternate;
+}
+[data-theme="dark"] .aurora--css { opacity: 0.55; }
+@keyframes bob { 0%, 100% { translate: 0 0; rotate: -4deg; } 50% { translate: 0 calc(-1 * var(--space-1)); rotate: 4deg; } }
+@keyframes aurora-drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+/* Logo mark: the app icon, drawn as its own rounded tile. Grid centring keeps it exact at every size. */
+.logo-mark { display: inline-grid; place-items: center; width: var(--size-avatar-xl); height: var(--size-avatar-xl); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-2); }
+.logo-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 /* Durations are already zeroed by tokens.css; loops also stop after one pass. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-iteration-count: 1 !important; }
   .skeleton { animation: none; }
 }
 @media (forced-colors: active) {
-  .btn, .input, .textarea, .card, .chip, .badge, .sticker-choice, .profile-tile { forced-color-adjust: none; border: var(--border-width-hairline) solid CanvasText; }
+  .btn, .input, .textarea, .card, .chip, .badge, .sticker-choice { forced-color-adjust: none; border: var(--border-width-hairline) solid CanvasText; }
   .btn--primary { background: Highlight; color: HighlightText; }
 }
 @media print { .topbar, .tabbar, .toast-region, .skip-link { display: none !important; } }
