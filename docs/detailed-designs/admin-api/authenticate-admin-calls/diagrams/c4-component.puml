@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Authenticate admin calls
+
+Container(cli, "shelfie-admin", ".NET 10", "Sends Authorization: Bearer")
+Container(script, "admin-token script", "Node 24", "npm run admin-token -w apps/api")
+Container_Boundary(api, "Shelfie API") {
+  Component(app, "createApp", "app.ts", "Mounts /api/admin/v1 before csrfGuard")
+  Component(router, "adminRouter", "admin.router.ts", "Admin routes under /api/admin/v1")
+  Component(audit, "adminAudit", "admin-audit.ts", "One admin_audit row per finished response")
+  Component(rate, "adminRateLimit", "admin-auth.ts", "60 calls per minute per source, in memory")
+  Component(auth, "requireAdminToken / requireScope", "admin-auth.ts", "Bearer lookup by SHA-256 hash; scope check")
+  Component(tokens, "createAdminToken / listAdminTokens / revokeAdminToken", "admin-token.ts", "Token lifecycle")
+  ComponentDb(db, "Shelfie database", "PostgreSQL", "admin_token, admin_audit")
+}
+Rel(cli, app, "Calls", "HTTPS via Caddy")
+Rel(app, router, "Routes /api/admin/v1 to")
+Rel(router, audit, "Runs first")
+Rel(router, rate, "Runs per route, in adminGuard")
+Rel(router, auth, "Runs per route, in adminGuard")
+Rel(audit, db, "Inserts audit row")
+Rel(auth, db, "Reads token, updates last_used_at")
+Rel(script, tokens, "Runs")
+Rel(tokens, db, "Inserts, lists, revokes tokens")
+@enduml

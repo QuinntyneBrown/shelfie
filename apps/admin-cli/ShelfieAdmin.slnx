@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ShelfieAdmin/ShelfieAdmin.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShelfieAdmin.Tests/ShelfieAdmin.Tests.csproj" />
+  </Folder>
+</Solution>

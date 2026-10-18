@@ -1,0 +1,65 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Serve admin data
+
+class "admin.router.ts" as Router <<module>> {
+  +adminRouter(db): Router
+  -transaction<T>(db, dryRun: boolean, run: () => T): T
+  -idParam: ZodString  ^[A-Za-z0-9_-]{1,100}$
+  -passwordBody, readOnBody, rewardBody: ZodObject
+}
+class "admin.service.ts" as Service <<module>> {
+  +listUsers(db): AdminUser[]
+  +listBooks(db): AdminBook[]
+  +listLogs(db, bookId): AdminLogSummary[]
+  +getLog(db, id): AdminLog
+  +resetParentPassword(db, id, password): {id, name, sessionsEnded}
+  +correctLog(db, id, readOn): {id, bookTitle, chapter, previousReadOn, readOn}
+  +deleteLog(db, id): {id, bookTitle, chapter, answersDeleted}
+  +finishBook(db, id): {id, title, finishedAt}
+}
+class AdminUser <<interface>> {
+  +id, householdId, role, name: string
+  +email: string | null
+}
+class AdminBook <<interface>> {
+  +id, householdId, title: string
+  +chaptersLogged, chapterCount: number
+  +finishedAt, reward: string | null
+}
+class AdminLogSummary <<interface>> {
+  +id, readOn, loggedAt: string
+  +chapter: number
+  +reviewedAt, sticker: string | null
+}
+class AdminLog <<interface>> {
+  +bookId, bookTitle: string
+  +note: string | null
+  +answers: {position, question, text}[]
+}
+class "rewards.service.ts" as Rewards <<module>> {
+  +giveReward(db, householdId, bookId, text, note): Reward
+}
+class Problem {
+  +status: number
+  +type: string
+  +extra: Record<string, unknown>
+}
+AdminLogSummary <|-- AdminLog
+Router ..> Service : calls
+Router ..> Rewards : calls
+Service ..> Problem : throws
+Rewards ..> Problem : throws
+Service ..> AdminUser
+Service ..> AdminBook
+Service ..> AdminLog
+@enduml

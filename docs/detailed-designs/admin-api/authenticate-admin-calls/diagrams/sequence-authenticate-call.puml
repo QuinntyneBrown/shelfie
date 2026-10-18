@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — An admin call passes audit, rate limit, token and scope checks
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router and middleware)" #D1FADF
+  participant "adminAudit" as audit
+  participant "adminRateLimit" as rate
+  participant "requireAdminToken" as auth
+  participant "requireScope" as scope
+  participant "route handler" as handler
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+actor -> client : Any command
+client -> audit : GET|POST|PUT|PATCH|DELETE /api/admin/v1/...\nAuthorization: Bearer shfa_...
+audit -> audit : Register res.on('finish')
+audit -> rate : next()
+alt 61st call from this source in the minute
+  rate --> client : 429 too-many-requests, Retry-After (L2-051)
+else within the limit
+  rate -> auth : next()
+  auth -> db : SELECT admin_token WHERE token_hash = sha256(bearer)
+  db --> auth : row or none
+  alt no header / no row
+    auth --> client : 401 token-missing / token-invalid (L2-050)
+  else revoked_at set
+    auth --> client : 401 token-revoked
+  else expires_at passed
+    auth --> client : 401 token-expired, expiresAt
+  else token valid
+    auth -> db : UPDATE admin_token SET last_used_at = now
+    auth -> scope : next() with res.locals.adminToken
+    alt write route and token lacks write
+      scope --> client : 403 scope-missing (L2-050)
+    else scope present
+      scope -> handler : next()
+      handler --> client : 2xx JSON, Cache-Control: no-store
+    end
+  end
+end
+audit -> db : INSERT admin_audit (at, token_id, method, route,\ntarget_id, dry_run, status, request_id) (L2-052)
+note over audit
+  No body, token, hash, password,
+  answer, note or reward text
+  is ever written (L2-052)
+end note
+@enduml

@@ -72,6 +72,7 @@ shelfie/
 │   ├── mocks/
 │   ├── design-system/
 │   ├── detailed-designs/   # {subsystem}/{feature}/
+│   ├── adr/                # architecture decision records, NNNN-title.md
 │   └── estimates/
 ├── apps/
 │   ├── web/                # Angular workspace
@@ -81,7 +82,10 @@ shelfie/
 │   │       ├── <feature>/  # one library per area: sign-in, shelf, books,
 │   │       │               #   log-chapter, review, settings
 │   │       └── shelfie/    # application: shell, routing, composition only
-│   └── api/                # Node backend
+│   ├── api/                # Node backend (web API and admin API)
+│   └── admin-cli/          # .NET global tool shelfie-admin (see docs/adr/0003)
+│       ├── src/ShelfieAdmin/
+│       └── tests/ShelfieAdmin.Tests/   # runs the real tool against a local API
 ├── e2e/
 │   ├── pages/              # Playwright page objects, one per screen
 │   └── tests/              # acceptance tests with "Traces to: L2-xxx" header

@@ -1,0 +1,300 @@
+openapi: 3.1.0
+info:
+  title: Shelfie admin API
+  version: 1.0.0
+  description: >-
+    The operator's API, called only by the shelfie-admin CLI (docs/specs/L2.md, L2-049 to L2-063).
+    Every call needs an admin token as a bearer token; every call is rate limited and audit logged.
+    Write endpoints accept ?dryRun=true, which validates and applies the change in a transaction that
+    is rolled back, and answer with what would have changed.
+servers:
+  - url: https://shelfie.kids/api/admin/v1
+  - url: http://localhost:3000/api/admin/v1
+security:
+  - adminToken: []
+paths:
+  /whoami:
+    get:
+      summary: The token making the call
+      description: Scope read.
+      responses:
+        '200':
+          description: The token
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Token' }
+        default: { $ref: '#/components/responses/Problem' }
+  /users:
+    get:
+      summary: Every profile in every household
+      description: Scope read.
+      responses:
+        '200':
+          description: Profiles ordered by household, then role (parents first), then name
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/User' } }
+        default: { $ref: '#/components/responses/Problem' }
+  /users/{id}/password:
+    put:
+      summary: Set a new password for a parent and end all of their sessions
+      description: Scope write. Destructive.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password: { type: string, minLength: 8, maxLength: 200 }
+      responses:
+        '200':
+          description: The password was (or would be) replaced
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PasswordReset' }
+        default: { $ref: '#/components/responses/Problem' }
+  /books:
+    get:
+      summary: Every book in every household with progress and reward
+      description: Scope read.
+      responses:
+        '200':
+          description: Books ordered by household, then title
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Book' } }
+        default: { $ref: '#/components/responses/Problem' }
+  /books/{id}/logs:
+    get:
+      summary: The logged chapters of one book
+      description: Scope read.
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Logs in chapter order
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/LogSummary' } }
+        default: { $ref: '#/components/responses/Problem' }
+  /books/{id}/finish:
+    post:
+      summary: Mark a book finished now
+      description: Scope write.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      responses:
+        '200':
+          description: The book was (or would be) marked finished
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FinishedBook' }
+        default: { $ref: '#/components/responses/Problem' }
+  /books/{id}/reward:
+    post:
+      summary: Give the reward for a finished book
+      description: Scope write. Same rules as the web app (L2-017).
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: { type: string, minLength: 1, maxLength: 100 }
+                note: { type: string, maxLength: 300 }
+      responses:
+        '201':
+          description: The reward was (or would be) given
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reward' }
+        default: { $ref: '#/components/responses/Problem' }
+  /logs/{id}:
+    get:
+      summary: One logged chapter with its answers and review
+      description: Scope read.
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: The log
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Log' }
+        default: { $ref: '#/components/responses/Problem' }
+    patch:
+      summary: Correct the day a chapter was read
+      description: Scope write.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [readOn]
+              properties:
+                readOn: { type: string, format: date }
+      responses:
+        '200':
+          description: The day was (or would be) changed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CorrectedLog' }
+        default: { $ref: '#/components/responses/Problem' }
+    delete:
+      summary: Delete the newest logged chapter of a book and its answers
+      description: Scope write. Destructive.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      responses:
+        '200':
+          description: The log was (or would be) deleted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeletedLog' }
+        default: { $ref: '#/components/responses/Problem' }
+components:
+  securitySchemes:
+    adminToken:
+      type: http
+      scheme: bearer
+      description: An admin token, shfa_ followed by 43 base64url characters (L2-049).
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+    DryRun:
+      name: dryRun
+      in: query
+      required: false
+      schema: { type: boolean, default: false }
+  responses:
+    Problem:
+      description: >-
+        401 token-missing, token-invalid, token-expired (with expiresAt) or token-revoked; 403 scope-missing;
+        404 not-found; 400 validation (with errors) or a rule type such as future-date, log-not-latest,
+        book-rewarded, not-a-parent, book-already-finished, book-not-finished; 409 reward-exists;
+        429 too-many-requests (with a Retry-After header); 500 about:blank.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      required: [type, requestId]
+      properties:
+        type: { type: string }
+        requestId: { type: string, pattern: '^SHF-[0-9A-F]{4}$' }
+        expiresAt: { type: string, format: date-time }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
+    Token:
+      type: object
+      required: [id, name, scopes, expiresAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        scopes: { type: array, items: { enum: [read, write] } }
+        expiresAt: { type: string, format: date-time }
+    User:
+      type: object
+      required: [id, householdId, role, name, email]
+      properties:
+        id: { type: string }
+        householdId: { type: string }
+        role: { enum: [reader, parent] }
+        name: { type: string }
+        email: { type: [string, 'null'] }
+    PasswordReset:
+      type: object
+      required: [id, name, sessionsEnded, dryRun]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        sessionsEnded: { type: integer }
+        dryRun: { type: boolean }
+    Book:
+      type: object
+      required: [id, householdId, title, chaptersLogged, chapterCount, finishedAt, reward]
+      properties:
+        id: { type: string }
+        householdId: { type: string }
+        title: { type: string }
+        chaptersLogged: { type: integer }
+        chapterCount: { type: integer }
+        finishedAt: { type: [string, 'null'], format: date-time }
+        reward: { type: [string, 'null'] }
+    FinishedBook:
+      type: object
+      required: [id, title, finishedAt, dryRun]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        finishedAt: { type: string, format: date-time }
+        dryRun: { type: boolean }
+    Reward:
+      type: object
+      required: [bookId, text, note, givenAt, dryRun]
+      properties:
+        bookId: { type: string }
+        text: { type: string }
+        note: { type: [string, 'null'] }
+        givenAt: { type: string, format: date-time }
+        dryRun: { type: boolean }
+    LogSummary:
+      type: object
+      required: [id, chapter, readOn, loggedAt, reviewedAt, sticker]
+      properties:
+        id: { type: string }
+        chapter: { type: integer }
+        readOn: { type: string, format: date }
+        loggedAt: { type: string, format: date-time }
+        reviewedAt: { type: [string, 'null'], format: date-time }
+        sticker: { type: [string, 'null'] }
+    Log:
+      allOf:
+        - $ref: '#/components/schemas/LogSummary'
+        - type: object
+          required: [bookId, bookTitle, note, answers]
+          properties:
+            bookId: { type: string }
+            bookTitle: { type: string }
+            note: { type: [string, 'null'] }
+            answers:
+              type: array
+              items:
+                type: object
+                required: [position, question, text]
+                properties:
+                  position: { type: integer }
+                  question: { type: string }
+                  text: { type: string }
+    CorrectedLog:
+      type: object
+      required: [id, bookTitle, chapter, previousReadOn, readOn, dryRun]
+      properties:
+        id: { type: string }
+        bookTitle: { type: string }
+        chapter: { type: integer }
+        previousReadOn: { type: string, format: date }
+        readOn: { type: string, format: date }
+        dryRun: { type: boolean }
+    DeletedLog:
+      type: object
+      required: [id, bookTitle, chapter, answersDeleted, dryRun]
+      properties:
+        id: { type: string }
+        bookTitle: { type: string }
+        chapter: { type: integer }
+        answersDeleted: { type: integer }
+        dryRun: { type: boolean }

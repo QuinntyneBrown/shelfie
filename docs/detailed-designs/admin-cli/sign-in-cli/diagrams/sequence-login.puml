@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — The operator signs the CLI in with a token
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "AuthCommands\nlogin" as login
+  participant "Prompt" as prompt
+  participant "AdminClient" as client
+  participant "CredentialStore" as store
+end box
+box "Frontend — Operator machine" #E0F2FE
+  database "OS credential store" as os
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "/api/admin/v1/whoami" as api
+end box
+actor -> login : shelfie-admin login [~--api-url URL]
+login -> login : Target.Resolve: https required unless localhost (L2-054)
+login -> prompt : Secret("Admin token")
+prompt --> actor : "Admin token: " (no echo)
+actor -> prompt : Paste shfa_...
+prompt --> login : token
+login -> client : GetAsync("whoami") with Bearer token
+client -> api : GET /api/admin/v1/whoami
+alt token refused
+  api --> client : 401 token-invalid | token-expired | token-revoked
+  client --> login : AdminApiException
+  login --> actor : stderr reason; exit 2; nothing stored (L2-055)
+else accepted
+  api --> client : 200 {id, name, scopes, expiresAt}
+  login -> store : Save(baseUrl, token)
+  store -> os : CredWriteW | security -i | secret-tool store (token on stdin)
+  login --> actor : "Signed in to URL as laptop (read, write) until ..." ; exit 0
+end
+@enduml

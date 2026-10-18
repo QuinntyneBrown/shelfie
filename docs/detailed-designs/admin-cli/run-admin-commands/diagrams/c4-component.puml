@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run admin commands
+
+Person(op, "Operator", "Runs shelfie-admin")
+Container_Boundary(cli, "shelfie-admin") {
+  Component(program, "Program", "System.CommandLine RootCommand", "users, books, logs groups")
+  Component(query, "QueryCommands", "users list, books list, logs list, logs show", "Read commands")
+  Component(write, "WriteCommands", "users reset-password, logs correct, logs delete, books finish, books reward", "Write commands with ~--dry-run and ~--yes")
+  Component(runner, "Cli", "Static class", "Token, target, failures and exit codes")
+  Component(prompt, "Prompt", "Static class", "Hidden password entry and Continue? [y/N]")
+  Component(output, "Output", "Static class", "Tables, key-value lists, raw JSON")
+  Component(client, "AdminClient", "HttpClient", "Calls /api/admin/v1")
+}
+Container(api, "Shelfie API", "Node 24", "Admin endpoints")
+Rel(op, program, "Runs")
+Rel(program, query, "Dispatches to")
+Rel(program, write, "Dispatches to")
+Rel(query, runner, "Runs inside")
+Rel(write, runner, "Runs inside")
+Rel(write, prompt, "Asks with")
+Rel(query, output, "Prints with")
+Rel(write, output, "Prints with")
+Rel(query, client, "GET")
+Rel(write, client, "PUT, PATCH, POST, DELETE with dryRun")
+Rel(client, api, "Calls", "HTTPS JSON")
+@enduml

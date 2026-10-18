@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — A query command prints a table or JSON
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend — shelfie-admin CLI" #E0F2FE
+  participant "QueryCommands\nlogs show" as cmd
+  participant "AdminClient" as client
+  participant "Output" as output
+end box
+box "Backend — Shelfie API (admin router)" #D1FADF
+  participant "GET /logs/:id" as api
+end box
+actor -> cmd : shelfie-admin logs show b-lion-c3 [~--json]
+cmd -> client : GetAsync("logs/b-lion-c3")
+client -> api : GET /api/admin/v1/logs/b-lion-c3
+alt unknown id
+  api --> client : 404 not-found, requestId
+  client --> cmd : AdminApiException
+  cmd --> actor : stderr "Not found. (SHF-....)" exit 1 (L2-058)
+else found
+  api --> client : 200 {bookTitle, chapter, readOn, reviewedAt, sticker, note, answers[]}
+  alt ~--json
+    cmd -> output : Json(raw)
+    output --> actor : the API JSON, nothing else on stdout (L2-063)
+  else
+    cmd -> output : Fields(book, chapter, read on, review, note)\nthen one question and answer per position
+    output --> actor : key-value list (L2-058)
+  end
+end
+@enduml

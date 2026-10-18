@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Serve admin data
+
+Container(cli, "shelfie-admin", ".NET 10", "Query and write commands")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "adminRouter", "admin.router.ts", "Validates with zod, applies scope, wraps writes in a transaction")
+  Component(tx, "transaction", "admin.router.ts", "BEGIN; run; COMMIT, or ROLLBACK when dryRun")
+  Component(service, "admin.service.ts", "Module", "listUsers, listBooks, listLogs, getLog, resetParentPassword, correctLog, deleteLog, finishBook")
+  Component(reward, "giveReward", "rewards.service.ts", "Existing reward rule (L2-017)")
+  Component(secret, "hashSecret", "secret.ts", "argon2id")
+  ComponentDb(db, "Shelfie database", "PostgreSQL", "profile, session, book, chapter_log, answer, reward")
+}
+Rel(cli, router, "Calls", "HTTPS JSON")
+Rel(router, tx, "Writes run inside")
+Rel(tx, service, "Calls")
+Rel(router, service, "Queries call")
+Rel(tx, reward, "Calls for POST /books/:id/reward")
+Rel(service, secret, "Hashes new passwords with")
+Rel(service, db, "Prepared statements")
+@enduml

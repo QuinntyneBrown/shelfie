@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Working agreement for contributors in `AGENTS.md`.
 - Agent skills for requirements, mocks, design system, detailed designs and estimates.
 - Shelfie favicon: three pastel books on a shelf on the violet brand tile, replacing the Angular default.
+- `shelfie-admin`, a .NET global tool in `apps/admin-cli` for the operator to query and correct production data, and its admin API under `/api/admin/v1` with scoped, expiring, revocable tokens, a rate limit and an audit trail (L1-016, L1-017; `docs/adr/`).
 
 ### Fixed
 

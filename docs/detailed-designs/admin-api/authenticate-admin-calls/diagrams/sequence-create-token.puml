@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — The operator creates an admin token
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Backend — Shelfie VM (admin-token script)" #D1FADF
+  participant "admin-token.ts\nmain" as script
+end box
+box "Backend — Shelfie API (token lifecycle)" #ECFDF3
+  participant "createAdminToken" as create
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+actor -> script : ssh; npm run admin-token -w apps/api --\ncreate ~--name laptop ~--scopes read,write ~--days 30
+script -> script : Check name 1-40, scopes read|read,write, days 1-90 (L2-049)
+alt an option is invalid
+  script --> actor : Message naming the option; exit 1; nothing stored
+else options valid
+  script -> create : createAdminToken(db, {name, scopes, days})
+  create -> create : token = "shfa_" + base64url(32 random bytes)
+  create -> db : INSERT admin_token (id, name, sha256(token), scopes, created_at, expires_at)
+  db --> create : ok
+  create --> script : {id, token, expiresAt}
+  script --> actor : Print the token once, with id and expiry (L2-049)
+end
+@enduml

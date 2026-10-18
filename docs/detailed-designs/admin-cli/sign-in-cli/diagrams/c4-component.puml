@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in the CLI
+
+Person(op, "Operator", "Runs shelfie-admin")
+Container_Boundary(cli, "shelfie-admin") {
+  Component(program, "Program", "System.CommandLine RootCommand", "Global ~--api-url and ~--json, ~--help, ~--version")
+  Component(auth, "AuthCommands", "login, logout, whoami", "Sign-in commands")
+  Component(runner, "Cli", "Static class", "Resolves the target and token, maps failures to messages and exit codes")
+  Component(target, "Target", "Record", "Base URL from ~--api-url, SHELFIE_ADMIN_URL or https://shelfie.kids")
+  Component(prompt, "Prompt", "Static class", "Hidden input and confirmation")
+  Component(store, "CredentialStore", "Static class", "Save, Load, Delete per OS")
+  Component(client, "AdminClient", "HttpClient", "Bearer calls, problem documents to AdminApiException")
+}
+ContainerDb(os, "OS credential store", "Credential Manager, Keychain, Secret Service", "Entry per base URL")
+Container(api, "Shelfie API", "Node 24", "/api/admin/v1/whoami")
+Rel(op, program, "Runs")
+Rel(program, auth, "Dispatches to")
+Rel(auth, runner, "Runs inside")
+Rel(runner, target, "Resolves")
+Rel(auth, prompt, "Reads the token with")
+Rel(auth, store, "Saves, loads, deletes the token")
+Rel(store, os, "CredWriteW, security -i, secret-tool")
+Rel(auth, client, "Checks the token with")
+Rel(client, api, "GET whoami", "HTTPS")
+@enduml
