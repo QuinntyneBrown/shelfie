@@ -32,6 +32,10 @@ export class ShellPage {
     return this.accountMenuButton(name).locator('img');
   }
 
+  accountPhotoUrl(name: string) {
+    return this.accountPhoto(name).getAttribute('src');
+  }
+
   /** Whether the account photo has loaded and has pixels to show. */
   async accountPhotoLoaded(name: string) {
     return this.accountPhoto(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);

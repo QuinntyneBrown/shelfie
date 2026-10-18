@@ -9,4 +9,8 @@ export class ProfilePhotoApi {
   upload(file: File) {
     return this.api.put<{ photo: string }>('/profile/photo', file);
   }
+
+  remove() {
+    return this.api.delete('/profile/photo');
+  }
 }

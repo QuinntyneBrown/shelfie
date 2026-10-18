@@ -24,6 +24,15 @@ export class ProfilePhotoDialog {
     return this.dialog().getByRole('status').filter({ hasText: 'Looking great' });
   }
 
+  async remove() {
+    await this.dialog().getByRole('button', { name: 'Remove photo' }).click();
+  }
+
+  /** The bytes the API serves at a photo URL, as the signed-in person. */
+  async download(url: string) {
+    return (await this.page.request.get(url)).body();
+  }
+
   async done() {
     await this.dialog().getByRole('button', { name: 'Done' }).click();
   }

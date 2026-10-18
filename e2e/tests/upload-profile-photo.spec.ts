@@ -22,3 +22,45 @@ test('Given Dad without a photo, when he adds one in Settings, then he is told i
   await expect(settings.ownPhoto()).toBeVisible();
   await expect(settings.photoButton()).toHaveText('Change photo');
 });
+
+test('Given Dad has a photo, when he chooses another, then the new one replaces it everywhere and the old one is no longer served', async ({ page }) => {
+  await signInAsDad(page);
+  const dialog = new ProfilePhotoDialog(page);
+  await dialog.uploadViaApi(fixture('dad.jpg'));
+  const settings = new SettingsPage(page);
+  const shell = new ShellPage(page);
+  await settings.open();
+  const before = (await shell.accountPhotoUrl('Dad'))!;
+  const oldPhoto = await dialog.download(before);
+
+  await settings.openPhotoDialog();
+  await dialog.choose(fixture('nia.jpg'));
+  await expect(dialog.success()).toBeVisible();
+  await dialog.done();
+
+  await expect(shell.accountPhoto('Dad')).not.toHaveAttribute('src', before);
+  const after = (await shell.accountPhotoUrl('Dad'))!;
+  expect(await dialog.download(after)).not.toEqual(oldPhoto);
+  expect(await dialog.download(before)).not.toEqual(oldPhoto);
+});
+
+test('Given Dad has a photo, when he removes it, then his initial comes back in the top bar and Settings and stays after a reload', async ({ page }) => {
+  await signInAsDad(page);
+  await new ProfilePhotoDialog(page).uploadViaApi(fixture('dad.jpg'));
+  const settings = new SettingsPage(page);
+  const dialog = new ProfilePhotoDialog(page);
+  const shell = new ShellPage(page);
+  await settings.open();
+
+  await settings.openPhotoDialog();
+  await dialog.remove();
+  await dialog.done();
+
+  await expect(shell.accountPhoto('Dad')).toHaveCount(0);
+  await expect(shell.accountMenuButton('Dad')).toHaveText('D');
+  await expect(settings.ownPhoto()).toHaveCount(0);
+  await expect(settings.photoButton()).toHaveText('Add a photo');
+  await page.reload();
+  await expect(shell.accountMenuButton('Dad')).toHaveText('D');
+  await expect(shell.accountPhoto('Dad')).toHaveCount(0);
+});

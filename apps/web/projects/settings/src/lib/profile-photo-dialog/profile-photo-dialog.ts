@@ -43,6 +43,13 @@ export class ProfilePhotoDialog {
     this.uploaded.set(done);
   }
 
+  protected async remove() {
+    await this.run({ title: 'Your photo wasn’t removed', retry: () => this.remove() }, async () => {
+      await this.api.remove();
+      this.session.update({ photo: null });
+    });
+  }
+
   /** Runs one request with the busy state; says whether it worked. */
   private async run(failure: { title: string; retry: () => void }, work: () => Promise<void>) {
     if (this.busy()) return false;
