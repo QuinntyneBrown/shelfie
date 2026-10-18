@@ -99,7 +99,7 @@
             novalidate
           >
             <h2 id="feedback-title" class="section-title">Your feedback</h2>
-            @if (advice()) {
+            @if (advice(); as advice) {
               @if (weakCount(); as count) {
                 <sh-banner
                   severity="warning"
@@ -115,6 +115,24 @@
                   message="Nothing to flag. Only you can see this."
                 />
               }
+              <sh-banner severity="info" title="Suggested note" [message]="advice.draft">
+                @if (noteHasWords()) {
+                  <div id="draft-why">
+                    Your note already has words in it, so the draft won’t replace them.
+                  </div>
+                }
+                <div class="alert__actions">
+                  <button
+                    class="btn btn--sm"
+                    type="button"
+                    [disabled]="noteHasWords()"
+                    [attr.aria-describedby]="noteHasWords() ? 'draft-why' : null"
+                    (click)="useDraft()"
+                  >
+                    Use draft
+                  </button>
+                </div>
+              </sh-banner>
             } @else {
               <div class="assist">
                 <div>

@@ -1,7 +1,8 @@
 // Traces to: L2-049, L2-050, L2-051, L2-052, L2-053
 import { test, expect } from '../support/test';
 import { holdAssistant } from '../support/assistant';
-import { signInAsDad } from '../support/signed-in';
+import { signInAsDad, signInAsNia } from '../support/signed-in';
+import { ChapterPage } from '../pages/chapter.page';
 import { ReviewChapterPage } from '../pages/review-chapter.page';
 
 test('Given a pending chapter, when Dad opens it, then Help me review is offered and nothing is sent to the assistant until he presses it', async ({ page }) => {
@@ -42,4 +43,47 @@ test('Given answers that show she understood, when Dad asks for help, then nothi
 
   await expect(chapter.assistSummary()).toContainText('Every answer looks good');
   await expect(chapter.flags()).toHaveCount(0);
+});
+
+const DRAFT = 'Thank you for telling me about Chapter 11! What was your favourite part?';
+
+test('Given the assistant’s advice, when Dad uses the draft, edits it, picks a sticker and sends, then Nia sees only his sticker and note, and no flags', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c11');
+  await chapter.askForHelp();
+
+  await expect(chapter.suggestedNote()).toContainText(DRAFT);
+  await expect(chapter.noteField()).toHaveValue('');
+  await chapter.useDraft();
+  await expect(chapter.noteField()).toHaveValue(DRAFT);
+  await chapter.noteField().fill(`${DRAFT} Love, Dad`);
+  await chapter.pickSticker('Wise owl');
+  await chapter.send();
+  await expect(chapter.sentHeading()).toBeVisible();
+
+  await page.context().clearCookies();
+  await signInAsNia(page);
+  const reader = new ChapterPage(page);
+  await reader.open('b-lion-c11');
+  await expect(reader.feedback()).toContainText('Wise owl');
+  await expect(reader.feedback()).toContainText(`${DRAFT} Love, Dad`);
+  await expect(page.getByText('Talk about this')).toHaveCount(0);
+  await expect(page.getByText('Only a few words')).toHaveCount(0);
+});
+
+test('Given Dad has typed a note, when the assistant suggests one, then Use draft is off and says why, and his note is kept', async ({ page }) => {
+  await signInAsDad(page);
+  const chapter = new ReviewChapterPage(page);
+  await chapter.open('b-lion-c11');
+  await chapter.noteField().fill('My own words.');
+  await chapter.askForHelp();
+
+  await expect(chapter.useDraftButton()).toBeDisabled();
+  await expect(chapter.suggestedNote()).toContainText('Your note already has words in it, so the draft won’t replace them.');
+  await expect(chapter.noteField()).toHaveValue('My own words.');
+
+  await chapter.noteField().fill('');
+  await chapter.useDraft();
+  await expect(chapter.noteField()).toHaveValue(DRAFT);
 });

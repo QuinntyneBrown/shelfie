@@ -42,6 +42,8 @@ export class ReviewChapterPage {
   protected readonly weakCount = computed(
     () => this.advice()?.answers.filter((a) => a.verdict === 'weak').length ?? 0,
   );
+  /** "Use draft" never replaces words the parent has typed. */
+  protected readonly noteHasWords = computed(() => this.note().trim() !== '');
   protected readonly givenSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.chapter()?.review?.sticker),
   );
@@ -82,6 +84,11 @@ export class ReviewChapterPage {
     this.assist.set('busy');
     this.advice.set(await this.api.assist(chapter.id));
     this.assist.set('done');
+  }
+
+  protected useDraft() {
+    const draft = this.advice()?.draft;
+    if (draft && !this.noteHasWords()) this.note.set(draft);
   }
 
   protected async send() {

@@ -78,6 +78,19 @@ export class ReviewChapterPage {
     return this.page.getByRole('status').filter({ hasText: /to talk about|Every answer looks good/ });
   }
 
+  /** The assistant's suggested note, with its Use draft button. */
+  suggestedNote() {
+    return this.page.getByRole('status').filter({ hasText: 'Suggested note' });
+  }
+
+  useDraftButton() {
+    return this.page.getByRole('button', { name: 'Use draft' });
+  }
+
+  async useDraft() {
+    await this.useDraftButton().click();
+  }
+
   private assists = 0;
 
   watchAssists() {
