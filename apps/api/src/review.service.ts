@@ -1,3 +1,4 @@
+import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, run, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { streakFor } from './streak.ts';
@@ -8,6 +9,7 @@ export interface QueueItem {
   bookTitle: string;
   coverColor: string;
   coverSticker: string;
+  coverImage: string | null;
   chapterNumber: number;
   readOn: string;
 }
@@ -17,6 +19,7 @@ export interface FinishedBook {
   title: string;
   coverColor: string;
   coverSticker: string;
+  coverImage: string | null;
   chapterCount: number;
   finishedOn: string;
 }
@@ -64,8 +67,8 @@ export function pendingChapterLogs(db: Db, householdId: string): Promise<QueueIt
   return all<QueueItem>(
     db,
     `SELECT c.id AS "chapterLogId", b.id AS "bookId", b.title AS "bookTitle", b.cover_color AS "coverColor", b.sticker AS "coverSticker",
-            c.chapter_number AS "chapterNumber", c.read_on AS "readOn"
-       FROM chapter_log c JOIN book b ON b.id = c.book_id
+            ${COVER_IMAGE_COLUMN} AS "coverImage", c.chapter_number AS "chapterNumber", c.read_on AS "readOn"
+       FROM chapter_log c JOIN book b ON b.id = c.book_id LEFT JOIN book_cover bc ON bc.book_id = b.id
       WHERE b.household_id = $1 AND c.reviewed_at IS NULL
       ORDER BY c.logged_at DESC, c.chapter_number DESC`,
     [householdId],
@@ -78,8 +81,9 @@ export async function overview(db: Db, householdId: string, now = new Date()): P
   const reader = await get<{ name: string }>(db, "SELECT name FROM profile WHERE household_id = $1 AND role = 'reader' ORDER BY name", [householdId]);
   const finished = await all<Omit<FinishedBook, 'finishedOn'> & { finished_at: string }>(
     db,
-    `SELECT b.id AS "bookId", b.title, b.cover_color AS "coverColor", b.sticker AS "coverSticker", b.chapter_count AS "chapterCount", b.finished_at
-       FROM book b LEFT JOIN reward r ON r.book_id = b.id
+    `SELECT b.id AS "bookId", b.title, b.cover_color AS "coverColor", b.sticker AS "coverSticker", ${COVER_IMAGE_COLUMN} AS "coverImage",
+            b.chapter_count AS "chapterCount", b.finished_at
+       FROM book b LEFT JOIN reward r ON r.book_id = b.id LEFT JOIN book_cover bc ON bc.book_id = b.id
       WHERE b.household_id = $1 AND b.finished_at IS NOT NULL AND r.book_id IS NULL
       ORDER BY b.finished_at DESC`,
     [householdId],
