@@ -11,7 +11,7 @@
 | [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 12 days | 86% |
 | [shell](shell.md) | 5 days | 96% |
-| [review](review.md) | 15 days | 79% |
+| [review](review.md) | 15 days | 77% |
 | [admin-api](admin-api.md) | 6 days | 100% |
 | [admin-cli](admin-cli.md) | 7 days | 100% |
 | [books](books.md) | 21 days | 100% |
