@@ -527,3 +527,6 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .photo-picker__body { flex: 1; min-width: 12rem; display: flex; flex-direction: column; gap: var(--space-2); }
 .photo-picker__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .photo-picker__actions .btn:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+/* Account trigger: a round button whose face is an avatar; the avatar gets the hover ring. */
+.avatar-trigger { display: inline-grid; padding: 0; border: 0; border-radius: var(--radius-full); background: none; cursor: pointer; }
+.avatar-trigger:hover .avatar, .avatar-trigger[data-state="hover"] .avatar { box-shadow: 0 0 0 var(--border-width-thick) var(--color-border-strong); }

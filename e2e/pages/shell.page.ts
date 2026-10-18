@@ -21,6 +21,21 @@ export class ShellPage {
     return this.page.getByRole('button', { name: `Account menu for ${name}` });
   }
 
+  /** The photo on the account menu button, when there is one. */
+  accountPhoto(name: string) {
+    return this.accountMenuButton(name).locator('img');
+  }
+
+  /** Whether the account photo has loaded and has pixels to show. */
+  async accountPhotoLoaded(name: string) {
+    return this.accountPhoto(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
+  /** Makes every photo request fail, as a dropped connection would. */
+  async breakPhotos() {
+    await this.page.route('**/api/photos/**', (route) => route.abort());
+  }
+
   /** Makes the page taller than the window, scrolls to the bottom, and returns how far the top bar sits from the window's top edge. */
   async topBarOffsetAfterScrolling() {
     return this.page.evaluate(() => {

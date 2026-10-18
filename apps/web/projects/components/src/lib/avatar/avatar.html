@@ -1,0 +1,4 @@
+{{ initial() }}
+@if (photo() && !broken()) {
+  <img class="avatar__img" [src]="photo()" alt="" (error)="broken.set(true)" />
+}
