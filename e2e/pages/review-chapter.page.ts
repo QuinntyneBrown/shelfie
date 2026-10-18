@@ -68,4 +68,11 @@ export class ReviewChapterPage {
   sendViaApi(chapterLogId: string, data: unknown) {
     return this.page.request.post(`/api/chapter-logs/${chapterLogId}/feedback`, { ...SAME_SITE, data });
   }
+
+  /** The space in pixels between the bottom of the top bar and the top of the breadcrumb. */
+  async breadcrumbGapBelowTopBar() {
+    const bar = await this.page.getByRole('banner').boundingBox();
+    const crumb = await this.page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('listitem').first().boundingBox();
+    return crumb!.y - (bar!.y + bar!.height);
+  }
 }
