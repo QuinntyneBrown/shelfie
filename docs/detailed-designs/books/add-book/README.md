@@ -4,7 +4,7 @@
 
 Shelfie is a web application that helps one child read books by logging each chapter she reads and answering short questions about it, while a parent in the same household reviews her answers and gives rewards. A **household** is the unit of tenancy: its parents and readers share one bookshelf.
 
-This feature puts a book on the shelf. A **book** is a title, an optional author, a **chapter count** (chapters are numbered, not titled, so the count is all the form asks about them) and a **cover**. Covers are made, not fetched: a cover is one of seven named pastel **cover colours** (Sage, Rose, Sky, Sun, Lilac, Mint, Peach) plus one of twelve named **stickers** (Lion, Robot, Dog, Books, Spider, Rabbit, Wizard, Rocket, Dragon, Tree, Elephant, Chocolate). There is no image upload and no online lookup.
+This feature puts a book on the shelf. A **book** is a title, an optional author, a **chapter count** (chapters are numbered, not titled, so the count is all the form asks about them) and a **cover**. Covers are made, not fetched: a cover is one of seven named pastel **cover colours** (Sage, Rose, Sky, Sun, Lilac, Mint, Peach) plus one of twelve named **stickers** (Lion, Robot, Dog, Books, Spider, Rabbit, Wizard, Rocket, Dragon, Tree, Elephant, Chocolate). There is no online lookup. An optional cover picture is added on this form too; see [upload-book-cover](../upload-book-cover/README.md).
 
 Either person in the household may add a book: the reader from the "Add a book" button on her shelf, the parent from the Books list. The same form serves both. A live **preview** shows the cover, title, author and chapter count as they are typed and picked. A new book has no logged chapters, so it appears on the shelf under "Up next".
 

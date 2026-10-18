@@ -1,0 +1,35 @@
+<sh-dialog heading="Your photo" [open]="open()" (closed)="busy() || closed.emit()">
+  @if (person(); as person) {
+    <div class="stack">
+      <p>
+        @if (person.role === 'reader') {
+          Pick a photo of you. It shows next to your name, so everyone knows it’s you! 📸
+        } @else {
+          It shows in the top bar and next to your name in Settings.
+        }
+      </p>
+      @if (uploaded()) {
+        <sh-banner [title]="'Looking great, ' + person.name + '!'" message="Your photo is on." />
+      }
+      @if (failure(); as failure) {
+        <sh-banner severity="danger" [title]="failure.title" message="Nothing changed. Check your connection and try again.">
+          <div class="alert__actions">
+            <button class="btn btn--sm" type="button" (click)="failure.retry()">Try again</button>
+          </div>
+        </sh-banner>
+      }
+      <sh-photo-picker
+        [name]="person.name"
+        [color]="person.color"
+        [photo]="person.photo"
+        [busy]="busy()"
+        [error]="error()"
+        (picked)="upload($event)"
+        (removed)="remove()"
+      />
+    </div>
+  }
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Done</button>
+  </div>
+</sh-dialog>

@@ -1,1 +1,6 @@
-<span class="cover" [class]="classes()" aria-hidden="true">{{ sticker() }}</span>
+<span class="cover" [class]="classes()" aria-hidden="true"
+  >{{ sticker() }}
+  @if (image() && !broken()) {
+    <img class="cover__img" [src]="image()" alt="" (error)="broken.set(true)" />
+  }
+</span>

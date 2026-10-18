@@ -2,7 +2,7 @@
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { SAME_SITE } from '../support/same-site';
-import { DAD } from '../support/accounts';
+import { DAD, NIA } from '../support/accounts';
 import { SignInPage } from '../pages/sign-in.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { LogChapterPage } from '../pages/log-chapter.page';
@@ -101,7 +101,8 @@ test('Given someone signs in on a browser that already had a session, then the o
   const sessionCookie = async () => (await page.context().cookies()).find((c) => c.name === 'shelfie_session')!;
   const first = await sessionCookie();
 
-  await signInAsNia(page);
+  const secondSignIn = await page.request.post('/api/auth/password', { ...SAME_SITE, data: { username: NIA.username, password: NIA.password, remember: true } });
+  expect(secondSignIn.ok()).toBe(true);
   const second = await sessionCookie();
   expect(second.value).not.toBe(first.value);
   expect(second.httpOnly && second.secure && second.sameSite === 'Strict').toBe(true);

@@ -130,7 +130,11 @@
         "error",
         "long"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-007",
+        "L2-047"
+      ]
     },
     {
       "id": "book",
@@ -142,11 +146,16 @@
         "loading",
         "error",
         "finished",
-        "edge"
+        "edge",
+        "picture"
       ],
       "not_applicable": {
         "empty": "A book always has at least one chapter row because the chapter count is required when the book is added."
-      }
+      },
+      "requirements": [
+        "L2-008",
+        "L2-047"
+      ]
     },
     {
       "id": "add-book",
@@ -157,13 +166,22 @@
         "default",
         "invalid",
         "submitting",
-        "error"
+        "error",
+        "picture",
+        "wrong-file",
+        "too-large"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
         "empty": "A single form; nothing to be empty.",
-        "success": "Success navigates to the new book and shows the toast in notifications/toast/success.html."
-      }
+        "success": "Success navigates to the new book and shows the toast in notifications/toast/success.html.",
+        "picture-failed": "The book is still added; the shelf shows a warning toast (notifications/toast/warning.html) saying its picture didn’t upload."
+      },
+      "requirements": [
+        "L2-009",
+        "L2-046",
+        "L2-048"
+      ]
     },
     {
       "id": "log-chapter",
@@ -241,7 +259,10 @@
         "empty",
         "error"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-047"
+      ]
     },
     {
       "id": "manage-book",
@@ -255,11 +276,20 @@
         "invalid",
         "submitting",
         "success",
-        "rewarded"
+        "rewarded",
+        "picture",
+        "uploading",
+        "picture-failed",
+        "wrong-file"
       ],
       "not_applicable": {
         "empty": "A book always has its three default questions and a chapter count, so the page is never empty."
-      }
+      },
+      "requirements": [
+        "L2-010",
+        "L2-046",
+        "L2-048"
+      ]
     },
     {
       "id": "settings",
@@ -272,7 +302,8 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "photo"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -281,7 +312,9 @@
         "L2-021",
         "L2-022",
         "L2-034",
-        "L2-036"
+        "L2-036",
+        "L2-042",
+        "L2-043"
       ]
     },
     {
@@ -386,7 +419,8 @@
       "title": "Add a reader",
       "opens_from": "settings",
       "requirements": [
-        "L2-036"
+        "L2-036",
+        "L2-043"
       ],
       "states": [
         "default",
@@ -394,7 +428,8 @@
         "busy",
         "invalid",
         "taken",
-        "failed"
+        "failed",
+        "photo"
       ],
       "not_applicable": {}
     },
@@ -422,15 +457,43 @@
       "opens_from": "shelf",
       "states": [
         "default",
-        "parent"
+        "parent",
+        "photo",
+        "parent-photo"
       ],
       "not_applicable": {
         "busy": "The menu only navigates; nothing is submitted.",
         "invalid": "The menu has no inputs."
       },
       "requirements": [
-        "L2-003"
+        "L2-003",
+        "L2-042",
+        "L2-043"
       ]
+    },
+    {
+      "id": "profile-photo",
+      "kind": "dialog",
+      "title": "Your photo",
+      "opens_from": "shelf",
+      "requirements": [
+        "L2-042",
+        "L2-044"
+      ],
+      "states": [
+        "default",
+        "parent",
+        "choosing",
+        "busy",
+        "success",
+        "photo",
+        "too-large",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {
+        "remove-confirmation": "Removing a photo takes effect at once and brings the letter back; choosing a photo again is one tap away, so no confirmation is asked."
+      }
     },
     {
       "id": "toast",

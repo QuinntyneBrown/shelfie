@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Upload a book cover picture
+
+Container(web, "Shelfie web", "Angular", "AddBookPage, ManageBookPage, sh-cover-picker; ShelfApi and BooksApi; sh-cover everywhere")
+Container_Boundary(api, "Shelfie API") {
+  Component(csrf, "csrfGuard", "Middleware", "403 cross-site for PUT and DELETE without X-Requested-With or from another origin")
+  Component(session, "requireSession, requireRole", "Middleware", "401 without a session; 403 for a reader removing a picture")
+  Component(router, "covers.router.ts", "Express Router", "PUT /api/books/:id/cover (raw body, 5 MB); DELETE /api/books/:id/cover; GET /api/books/:id/cover with ETag")
+  Component(service, "covers.service.ts", "Service", "processCover (320 x 480); saveCover; removeCover; readCover; COVER_IMAGE_COLUMN")
+  Component(images, "photos.service.ts", "Service", "processImage (sharp: type check, 40 MP limit, rotate, crop and resize, WebP), shared with profile photos")
+  Component(views, "books, shelf, chapters, review services", "Services", "Add coverImage to every book they return")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book_cover, book")
+}
+Rel(web, router, "PUT, DELETE, GET", "HTTPS")
+Rel(router, csrf, "Applies")
+Rel(router, session, "Applies")
+Rel(router, service, "processCover, saveCover, removeCover, readCover(householdId, bookId)")
+Rel(service, images, "processImage(bytes, 320, 480)")
+Rel(service, db, "Reads and writes", "SQL")
+Rel(views, db, "LEFT JOIN book_cover", "SQL")
+@enduml

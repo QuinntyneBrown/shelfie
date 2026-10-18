@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="settings">
 <meta name="mock:state" content="default">
-<meta name="mock:requirements" content="L2-021 L2-022 L2-034 L2-036">
+<meta name="mock:requirements" content="L2-021 L2-022 L2-034 L2-036 L2-042 L2-043">
 <meta name="description" content="Parents (invite), Readers (add, edit), your account, appearance.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
@@ -45,6 +45,7 @@
   </section>
   <section class="card stack" aria-labelledby="account-title">
     <h2 id="account-title" style="font: var(--text-h4);">Your account</h2>
+    <div class="cluster"><span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span><div class="stack" style="gap: var(--space-1);"><span class="field__label">Your photo</span><a class="btn btn--sm" href="../../dialogs/profile-photo/parent.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a photo</a></div></div>
     <div class="field"><label class="field__label" for="parent-name">Your name</label><input class="input" id="parent-name" type="text" required value="Dad" style="max-width: 16rem;"></div>
     <div class="field"><label class="field__label" for="username">Username</label><input class="input" id="username" type="text" value="marcus" readonly style="max-width: 16rem;"></div>
     <div class="field"><label class="field__label" for="email">E-mail address</label><input class="input" id="email" type="email" autocomplete="email" required value="marcus@example.com" style="max-width: 24rem;"></div>
@@ -76,7 +77,7 @@
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Settings</span>
-  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="photo.html">photo</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>

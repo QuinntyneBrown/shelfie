@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Upload or replace a photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent or reader" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "ProfilePhotoDialog\n+ sh-photo-picker" as dialog
+  participant "ProfilePhotoApi" as client
+  participant "SessionService" as session
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "photos.router.ts\n+ csrfGuard, requireSession" as router
+  participant "photos.service.ts\n(sharp)" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+person -> dialog : Choose a photo (or Choose another)
+dialog -> dialog : Picker checks type (JPEG, PNG, WebP) and size (5 MB)
+alt a check fails
+  dialog --> person : Show the type or size error; keep the current photo; send nothing (L2-044)
+else checks pass
+  dialog -> dialog : Set busy: spinner on preview and button; Done waits (L2-042)
+  dialog -> client : upload(file)
+  client -> router : PUT /api/profile/photo (raw body, X-Requested-With: Shelfie)
+  router -> router : Session required (401); CSRF (403); body over 5 MB → 413 photo-too-large
+  router -> service : processPhoto(bytes)
+  alt content not JPEG, PNG or WebP, or over 40 MP
+    service --> router : Problem 400 photo-type
+    router --> client : 400 {type: photo-type}
+    client --> dialog : ApiError
+    dialog --> person : Show "Shelfie can’t use that file…"; keep the current photo
+  else decoded
+    service -> service : rotate(); resize 256 x 256 cover; WebP q80; no metadata (L2-045)
+    service --> router : image
+    router -> service : savePhoto(session.profileId, image)
+    service -> db : INSERT … ON CONFLICT (profile_id) DO UPDATE image, etag
+    alt database or network failure
+      db --> service : error
+      router --> client : 500 problem {requestId}
+      client --> dialog : ApiError
+      dialog --> person : Show "Your photo didn’t upload" with Try again; keep the current photo
+    else saved
+      db --> service : ok
+      router --> client : 200 {photo: /api/photos/{id}?v={etag}}
+      client --> dialog : photo
+      dialog -> session : update({photo})
+      dialog --> person : "Looking great!"; preview and top bar show the new photo (L2-043)
+    end
+  end
+end
+@enduml

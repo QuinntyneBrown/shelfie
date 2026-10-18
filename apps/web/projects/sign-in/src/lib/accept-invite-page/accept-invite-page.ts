@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
+import { Avatar, Banner, Button, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
 import { AuthLayout } from '../auth-layout/auth-layout';
@@ -8,7 +8,7 @@ import { usernameProblem } from '../sign-up-page/sign-up-page';
 
 @Component({
   selector: 'sh-accept-invite-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Avatar, Banner, Button, RouterLink, TextField],
   templateUrl: './accept-invite-page.html',
   styleUrl: './accept-invite-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

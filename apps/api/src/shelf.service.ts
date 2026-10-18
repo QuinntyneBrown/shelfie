@@ -1,3 +1,4 @@
+import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, type Db } from './db.ts';
 import { streakFor } from './streak.ts';
 
@@ -8,6 +9,7 @@ export interface ShelfBook {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   nextChapter: number;
   lastLoggedAt: string | null;
@@ -19,6 +21,7 @@ export interface FinishedBook {
   title: string;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   finishedOn: string;
   reward: { text: string; givenOn: string } | null;
 }
@@ -47,6 +50,7 @@ interface BookRow {
   chapter_count: number;
   cover_color: string;
   sticker: string;
+  cover_image: string | null;
   created_at: string;
   finished_at: string | null;
   logged_count: number;
@@ -58,11 +62,11 @@ interface BookRow {
 export async function getShelf(db: Db, householdId: string): Promise<ShelfResponse> {
   const rows = await all<BookRow>(
     db,
-    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, b.created_at, b.finished_at,
+    `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image, b.created_at, b.finished_at,
             COUNT(c.id) AS logged_count, MAX(c.logged_at) AS last_logged_at,
             r.text AS reward_text, r.given_at AS reward_given_at
-       FROM book b LEFT JOIN chapter_log c ON c.book_id = b.id LEFT JOIN reward r ON r.book_id = b.id
-      WHERE b.household_id = $1 GROUP BY b.id, r.book_id`,
+       FROM book b LEFT JOIN chapter_log c ON c.book_id = b.id LEFT JOIN reward r ON r.book_id = b.id LEFT JOIN book_cover bc ON bc.book_id = b.id
+      WHERE b.household_id = $1 GROUP BY b.id, r.book_id, bc.book_id`,
     [householdId],
   );
 
@@ -78,6 +82,7 @@ export async function getShelf(db: Db, householdId: string): Promise<ShelfRespon
     chapterCount: r.chapter_count,
     coverColor: r.cover_color,
     sticker: r.sticker,
+    coverImage: r.cover_image,
     loggedCount: r.logged_count,
     nextChapter: r.logged_count + 1,
     lastLoggedAt: r.last_logged_at,
@@ -114,6 +119,7 @@ export async function getShelf(db: Db, householdId: string): Promise<ShelfRespon
         title: r.title,
         coverColor: r.cover_color,
         sticker: r.sticker,
+        coverImage: r.cover_image,
         finishedOn: dayOf(r.finished_at!),
         reward: r.reward_text ? { text: r.reward_text, givenOn: dayOf(r.reward_given_at!) } : null,
       })),

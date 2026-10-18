@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { get, run, type Db } from './db.ts';
+import { PHOTO_COLUMN } from './photos.service.ts';
 
 /** A session lasts this long after its last request. */
 export const SESSION_DAYS = 30;
@@ -13,6 +14,8 @@ export interface RequestSession {
   theme: string;
   householdId: string;
   role: 'reader' | 'parent';
+  /** The URL of the person's own photo, or null when they have none. */
+  photo: string | null;
 }
 
 export function readCookie(header: string | undefined, name: string): string | null {
@@ -30,8 +33,10 @@ export function requireSession(db: Db) {
     const row = id
       ? await get<RequestSession & { expiresAt: string }>(
           db,
-          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt"
-             FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = $1`,
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt",
+                  ${PHOTO_COLUMN}
+             FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id
+             LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,
           [id],
         )
       : undefined;

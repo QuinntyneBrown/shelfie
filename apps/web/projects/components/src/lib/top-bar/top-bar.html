@@ -25,11 +25,11 @@
   }
   <sh-menu
     [label]="'Account menu for ' + name()"
-    [triggerClass]="'avatar avatar--sm avatar--' + color()"
+    triggerClass="avatar-trigger"
     [header]="menuHeader()"
     [items]="menuItems()"
     (select)="menuSelect.emit($event)"
   >
-    {{ initial() }}
+    <sh-avatar [name]="name()" [color]="color()" [photo]="photo()" size="sm" />
   </sh-menu>
 </header>

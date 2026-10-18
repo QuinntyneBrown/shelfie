@@ -20,3 +20,6 @@
 .form-actions--between {
   justify-content: space-between;
 }
+.photo-row {
+  gap: var(--space-1);
+}

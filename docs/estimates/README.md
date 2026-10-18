@@ -1,16 +1,16 @@
 # Estimates
 
-- Overall effort: 63 days
-- Complete: 96%
+- Overall effort: 72 days
+- Complete: 97%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [sign-in](sign-in.md) | 14 days | 100% |
-| [settings](settings.md) | 12 days | 100% |
+| [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 12 days | 86% |
 | [shell](shell.md) | 5 days | 96% |
 | [review](review.md) | 6 days | 97% |
-| [books](books.md) | 8 days | 100% |
+| [books](books.md) | 12 days | 100% |
 | [reading-log](reading-log.md) | 6 days | 100% |
 
 ## Roadmap

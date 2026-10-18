@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { get, run, transaction, type Db } from './db.ts';
 import { takenFields } from './auth.service.ts';
+import { PHOTO_COLUMN } from './photos.service.ts';
 import { Problem } from './problem.ts';
 import { hashSecret } from './secret.ts';
 import type { ReaderView } from './settings.service.ts';
@@ -14,7 +15,7 @@ export interface ReaderInput {
 }
 
 async function readerView(db: Db, id: string): Promise<ReaderView> {
-  return (await get<ReaderView>(db, 'SELECT id, name, color, username FROM profile WHERE id = $1', [id]))!;
+  return (await get<ReaderView>(db, `SELECT p.id, p.name, p.color, p.username, ${PHOTO_COLUMN} FROM profile p LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE p.id = $1`, [id]))!;
 }
 
 /** Adds a reader to the household; the parent chooses her username and password. */

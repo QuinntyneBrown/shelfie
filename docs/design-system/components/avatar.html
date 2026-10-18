@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Avatar — Shelfie design system</title>
-<meta name="description" content="Avatars show who is signed in or being picked: Nia in rose, Dad in sky. Initials in a circle, three sizes, and a button form that opens the account menu.">
+<meta name="description" content="Avatars show who is signed in or being picked: Nia in rose, Dad in sky. Their own photo, or their initial in a circle; four sizes, and a button form that opens the account menu.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -53,12 +53,14 @@
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/feed.html">Activity feed</a></li>
       <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/photo-picker.html">Photo picker</a></li>
       <li><a href="../components/logo-mark.html">Logo mark</a></li>
       <li><a href="../components/badge.html">Badge</a></li>
       <li><a href="../components/chip.html">Chip</a></li>
       <li><a href="../components/streak.html">Streak</a></li>
       <li><a href="../components/stat.html">Stat</a></li>
       <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/cover-picker.html">Cover picker</a></li>
       <li><a href="../components/book-card.html">Book card</a></li>
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
@@ -90,7 +92,7 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Identity</p>
       <h1>Avatar</h1>
-      <p class="ds-lead">A circle with initials that stands for a person. Nia is "N" in rose, Dad is "D" in sky, everywhere: the top bar, the member rows in Settings and the accept-invite page.</p>
+      <p class="ds-lead">A circle that stands for a person: their own photo when they have one, otherwise their initial. Nia is "N" in rose, Dad is "D" in sky, everywhere: the top bar, the member rows in Settings and the accept-invite page.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;span&gt;</code> or <code>&lt;button&gt;</code></span></div>
       <ul class="ds-toc">
         <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
@@ -98,12 +100,13 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use an avatar wherever a screen is about one person in the household. There are no photos: each person has initials and a colour, set once, so a nine-year-old can tell at a glance whose screen she is on.</p>
+      <p>Use an avatar wherever a screen is about one person in the household. Each person has an initial and a colour, set once, and may add their own photo, so a nine-year-old can tell at a glance whose screen she is on. The photo covers the initial; the initial and colour stay underneath and show while the photo loads, if it fails, and when it is removed.</p>
       <ul>
         <li><b>Static</b> (<code>span.avatar</code>): decoration next to a name, as in the member rows in Settings and on the accept-invite page.</li>
         <li><b>Button</b> (<code>button.avatar</code>): the top-bar trigger for the <a href="menu.html">account menu</a>.</li>
         <li>The colour is chosen from the swatches in the add/edit-reader dialog.</li>
-        <li>The colour is chosen from the swatches in the add/edit-reader dialog.</li>
+        <li>The photo is chosen by the person themselves in the <a href="photo-picker.html">photo picker</a>.</li>
+        <li>In Angular, use <code>&lt;sh-avatar&gt;</code>; it renders both forms of content and drops a photo that fails to load.</li>
       </ul>
       <p>Avatars are not for books; books use a <a href="cover.html">cover</a>. Do not use them for status; use a <a href="badge.html">badge</a>.</p>
     </section>
@@ -113,10 +116,11 @@
         <figure class="ds-anatomy__figure">
           <span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span>
           <span class="ds-callout" style="left: 52%; top: 30%;" aria-hidden="true">1</span>
-          <span class="ds-callout" style="left: 40%; top: 72%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 40%; top: 72%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Initials</b><small>One capital in <code>--text-label</code>, dark <code>--color-fg-on-cover</code> on a person colour.</small></div></li>
+          <li><div><b>Photo</b> (optional)<small><code>img.avatar__img</code> over the initial, cropped to the circle with <code>object-fit: cover</code>, <code>alt=""</code>.</small></div></li>
           <li><div><b>Circle</b><small><code>--radius-full</code>, sized by <code>--avatar-size</code> (32, 40 or 56px), filled with the person's colour.</small></div></li>
         </ol>
       </div>
@@ -145,6 +149,16 @@
 &lt;span class="avatar avatar--peach" aria-hidden="true"&gt;K&lt;/span&gt;
 &lt;span class="avatar" aria-hidden="true"&gt;N&lt;/span&gt;</code></pre></details>
       </div>
+      <h3>Photo</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <span class="avatar avatar--rose" aria-hidden="true">N<img class="avatar__img" src="../assets/photos/nia.jpg" alt=""></span>
+          <span class="avatar avatar--sky" aria-hidden="true">D<img class="avatar__img" src="../assets/photos/dad.jpg" alt=""></span>
+          <span class="avatar avatar--rose" aria-hidden="true">N</span>
+        </div>
+        <div class="ds-example__caption"><span>Nia's and Dad's photos, and Nia without one. The image is decorative (<code>alt=""</code>) because the name sits beside it or the button names the person.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="avatar avatar--rose" aria-hidden="true"&gt;N&lt;img class="avatar__img" src="/api/photos/…" alt=""&gt;&lt;/span&gt;</code></pre></details>
+      </div>
       <h3>Button avatar</h3>
       <div class="ds-example">
         <div class="ds-example__canvas">
@@ -158,14 +172,16 @@
     </section>
 
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Small sits in the 64px top bar. Medium is the default and sits in the member rows in Settings. Large heads the accept-invite page, where the avatar confirms who is joining.</p>
+      <p>Small sits in the 64px top bar. Medium is the default and sits in the member rows in Settings. Large heads the accept-invite page, where the avatar confirms who is joining, and sits in Settings → Your account. Extra large is the photo picker preview.</p>
       <div class="ds-example">
         <div class="ds-example__canvas">
           <span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span>
           <span class="avatar avatar--rose" aria-hidden="true">N</span>
           <span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span>
+          <span class="avatar avatar--xl avatar--rose" aria-hidden="true">N</span>
+          <span class="avatar avatar--xl avatar--rose" aria-hidden="true">N<img class="avatar__img" src="../assets/photos/nia.jpg" alt=""></span>
         </div>
-        <div class="ds-example__caption"><span>Small · 32px, medium · 40px, large · 56px: <code>--size-avatar-sm/md/lg</code>.</span></div>
+        <div class="ds-example__caption"><span>Small · 32px, medium · 40px, large · 56px, extra large · 64px: <code>--size-avatar-sm/md/lg/xl</code>. Extra large is the preview in the photo picker.</span></div>
       </div>
     </section>
 
@@ -183,10 +199,20 @@
         <div data-theme="light"><div class="cluster"><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span><span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span><span class="avatar avatar--lg" aria-hidden="true">N</span><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" data-state="hover">D</button></div></div>
         <div data-theme="dark"><div class="cluster"><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span><span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span><span class="avatar avatar--lg" aria-hidden="true">N</span><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" data-state="hover">D</button></div></div>
       </div>
+      <h3>Photo states</h3>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Person</th><th scope="col">No photo</th><th scope="col">Loading</th><th scope="col">Loaded</th><th scope="col">Broken</th><th scope="col">Uploading</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Nia</th><td><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span></td><td><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span></td><td><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N<img class="avatar__img" src="../assets/photos/nia.jpg" alt=""></span></td><td><span class="avatar avatar--lg avatar--rose" aria-hidden="true">N</span></td><td><span class="avatar avatar--lg avatar--rose" aria-hidden="true" aria-busy="true">N<img class="avatar__img" src="../assets/photos/nia.jpg" alt=""></span></td></tr>
+        </tbody>
+      </table></div>
       <ul>
+        <li><b>Loading</b> shows the initial on the person's colour; the photo fades in over it (<code>--duration-base</code>, none under reduced motion). No skeleton, no layout shift: the circle is the same size either way.</li>
+        <li><b>Broken</b>: if the photo fails to load, <code>sh-avatar</code> removes the image and the initial stays. A broken-image icon is never shown.</li>
+        <li><b>Uploading</b> (<code>aria-busy="true"</code>, photo picker only) dims the photo and spins a ring over it.</li>
         <li><b>Hover</b> draws a 2px ring in <code>--color-border-strong</code> around the circle.</li>
         <li><b>Focus</b> uses the shared focus ring, outside the hover ring.</li>
-        <li>There is no disabled or loading avatar: the account menu is always available.</li>
+        <li>There is no disabled avatar: the account menu is always available.</li>
       </ul>
     </section>
 
@@ -203,7 +229,7 @@
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
-      <p>Static avatars are a <code>&lt;span aria-hidden="true"&gt;</code> next to the visible name. The account trigger is a native <code>&lt;button&gt;</code> following the APG menu button pattern: <code>aria-haspopup="menu"</code> and <code>aria-expanded</code>.</p>
+      <p>Static avatars are a <code>&lt;span aria-hidden="true"&gt;</code> next to the visible name; the photo inside is <code>&lt;img alt=""&gt;</code> for the same reason. Where an avatar stands alone as content (the photo picker preview) it is <code>role="img"</code> with a label such as "Your photo" or "No photo yet". The account trigger is a native <code>&lt;button&gt;</code> following the APG menu button pattern: <code>aria-haspopup="menu"</code> and <code>aria-expanded</code>.</p>
       <h3>Keyboard</h3>
       <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>Tab</kbd></td><td>Focuses the button avatar (last item in the top bar).</td></tr>
@@ -217,7 +243,7 @@
       <h3>Contrast</h3>
       <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Initials on rose</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sky</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sky" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on fallback</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Hover ring on top bar</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div><div class="ds-pair"><span>Focus ring on top bar</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Initials on rose</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sky</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sky" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sun</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sun" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on mint</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-mint" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on lilac</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-lilac" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on sage</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-sage" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on peach</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-peach" data-min="4.5"></span></div><div class="ds-pair"><span>Initials on fallback</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Hover ring on top bar</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div><div class="ds-pair"><span>Focus ring on top bar</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div></div></div></div>
       <h3>Motion</h3>
-      <p>None. The hover ring appears instantly.</p>
+      <p>The photo fades in once over <code>--duration-base</code>; reduced motion removes the fade. The hover ring appears instantly.</p>
       <h3>Touch</h3>
       <p>The 32px top-bar button clears the 24px minimum and has 16px of space on each side in the top bar. Use medium or larger wherever the avatar is the only target on a phone.</p>
     </section>
@@ -226,6 +252,7 @@
       <ul>
         <li>Initials: the first letter of the display name ("N" for Nia, "D" for Dad).</li>
         <li>One letter, capital.</li>
+        <li>A photo is the person's own choice. Never show a photo of one person on another's avatar, and never fetch one from outside Shelfie.</li>
         <li>The button's label says what it opens and for whom: "Account menu for Dad".</li>
       </ul>
     </section>
@@ -234,6 +261,8 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false">D</button></div><figcaption>Use <code>button.avatar</code>; the class resets the border and gives the hover ring.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" style="border: var(--space-0); cursor: pointer;">D</button></div><figcaption>Resetting the button inline on every page, as 58 mocks did; it also loses the hover ring.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="avatar avatar--rose" aria-hidden="true">N<img class="avatar__img" src="../assets/photos/nia.jpg" alt=""></span><span>Nia</span></div><figcaption>Keep the colour class with a photo: the colour shows while it loads and if it is removed.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="avatar" aria-hidden="true"><img class="avatar__img" src="../assets/photos/nia.jpg" alt="Nia"></span><span>Nia</span></div><figcaption>A photo with no initial and no colour underneath leaves an empty circle if it breaks, and <code>alt="Nia"</code> next to the name says her name twice.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><span class="avatar avatar--rose" aria-hidden="true">N</span><span>Nia</span></div><figcaption>Keep Nia rose everywhere so she always recognises her own screens.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><span class="avatar avatar--sky" aria-hidden="true">N</span><span>Nia</span></div><figcaption>Swapping colours between screens; sky means Dad.</figcaption></figure>
       </div>
@@ -259,7 +288,8 @@
           <tr><td>Fallback background</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
           <tr><td>Fallback initials</td><td><code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
           <tr><td>Hover ring</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
-          <tr><td>Size sm / md / lg</td><td><code>--size-avatar-sm/md/lg</code></td><td colspan="2"><span data-token="--size-avatar-sm"></span> / <span data-token="--size-avatar-md"></span> / <span data-token="--size-avatar-lg"></span></td></tr>
+          <tr><td>Size sm / md / lg / xl</td><td><code>--size-avatar-sm/md/lg/xl</code></td><td colspan="2"><span data-token="--size-avatar-sm"></span> / <span data-token="--size-avatar-md"></span> / <span data-token="--size-avatar-lg"></span> / <span data-token="--size-avatar-xl"></span></td></tr>
+          <tr><td>Photo fade-in</td><td><code>--duration-base</code></td><td colspan="2"><span data-token="--duration-base"></span></td></tr>
           <tr><td>Hover ring width</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
           <tr><td>Initials font</td><td><code>--text-label</code>; <code>--font-size-xs</code> small, <code>--font-size-lg</code> large</td><td colspan="2"><span data-token="--text-label"></span></td></tr>
         </tbody>
@@ -272,12 +302,21 @@
         aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false"&gt;N&lt;/button&gt;
 
 &lt;!-- Beside a name --&gt;
-&lt;span class="avatar avatar--lg avatar--sky" aria-hidden="true"&gt;D&lt;/span&gt;</code></pre>
+&lt;span class="avatar avatar--lg avatar--sky" aria-hidden="true"&gt;D&lt;/span&gt;
+
+&lt;!-- With a photo --&gt;
+&lt;span class="avatar avatar--sky" aria-hidden="true"&gt;D&lt;img class="avatar__img" src="/api/photos/…" alt=""&gt;&lt;/span&gt;
+
+&lt;!-- Angular (components library) --&gt;
+&lt;sh-avatar [name]="reader.name" [color]="reader.color" [photo]="reader.photo" size="lg" /&gt;</code></pre>
       <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.avatar</code></td><td>40px circle, accent tint, centred initials.</td></tr>
-        <tr><td><code>.avatar--sm</code> <code>.avatar--lg</code></td><td>32px or 56px; omit for 40px.</td></tr>
+        <tr><td><code>.avatar--sm</code> <code>.avatar--lg</code> <code>.avatar--xl</code></td><td>32px, 56px or 64px; omit for 40px.</td></tr>
+        <tr><td><code>img.avatar__img</code></td><td>The photo, cropped to the circle over the initial; fades in.</td></tr>
+        <tr><td><code>aria-busy="true"</code></td><td>Uploading: dims the photo and spins a ring (photo picker only).</td></tr>
         <tr><td><code>.avatar--rose</code> <code>.avatar--sky</code> <code>.avatar--sun</code> <code>.avatar--mint</code> <code>.avatar--lilac</code> <code>.avatar--sage</code> <code>.avatar--peach</code></td><td>Person colour with dark initials.</td></tr>
         <tr><td><code>button.avatar</code></td><td>Border reset, pointer cursor, 2px hover ring.</td></tr>
+        <tr><td><code>button.avatar-trigger</code></td><td>A round, borderless button around an <code>sh-avatar</code>; the avatar inside gets the hover ring. Used by <code>sh-top-bar</code> for the account menu.</td></tr>
         <tr><td><code>aria-haspopup="menu"</code>, <code>aria-expanded</code></td><td>Required on the button form.</td></tr>
         <tr><td><code>data-state="hover|focus"</code></td><td>Documentation only.</td></tr>
       </tbody></table>
@@ -292,6 +331,8 @@
         <li><a href="../../mocks/pages/accept-invite/default.html">pages/accept-invite/default</a> (large avatar)</li>
         <li><a href="../../mocks/dialogs/edit-reader/default.html">dialogs/edit-reader/default</a> (reader colour swatches)</li>
         <li><a href="../../mocks/dialogs/account-menu/default.html">dialogs/account-menu/default</a> (menu open)</li>
+        <li><a href="../../mocks/dialogs/account-menu/photo.html">dialogs/account-menu/photo</a> and <a href="../../mocks/pages/settings/photo.html">pages/settings/photo</a> (photos in place of initials)</li>
+        <li><a href="../../mocks/dialogs/profile-photo/busy.html">dialogs/profile-photo/busy</a> (extra large, uploading)</li>
       </ul>
       <p>Drift fixed during extraction: D6, 58 mocks reset the top-bar <code>&lt;button class="avatar"&gt;</code> inline with <code>style="border: 0; cursor: pointer;"</code>; the <code>button.avatar</code> rule now does it and adds a hover ring. D13, raw avatar sizes are now <code>--size-avatar-*</code>.</p>
     </section>

@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { coverPictureRoute } from '../support/covers';
 
 export class AddBookPage {
   constructor(private readonly page: Page) {}
@@ -77,6 +78,64 @@ export class AddBookPage {
 
   previewCover() {
     return this.preview().locator('.cover');
+  }
+
+  previewPicture() {
+    return this.previewCover().locator('img');
+  }
+
+  /** Whether the preview's picture has loaded and has pixels to show. */
+  async previewPictureLoaded() {
+    return this.previewPicture().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+  }
+
+  private picker() {
+    return this.page.getByRole('group', { name: 'Cover picture (optional)' });
+  }
+
+  /** The file input behind "Add a picture" or "Change picture". */
+  pictureChooser() {
+    return this.picker().getByLabel(/Add a picture|Change picture/);
+  }
+
+  removePictureButton() {
+    return this.picker().getByRole('button', { name: 'Remove picture' });
+  }
+
+  async choosePicture(file: string) {
+    await this.pictureChooser().setInputFiles(file);
+  }
+
+  async chooseNotAPicture() {
+    await this.pictureChooser().setInputFiles({ name: 'story.txt', mimeType: 'text/plain', buffer: Buffer.from('Once upon a time') });
+  }
+
+  async chooseTooLargePicture() {
+    await this.pictureChooser().setInputFiles({ name: 'huge.jpg', mimeType: 'image/jpeg', buffer: Buffer.alloc(5 * 1024 * 1024 + 1) });
+  }
+
+  async removePicture() {
+    await this.removePictureButton().click();
+  }
+
+  pictureError() {
+    return this.picker().getByRole('alert');
+  }
+
+  private pictureUploads = 0;
+
+  watchPictureUploads() {
+    this.page.on('request', (request) => {
+      if (request.method() === 'PUT' && /\/api\/books\/[^/]+\/cover$/.test(request.url())) this.pictureUploads++;
+    });
+  }
+
+  pictureUploadCount() {
+    return this.pictureUploads;
+  }
+
+  async breakPictureUploads() {
+    await this.page.route(coverPictureRoute, (route) => (route.request().method() === 'PUT' ? route.abort() : route.continue()));
   }
 
   async submit() {

@@ -16,6 +16,10 @@ export class BooksPage {
     return this.page.getByRole('listitem').filter({ hasText: title });
   }
 
+  coverPicture(title: string) {
+    return this.row(title).locator('.cover img');
+  }
+
   async manage(title: string) {
     await this.row(title).getByRole('link', { name: 'Manage' }).click();
   }

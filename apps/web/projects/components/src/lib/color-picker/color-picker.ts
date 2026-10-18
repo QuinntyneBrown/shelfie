@@ -11,6 +11,7 @@ let nextGroup = 0;
 export class ColorPicker {
   readonly label = input.required<string>();
   readonly colors = input.required<string[]>();
+  readonly help = input<string | null>(null);
   readonly value = model.required<string>();
   protected readonly group = `sh-color-picker-${nextGroup++}`;
 }

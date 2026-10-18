@@ -20,6 +20,7 @@ Every mock tells the same story so a reviewer can follow it across screens. Reus
   Parent:     Dad = Marcus Bell, marcus@example.com, username marcus. Avatar "D", sky. Signed up and started the household.
   Invited:    Mum = Priya Bell, priya@example.com, username priya. Avatar "P", lilac. Dad invited her today; she has not joined yet.
   New reader: Theo (6). Avatar "T", mint. Username theo; the reader Dad adds in the edit-reader dialog.
+  Photos:     Nia and Dad each upload their own photo (assets/photos/nia.jpg, dad.jpg) in the photo states; elsewhere they show their letters.
   Everyone signs in on one form: username, password and "Keep me signed in on this device" (30 days of use; off = ends with the browser).
   Today:      Friday 17 October 2026, late afternoon.
 
@@ -65,7 +66,7 @@ Two people share one household. Nia opens her **shelf**, taps the book she is re
 | Area | Pages | Dialogs | Notifications |
 |---|---|---|---|
 | Entry | sign-in, sign-up, accept-invite, forgot-password, reset-password | | |
-| Reader | shelf, book, add-book, log-chapter, chapter | account-menu | toast, banner |
+| Reader | shelf, book, add-book, log-chapter, chapter | account-menu, profile-photo | toast, banner |
 | Grown-up | review, review-chapter, books, manage-book, settings | give-reward, delete-book, edit-question, edit-reader, invite-parent | |
 | Errors | not-found, forbidden, server-error, offline | | |
 
@@ -87,6 +88,7 @@ These are decisions the mocks make that nobody has confirmed. Each is marked in 
 10. **Offline:** the shelf shows cached data with a banner; a chapter logged offline is kept on the device and sent later.
 11. **Theme** is a household setting (match device, light, dark) saved in Settings; the mock bar's toggle only previews it.
 12. **Auth pages are animated.** The card scales in and its fields rise with a short stagger; the logo sticker sways; a slow pastel aurora runs behind the card, drawn with WebGPU (`assets/aurora.js`) from the cover-colour tokens, with a CSS-gradient fallback. All of it stops under reduced motion. These pages break the "no animation on page load" rule on purpose: they are the only pages a person sees cold.
+13. **Profile photos (L2-042 to L2-045).** A parent and a reader can each upload, replace and remove their own photo, and nobody else's. One "Your photo" dialog serves both: Nia opens it from "My photo" in her account menu, Dad from "Add a photo" in Settings → Your account. Picking a photo uploads it at once (no Save); JPEG, PNG or WebP up to 5 MB. The photo replaces the letter in every avatar; with no photo, or while it loads, or if it fails to load, the letter shows exactly as before. Removing takes effect at once without a confirmation. No cropping, filters or photos of other people.
 
 ## Checking and screenshots
 
@@ -94,7 +96,7 @@ These are decisions the mocks make that nobody has confirmed. Each is marked in 
 # coverage, HTML hygiene, accessibility basics, broken links; --write regenerates index.html and the matrix below
 python3 -I .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks --write
 
-# 606 screenshots (101 mocks × 360/768/1280 × light/dark) plus a contact sheet in docs/mocks/.cache/mocks/
+# 792 screenshots (132 mocks × 360/768/1280 × light/dark) plus a contact sheet in docs/mocks/.cache/mocks/
 python3 -I .claude/skills/writing-html-mocks/scripts/screenshot_mocks.py docs/mocks
 ```
 
@@ -108,38 +110,39 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 
 ### Pages
 
-| Screen | default | loading | empty | error | missing | invalid | submitting | expired | taken | success | long | finished | edge | pending | reviewed | rewarded | Requirements |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) | [✅](pages/sign-in/missing.html) | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) | [✅](pages/sign-in/expired.html) |  |  |  |  |  |  |  |  | `L2-002`, `L2-003` |
-| Create a parent account (`sign-up`) | [✅](pages/sign-up/default.html) | ➖ | ➖ | [✅](pages/sign-up/error.html) |  | [✅](pages/sign-up/invalid.html) | [✅](pages/sign-up/submitting.html) |  | [✅](pages/sign-up/taken.html) | ➖ |  |  |  |  |  |  | `L2-033` |
-| Join a household (`accept-invite`) | [✅](pages/accept-invite/default.html) | ➖ | ➖ | [✅](pages/accept-invite/error.html) |  | [✅](pages/accept-invite/invalid.html) | [✅](pages/accept-invite/submitting.html) |  | [✅](pages/accept-invite/taken.html) | ➖ |  |  |  |  |  |  | `L2-035` |
-| Forgot password (`forgot-password`) | [✅](pages/forgot-password/default.html) | ➖ | ➖ | [✅](pages/forgot-password/error.html) |  | [✅](pages/forgot-password/invalid.html) | [✅](pages/forgot-password/submitting.html) |  |  | [✅](pages/forgot-password/success.html) |  |  |  |  |  |  |  |
-| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | ➖ | ➖ | [✅](pages/reset-password/error.html) |  | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) |  |  | [✅](pages/reset-password/success.html) |  |  |  |  |  |  |  |
-| My shelf (`shelf`) | [✅](pages/shelf/default.html) | [✅](pages/shelf/loading.html) | [✅](pages/shelf/empty.html) | [✅](pages/shelf/error.html) |  |  |  |  |  |  | [✅](pages/shelf/long.html) |  |  |  |  |  |  |
-| Book (`book`) | [✅](pages/book/default.html) | [✅](pages/book/loading.html) | ➖ | [✅](pages/book/error.html) |  |  |  |  |  |  |  | [✅](pages/book/finished.html) | [✅](pages/book/edge.html) |  |  |  |  |
-| Add a book (`add-book`) | [✅](pages/add-book/default.html) | ➖ | ➖ | [✅](pages/add-book/error.html) |  | [✅](pages/add-book/invalid.html) | [✅](pages/add-book/submitting.html) |  |  | ➖ |  |  |  |  |  |  |  |
-| Log a chapter (`log-chapter`) | [✅](pages/log-chapter/default.html) | [✅](pages/log-chapter/loading.html) | ➖ | [✅](pages/log-chapter/error.html) |  | [✅](pages/log-chapter/invalid.html) | [✅](pages/log-chapter/submitting.html) |  |  | [✅](pages/log-chapter/success.html) |  | [✅](pages/log-chapter/finished.html) |  |  |  |  |  |
-| Chapter answers (`chapter`) | [✅](pages/chapter/default.html) | [✅](pages/chapter/loading.html) | ➖ | [✅](pages/chapter/error.html) |  |  |  |  |  |  |  |  |  | [✅](pages/chapter/pending.html) |  |  |  |
-| Review (`review`) | [✅](pages/review/default.html) | [✅](pages/review/loading.html) | [✅](pages/review/empty.html) | [✅](pages/review/error.html) |  |  |  |  |  |  | [✅](pages/review/long.html) |  |  |  |  |  |  |
-| Review a chapter (`review-chapter`) | [✅](pages/review-chapter/default.html) | [✅](pages/review-chapter/loading.html) | ➖ | [✅](pages/review-chapter/error.html) |  | [✅](pages/review-chapter/invalid.html) | [✅](pages/review-chapter/submitting.html) |  |  | [✅](pages/review-chapter/success.html) |  |  |  |  | [✅](pages/review-chapter/reviewed.html) |  |  |
-| Books (`books`) | [✅](pages/books/default.html) | [✅](pages/books/loading.html) | [✅](pages/books/empty.html) | [✅](pages/books/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Manage a book (`manage-book`) | [✅](pages/manage-book/default.html) | [✅](pages/manage-book/loading.html) | ➖ | [✅](pages/manage-book/error.html) |  | [✅](pages/manage-book/invalid.html) | [✅](pages/manage-book/submitting.html) |  |  | [✅](pages/manage-book/success.html) |  |  |  |  |  | [✅](pages/manage-book/rewarded.html) |  |
-| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) |  | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) |  |  | [✅](pages/settings/success.html) |  |  |  |  |  |  | `L2-021`, `L2-022`, `L2-034`, `L2-036` |
-| Page not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Grown-ups only (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Something went wrong (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Screen | default | loading | empty | error | missing | invalid | submitting | expired | taken | success | long | finished | edge | picture | wrong-file | too-large | picture-failed | pending | reviewed | rewarded | uploading | photo | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) | [✅](pages/sign-in/missing.html) | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) | [✅](pages/sign-in/expired.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  | `L2-002`, `L2-003` |
+| Create a parent account (`sign-up`) | [✅](pages/sign-up/default.html) | ➖ | ➖ | [✅](pages/sign-up/error.html) |  | [✅](pages/sign-up/invalid.html) | [✅](pages/sign-up/submitting.html) |  | [✅](pages/sign-up/taken.html) | ➖ |  |  |  |  |  |  |  |  |  |  |  |  | `L2-033` |
+| Join a household (`accept-invite`) | [✅](pages/accept-invite/default.html) | ➖ | ➖ | [✅](pages/accept-invite/error.html) |  | [✅](pages/accept-invite/invalid.html) | [✅](pages/accept-invite/submitting.html) |  | [✅](pages/accept-invite/taken.html) | ➖ |  |  |  |  |  |  |  |  |  |  |  |  | `L2-035` |
+| Forgot password (`forgot-password`) | [✅](pages/forgot-password/default.html) | ➖ | ➖ | [✅](pages/forgot-password/error.html) |  | [✅](pages/forgot-password/invalid.html) | [✅](pages/forgot-password/submitting.html) |  |  | [✅](pages/forgot-password/success.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | ➖ | ➖ | [✅](pages/reset-password/error.html) |  | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) |  |  | [✅](pages/reset-password/success.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| My shelf (`shelf`) | [✅](pages/shelf/default.html) | [✅](pages/shelf/loading.html) | [✅](pages/shelf/empty.html) | [✅](pages/shelf/error.html) |  |  |  |  |  |  | [✅](pages/shelf/long.html) |  |  |  |  |  |  |  |  |  |  |  | `L2-007`, `L2-047` |
+| Book (`book`) | [✅](pages/book/default.html) | [✅](pages/book/loading.html) | ➖ | [✅](pages/book/error.html) |  |  |  |  |  |  |  | [✅](pages/book/finished.html) | [✅](pages/book/edge.html) | [✅](pages/book/picture.html) |  |  |  |  |  |  |  |  | `L2-008`, `L2-047` |
+| Add a book (`add-book`) | [✅](pages/add-book/default.html) | ➖ | ➖ | [✅](pages/add-book/error.html) |  | [✅](pages/add-book/invalid.html) | [✅](pages/add-book/submitting.html) |  |  | ➖ |  |  |  | [✅](pages/add-book/picture.html) | [✅](pages/add-book/wrong-file.html) | [✅](pages/add-book/too-large.html) | ➖ |  |  |  |  |  | `L2-009`, `L2-046`, `L2-048` |
+| Log a chapter (`log-chapter`) | [✅](pages/log-chapter/default.html) | [✅](pages/log-chapter/loading.html) | ➖ | [✅](pages/log-chapter/error.html) |  | [✅](pages/log-chapter/invalid.html) | [✅](pages/log-chapter/submitting.html) |  |  | [✅](pages/log-chapter/success.html) |  | [✅](pages/log-chapter/finished.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Chapter answers (`chapter`) | [✅](pages/chapter/default.html) | [✅](pages/chapter/loading.html) | ➖ | [✅](pages/chapter/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/chapter/pending.html) |  |  |  |  |  |
+| Review (`review`) | [✅](pages/review/default.html) | [✅](pages/review/loading.html) | [✅](pages/review/empty.html) | [✅](pages/review/error.html) |  |  |  |  |  |  | [✅](pages/review/long.html) |  |  |  |  |  |  |  |  |  |  |  |  |
+| Review a chapter (`review-chapter`) | [✅](pages/review-chapter/default.html) | [✅](pages/review-chapter/loading.html) | ➖ | [✅](pages/review-chapter/error.html) |  | [✅](pages/review-chapter/invalid.html) | [✅](pages/review-chapter/submitting.html) |  |  | [✅](pages/review-chapter/success.html) |  |  |  |  |  |  |  |  | [✅](pages/review-chapter/reviewed.html) |  |  |  |  |
+| Books (`books`) | [✅](pages/books/default.html) | [✅](pages/books/loading.html) | [✅](pages/books/empty.html) | [✅](pages/books/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | `L2-047` |
+| Manage a book (`manage-book`) | [✅](pages/manage-book/default.html) | [✅](pages/manage-book/loading.html) | ➖ | [✅](pages/manage-book/error.html) |  | [✅](pages/manage-book/invalid.html) | [✅](pages/manage-book/submitting.html) |  |  | [✅](pages/manage-book/success.html) |  |  |  | [✅](pages/manage-book/picture.html) | [✅](pages/manage-book/wrong-file.html) |  | [✅](pages/manage-book/picture-failed.html) |  |  | [✅](pages/manage-book/rewarded.html) | [✅](pages/manage-book/uploading.html) |  | `L2-010`, `L2-046`, `L2-048` |
+| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) |  | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) |  |  | [✅](pages/settings/success.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/settings/photo.html) | `L2-021`, `L2-022`, `L2-034`, `L2-036`, `L2-042`, `L2-043` |
+| Page not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Grown-ups only (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Something went wrong (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ### Dialogs
 
-| Screen | default | busy | invalid | failed | edit | taken | sent | parent | Requirements |
-|---|---|---|---|---|---|---|---|---|---|
-| Give a reward (`give-reward`) | [✅](dialogs/give-reward/default.html) | [✅](dialogs/give-reward/busy.html) | [✅](dialogs/give-reward/invalid.html) | [✅](dialogs/give-reward/failed.html) |  |  |  |  |  |
-| Remove a book (`delete-book`) | [✅](dialogs/delete-book/default.html) | [✅](dialogs/delete-book/busy.html) | ➖ | [✅](dialogs/delete-book/failed.html) |  |  |  |  |  |
-| Add a question (`edit-question`) | [✅](dialogs/edit-question/default.html) | [✅](dialogs/edit-question/busy.html) | [✅](dialogs/edit-question/invalid.html) | [✅](dialogs/edit-question/failed.html) |  |  |  |  |  |
-| Add a reader (`edit-reader`) | [✅](dialogs/edit-reader/default.html) | [✅](dialogs/edit-reader/busy.html) | [✅](dialogs/edit-reader/invalid.html) | [✅](dialogs/edit-reader/failed.html) | [✅](dialogs/edit-reader/edit.html) | [✅](dialogs/edit-reader/taken.html) |  |  | `L2-036` |
-| Invite a parent (`invite-parent`) | [✅](dialogs/invite-parent/default.html) | [✅](dialogs/invite-parent/busy.html) | [✅](dialogs/invite-parent/invalid.html) | [✅](dialogs/invite-parent/failed.html) |  |  | [✅](dialogs/invite-parent/sent.html) |  | `L2-034` |
-| Account menu (`account-menu`) | [✅](dialogs/account-menu/default.html) | ➖ | ➖ |  |  |  |  | [✅](dialogs/account-menu/parent.html) | `L2-003` |
+| Screen | default | busy | invalid | failed | edit | taken | photo | sent | parent | parent-photo | choosing | success | too-large | remove-confirmation | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Give a reward (`give-reward`) | [✅](dialogs/give-reward/default.html) | [✅](dialogs/give-reward/busy.html) | [✅](dialogs/give-reward/invalid.html) | [✅](dialogs/give-reward/failed.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Remove a book (`delete-book`) | [✅](dialogs/delete-book/default.html) | [✅](dialogs/delete-book/busy.html) | ➖ | [✅](dialogs/delete-book/failed.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Add a question (`edit-question`) | [✅](dialogs/edit-question/default.html) | [✅](dialogs/edit-question/busy.html) | [✅](dialogs/edit-question/invalid.html) | [✅](dialogs/edit-question/failed.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Add a reader (`edit-reader`) | [✅](dialogs/edit-reader/default.html) | [✅](dialogs/edit-reader/busy.html) | [✅](dialogs/edit-reader/invalid.html) | [✅](dialogs/edit-reader/failed.html) | [✅](dialogs/edit-reader/edit.html) | [✅](dialogs/edit-reader/taken.html) | [✅](dialogs/edit-reader/photo.html) |  |  |  |  |  |  |  | `L2-036`, `L2-043` |
+| Invite a parent (`invite-parent`) | [✅](dialogs/invite-parent/default.html) | [✅](dialogs/invite-parent/busy.html) | [✅](dialogs/invite-parent/invalid.html) | [✅](dialogs/invite-parent/failed.html) |  |  |  | [✅](dialogs/invite-parent/sent.html) |  |  |  |  |  |  | `L2-034` |
+| Account menu (`account-menu`) | [✅](dialogs/account-menu/default.html) | ➖ | ➖ |  |  |  | [✅](dialogs/account-menu/photo.html) |  | [✅](dialogs/account-menu/parent.html) | [✅](dialogs/account-menu/parent-photo.html) |  |  |  |  | `L2-003`, `L2-042`, `L2-043` |
+| Your photo (`profile-photo`) | [✅](dialogs/profile-photo/default.html) | [✅](dialogs/profile-photo/busy.html) | [✅](dialogs/profile-photo/invalid.html) | [✅](dialogs/profile-photo/failed.html) |  |  | [✅](dialogs/profile-photo/photo.html) |  | [✅](dialogs/profile-photo/parent.html) |  | [✅](dialogs/profile-photo/choosing.html) | [✅](dialogs/profile-photo/success.html) | [✅](dialogs/profile-photo/too-large.html) | ➖ | `L2-042`, `L2-044` |
 
 ### Notifications
 

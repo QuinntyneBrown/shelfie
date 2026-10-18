@@ -1,15 +1,26 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Banner, Button, ErrorState, Skeleton, TextField } from 'components';
+import { Avatar, Banner, Button, ErrorState, Skeleton, TextField } from 'components';
 import { ApiError, SessionService, ToastService } from 'core';
 import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
 import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
+import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog';
 import { InvitesApi } from '../invites-api';
-import { InviteView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
+import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
   selector: 'sh-settings-page',
-  imports: [Banner, Button, EditReaderDialog, ErrorState, InviteParentDialog, Skeleton, TextField],
+  imports: [
+    Avatar,
+    Banner,
+    Button,
+    EditReaderDialog,
+    ErrorState,
+    InviteParentDialog,
+    ProfilePhotoDialog,
+    Skeleton,
+    TextField,
+  ],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +49,9 @@ export class SettingsPage {
       this.confirmError() && 'Passwords don’t match',
     ].filter((p): p is string => !!p),
   );
+  /** The signed-in parent, whose photo changes in the Your photo dialog. */
+  protected readonly me = this.session.current;
+  protected readonly photoDialogOpen = signal(false);
   protected readonly inviteDialogOpen = signal(false);
   protected readonly readerDialogOpen = signal(false);
   protected readonly editingReader = signal<ReaderView | null>(null);
@@ -99,8 +113,10 @@ export class SettingsPage {
     this.toasts.show({ title: edited ? `${reader.name} saved` : `${reader.name} added` });
   }
 
-  protected initial(name: string) {
-    return name.charAt(0).toUpperCase();
+  /** A parent's photo; your own comes from the session, so a change shows at once. */
+  protected photoOf(parent: ParentView) {
+    const me = this.me();
+    return parent.id === me?.profileId ? me.photo : parent.photo;
   }
 
   protected async signOut() {

@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { get, run, transaction, type Db } from './db.ts';
 import { sendMail, type Mail } from './mail.ts';
 import { Problem } from './problem.ts';
+import { photoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 import { SESSION_DAYS } from './session.ts';
 
@@ -16,6 +17,7 @@ export interface Session {
   color: string;
   email: string | null;
   theme: string;
+  photo: string | null;
 }
 
 interface ProfileRow {
@@ -50,6 +52,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     remember ? 1 : 0,
   ]);
   const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [profile.household_id]))!;
+  const photo = await get<{ etag: string }>(db, 'SELECT etag FROM profile_photo WHERE profile_id = $1', [profile.id]);
   return {
     id,
     remember,
@@ -60,6 +63,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     color: profile.color,
     email: profile.email,
     theme,
+    photo: photo ? photoUrl(profile.id, photo.etag) : null,
   };
 }
 
