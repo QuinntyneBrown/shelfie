@@ -15,13 +15,14 @@ The feature sits in the `reading-log` subsystem beside log-chapter. It changes o
 ### Frontend
 
 - **`sh-question-field`** (components) — gains a microphone button in a `.cluster` row under the textarea, drawn only when `SpeechRecognition ?? webkitSpeechRecognition` exists. Its other inputs and outputs, the `value` model, the counter and the error slot are unchanged.
-  - The button is a ghost `.btn` with the microphone icon and "Speak your answer", `aria-pressed="false"` and `aria-label="Speak your answer to question N"`. While listening it shows a pulsing `.mic-dot` and "Listening… tap to stop", with `aria-pressed="true"`.
+  - The button is a ghost `.btn` with the microphone icon and "Speak your answer", `aria-pressed="false"` and `aria-label="Speak your answer to question N"`. While listening it shows a pulsing `.mic-dot` in place of the icon, with `aria-pressed="true"` and the same name, and "Listening… tap to stop" as help text beside it.
   - Starting creates a recogniser with `lang = document.documentElement.lang`, `interimResults = true` and `continuous = true`. Each result event rebuilds the dictated part: the answer as it was when listening began, a single space if both parts are non-empty, then the recognised words so far. The interim words show in the box and are committed on every event, so stopping keeps them.
   - The new value is cut to `maxlength`, so the answer never exceeds the limit and the counter stays right.
   - Choosing the button while listening calls `stop()`. The `end` event, whether from the button or from the browser, returns the button to idle.
   - A module-level reference to the active recogniser means starting dictation in another field stops the first.
   - On an `error` event of any kind the field stops, keeps the words, and shows "Shelfie can’t hear you. You can type your answer instead." in a `.field__error` under the button, linked from the textarea with `aria-describedby`. Choosing the button again clears the message and starts again.
   - A visually hidden `aria-live="polite"` region says "Listening" or "Stopped listening". Under reduced motion the dot does not pulse.
+  - Typing in the box while listening stops dictation, so the words she types are never overwritten by the next result.
 - **`LogChapterPage`** (log-chapter) — unchanged. It already binds the `value` of each `sh-question-field`, so dictated text goes through the same `setAnswer`, the same draft saving and the same submit.
 - **`components.css`** — the `.mic-dot` pulse (`docs/design-system/assets/components.css`), documented in `docs/design-system/components/textarea.html`.
 
