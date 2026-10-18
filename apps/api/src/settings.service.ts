@@ -1,4 +1,5 @@
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
+import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 
@@ -31,27 +32,30 @@ export interface SettingsView {
   readers: ReaderView[];
 }
 
-export function listReaders(db: DatabaseSync, householdId: string): ReaderView[] {
-  return db
-    .prepare("SELECT id, name, color, username FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name")
-    .all(householdId) as unknown as ReaderView[];
+export function listReaders(db: Db, householdId: string): Promise<ReaderView[]> {
+  return all<ReaderView>(db, "SELECT id, name, color, username FROM profile WHERE household_id = $1 AND role = 'reader' ORDER BY name", [householdId]);
 }
 
-export function listPendingInvites(db: DatabaseSync, householdId: string): InviteView[] {
-  return db
-    .prepare(
-      "SELECT token_hash AS id, email, datetime(expires_at, '-7 days') AS sentAt, expires_at AS expiresAt FROM invites WHERE household_id = ? AND used_at IS NULL AND expires_at > ? ORDER BY expires_at",
-    )
-    .all(householdId, new Date().toISOString()) as unknown as InviteView[];
+export function listPendingInvites(db: Db, householdId: string): Promise<InviteView[]> {
+  return all<InviteView>(
+    db,
+    `SELECT token_hash AS id, email,
+            to_char((expires_at::timestamptz - interval '7 days') AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "sentAt",
+            expires_at AS "expiresAt"
+       FROM invites WHERE household_id = $1 AND used_at IS NULL AND expires_at > $2 ORDER BY expires_at`,
+    [householdId, new Date().toISOString()],
+  );
 }
 
-export function getSettings(db: DatabaseSync, householdId: string, profileId: string): SettingsView {
-  const account = db.prepare('SELECT name, username, email FROM profile WHERE id = ?').get(profileId) as SettingsView['account'];
-  const { theme } = db.prepare('SELECT theme FROM household WHERE id = ?').get(householdId) as { theme: string };
-  const parents = db
-    .prepare("SELECT id, name, username, color FROM profile WHERE household_id = ? AND role = 'parent' ORDER BY id = ? DESC, name")
-    .all(householdId, profileId) as unknown as ParentView[];
-  return { account, theme, parents, invites: listPendingInvites(db, householdId), readers: listReaders(db, householdId) };
+export async function getSettings(db: Db, householdId: string, profileId: string): Promise<SettingsView> {
+  const account = (await get<SettingsView['account']>(db, 'SELECT name, username, email FROM profile WHERE id = $1', [profileId]))!;
+  const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [householdId]))!;
+  const parents = await all<ParentView>(
+    db,
+    "SELECT id, name, username, color FROM profile WHERE household_id = $1 AND role = 'parent' ORDER BY (id = $2) DESC, name",
+    [householdId, profileId],
+  );
+  return { account, theme, parents, invites: await listPendingInvites(db, householdId), readers: await listReaders(db, householdId) };
 }
 
 export interface SettingsPatch {
@@ -59,8 +63,8 @@ export interface SettingsPatch {
   account: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
-export function updateSettings(db: DatabaseSync, householdId: string, profileId: string, patch: SettingsPatch): SettingsView {
-  const stored = db.prepare('SELECT email, password_hash FROM profile WHERE id = ?').get(profileId) as { email: string; password_hash: string };
+export async function updateSettings(pool: Pool, householdId: string, profileId: string, patch: SettingsPatch): Promise<SettingsView> {
+  const stored = (await get<{ email: string; password_hash: string }>(pool, 'SELECT email, password_hash FROM profile WHERE id = $1', [profileId]))!;
   const email = patch.account.email.trim().toLowerCase();
   const changingEmail = email !== stored.email;
   if (changingEmail || patch.account.newPassword) {
@@ -68,20 +72,15 @@ export function updateSettings(db: DatabaseSync, householdId: string, profileId:
       throw new Problem(400, 'current-password-invalid');
     }
   }
-  if (changingEmail && db.prepare('SELECT 1 FROM profile WHERE email = ? AND id != ?').get(email, profileId)) {
+  if (changingEmail && (await get(pool, 'SELECT 1 FROM profile WHERE email = $1 AND id != $2', [email, profileId]))) {
     throw new Problem(409, 'email-in-use');
   }
-  db.exec('BEGIN');
-  try {
-    db.prepare('UPDATE profile SET name = ?, email = ? WHERE id = ?').run(patch.account.name, email, profileId);
+  await transaction(pool, async (db) => {
+    await run(db, 'UPDATE profile SET name = $1, email = $2 WHERE id = $3', [patch.account.name, email, profileId]);
     if (patch.account.newPassword) {
-      db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(patch.account.newPassword), profileId);
+      await run(db, 'UPDATE profile SET password_hash = $1 WHERE id = $2', [hashSecret(patch.account.newPassword), profileId]);
     }
-    db.prepare('UPDATE household SET theme = ? WHERE id = ?').run(patch.theme, householdId);
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
-  return getSettings(db, householdId, profileId);
+    await run(db, 'UPDATE household SET theme = $1 WHERE id = $2', [patch.theme, householdId]);
+  });
+  return getSettings(pool, householdId, profileId);
 }

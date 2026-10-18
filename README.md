@@ -50,7 +50,8 @@ It is designed to be extremely easy to navigate and a delight to use. It should 
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org) (current LTS or newer) and npm
+- [Node.js](https://nodejs.org) 24 and npm
+- [PostgreSQL](https://www.postgresql.org) 16, reachable as `postgres://postgres:postgres@localhost:5432/postgres` (for example `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16`); set `DATABASE_URL` to use another server
 - [Google Chrome](https://www.google.com/chrome/) (latest stable or newer)
 - [Git](https://git-scm.com)
 
@@ -64,11 +65,14 @@ npm install
 
 ### Running locally
 
-Start the backend API and the Angular dev server:
+Create and seed the local database once, then start the backend API and the Angular dev server:
 
 ```bash
+npm run seed -w apps/api
 npm run dev
 ```
+
+The API applies `apps/api/migrations/*.sql` to the database named by `DATABASE_URL` (default `postgres://postgres:postgres@localhost:5432/shelfie`) when it starts. The tests create and drop throwaway databases on the same server.
 
 Then open the URL printed in the terminal in Chrome.
 

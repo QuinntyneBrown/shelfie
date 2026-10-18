@@ -7,7 +7,7 @@ Person(invitee, "Invited person", "Opens the link; chooses a name, username and 
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Accept invite page in the sign-in library")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Looks up the invite by token hash, creates the parent, marks the invite used, opens a session")
-  ContainerDb(db, "Shelfie database", "SQLite", "invites, household, profile, session and device tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "invites, household, profile, session and device tables")
 }
 Rel(invitee, web, "Opens /accept-invite?token=...", "HTTPS")
 Rel(web, api, "GET /api/auth/invites/{token}, POST /api/auth/accept-invite", "JSON/HTTPS")

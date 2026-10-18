@@ -1,67 +1,76 @@
-import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import pg from 'pg';
 
-// Columns added to tables after the first release. schema.sql only creates tables that are missing,
-// so an existing database gets each of these through ALTER TABLE before the schema runs.
-const addedColumns: [table: string, column: string, definition: string][] = [
-  ['household', 'theme', "TEXT NOT NULL DEFAULT 'device' CHECK (theme IN ('device','light','dark'))"],
-  ['profile', 'email', 'TEXT'],
-  ['profile', 'password_hash', 'TEXT'],
-  ['session', 'remember', 'INTEGER NOT NULL DEFAULT 1'],
-  ['chapter_log', 'reviewed_at', 'TEXT'],
-  ['chapter_log', 'sticker', 'TEXT'],
-  ['chapter_log', 'note', 'TEXT'],
-  ['chapter_log', 'feedback_seen_at', 'TEXT'],
-  ['reward', 'note', 'TEXT'],
-];
+/** A pool, or one client of it while inside `transaction()`. */
+export type Db = pg.Pool | pg.PoolClient;
 
-export function openDb(path: string): DatabaseSync {
-  const db = new DatabaseSync(path);
-  // WAL keeps every committed write on disk before the API answers, so it survives a restart.
-  db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = OFF');
-  const hasColumn = db.prepare('SELECT 1 FROM pragma_table_info(?) WHERE name = ?');
-  const tableExists = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?");
-  for (const [table, column, definition] of addedColumns) {
-    if (tableExists.get(table) && !hasColumn.get(table, column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
-  }
-  if (tableExists.get('profile') && !hasColumn.get('profile', 'username')) replaceProfilesWithUsers(db);
-  db.exec('PRAGMA foreign_keys = ON');
-  db.exec(readFileSync(new URL('./schema.sql', import.meta.url), 'utf8'));
-  return db;
+// COUNT(*) and friends come back as int8, which pg hands over as strings unless told otherwise.
+pg.types.setTypeParser(pg.types.builtins.INT8, Number);
+
+/** A pool of at most 10 connections; in production the server certificate is verified and a plain connection refused. */
+export function openDb(url: string): pg.Pool {
+  return new pg.Pool({
+    connectionString: url,
+    max: 10,
+    connectionTimeoutMillis: 5000,
+    ssl: process.env['NODE_ENV'] === 'production' ? { rejectUnauthorized: true } : false,
+  });
 }
 
-/**
- * The accounts release: everyone signs in with a username, the grown-up role is called parent, and
- * the PIN columns and the device table go. The role check on the old table forbids the new value, so
- * the table is rebuilt; ids are kept, so sessions and reset links still point at the right person.
- */
-function replaceProfilesWithUsers(db: DatabaseSync) {
-  db.exec(`BEGIN;
-    CREATE TABLE profile_new (
-      id TEXT PRIMARY KEY,
-      household_id TEXT NOT NULL REFERENCES household(id),
-      role TEXT NOT NULL CHECK (role IN ('reader','parent')),
-      name TEXT NOT NULL,
-      color TEXT NOT NULL,
-      username TEXT NOT NULL,
-      email TEXT,
-      password_hash TEXT
-    );`);
-  const rows = db.prepare('SELECT id, role, name, email FROM profile ORDER BY rowid').all() as { id: string; role: string; name: string; email: string | null }[];
-  const taken = new Set<string>();
-  const insert = db.prepare(
-    "INSERT INTO profile_new (id, household_id, role, name, color, username, email, password_hash) SELECT id, household_id, ?, name, color, ?, lower(email), password_hash FROM profile WHERE id = ?",
-  );
-  for (const row of rows) {
-    const base = (row.role === 'parent' && row.email ? row.email.split('@')[0] : row.name).toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 20).padEnd(3, '0');
-    let username = base;
-    for (let n = 2; taken.has(username); n++) username = `${base.slice(0, 18)}${n}`;
-    taken.add(username);
-    insert.run(row.role === 'parent' ? 'parent' : row.role, username, row.id);
+export async function all<T>(db: Db, sql: string, params: unknown[] = []): Promise<T[]> {
+  return (await db.query(sql, params)).rows as T[];
+}
+
+export async function get<T>(db: Db, sql: string, params: unknown[] = []): Promise<T | undefined> {
+  return (await all<T>(db, sql, params))[0];
+}
+
+/** Runs a statement and returns how many rows it touched. */
+export async function run(db: Db, sql: string, params: unknown[] = []): Promise<number> {
+  return (await db.query(sql, params)).rowCount ?? 0;
+}
+
+/** Runs `work` on one client between BEGIN and COMMIT; a throw rolls back and is rethrown. */
+export async function transaction<T>(pool: pg.Pool, work: (client: pg.PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await work(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
   }
-  db.exec(`DROP TABLE profile;
-    ALTER TABLE profile_new RENAME TO profile;
-    DROP TABLE IF EXISTS device;
-    UPDATE book SET added_by_role = 'parent' WHERE added_by_role = 'parent';
-    COMMIT;`);
+}
+
+const MIGRATIONS_DIR = new URL('../migrations/', import.meta.url);
+// Any fixed number: processes starting together queue on it, so each migration runs once.
+const MIGRATION_LOCK = 20261018;
+
+/** Applies each `NNN-name.sql` in `dir` that `schema_migration` does not list yet, in file-name order, one transaction each. */
+export async function migrate(pool: pg.Pool, dir: URL = MIGRATIONS_DIR): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query('SELECT pg_advisory_lock($1)', [MIGRATION_LOCK]);
+    await client.query('CREATE TABLE IF NOT EXISTS schema_migration (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)');
+    const applied = new Set((await client.query('SELECT name FROM schema_migration')).rows.map((row) => row.name as string));
+    for (const name of readdirSync(dir).filter((file) => file.endsWith('.sql')).sort()) {
+      if (applied.has(name)) continue;
+      try {
+        await client.query('BEGIN');
+        await client.query(readFileSync(new URL(name, dir), 'utf8'));
+        await client.query('INSERT INTO schema_migration (name, applied_at) VALUES ($1, $2)', [name, new Date().toISOString()]);
+        await client.query('COMMIT');
+      } catch (e) {
+        await client.query('ROLLBACK');
+        throw new Error(`Migration ${name} failed: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
+      }
+    }
+    await client.query('SELECT pg_advisory_unlock($1)', [MIGRATION_LOCK]);
+  } finally {
+    client.release();
+  }
 }

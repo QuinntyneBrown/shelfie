@@ -28,7 +28,7 @@ box "Backend — Shelfie API (services)" #ECFDF3
   participant "streak.service.ts" as streak
 end box
 box "Backend — Shelfie infrastructure" #FFF4E5
-  database "Shelfie database (SQLite)" as db
+  database "Shelfie database (PostgreSQL)" as db
 end box
 
 reader -> page : Open the shelf

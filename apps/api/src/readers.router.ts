@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { password, username } from './auth.router.ts';
 import { requireRole } from './authz.ts';
@@ -15,31 +15,31 @@ const readerSchema = z.object({
   password: password.optional(),
 });
 
-export function readersRouter(db: DatabaseSync) {
+export function readersRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db), requireRole('parent'));
 
-  const answer = (res: Parameters<Parameters<typeof router.post>[1]>[1], work: () => unknown, status = 200) => {
+  const answer = async (res: Parameters<Parameters<typeof router.post>[1]>[1], work: () => Promise<unknown>, status = 200) => {
     try {
-      res.status(status).json(work());
+      res.status(status).json(await work());
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type, ...e.extra });
     }
   };
 
-  router.post('/', (req, res) => {
+  router.post('/', async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = readerSchema.required({ password: true }).safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    answer(res, () => addReader(db, householdId, body.data), 201);
+    await answer(res, () => addReader(db, householdId, body.data), 201);
   });
 
-  router.patch('/:id', (req, res) => {
+  router.patch('/:id', async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = readerSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    answer(res, () => updateReader(db, householdId, String(req.params['id']), body.data));
+    await answer(res, () => updateReader(db, householdId, String(req.params['id']), body.data));
   });
 
   return router;

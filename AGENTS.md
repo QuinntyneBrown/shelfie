@@ -19,7 +19,7 @@ Shelfie is a full-stack, responsive web app that helps my daughter with her read
 ## Tech stack
 
 - **Frontend:** Angular
-- **Backend:** Node.js
+- **Backend:** Node.js with PostgreSQL 16 (see `docs/detailed-designs/platform/run-production-database`)
 - **Target browser:** Bleeding-edge Chrome only. Use the latest browser features freely, including WebGPU. Don't add polyfills or legacy-browser fallbacks.
 
 ## Components library is mandatory (CRITICAL)
@@ -100,3 +100,4 @@ Not built yet. Designs mention these as deferred; estimates do not cost them and
 
 *   Uptime monitoring and log shipping beyond journald on the VM.
 *   The production e-mail provider for password-reset links (Mailpit locally).
+*   Self-service household deletion and data export screens; until then the operator runs the erasure statement in `docs/runbook.md`.

@@ -11,7 +11,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "questions.service.ts", "Service", "DEFAULT_QUESTIONS; addQuestion, updateQuestion, removeQuestion (soft), questionsForBook")
   Component(repo, "questions.repo.ts", "Repository", "insert, findWithBook, updateText, markRemoved, listActive")
   Component(chapters, "chapters.service.ts", "Service", "Log form composes defaults + active custom questions; answers snapshot question_text (reading-log/log-chapter)")
-  ComponentDb(db, "Shelfie database", "SQLite", "question, answer")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "question, answer")
 }
 Rel(web, router, "POST, PATCH, DELETE", "JSON/HTTPS")
 Rel(router, authz, "Applies")

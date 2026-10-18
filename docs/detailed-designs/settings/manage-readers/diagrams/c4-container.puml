@@ -7,7 +7,7 @@ Person(parent, "Parent", "Adds and edits readers")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Settings page and EditReaderDialog")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Checks username uniqueness, hashes passwords, writes readers")
-  ContainerDb(db, "Shelfie database", "SQLite", "users and session tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "users and session tables")
 }
 Rel(parent, web, "Fills in and saves the dialog", "HTTPS")
 Rel(web, api, "POST /api/readers, PATCH /api/readers/{id}", "JSON/HTTPS")

@@ -9,7 +9,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate()", "Middleware (zod)", "acceptInviteSchema; 400 with field errors")
   Component(service, "auth.service.ts", "Service", "getInvite, acceptInvite: token hash, expiry and used checks, username uniqueness, argon2id, session")
   Component(repo, "auth.repo.ts", "Repository", "Parameterised SQL over invites, profile, household, session and device")
-  ComponentDb(db, "Shelfie database", "SQLite", "invites, household, profile, session, device")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "invites, household, profile, session, device")
 }
 Rel(web, router, "GET invite, POST accept-invite", "JSON/HTTPS")
 Rel(router, validate, "Applies")

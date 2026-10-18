@@ -11,7 +11,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "invites.service.ts", "Service", "createInvite: token, SHA-256 hash, link, rollback on mail failure")
   Component(repo, "invites.repo.ts", "Repository", "insertInvite, deleteInvite, listPendingInvites")
   Component(mailer, "mail.ts", "Module", "sendMail(to, subject, text); shared with reset-password")
-  ComponentDb(db, "Shelfie database", "SQLite", "invites")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "invites")
 }
 Rel(web, router, "POST /api/invites", "JSON/HTTPS")
 Rel(router, authz, "Applies")

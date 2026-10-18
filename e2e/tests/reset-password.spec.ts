@@ -113,7 +113,7 @@ test('Given a reset link older than an hour, when Dad submits a new password, th
   await forgot.open();
   await forgot.requestLink(DAD.email);
   const link = await resetLinkFor(DAD.email);
-  expireResetLinks();
+  await expireResetLinks();
 
   const reset = new ResetPasswordPage(page);
   await reset.openLink(link);

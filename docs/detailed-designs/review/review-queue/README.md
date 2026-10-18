@@ -45,7 +45,7 @@ The parent reviews the reader's chapters through Shelfie; the reader produces th
 
 ### Containers
 
-The Review page in the Angular application calls the Express API, which reads the queue, finished books, weekly stats and activity from the SQLite database.
+The Review page in the Angular application calls the Express API, which reads the queue, finished books, weekly stats and activity from the PostgreSQL database.
 
 ![C4 container view for the review queue](diagrams/c4-container.png)
 

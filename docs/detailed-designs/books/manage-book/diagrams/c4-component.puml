@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate(updateBookSchema)", "Middleware (zod)", "Title 1-120, author up to 120, chapterCount 1-200; 400 with errors[]")
   Component(service, "books.service.ts", "Service", "listBooks; updateBook with chapter-count floor; deleteBook")
   Component(repo, "books.repo.ts", "Repository", "listBooksWithProgress, countChapterLogs, updateBook, deleteBookCascade (transaction)")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, answer, question, reward")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, chapter_log, answer, question, reward")
 }
 Rel(web, router, "GET, PATCH, DELETE", "JSON/HTTPS")
 Rel(router, authz, "Applies")

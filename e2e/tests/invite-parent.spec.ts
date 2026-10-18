@@ -19,7 +19,7 @@ test('Given Dad invites Priya by e-mail, when he sends, then a link is mailed to
   await expect(dialog.heading()).toHaveText('Invite sent');
   await expect(dialog.confirmation()).toContainText(`We e-mailed ${PRIYA}.`);
   await expect.poll(() => mailFor(PRIYA).length).toBe(1);
-  expect(inviteLinkFor(PRIYA)).toContain('/accept-invite?token=');
+  expect(await inviteLinkFor(PRIYA)).toContain('/accept-invite?token=');
   await dialog.done();
 
   await expect(dialog.dialog()).toBeHidden();
@@ -76,12 +76,12 @@ test('Given a pending invite, when Dad chooses Send again, then a fresh link is 
   const dialog = new InviteParentDialog(page);
   await dialog.send(PRIYA);
   await dialog.done();
-  const first = inviteLinkFor(PRIYA);
+  const first = await inviteLinkFor(PRIYA);
 
   await settings.sendInviteAgain(PRIYA);
 
   await expect(settings.toast(`Invite sent again to ${PRIYA}`)).toBeVisible();
   await expect.poll(() => mailFor(PRIYA).length).toBe(2);
-  expect(inviteLinkFor(PRIYA)).not.toBe(first);
+  expect(await inviteLinkFor(PRIYA)).not.toBe(first);
   await expect(settings.parent(PRIYA)).toHaveCount(1);
 });

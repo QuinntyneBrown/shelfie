@@ -8,7 +8,7 @@ Person(grownUp, "Parent", "Opens Review")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "sh-streak-badge in the top bar, shelf hero line, Review streak tile")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Derives the streak from read_on days in the household time zone inside the shelf and review responses")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "household.time_zone, chapter_log.read_on; nothing stores the streak")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "household.time_zone, chapter_log.read_on; nothing stores the streak")
 }
 Rel(reader, web, "Reads the streak", "HTTPS")
 Rel(grownUp, web, "Reads the streak", "HTTPS")

@@ -8,7 +8,7 @@ Person(reader, "Reader", "Signs in with username and password")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Sign-in page with username, password and Remember me")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Verifies the password, creates the session, sets the session cookie")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "users and session tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "users and session tables")
 }
 Rel(parent, web, "Enters credentials", "HTTPS")
 Rel(reader, web, "Enters credentials", "HTTPS")

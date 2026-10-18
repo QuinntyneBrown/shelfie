@@ -27,7 +27,7 @@ box "Backend — Shelfie API (services)" #ECFDF3
   participant "settings.service.ts" as service
 end box
 box "Backend — Shelfie infrastructure" #FFF4E5
-  database "Shelfie database (SQLite)" as db
+  database "Shelfie database (PostgreSQL)" as db
 end box
 
 grownUp -> page : Pick Match the device, Always light or Always dark

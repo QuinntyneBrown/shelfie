@@ -53,7 +53,7 @@ A parent or a reader signs in to Shelfie with a username and password.
 
 ### Containers
 
-The sign-in page in the Angular application posts credentials to the Express API, which verifies the password against the SQLite database and sets the session cookie.
+The sign-in page in the Angular application posts credentials to the Express API, which verifies the password against the PostgreSQL database and sets the session cookie.
 
 ![C4 container view for signing in with a password](diagrams/c4-container.png)
 

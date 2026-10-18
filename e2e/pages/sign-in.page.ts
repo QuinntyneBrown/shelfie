@@ -42,6 +42,8 @@ export class SignInPage {
   }
 
   async fillCredentials(username: string, password: string) {
+    // After a sign-out the previous page can still be on screen for a moment, with fields of its own.
+    await this.page.waitForURL(/\/sign-in(\?|$)/);
     await this.usernameField().fill(username);
     await this.passwordField().fill(password);
   }

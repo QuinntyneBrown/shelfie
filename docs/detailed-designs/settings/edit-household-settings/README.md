@@ -47,7 +47,7 @@ The parent edits their own account in Shelfie.
 
 ### Containers
 
-The Settings page in the Angular application loads and saves through the Express API, which reads and writes the parent's row in the SQLite database.
+The Settings page in the Angular application loads and saves through the Express API, which reads and writes the parent's row in the PostgreSQL database.
 
 ![C4 container view for editing household settings](diagrams/c4-container.png)
 

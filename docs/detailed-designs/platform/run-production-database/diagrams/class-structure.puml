@@ -1,0 +1,88 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run the production database
+
+class Db <<db.ts>> {
+  +openDb(url: string): Pool
+  +migrate(pool: Pool): Promise<void>
+  +all<T>(db: Db, sql: string, params: unknown[]): Promise<T[]>
+  +get<T>(db: Db, sql: string, params: unknown[]): Promise<T | undefined>
+  +run(db: Db, sql: string, params: unknown[]): Promise<number>
+  +transaction<T>(pool: Pool, fn: (client) => Promise<T>): Promise<T>
+  -max: 10
+  -connectionTimeoutMillis: 5000
+  -ssl: rejectUnauthorized when NODE_ENV=production
+}
+
+class Migration <<migrations/*.sql>> {
+  +name: string
+  +sql: string
+}
+
+class SchemaMigration <<table>> {
+  +name: TEXT PRIMARY KEY
+  +applied_at: TEXT
+}
+
+class Purge <<purge.ts>> {
+  +purgeExpired(db: Db, now: Date): Promise<void>
+  -rateLimitWindowMinutes: 10
+}
+
+class SqliteImport <<import-sqlite.ts>> {
+  +importSqlite(sqlitePath: string, pool: Pool): Promise<void>
+  -tables: household, profile, device, session, password_reset, book, chapter_log, answer, question, reward, sign_in_attempt
+}
+
+class Household <<table>> {
+  +id: TEXT PRIMARY KEY
+  +time_zone: TEXT
+  +theme: TEXT
+}
+
+class Profile <<table>> {
+  +id: TEXT PRIMARY KEY
+  +household_id: TEXT REFERENCES household ON DELETE CASCADE
+  +email: TEXT UNIQUE
+  +password_hash: TEXT
+  +pin_hash: TEXT
+}
+
+class Book <<table>> {
+  +id: TEXT PRIMARY KEY
+  +household_id: TEXT REFERENCES household ON DELETE CASCADE
+}
+
+class ChapterLog <<table>> {
+  +id: TEXT PRIMARY KEY
+  +book_id: TEXT REFERENCES book ON DELETE CASCADE
+}
+
+class Answer <<table>> {
+  +chapter_log_id: TEXT REFERENCES chapter_log ON DELETE CASCADE
+}
+
+class Session <<table>> {
+  +profile_id: TEXT REFERENCES profile ON DELETE CASCADE
+  +expires_at: TEXT
+}
+
+Db ..> Migration : reads in file-name order
+Db --> SchemaMigration : records applied names
+Purge ..> Db : DELETE expired rows
+SqliteImport ..> Db : INSERT rows in one transaction
+Household "1" *-- "*" Profile : owns
+Household "1" *-- "*" Book : owns
+Profile "1" *-- "*" Session : owns
+Book "1" *-- "*" ChapterLog : owns
+ChapterLog "1" *-- "*" Answer : owns
+@enduml

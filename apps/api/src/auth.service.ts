@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
+import { get, run, transaction, type Db } from './db.ts';
 import { sendMail, type Mail } from './mail.ts';
 import { Problem } from './problem.ts';
 import { hashSecret, verifySecret } from './secret.ts';
@@ -37,18 +38,18 @@ const DUMMY_HASH = hashSecret('not-a-real-password');
  * Creates a session for the profile. A remembered session's cookie outlives the browser; an
  * unremembered one ends with it. Both rows idle out after SESSION_DAYS of no requests.
  */
-export function createSession(db: DatabaseSync, profile: Omit<ProfileRow, 'password_hash'>, remember = true): Session {
+export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_hash'>, remember = true): Promise<Session> {
   const id = randomBytes(32).toString('hex');
   const now = new Date();
   const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  db.prepare('INSERT INTO session (id, profile_id, created_at, expires_at, remember) VALUES (?, ?, ?, ?, ?)').run(
+  await run(db, 'INSERT INTO session (id, profile_id, created_at, expires_at, remember) VALUES ($1, $2, $3, $4, $5)', [
     id,
     profile.id,
     now.toISOString(),
     expires.toISOString(),
     remember ? 1 : 0,
-  );
-  const { theme } = db.prepare('SELECT theme FROM household WHERE id = ?').get(profile.household_id) as { theme: string };
+  ]);
+  const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [profile.household_id]))!;
   return {
     id,
     remember,
@@ -62,13 +63,13 @@ export function createSession(db: DatabaseSync, profile: Omit<ProfileRow, 'passw
   };
 }
 
-export function findProfileByUsername(db: DatabaseSync, username: string): ProfileRow | undefined {
-  return db.prepare(`SELECT ${PROFILE_COLUMNS} FROM profile WHERE lower(username) = lower(?)`).get(username) as ProfileRow | undefined;
+export function findProfileByUsername(db: Db, username: string): Promise<ProfileRow | undefined> {
+  return get<ProfileRow>(db, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE lower(username) = lower($1)`, [username]);
 }
 
 /** Signs a parent or a reader in. An unknown username and a wrong password fail the same way. */
-export function signInWithPassword(db: DatabaseSync, username: string, password: string, remember: boolean): Session | null {
-  const profile = findProfileByUsername(db, username);
+export async function signInWithPassword(db: Db, username: string, password: string, remember: boolean): Promise<Session | null> {
+  const profile = await findProfileByUsername(db, username);
   const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
   return profile && profile.password_hash && valid ? createSession(db, profile, remember) : null;
 }
@@ -81,25 +82,24 @@ export interface SignUpInput {
 }
 
 /** Which of a new account's username and e-mail another parent or reader already holds. */
-export function takenFields(db: DatabaseSync, username: string, email: string | null, exceptId = ''): string[] {
+export async function takenFields(db: Db, username: string, email: string | null, exceptId = ''): Promise<string[]> {
   const taken: string[] = [];
-  if (email && db.prepare('SELECT 1 FROM profile WHERE email = ? AND id != ?').get(email, exceptId)) taken.push('email');
-  if (db.prepare('SELECT 1 FROM profile WHERE lower(username) = lower(?) AND id != ?').get(username, exceptId)) taken.push('username');
+  if (email && (await get(db, 'SELECT 1 FROM profile WHERE email = $1 AND id != $2', [email, exceptId]))) taken.push('email');
+  if (await get(db, 'SELECT 1 FROM profile WHERE lower(username) = lower($1) AND id != $2', [username, exceptId])) taken.push('username');
   return taken;
 }
 
 /** Starts a household with this parent as its only member and signs them in. */
-export function signUp(db: DatabaseSync, input: SignUpInput): Session {
+export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
   const email = input.email.trim().toLowerCase();
-  const taken = takenFields(db, input.username, email);
+  const taken = await takenFields(pool, input.username, email);
   if (taken.length) throw new Problem(409, 'taken', { fields: taken });
   const passwordHash = hashSecret(input.password);
   const householdId = randomUUID();
   const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
-  db.exec('BEGIN');
-  try {
-    db.prepare('INSERT INTO household (id) VALUES (?)').run(householdId);
-    db.prepare('INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+  return transaction(pool, async (db) => {
+    await run(db, 'INSERT INTO household (id) VALUES ($1)', [householdId]);
+    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
       parent.id,
       householdId,
       parent.role,
@@ -108,48 +108,39 @@ export function signUp(db: DatabaseSync, input: SignUpInput): Session {
       parent.username,
       email,
       passwordHash,
-    );
-    const session = createSession(db, parent);
-    db.exec('COMMIT');
-    return session;
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+    ]);
+    return createSession(db, parent);
+  });
 }
 
 const RESET_HOURS = 1;
 export const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
 
 /** Mails a reset link when the address belongs to a parent; says nothing either way. */
-export async function requestPasswordReset(db: DatabaseSync, email: string, mail: Mail = sendMail) {
-  const profile = db.prepare("SELECT id FROM profile WHERE email = ? AND role = 'parent'").get(email.toLowerCase()) as { id: string } | undefined;
+export async function requestPasswordReset(db: Db, email: string, mail: Mail = sendMail) {
+  const profile = await get<{ id: string }>(db, "SELECT id FROM profile WHERE email = $1 AND role = 'parent'", [email.toLowerCase()]);
   if (!profile) return;
   const token = randomBytes(32).toString('base64url');
   const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
-  db.prepare('INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES (?, ?, ?)').run(sha256(token), profile.id, expires);
+  await run(db, 'INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES ($1, $2, $3)', [sha256(token), profile.id, expires]);
   const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
   await mail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
 }
 
 /** Spends a reset token: sets the new password, ends every session of the parent and signs them in. Null when the link is used or expired. */
-export function resetPassword(db: DatabaseSync, token: string, password: string): Session | null {
-  const reset = db
-    .prepare('SELECT token_hash, profile_id FROM password_reset WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?')
-    .get(sha256(token), new Date().toISOString()) as { token_hash: string; profile_id: string } | undefined;
+export async function resetPassword(pool: Pool, token: string, password: string): Promise<Session | null> {
+  const reset = await get<{ token_hash: string; profile_id: string }>(
+    pool,
+    'SELECT token_hash, profile_id FROM password_reset WHERE token_hash = $1 AND used_at IS NULL AND expires_at > $2',
+    [sha256(token), new Date().toISOString()],
+  );
   if (!reset) return null;
-  const profile = db.prepare(`SELECT ${PROFILE_COLUMNS} FROM profile WHERE id = ?`).get(reset.profile_id) as unknown as ProfileRow;
+  const profile = (await get<ProfileRow>(pool, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE id = $1`, [reset.profile_id]))!;
 
-  db.exec('BEGIN');
-  try {
-    db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(password), profile.id);
-    db.prepare('UPDATE password_reset SET used_at = ? WHERE token_hash = ?').run(new Date().toISOString(), reset.token_hash);
-    db.prepare('DELETE FROM session WHERE profile_id = ?').run(profile.id);
-    const session = createSession(db, profile);
-    db.exec('COMMIT');
-    return session;
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+  return transaction(pool, async (db) => {
+    await run(db, 'UPDATE profile SET password_hash = $1 WHERE id = $2', [hashSecret(password), profile.id]);
+    await run(db, 'UPDATE password_reset SET used_at = $1 WHERE token_hash = $2', [new Date().toISOString(), reset.token_hash]);
+    await run(db, 'DELETE FROM session WHERE profile_id = $1', [profile.id]);
+    return createSession(db, profile);
+  });
 }

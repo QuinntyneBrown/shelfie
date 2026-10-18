@@ -15,7 +15,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(authService, "auth.service.ts", "Service", "Joins household.theme into the session payload")
   Component(settingsService, "settings.service.ts", "Service", "updateSettings writes household.theme")
   Component(repo, "settings.repo.ts", "Repository", "updateTheme, findHouseholdSettings")
-  ComponentDb(db, "Shelfie database", "SQLite", "household")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household")
 }
 Rel(page, settingsApi, "save(patch) with theme")
 Rel(page, theme, "apply(theme) after a successful save")

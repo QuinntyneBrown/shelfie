@@ -49,7 +49,7 @@ npm install
 npm run dev
 ```
 
-See the [README](README.md#getting-started) for prerequisites.
+See the [README](README.md#getting-started) for prerequisites, including the local PostgreSQL 16 server the API and the tests use.
 
 ## Making changes
 

@@ -1,17 +1,18 @@
 import { randomUUID } from 'node:crypto';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
+import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
 
 const UNDO_SECONDS = 10;
+const UNIQUE_VIOLATION = '23505';
 
 const dayIn = (timeZone: string, date: Date) => new Intl.DateTimeFormat('en-CA', { timeZone }).format(date);
 
-function householdToday(db: DatabaseSync, householdId: string): string {
-  const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
+async function householdToday(db: Db, householdId: string): Promise<string> {
+  const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   return dayIn(time_zone, new Date());
 }
-
 
 export interface LogRequest {
   readOn: string;
@@ -27,71 +28,78 @@ interface BookRow {
   sticker: string;
 }
 
-function findBook(db: DatabaseSync, householdId: string, bookId: string, n: number): BookRow {
-  const book = db
-    .prepare('SELECT id, title, author, chapter_count, cover_color, sticker FROM book WHERE id = ? AND household_id = ?')
-    .get(bookId, householdId) as BookRow | undefined;
+async function findBook(db: Db, householdId: string, bookId: string, n: number): Promise<BookRow> {
+  const book = await get<BookRow>(db, 'SELECT id, title, author, chapter_count, cover_color, sticker FROM book WHERE id = $1 AND household_id = $2', [
+    bookId,
+    householdId,
+  ]);
   if (!book || n > book.chapter_count) throw new Problem(404, 'not-found');
   return book;
 }
 
-function loggedCount(db: DatabaseSync, bookId: string): number {
-  return (db.prepare('SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = ?').get(bookId) as { count: number }).count;
+async function loggedCount(db: Db, bookId: string): Promise<number> {
+  return (await get<{ count: number }>(db, 'SELECT COUNT(*) AS count FROM chapter_log WHERE book_id = $1', [bookId]))!.count;
 }
 
-function refuseIfLogged(db: DatabaseSync, bookId: string, n: number) {
-  const existing = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(bookId, n) as { id: string } | undefined;
+async function refuseIfLogged(db: Db, bookId: string, n: number) {
+  const existing = await get<{ id: string }>(db, 'SELECT id FROM chapter_log WHERE book_id = $1 AND chapter_number = $2', [bookId, n]);
   if (existing) throw new Problem(409, 'chapter-already-logged', { chapterLogId: existing.id });
 }
 
-export function getForm(db: DatabaseSync, householdId: string, bookId: string, n: number) {
-  const book = findBook(db, householdId, bookId, n);
-  refuseIfLogged(db, bookId, n);
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
+const profileName = async (db: Db, householdId: string, role: string) =>
+  (await get<{ name: string }>(db, 'SELECT name FROM profile WHERE household_id = $1 AND role = $2 ORDER BY name', [householdId, role]))?.name;
+
+const parentName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'parent'))!;
+// A household need not have a reader yet, so her name falls back to something the page can still say.
+const readerName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'reader')) ?? 'your reader';
+
+export async function getForm(db: Db, householdId: string, bookId: string, n: number) {
+  const book = await findBook(db, householdId, bookId, n);
+  await refuseIfLogged(db, bookId, n);
   return {
     book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker },
     chapterNumber: n,
-    today: householdToday(db, householdId),
-    grownUpName: grownUp.name,
-    questions: questionsForBook(db, bookId).map((text, i) => ({ position: i + 1, text, required: i === 0 })),
+    today: await householdToday(db, householdId),
+    grownUpName: await parentName(db, householdId),
+    questions: (await questionsForBook(db, bookId)).map((text, i) => ({ position: i + 1, text, required: i === 0 })),
   };
 }
 
-export function logChapter(db: DatabaseSync, householdId: string, bookId: string, n: number, request: LogRequest) {
-  const book = findBook(db, householdId, bookId, n);
-  if (request.readOn > householdToday(db, householdId)) throw new Problem(400, 'future-date');
-  refuseIfLogged(db, bookId, n);
-  if (n !== loggedCount(db, bookId) + 1) throw new Problem(409, 'chapter-out-of-order');
+export async function logChapter(pool: Pool, householdId: string, bookId: string, n: number, request: LogRequest) {
+  const book = await findBook(pool, householdId, bookId, n);
+  if (request.readOn > (await householdToday(pool, householdId))) throw new Problem(400, 'future-date');
+  await refuseIfLogged(pool, bookId, n);
+  if (n !== (await loggedCount(pool, bookId)) + 1) throw new Problem(409, 'chapter-out-of-order');
   const id = randomUUID();
   const loggedAt = new Date();
   const undoUntil = new Date(loggedAt.getTime() + UNDO_SECONDS * 1000);
 
-  db.exec('BEGIN');
   try {
-    db.prepare('INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES (?, ?, ?, ?, ?, ?)').run(
-      id,
-      bookId,
-      n,
-      request.readOn,
-      loggedAt.toISOString(),
-      undoUntil.toISOString(),
-    );
-    const insertAnswer = db.prepare('INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES (?, ?, ?, ?, ?)');
-    questionsForBook(db, bookId).forEach((question, i) => {
-      const text = request.answers.find((a) => a.position === i + 1)?.text ?? '';
-      insertAnswer.run(randomUUID(), id, i + 1, question, text);
+    // The log, its answers and the finished mark commit together, so a 201 means they are all on the server.
+    await transaction(pool, async (db) => {
+      await run(db, 'INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ($1, $2, $3, $4, $5, $6)', [
+        id,
+        bookId,
+        n,
+        request.readOn,
+        loggedAt.toISOString(),
+        undoUntil.toISOString(),
+      ]);
+      const questions = await questionsForBook(db, bookId);
+      for (const [i, question] of questions.entries()) {
+        const text = request.answers.find((a) => a.position === i + 1)?.text ?? '';
+        await run(db, 'INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES ($1, $2, $3, $4, $5)', [randomUUID(), id, i + 1, question, text]);
+      }
+      if ((await loggedCount(db, bookId)) === book.chapter_count) {
+        await run(db, 'UPDATE book SET finished_at = $1 WHERE id = $2', [loggedAt.toISOString(), bookId]);
+      }
     });
-    if (loggedCount(db, bookId) === book.chapter_count) {
-      db.prepare('UPDATE book SET finished_at = ? WHERE id = ?').run(loggedAt.toISOString(), bookId);
-    }
-    db.exec('COMMIT');
   } catch (e) {
-    db.exec('ROLLBACK');
-    if (e instanceof Error && e.message.includes('UNIQUE')) throw new Problem(409, 'chapter-already-logged');
+    if ((e as { code?: string }).code === UNIQUE_VIOLATION) throw new Problem(409, 'chapter-already-logged');
     throw e;
   }
 
-  const count = loggedCount(db, bookId);
+  const count = await loggedCount(pool, bookId);
   return {
     chapterLogId: id,
     undoUntil: undoUntil.toISOString(),
@@ -101,17 +109,19 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
   };
 }
 
-export function undoLog(db: DatabaseSync, householdId: string, chapterLogId: string) {
-  const log = db
-    .prepare('SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
-    .get(chapterLogId, householdId) as { id: string; book_id: string; chapter_number: number; undo_until: string } | undefined;
+export async function undoLog(db: Db, householdId: string, chapterLogId: string) {
+  const log = await get<{ id: string; book_id: string; chapter_number: number; undo_until: string }>(
+    db,
+    'SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2',
+    [chapterLogId, householdId],
+  );
   if (!log) throw new Problem(404, 'not-found');
   if (log.undo_until < new Date().toISOString()) throw new Problem(409, 'undo-expired');
   // Only the newest chapter of a book can be undone, so the logged chapters never have a gap.
-  const { latest } = db.prepare('SELECT MAX(chapter_number) AS latest FROM chapter_log WHERE book_id = ?').get(log.book_id) as { latest: number };
+  const { latest } = (await get<{ latest: number }>(db, 'SELECT MAX(chapter_number) AS latest FROM chapter_log WHERE book_id = $1', [log.book_id]))!;
   if (log.chapter_number !== latest) throw new Problem(409, 'undo-not-latest');
-  db.prepare('DELETE FROM chapter_log WHERE id = ?').run(log.id);
-  db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(log.book_id);
+  await run(db, 'DELETE FROM chapter_log WHERE id = $1', [log.id]);
+  await run(db, 'UPDATE book SET finished_at = NULL WHERE id = $1', [log.book_id]);
 }
 
 export interface ChapterView {
@@ -127,40 +137,41 @@ export interface ChapterView {
   nextChapterLogId: string | null;
 }
 
-export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: string): ChapterView {
-  const log = db
-    .prepare(
-      `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
-         FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?`,
-    )
-    .get(chapterLogId, householdId) as
-    | {
-        id: string;
-        chapter_number: number;
-        read_on: string;
-        reviewed_at: string | null;
-        review_sticker: string | null;
-        note: string | null;
-        feedback_seen_at: string | null;
-        book_id: string; title: string; cover_color: string; sticker: string; chapter_count: number }
-    | undefined;
+export async function getChapter(db: Db, householdId: string, chapterLogId: string): Promise<ChapterView> {
+  const log = await get<{
+    id: string;
+    chapter_number: number;
+    read_on: string;
+    reviewed_at: string | null;
+    review_sticker: string | null;
+    note: string | null;
+    feedback_seen_at: string | null;
+    book_id: string;
+    title: string;
+    cover_color: string;
+    sticker: string;
+    chapter_count: number;
+  }>(
+    db,
+    `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
+       FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2`,
+    [chapterLogId, householdId],
+  );
   if (!log) throw new Problem(404, 'not-found');
-  const answers = db
-    .prepare('SELECT position, question_text AS questionText, text FROM answer WHERE chapter_log_id = ? ORDER BY position')
-    .all(log.id) as unknown as ChapterView['answers'];
-  const next = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(log.book_id, log.chapter_number + 1) as
-    | { id: string }
-    | undefined;
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
+  const answers = await all<ChapterView['answers'][number]>(
+    db,
+    'SELECT position, question_text AS "questionText", text FROM answer WHERE chapter_log_id = $1 ORDER BY position',
+    [log.id],
+  );
+  const next = await get<{ id: string }>(db, 'SELECT id FROM chapter_log WHERE book_id = $1 AND chapter_number = $2', [log.book_id, log.chapter_number + 1]);
   return {
     id: log.id,
     book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
     chapterNumber: log.chapter_number,
     readOn: log.read_on,
-    today: householdToday(db, householdId),
-    grownUpName: grownUp.name,
-    readerName: reader?.name ?? 'your reader',
+    today: await householdToday(db, householdId),
+    grownUpName: await parentName(db, householdId),
+    readerName: await readerName(db, householdId),
     answers,
     review: log.reviewed_at
       ? { sticker: log.review_sticker!, note: log.note, reviewedAt: log.reviewed_at, feedbackSeenAt: log.feedback_seen_at }
@@ -170,13 +181,11 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
 }
 
 /** Notes that the reader has opened her feedback, so the shelf stops announcing it. */
-export function markFeedbackSeen(db: DatabaseSync, householdId: string, chapterLogId: string) {
-  const log = db
-    .prepare('SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
-    .get(chapterLogId, householdId);
+export async function markFeedbackSeen(db: Db, householdId: string, chapterLogId: string) {
+  const log = await get(db, 'SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2', [chapterLogId, householdId]);
   if (!log) throw new Problem(404, 'not-found');
-  db.prepare('UPDATE chapter_log SET feedback_seen_at = ? WHERE id = ? AND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL').run(
+  await run(db, 'UPDATE chapter_log SET feedback_seen_at = $1 WHERE id = $2 AND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL', [
     new Date().toISOString(),
     chapterLogId,
-  );
+  ]);
 }

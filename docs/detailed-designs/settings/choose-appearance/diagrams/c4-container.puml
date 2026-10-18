@@ -8,7 +8,7 @@ Person(reader, "Reader", "Sees the theme at sign-in")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "ThemeService sets data-theme on the html element from the session; Appearance section of SettingsPage")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Returns theme in every session payload; stores it through PATCH /api/settings")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "household.theme")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "household.theme")
 }
 Rel(grownUp, web, "Picks a setting and saves", "HTTPS")
 Rel(reader, web, "Signs in", "HTTPS")

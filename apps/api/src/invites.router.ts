@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
 import { createInvite } from './invites.service.ts';
@@ -10,7 +10,7 @@ import { validationProblem } from './validation.ts';
 
 const inviteSchema = z.object({ email: z.email() });
 
-export function invitesRouter(db: DatabaseSync, mail?: Mail) {
+export function invitesRouter(db: Pool, mail?: Mail) {
   const router = Router();
   router.use(requireSession(db), requireRole('parent'));
 

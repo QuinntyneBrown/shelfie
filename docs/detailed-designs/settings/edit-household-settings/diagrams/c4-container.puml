@@ -7,7 +7,7 @@ Person(parent, "Parent", "Edits their own account")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "SettingsPage with the Your account section")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Verifies the current password, hashes the new password, writes the parent")
-  ContainerDb(db, "Shelfie database", "SQLite", "users and household tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "users and household tables")
 }
 Rel(parent, web, "Edits and saves the form", "HTTPS")
 Rel(web, api, "GET /api/settings, PATCH /api/settings", "JSON/HTTPS")

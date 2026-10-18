@@ -8,7 +8,7 @@ Person(parent, "Parent", "Signs out")
 System_Boundary(shelfie, "Shelfie") {
   Container(web, "Shelfie web", "Angular", "Restores the session at start, shows the account menu and the expired message")
   Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Resolves the session cookie, slides remembered sessions, refuses expired sessions, deletes sessions on sign-out")
-  ContainerDb(db, "Shelfie database", "SQLite (better-sqlite3)", "session and users tables")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "session and users tables")
 }
 Rel(reader, web, "Opens the account menu", "HTTPS")
 Rel(parent, web, "Opens the account menu", "HTTPS")

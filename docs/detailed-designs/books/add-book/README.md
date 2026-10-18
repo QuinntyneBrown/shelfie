@@ -46,7 +46,7 @@ Either person adds a book; it appears on the reader's shelf.
 
 ### Containers
 
-The add-book page in the Angular application posts to the Express API, which inserts the book into the SQLite database.
+The add-book page in the Angular application posts to the Express API, which inserts the book into the PostgreSQL database.
 
 ![C4 container view for adding a book](diagrams/c4-container.png)
 

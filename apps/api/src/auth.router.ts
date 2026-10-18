@@ -1,7 +1,8 @@
 import { Router, type Response } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
+import { run } from './db.ts';
 import { passwordSignInLimiter } from './rate-limit.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
 import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type Session } from './auth.service.ts';
@@ -32,13 +33,13 @@ export function sessionSummary({ id, remember, ...summary }: Session) {
   return summary;
 }
 
-export function authRouter(db: DatabaseSync, mail?: Mail) {
+export function authRouter(db: Pool, mail?: Mail) {
   const router = Router();
 
   /** A new sign-in always gets a new session id; the browser's previous one stops working. */
-  const endPreviousSession = (cookieHeader: string | undefined) => {
+  const endPreviousSession = async (cookieHeader: string | undefined) => {
     const previous = readCookie(cookieHeader, 'shelfie_session');
-    if (previous) db.prepare('DELETE FROM session WHERE id = ?').run(previous);
+    if (previous) await run(db, 'DELETE FROM session WHERE id = $1', [previous]);
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
@@ -46,9 +47,9 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     res.json({ profileId, name, username, role, color, email, theme });
   });
 
-  router.post('/sign-out', (req, res) => {
+  router.post('/sign-out', async (req, res) => {
     const id = readCookie(req.headers.cookie, 'shelfie_session');
-    if (id) db.prepare('DELETE FROM session WHERE id = ?').run(id);
+    if (id) await run(db, 'DELETE FROM session WHERE id = $1', [id]);
     res.clearCookie('shelfie_session');
     res.status(204).end();
   });
@@ -60,24 +61,24 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     res.status(202).end();
   });
 
-  router.post('/reset-password', (req, res) => {
+  router.post('/reset-password', async (req, res) => {
     const body = resetPasswordSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
 
-    const session = resetPassword(db, body.data.token, body.data.password);
+    const session = await resetPassword(db, body.data.token, body.data.password);
     if (!session) return res.status(400).json({ type: 'reset-token-invalid' });
 
-    endPreviousSession(req.headers.cookie);
+    await endPreviousSession(req.headers.cookie);
     setSessionCookie(res, session);
     res.json(sessionSummary(session));
   });
 
-  router.post('/sign-up', (req, res) => {
+  router.post('/sign-up', async (req, res) => {
     const body = signUpSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      const session = signUp(db, body.data);
-      endPreviousSession(req.headers.cookie);
+      const session = await signUp(db, body.data);
+      await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));
     } catch (e) {
@@ -86,21 +87,21 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     }
   });
 
-  router.get('/invites/:token', (req, res) => {
+  router.get('/invites/:token', async (req, res) => {
     try {
-      res.json(getInvite(db, String(req.params['token'])));
+      res.json(await getInvite(db, String(req.params['token'])));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type, ...e.extra });
     }
   });
 
-  router.post('/accept-invite', (req, res) => {
+  router.post('/accept-invite', async (req, res) => {
     const body = acceptInviteSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      const session = acceptInvite(db, body.data);
-      endPreviousSession(req.headers.cookie);
+      const session = await acceptInvite(db, body.data);
+      await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));
     } catch (e) {
@@ -109,14 +110,14 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     }
   });
 
-  router.post('/password', passwordSignInLimiter(db), (req, res) => {
+  router.post('/password', passwordSignInLimiter(db), async (req, res) => {
     const body = passwordSignInSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
 
-    const session = signInWithPassword(db, body.data.username, body.data.password, body.data.remember);
+    const session = await signInWithPassword(db, body.data.username, body.data.password, body.data.remember);
     if (!session) return res.status(401).json({ type: 'credentials-invalid' });
 
-    endPreviousSession(req.headers.cookie);
+    await endPreviousSession(req.headers.cookie);
     setSessionCookie(res, session);
     res.json(sessionSummary(session));
   });

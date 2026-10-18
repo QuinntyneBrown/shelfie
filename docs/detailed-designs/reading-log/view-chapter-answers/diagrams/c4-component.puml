@@ -8,7 +8,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(router, "chapters.router.ts", "Express Router", "GET /chapter-logs/:id, POST /chapter-logs/:id/seen")
   Component(service, "chapters.service.ts", "Service", "getChapter (household check, answers, review); markFeedbackSeen")
   Component(repo, "chapters.repo.ts", "Repository", "Parameterised SQL over chapter_log, answer and book")
-  ComponentDb(db, "Shelfie database", "SQLite", "chapter_log, answer, book")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "chapter_log, answer, book")
 }
 Rel(web, router, "Chapter and seen requests", "JSON/HTTPS")
 Rel(router, service, "getChapter, markFeedbackSeen")

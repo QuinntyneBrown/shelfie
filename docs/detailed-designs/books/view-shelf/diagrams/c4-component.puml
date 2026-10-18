@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(service, "shelf.service.ts", "Service", "getShelf: groups reading / up next / finished, picks hero, attaches rewards and unseen feedback")
   Component(chapters, "chapters.service.ts", "Service", "Computes the streak from chapter_log.read_on (reading-log/track-streak)")
   Component(repo, "shelf.repo.ts", "Repository", "listBooksWithProgress, listRewards, listUnseenFeedback")
-  ComponentDb(db, "Shelfie database", "SQLite", "book, chapter_log, reward")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, chapter_log, reward")
 }
 Rel(web, router, "GET /api/shelf", "JSON/HTTPS")
 Rel(router, authz, "Applies")

@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import { get, run, type Db } from './db.ts';
 
 /** A session lasts this long after its last request. */
 export const SESSION_DAYS = 30;
@@ -24,24 +24,25 @@ export function readCookie(header: string | undefined, name: string): string | n
 }
 
 /** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */
-export function requireSession(db: DatabaseSync) {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function requireSession(db: Db) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     const id = readCookie(req.headers.cookie, 'shelfie_session');
     const row = id
-      ? (db
-          .prepare(
-            'SELECT p.id AS profileId, p.name AS name, p.username AS username, p.color AS color, p.email AS email, h.theme AS theme, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = ?',
-          )
-          .get(id) as (RequestSession & { expiresAt: string }) | undefined)
+      ? await get<RequestSession & { expiresAt: string }>(
+          db,
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt"
+             FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = $1`,
+          [id],
+        )
       : undefined;
     if (!row) return res.status(401).json({ type: 'no-session' });
     if (row.expiresAt <= new Date().toISOString()) {
-      db.prepare('DELETE FROM session WHERE id = ?').run(id);
+      await run(db, 'DELETE FROM session WHERE id = $1', [id]);
       res.clearCookie('shelfie_session');
       return res.status(401).json({ type: 'session-expired' });
     }
     const slidTo = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-    db.prepare('UPDATE session SET expires_at = ? WHERE id = ?').run(slidTo, id);
+    await run(db, 'UPDATE session SET expires_at = $1 WHERE id = $2', [slidTo, id]);
     const { expiresAt, ...session } = row;
     res.locals['session'] = session;
     next();

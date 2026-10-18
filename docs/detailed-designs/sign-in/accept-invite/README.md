@@ -49,7 +49,7 @@ An invited person opens the link and creates a parent account in Shelfie; the e-
 
 ### Containers
 
-The Accept invite page in the Angular application reads the invite and posts the new account to the Express API, which reads and writes the SQLite database.
+The Accept invite page in the Angular application reads the invite and posts the new account to the Express API, which reads and writes the PostgreSQL database.
 
 ![C4 container view for accepting an invite](diagrams/c4-container.png)
 

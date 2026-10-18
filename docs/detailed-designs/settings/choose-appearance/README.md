@@ -43,7 +43,7 @@ The parent chooses the appearance; both people see it on every device they sign 
 
 ### Containers
 
-The Angular application reads the theme from every session response and applies it to the document; the Express API stores it on the household row in the SQLite database.
+The Angular application reads the theme from every session response and applies it to the document; the Express API stores it on the household row in the PostgreSQL database.
 
 ![C4 container view for choosing the appearance](diagrams/c4-container.png)
 

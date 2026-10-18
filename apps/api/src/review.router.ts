@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { Problem } from './problem.ts';
@@ -28,32 +28,32 @@ const feedbackSchema = z.object({
 });
 import { requireSession, type RequestSession } from './session.ts';
 
-export function reviewRouter(db: DatabaseSync) {
+export function reviewRouter(db: Pool) {
   const router = Router();
 
-  router.get('/review', requireSession(db), requireRole('parent'), (_req, res) => {
+  router.get('/review', requireSession(db), requireRole('parent'), async (_req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
-    res.json(overview(db, householdId));
+    res.json(await overview(db, householdId));
   });
 
-  router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('parent'), (req, res) => {
+  router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('parent'), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = feedbackSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      res.json(sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
+      res.json(await sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });
     }
   });
 
-  router.post('/books/:id/reward', requireSession(db), requireRole('parent'), (req, res) => {
+  router.post('/books/:id/reward', requireSession(db), requireRole('parent'), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = giveRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      res.status(201).json(giveReward(db, householdId, String(req.params['id']), body.data.text, body.data.note));
+      res.status(201).json(await giveReward(db, householdId, String(req.params['id']), body.data.text, body.data.note));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });

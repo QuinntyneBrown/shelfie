@@ -29,7 +29,7 @@ box "Backend — Shelfie API (services)" #ECFDF3
   participant "chapters.service.ts" as chapters
 end box
 box "Backend — Shelfie infrastructure" #FFF4E5
-  database "Shelfie database (SQLite)" as db
+  database "Shelfie database (PostgreSQL)" as db
 end box
 
 grownUp -> page : "Remove" on a custom question (defaults have no Remove — L2-013)

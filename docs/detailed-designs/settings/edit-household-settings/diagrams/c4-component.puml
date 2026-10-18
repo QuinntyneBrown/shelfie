@@ -10,7 +10,7 @@ Container_Boundary(api, "Shelfie API") {
   Component(validate, "validate()", "Middleware (zod)", "Rejects malformed bodies with 400 and errors[]")
   Component(service, "settings.service.ts", "Service", "getSettings; updateSettings: current-password verify, e-mail uniqueness, argon2id hashing")
   Component(repo, "settings.repo.ts", "Repository", "Parameterised SQL over users and household")
-  ComponentDb(db, "Shelfie database", "SQLite", "users, household")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "users, household")
 }
 Rel(web, router, "GET /api/settings, PATCH /api/settings", "JSON/HTTPS")
 Rel(router, authz, "Applies")
