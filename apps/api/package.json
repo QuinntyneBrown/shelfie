@@ -6,7 +6,8 @@
     "start": "node src/main.ts",
     "seed": "node src/seed-cli.ts",
     "test": "node --test \"src/**/*.test.ts\"",
-    "backup": "node src/backup.ts"
+    "purge": "node src/purge.ts",
+    "import-sqlite": "node src/import-sqlite.ts"
   },
   "dependencies": {
     "@types/pg": "^8.23.1",

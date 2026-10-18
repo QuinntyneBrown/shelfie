@@ -1,4 +1,4 @@
-// Traces to: L2-033, L2-034
+// Traces to: L2-037, L2-038
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync } from 'node:fs';
