@@ -229,9 +229,16 @@ export class AddBookPage {
     return this.page.getByRole('dialog', { name: 'Pick a cover' });
   }
 
-  /** Waits for the dialog's opening animation to finish, so colours are read at rest. */
+  /** Waits for the dialog's opening animation to finish, so colours are read at rest; a cancelled one counts as done. */
   async coversSettled() {
-    await this.page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished)));
+    await this.page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+          .map((animation) => animation.finished.catch(() => undefined)),
+      ),
+    );
   }
 
   galleryCovers() {
