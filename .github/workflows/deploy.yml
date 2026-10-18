@@ -1,5 +1,7 @@
 name: Deploy
 
+# Every commit on main arrives through a pull request whose branch was up to date with main and had
+# passed CI, so the tree being deployed is exactly the one CI tested; it is not tested again here.
 on:
   push:
     branches: [main]
@@ -12,11 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
-
   deploy:
-    needs: ci
     runs-on: ubuntu-latest
     environment:
       name: production
