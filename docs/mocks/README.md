@@ -66,23 +66,6 @@ Two people share one household. Nia opens her **shelf**, taps the book she is re
 
 Navigation: the reader has one place to be (the shelf), so her top bar is just the brand, her streak and her avatar. The grown-up gets Review / Books / Settings in the top bar from 768 px and a bottom tab bar on phones.
 
-## Budget check (45-day limit)
-
-AGENTS.md caps the whole build at 45 developer-days and asks that the mock set be sized against it before writing. Estimated with the `estimating-designs` guideline (about one day per behaviour plus setup, 2 to 7 days per design):
-
-| Design | Behaviours | Days |
-|---|---|---|
-| Platform setup: Angular app, Node API, database, auth middleware, Playwright, CI | | 5 |
-| Sign in: profile picker, PIN with lockout, password, session expiry, forgot and reset password | 6 | 6 |
-| Books: shelf, add a book with cover, book page, grown-up list, manage (details, questions, remove) | 7 | 8 |
-| Reading log: log a chapter with answers, drafts, chapter page, finish-book celebration, streak | 5 | 6 |
-| Review: queue and activity, review a chapter with sticker and note, give a reward | 4 | 5 |
-| Settings: reader name, colour and PIN, grown-up e-mail and password, appearance | 3 | 3 |
-| Shell: top bar, tab bar, account menu, toasts, banners, offline queue, error pages | 4 | 4 |
-| **Total** | | **37** |
-
-37 of 45 days, leaving 8 days of margin for the unknowns that every build has. Things deliberately **not** mocked because they would not fit or are not asked for: book-cover lookup from an online catalogue, chapter titles, AI-generated questions, more than one reader per household, editing answers after they are sent, e-mail notifications, push notifications, exporting or printing.
-
 ## Open questions and assumptions
 
 These are decisions the mocks make that nobody has confirmed. Each is marked in the relevant mock with a yellow note.

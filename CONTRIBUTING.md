@@ -19,7 +19,6 @@ Thank you for your interest in contributing. This document explains how to propo
 
 Read [AGENTS.md](AGENTS.md). It is the working agreement for this repository and it applies to every contributor, human or AI. The most important rules are:
 
-- **45-day build budget.** The whole app must be buildable within 45 developer-days. Any new scope must be estimated first and must keep the total in `docs/estimates/README.md` at or under 45 days.
 - **Scope lock.** Implement exactly what the issue asks for. No speculative features, abstractions, or refactors.
 - **Documentation first.** Requirements, mocks and designs come before code.
 - **Acceptance test-driven development.** Every production change starts with a failing acceptance test.
@@ -39,7 +38,7 @@ Please check existing issues first to avoid duplicates.
 
 ## Suggesting features
 
-Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). Describe the problem the feature solves for the reader or the parent, not only the solution. Remember that every feature competes for the same 45-day budget, so say what you would cut or simplify to make room.
+Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). Describe the problem the feature solves for the reader or the parent, not only the solution.
 
 ## Development setup
 
@@ -91,7 +90,7 @@ npm test
 3. Keep the pull request proportional to the issue. A small fix should be a small diff.
 4. Be responsive to review feedback. Maintainers may ask for changes before merging.
 
-Pull requests that add unrequested scope, exceed the build budget, or ship production code without acceptance tests will be asked to be revised.
+Pull requests that add unrequested scope or ship production code without acceptance tests will be asked to be revised.
 
 ## Commit messages
 

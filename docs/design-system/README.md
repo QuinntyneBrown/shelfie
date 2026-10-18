@@ -70,7 +70,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 
 ### Left out on purpose
 
-AGENTS.md locks scope to what the mocks define, so components a generic kit would include but Shelfie never uses are **not** in this system: checkbox, select, switch, tabs, tooltip, sidebar navigation, pagination, stepper, drawer, popover, button group, spinner, description list, link-style button, interactive card, input groups and search. Their CSS was removed from the mocks' starter kit during extraction. Add one only when a mock needs it, and estimate it against the 45-day budget first.
+AGENTS.md locks scope to what the mocks define, so components a generic kit would include but Shelfie never uses are **not** in this system: checkbox, select, switch, tabs, tooltip, sidebar navigation, pagination, stepper, drawer, popover, button group, spinner, description list, link-style button, interactive card, input groups and search. Their CSS was removed from the mocks' starter kit during extraction. Add one only when a mock needs it.
 
 ## Patterns
 
