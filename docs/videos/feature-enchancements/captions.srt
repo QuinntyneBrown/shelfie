@@ -1,0 +1,52 @@
+1
+00:00:00,400 --> 00:00:02,943
+Two new touches just landed in Shelfie.
+
+2
+00:00:02,943 --> 00:00:09,790
+Books can have real cover pictures, and a review assistant helps the grown up give kind, useful feedback.
+
+3
+00:00:10,640 --> 00:00:11,891
+Nia adds The Hobbit.
+
+4
+00:00:11,891 --> 00:00:16,521
+She types the title, picks a colour and a sticker, then chooses a picture.
+
+5
+00:00:16,521 --> 00:00:19,150
+The preview shows her cover straight away.
+
+6
+00:00:20,000 --> 00:00:23,609
+The book goes on her shelf with its picture, right next to the others.
+
+7
+00:00:25,440 --> 00:00:28,728
+A grown up can change a cover any time from Manage book.
+
+8
+00:00:28,728 --> 00:00:31,430
+The new picture appears as soon as it uploads.
+
+9
+00:00:32,280 --> 00:00:36,364
+Over in Review, Dad opens a chapter and presses Help me review.
+
+10
+00:00:36,364 --> 00:00:41,939
+The assistant flags short answers that deserve a conversation, with a reason for each.
+
+11
+00:00:42,800 --> 00:00:45,052
+It also drafts an encouraging note.
+
+12
+00:00:45,052 --> 00:00:50,200
+Dad can use it as it is, or make it his own, pick a sticker, and send it to Nia.
+
+13
+00:00:51,000 --> 00:00:57,890
+Nothing is sent until Dad says so, and if the assistant is ever unavailable, reviewing works just as before.
+
