@@ -24,3 +24,4 @@ export * from './lib/celebration/celebration';
 export * from './lib/activity-item/activity-item';
 export * from './lib/avatar/avatar';
 export * from './lib/photo-picker/photo-picker';
+export * from './lib/cover-picker/cover-picker';

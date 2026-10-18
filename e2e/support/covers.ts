@@ -16,7 +16,10 @@ export async function uploadCoverViaApi(page: Page, bookId: string, file = cover
   return ((await response.json()) as { coverImage: string }).coverImage;
 }
 
+/** Every request for a book's cover picture: its upload, removal and the picture itself. */
+export const coverPictureRoute = /\/api\/books\/[^/]+\/cover(\?|$)/;
+
 /** Makes every cover picture fail to load, as a dropped connection would. */
 export async function breakCoverPictures(page: Page) {
-  await page.route('**/api/books/*/cover?v=*', (route) => (route.request().method() === 'GET' ? route.abort() : route.continue()));
+  await page.route(coverPictureRoute, (route) => (route.request().method() === 'GET' ? route.abort() : route.continue()));
 }

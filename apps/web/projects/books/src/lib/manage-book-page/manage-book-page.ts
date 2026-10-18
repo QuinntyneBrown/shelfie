@@ -9,7 +9,16 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, Cover, Dialog, Progress, TextField } from 'components';
+import {
+  Banner,
+  Button,
+  COVER_PICTURE_ERRORS,
+  Cover,
+  CoverPicker,
+  Dialog,
+  Progress,
+  TextField,
+} from 'components';
 import { ApiError, ToastService } from 'core';
 import { BookDetail, BooksApi, CustomQuestion } from '../books-api';
 import { QuestionDialog } from '../question-dialog/question-dialog';
@@ -20,6 +29,7 @@ import { QuestionDialog } from '../question-dialog/question-dialog';
     Banner,
     Button,
     Cover,
+    CoverPicker,
     DatePipe,
     Dialog,
     Progress,
@@ -53,6 +63,11 @@ export class ManageBookPage {
   protected readonly removeOpen = signal(false);
   protected readonly removing = signal(false);
   protected readonly removeFailed = signal(false);
+  protected readonly coverBusy = signal(false);
+  /** The picker's error when the server refuses the file. */
+  protected readonly coverError = signal<string | null>(null);
+  /** The heading of the cover failure banner, and what Try again repeats. */
+  protected readonly coverFailure = signal<{ title: string; retry: () => void } | null>(null);
   /** Logged chapters, newest first. */
   protected readonly logged = computed(() =>
     (this.book()?.chapters ?? []).filter((c) => c.log !== null).reverse(),
@@ -110,6 +125,43 @@ export class ManageBookPage {
       this.saved.set(true);
     } finally {
       this.saving.set(false);
+    }
+  }
+
+  protected async uploadCover(file: File) {
+    await this.changeCover({ title: 'The picture didn’t upload', retry: () => this.uploadCover(file) }, async (book) => {
+      const { coverImage } = await this.api.uploadCover(book.id, file);
+      this.book.set({ ...book, coverImage });
+      this.toasts.show({ title: `${book.title} has a new cover.` });
+    });
+  }
+
+  protected async removeCover() {
+    await this.changeCover({ title: 'The picture wasn’t removed', retry: () => this.removeCover() }, async (book) => {
+      await this.api.removeCover(book.id);
+      this.book.set({ ...book, coverImage: null });
+    });
+  }
+
+  /** Runs one cover request with the busy state; a refusal shows in the picker, a failure in a banner. */
+  private async changeCover(
+    failure: { title: string; retry: () => void },
+    work: (book: BookDetail) => Promise<void>,
+  ) {
+    const book = this.book();
+    if (!book || this.coverBusy()) return;
+    this.coverBusy.set(true);
+    this.coverError.set(null);
+    this.coverFailure.set(null);
+    try {
+      await work(book);
+    } catch (e) {
+      if (e instanceof ApiError && e.type === 'photo-type') this.coverError.set(COVER_PICTURE_ERRORS.type);
+      else if (e instanceof ApiError && e.type === 'photo-too-large') this.coverError.set(COVER_PICTURE_ERRORS.size);
+      else if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      else this.coverFailure.set(failure);
+    } finally {
+      this.coverBusy.set(false);
     }
   }
 

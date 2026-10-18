@@ -8,6 +8,7 @@ export interface BookListItem {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   finishedOn: string | null;
   reward: { text: string } | null;
@@ -32,6 +33,7 @@ export interface BookDetail {
   chapterCount: number;
   coverColor: string;
   sticker: string;
+  coverImage: string | null;
   loggedCount: number;
   readerName: string;
   reward: { text: string; givenOn: string } | null;
@@ -77,6 +79,15 @@ export class BooksApi {
 
   remove(id: string) {
     return this.api.delete(`/books/${id}`);
+  }
+
+  /** Uploads a book's cover picture and returns its URL. */
+  uploadCover(id: string, file: File) {
+    return this.api.put<{ coverImage: string }>(`/books/${id}/cover`, file);
+  }
+
+  removeCover(id: string) {
+    return this.api.delete(`/books/${id}/cover`);
   }
 
   list() {
