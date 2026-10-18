@@ -7,6 +7,8 @@ import { problemDetailsHandler } from './errors.ts';
 import { requestLogging, stdoutLog, type Log } from './logging.ts';
 import type { Mail } from './mail.ts';
 import { booksRouter } from './books.router.ts';
+import { bookSearchRouter } from './book-search.router.ts';
+import type { Provider } from './book-search.service.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { coversRouter } from './covers.router.ts';
 import { questionsRouter } from './questions.router.ts';
@@ -19,10 +21,7 @@ import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 import type { SuggestQuestions } from './suggestions.ts';
 
-export function createApp(
-  db: Pool,
-  options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions } = {},
-) {
+export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch } = {}) {
   const app = express();
   app.use(requestLogging(options.log ?? stdoutLog));
   app.use(express.json({ limit: '16kb' }));
@@ -51,6 +50,7 @@ export function createApp(
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db, options.suggest));
   app.use('/api', reviewRouter(db, options.assistant ?? anthropicAssistant));
+  app.use('/api/books', bookSearchRouter(db, { catalogue: options.catalogue ?? (async () => []), ai: options.ai ?? null }));
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
   app.use('/api/books', coversRouter(db));
