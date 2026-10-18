@@ -91,3 +91,8 @@ export async function addGalleryReward(name: string, target: number): Promise<st
 export async function finishBook(bookId: string) {
   await db.query('UPDATE book SET finished_at = $1 WHERE id = $2', [new Date().toISOString(), bookId]);
 }
+
+/** Makes a gallery reward the seeded household's goal, picked a minute ago. */
+export async function pickGoal(id: string) {
+  await db.query('UPDATE gallery_reward SET picked_at = $1 WHERE id = $2', [new Date(Date.now() - 60_000).toISOString(), id]);
+}

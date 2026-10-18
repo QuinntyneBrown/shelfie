@@ -45,6 +45,12 @@ export class ReviewPage {
       });
   }
 
+  /** The goal's name when this finished book is the one that reached the reader's goal. */
+  protected goalNameOf(overview: ReviewOverview, book: FinishedBook | null) {
+    const goal = overview.goal;
+    return goal?.reached && goal.bookId === book?.bookId ? goal.name : null;
+  }
+
   protected rewarded(book: FinishedBook) {
     this.rewarding.set(null);
     this.overview.update(

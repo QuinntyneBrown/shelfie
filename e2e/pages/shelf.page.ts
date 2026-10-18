@@ -175,4 +175,9 @@ export class ShelfPage {
   async reload() {
     await this.page.reload();
   }
+
+  /** The confetti over the goal celebration; absent with reduced motion. */
+  goalConfetti() {
+    return this.gallery().locator('.confetti');
+  }
 }

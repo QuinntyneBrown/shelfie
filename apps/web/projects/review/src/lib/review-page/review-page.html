@@ -77,6 +77,11 @@
               {{ overview.readerName }} logged the last chapter on
               {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }} · {{ book.chapterCount }} chapters
             </span>
+            @if (goalNameOf(overview, book); as goalName) {
+              <p class="book-card__author">
+                🎯 {{ overview.readerName }} reached her goal: <strong>{{ goalName }}</strong>
+              </p>
+            }
           </div>
         </div>
         <div>
@@ -104,6 +109,7 @@
     <sh-give-reward-dialog
       [book]="rewarding()"
       [readerName]="overview.readerName"
+      [suggested]="goalNameOf(overview, rewarding()) ?? ''"
       (given)="rewarded($event)"
       (closed)="rewarding.set(null)"
     />

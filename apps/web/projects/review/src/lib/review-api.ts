@@ -72,6 +72,8 @@ export interface ReviewOverview {
   today: string;
   queue: QueueItem[];
   finishedUnrewarded: FinishedBook[];
+  /** The reader's reward-gallery goal; `bookId` is the finished book that reached it. */
+  goal: { name: string; reached: boolean; bookId: string | null } | null;
   thisWeek: { chapters: number; streak: number };
 }
 

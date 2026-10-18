@@ -33,6 +33,8 @@ export class GiveRewardDialog {
   /** The book to reward, or null when the dialog is closed. */
   readonly book = input<FinishedBook | null>(null);
   readonly readerName = input.required<string>();
+  /** Text the reward field starts with, e.g. the name of the goal this book reached. */
+  readonly suggested = input('');
   readonly given = output<FinishedBook>();
   readonly closed = output<void>();
 
@@ -46,7 +48,7 @@ export class GiveRewardDialog {
   constructor() {
     effect(() => {
       if (!this.book()) return;
-      this.text.set('');
+      this.text.set(this.suggested());
       this.note.set('');
       this.error.set(null);
       this.failed.set(false);
