@@ -7,15 +7,14 @@ import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { getSettings, updateSettings } from './settings.service.ts';
 
-const name = z.string().trim().min(1).max(40);
 const settingsPatchSchema = z.object({
-  theme: z.enum(['device', 'light', 'dark']).optional(),
-  reader: z.object({
-    name,
-    color: z.enum(['rose', 'sky', 'sun', 'mint', 'lilac']),
-    pin: z.string().regex(/^[0-9]{4}$/).optional(),
+  theme: z.enum(['device', 'light', 'dark']),
+  account: z.object({
+    name: z.string().trim().min(1).max(40),
+    email: z.email(),
+    newPassword: z.string().min(8).optional(),
+    currentPassword: z.string().optional(),
   }),
-  grownUp: z.object({ name, email: z.email(), newPassword: z.string().min(8).optional(), currentPassword: z.string().optional() }),
 });
 
 export function settingsRouter(db: DatabaseSync) {
@@ -23,8 +22,8 @@ export function settingsRouter(db: DatabaseSync) {
   router.use(requireSession(db), requireRole('parent'));
 
   router.get('/', (_req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    res.json(getSettings(db, householdId));
+    const { householdId, profileId } = res.locals['session'] as RequestSession;
+    res.json(getSettings(db, householdId, profileId));
   });
 
   router.patch('/', (req, res) => {

@@ -4,7 +4,6 @@ import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ErrorPage } from '../pages/error.page';
-import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
 import { DAD } from '../support/accounts';
 
@@ -16,9 +15,36 @@ test('Given Dad is signed in, when he chooses Settings from his account menu, th
 
   const settings = new SettingsPage(page);
   await expect(settings.heading()).toHaveText('Settings');
-  await expect(settings.readerName()).toHaveValue('Nia');
-  await expect(settings.grownUpName()).toHaveValue('Dad');
+  await expect(settings.yourName()).toHaveValue('Dad');
+  await expect(settings.username()).toHaveValue('dad');
+  await expect(settings.username()).toHaveAttribute('readonly');
   await expect(settings.email()).toHaveValue('dad@example.com');
+  await expect(settings.parent('Dad')).toContainText('You · @dad');
+  await expect(settings.reader('Nia')).toContainText('@nia');
+});
+
+test('Given Settings is open, when Dad chooses Sign out at the bottom, then his session ends and the sign-in page shows', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.signOut();
+
+  await expect(new SignInPage(page).heading()).toHaveText('Welcome back');
+  await page.goto('/settings');
+  await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test('Given the settings cannot be loaded, when Dad opens the page, then it says so and Try again loads them', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.breakLoading();
+  await settings.open();
+  await expect(settings.loadFailure()).toBeVisible();
+
+  await settings.repairLoading();
+  await settings.tryLoadingAgain();
+
+  await expect(settings.yourName()).toHaveValue('Dad');
 });
 
 test('Given Nia is signed in, when she opens Settings, then it is for grown-ups only, on the page and in the API', async ({ page }) => {
@@ -43,7 +69,7 @@ test('Given Dad changes his own display name, when he saves, then the top bar sh
   await signInAsDad(page);
   const settings = new SettingsPage(page);
   await settings.open();
-  await settings.setGrownUpName('Marcus');
+  await settings.setYourName('Marcus');
   await settings.save();
 
   await expect(settings.banner()).toBeVisible();
@@ -140,12 +166,12 @@ test('Given the server cannot be reached, when Dad saves, then he is told and ev
   await signInAsDad(page);
   const settings = new SettingsPage(page);
   await settings.open();
-  await settings.setReaderName('Nina');
+  await settings.setYourName('Marcus');
   await settings.breakSaving();
   await settings.save();
 
   await expect(settings.failureBanner()).toBeVisible();
-  await expect(settings.readerName()).toHaveValue('Nina');
+  await expect(settings.yourName()).toHaveValue('Marcus');
 
   await settings.repairSaving();
   await settings.save();
@@ -153,19 +179,17 @@ test('Given the server cannot be reached, when Dad saves, then he is told and ev
   await expect(settings.failureBanner()).toBeHidden();
 });
 
-test('Given an empty name or a malformed e-mail, when Dad saves, then each field says what to fix and nothing is sent', async ({ page }) => {
+test('Given a name that is too long or a malformed e-mail, when Dad saves, then each field says what to fix and nothing is sent', async ({ page }) => {
   await signInAsDad(page);
   const settings = new SettingsPage(page);
   settings.watchSaves();
   await settings.open();
-  await settings.setReaderName('');
-  await settings.setGrownUpName('x'.repeat(41));
+  await settings.setYourName('x'.repeat(41));
   await settings.setEmail('dad@');
   await settings.save();
 
-  await expect(settings.readerName()).toHaveAccessibleDescription(/Enter a name/);
-  await expect(settings.grownUpName()).toHaveAccessibleDescription(/Use 40 characters or fewer/);
-  await expect(settings.email()).toHaveAccessibleDescription(/Enter a valid e-mail/);
-  await expect(settings.problemSummary()).toContainText('Fix 3 things');
+  await expect(settings.yourName()).toHaveAccessibleDescription(/Use 40 characters or fewer/);
+  await expect(settings.email()).toHaveAccessibleDescription(/Enter an e-mail address like name@example.com/);
+  await expect(settings.problemSummary()).toContainText('Fix 2 things');
   expect(settings.saveRequestCount()).toBe(0);
 });

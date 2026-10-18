@@ -83,7 +83,7 @@ export const screens: Screen[] = [
     open: async (page) => {
       await signInAsDad(page);
       await page.goto('/settings');
-      await new SettingsPage(page).readerName().waitFor();
+      await new SettingsPage(page).yourName().waitFor();
     },
   },
   {

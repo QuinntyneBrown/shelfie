@@ -7,12 +7,12 @@ export class SettingsPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
-  readerName() {
-    return this.page.getByLabel('Name', { exact: true });
+  yourName() {
+    return this.page.getByLabel('Your name');
   }
 
-  grownUpName() {
-    return this.page.getByLabel('Name Nia sees');
+  username() {
+    return this.page.getByLabel('Username');
   }
 
   email() {
@@ -23,20 +23,8 @@ export class SettingsPage {
     await this.page.goto('/settings');
   }
 
-  async setReaderName(name: string) {
-    await this.readerName().fill(name);
-  }
-
-  async chooseReaderColour(colour: string) {
-    await this.page.getByRole('radio', { name: colour }).check({ force: true });
-  }
-
-  async setGrownUpName(name: string) {
-    await this.grownUpName().fill(name);
-  }
-
-  async setPin(pin: string) {
-    await this.page.getByLabel('New 4-digit PIN').fill(pin);
+  async setYourName(name: string) {
+    await this.yourName().fill(name);
   }
 
   private saveRequests = 0;
@@ -55,13 +43,9 @@ export class SettingsPage {
     return this.page.getByRole('alert').filter({ hasText: /Fix \d+ thing/ });
   }
 
-  pinField() {
-    return this.page.getByLabel('New 4-digit PIN');
-  }
-
   async setNewPassword(password: string, again = password) {
     await this.newPasswordField().fill(password);
-    await this.page.getByRole('textbox', { name: 'Type it again' }).fill(again);
+    await this.confirmField().fill(again);
   }
 
   async setCurrentPassword(password: string) {
@@ -92,6 +76,22 @@ export class SettingsPage {
     await this.page.unroute('**/api/settings');
   }
 
+  async breakLoading() {
+    await this.page.route('**/api/settings', (route) => (route.request().method() === 'GET' ? route.abort() : route.continue()));
+  }
+
+  async repairLoading() {
+    await this.page.unroute('**/api/settings');
+  }
+
+  loadFailure() {
+    return this.page.getByRole('heading', { name: 'Settings didn’t load' });
+  }
+
+  async tryLoadingAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
   async chooseAppearance(label: 'Match the device' | 'Always light' | 'Always dark') {
     await this.page.getByRole('radio', { name: label }).check();
   }
@@ -102,6 +102,19 @@ export class SettingsPage {
 
   banner() {
     return this.page.getByRole('status').filter({ hasText: 'Saved' });
+  }
+
+  async signOut() {
+    await this.page.getByRole('button', { name: 'Sign out' }).click();
+  }
+
+  /** A row of the Parents list: a parent or a pending invite. */
+  parent(text: string) {
+    return this.page.getByRole('region', { name: 'Parents' }).getByRole('listitem').filter({ hasText: text });
+  }
+
+  reader(name: string) {
+    return this.page.getByRole('region', { name: 'Readers' }).getByRole('listitem').filter({ hasText: name });
   }
 
   /** Asks the API for the settings, as a client that skips the page would. */
