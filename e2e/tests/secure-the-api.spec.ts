@@ -8,7 +8,6 @@ import { ShelfPage } from '../pages/shelf.page';
 import { LogChapterPage } from '../pages/log-chapter.page';
 import { BookPage } from '../pages/book.page';
 import { ChapterPage } from '../pages/chapter.page';
-import { rememberDevice } from '../support/remember-device';
 
 test('Given any API response, then it carries a content security policy, nosniff, frame-ancestors and HSTS', async ({ page }) => {
   await signInAsNia(page);
@@ -43,17 +42,17 @@ test('Given a state-changing request that did not come from the app, then it is 
 
 test('Given ten password sign-ins in ten minutes, when an eleventh comes, then it is answered 429 and the page says to wait', async ({ page }) => {
   for (let attempt = 1; attempt <= 10; attempt++) {
-    const response = await page.request.post('/api/auth/password', { ...SAME_SITE, data: { email: DAD.email, password: 'wrong-guess' } });
+    const response = await page.request.post('/api/auth/password', { ...SAME_SITE, data: { username: DAD.username, password: 'wrong-guess', remember: true } });
     expect(response.status()).toBe(401);
   }
 
-  const eleventh = await page.request.post('/api/auth/password', { ...SAME_SITE, data: DAD });
+  const eleventh = await page.request.post('/api/auth/password', { ...SAME_SITE, data: { username: DAD.username, password: DAD.password, remember: true } });
   expect(eleventh.status()).toBe(429);
   expect(Number(eleventh.headers()['retry-after'])).toBeGreaterThan(0);
 
   const signIn = new SignInPage(page);
   await signIn.open();
-  await signIn.signInWithPassword(DAD.email, DAD.password);
+  await signIn.signInWithPassword(DAD.username, DAD.password);
   await expect(signIn.failureSummary()).toContainText('Too many tries. Wait 10 minutes and try again.');
 });
 
@@ -97,7 +96,8 @@ test('Given an answer with markup in it, when it is shown, then it appears as te
 
 test('Given someone signs in on a browser that already had a session, then the old session no longer works', async ({ page }) => {
   // Traces to: L2-027
-  await rememberDevice(page.context());
+  const firstSignIn = await page.request.post('/api/auth/password', { ...SAME_SITE, data: { username: DAD.username, password: DAD.password, remember: true } });
+  expect(firstSignIn.ok()).toBe(true);
   const sessionCookie = async () => (await page.context().cookies()).find((c) => c.name === 'shelfie_session')!;
   const first = await sessionCookie();
 

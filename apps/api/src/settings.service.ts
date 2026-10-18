@@ -2,65 +2,86 @@ import type { DatabaseSync } from 'node:sqlite';
 import { Problem } from './problem.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 
-export interface SettingsView {
-  reader: { name: string; color: string };
-  grownUp: { name: string; email: string };
-  theme: string;
+export interface ParentView {
+  id: string;
+  name: string;
+  username: string;
+  color: string;
 }
 
-export function getSettings(db: DatabaseSync, householdId: string): SettingsView {
-  const profile = (role: string) =>
-    db.prepare('SELECT name, color, email FROM profile WHERE household_id = ? AND role = ?').get(householdId, role) as {
-      name: string;
-      color: string;
-      email: string;
-    };
-  const reader = profile('reader');
-  const grownUp = profile('grown_up');
+export interface InviteView {
+  id: string;
+  email: string;
+  sentAt: string;
+  expiresAt: string;
+}
+
+export interface ReaderView {
+  id: string;
+  name: string;
+  color: string;
+  username: string;
+}
+
+export interface SettingsView {
+  account: { name: string; username: string; email: string };
+  theme: string;
+  parents: ParentView[];
+  invites: InviteView[];
+  readers: ReaderView[];
+}
+
+export function listReaders(db: DatabaseSync, householdId: string): ReaderView[] {
+  return db
+    .prepare("SELECT id, name, color, username FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name")
+    .all(householdId) as unknown as ReaderView[];
+}
+
+export function listPendingInvites(db: DatabaseSync, householdId: string): InviteView[] {
+  return db
+    .prepare(
+      "SELECT token_hash AS id, email, datetime(expires_at, '-7 days') AS sentAt, expires_at AS expiresAt FROM invites WHERE household_id = ? AND used_at IS NULL AND expires_at > ? ORDER BY expires_at",
+    )
+    .all(householdId, new Date().toISOString()) as unknown as InviteView[];
+}
+
+export function getSettings(db: DatabaseSync, householdId: string, profileId: string): SettingsView {
+  const account = db.prepare('SELECT name, username, email FROM profile WHERE id = ?').get(profileId) as SettingsView['account'];
   const { theme } = db.prepare('SELECT theme FROM household WHERE id = ?').get(householdId) as { theme: string };
-  return { reader: { name: reader.name, color: reader.color }, grownUp: { name: grownUp.name, email: grownUp.email }, theme };
+  const parents = db
+    .prepare("SELECT id, name, username, color FROM profile WHERE household_id = ? AND role = 'parent' ORDER BY id = ? DESC, name")
+    .all(householdId, profileId) as unknown as ParentView[];
+  return { account, theme, parents, invites: listPendingInvites(db, householdId), readers: listReaders(db, householdId) };
 }
 
 export interface SettingsPatch {
-  theme?: string;
-  reader: { name: string; color: string; pin?: string };
-  grownUp: { name: string; email: string; newPassword?: string; currentPassword?: string };
+  theme: string;
+  account: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
 export function updateSettings(db: DatabaseSync, householdId: string, profileId: string, patch: SettingsPatch): SettingsView {
-  const stored = db.prepare('SELECT email, password_hash FROM profile WHERE id = ?').get(profileId) as {
-    email: string;
-    password_hash: string;
-  };
-  const changingEmail = patch.grownUp.email !== stored.email;
-  if (changingEmail || patch.grownUp.newPassword) {
-    if (!patch.grownUp.currentPassword || !verifySecret(patch.grownUp.currentPassword, stored.password_hash)) {
+  const stored = db.prepare('SELECT email, password_hash FROM profile WHERE id = ?').get(profileId) as { email: string; password_hash: string };
+  const email = patch.account.email.trim().toLowerCase();
+  const changingEmail = email !== stored.email;
+  if (changingEmail || patch.account.newPassword) {
+    if (!patch.account.currentPassword || !verifySecret(patch.account.currentPassword, stored.password_hash)) {
       throw new Problem(400, 'current-password-invalid');
     }
   }
-  if (changingEmail && db.prepare('SELECT 1 FROM profile WHERE email = ? AND id != ?').get(patch.grownUp.email, profileId)) {
+  if (changingEmail && db.prepare('SELECT 1 FROM profile WHERE email = ? AND id != ?').get(email, profileId)) {
     throw new Problem(409, 'email-in-use');
   }
   db.exec('BEGIN');
   try {
-    const update = db.prepare('UPDATE profile SET name = ?, color = COALESCE(?, color) WHERE household_id = ? AND role = ?');
-    update.run(patch.reader.name, patch.reader.color, householdId, 'reader');
-    update.run(patch.grownUp.name, null, householdId, 'grown_up');
-    db.prepare('UPDATE profile SET email = ? WHERE id = ?').run(patch.grownUp.email, profileId);
-    if (patch.grownUp.newPassword) {
-      db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(patch.grownUp.newPassword), profileId);
+    db.prepare('UPDATE profile SET name = ?, email = ? WHERE id = ?').run(patch.account.name, email, profileId);
+    if (patch.account.newPassword) {
+      db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(patch.account.newPassword), profileId);
     }
-    if (patch.theme) db.prepare('UPDATE household SET theme = ? WHERE id = ?').run(patch.theme, householdId);
-    if (patch.reader.pin) {
-      db.prepare("UPDATE profile SET pin_hash = ?, pin_failed_count = 0, pin_locked_until = NULL WHERE household_id = ? AND role = 'reader'").run(
-        hashSecret(patch.reader.pin),
-        householdId,
-      );
-    }
+    db.prepare('UPDATE household SET theme = ? WHERE id = ?').run(patch.theme, householdId);
     db.exec('COMMIT');
   } catch (e) {
     db.exec('ROLLBACK');
     throw e;
   }
-  return getSettings(db, householdId);
+  return getSettings(db, householdId, profileId);
 }

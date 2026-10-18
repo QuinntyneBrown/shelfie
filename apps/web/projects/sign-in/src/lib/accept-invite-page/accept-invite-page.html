@@ -1,0 +1,93 @@
+<sh-auth-layout>
+  @if (expired() || emailTaken()) {
+    <div class="card stack centred">
+      <span class="sticker sticker--lg centred-item" aria-hidden="true">{{ emailTaken() ? '🔑' : '⏳' }}</span>
+      @if (emailTaken()) {
+        <h1>That e-mail already has an account</h1>
+        <p class="text-muted centred-item">Sign in with it instead.</p>
+      } @else {
+        <h1>This invite has expired</h1>
+        <p class="text-muted centred-item">
+          Ask {{ invitedBy() ?? 'the parent who invited you' }} for a new one.
+        </p>
+      }
+      <a class="btn btn--block" routerLink="/sign-in">Back to sign in</a>
+    </div>
+  } @else if (invite(); as invite) {
+    <div class="card stack">
+      <div class="cluster centred-cluster">
+        <span class="avatar avatar--lg avatar--sky" aria-hidden="true">{{ invite.invitedBy.charAt(0) }}</span>
+      </div>
+      <h1 class="centred">Join {{ invite.invitedBy }}’s household</h1>
+      <p class="text-muted centred centred-item">{{ invite.invitedBy }} invited you.</p>
+      @if (problems().length) {
+        <sh-banner
+          #summary
+          severity="danger"
+          [summary]="true"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
+      @if (unreachable()) {
+        <sh-banner severity="danger" title="Can’t reach Shelfie" message="Check your connection.">
+          <div class="alert__actions">
+            <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
+          </div>
+        </sh-banner>
+      }
+      <form class="stack stagger" (submit)="$event.preventDefault(); submit()" novalidate>
+        <sh-text-field
+          style="--i: 0"
+          label="E-mail address"
+          type="email"
+          autocomplete="email"
+          [readonly]="true"
+          [value]="invite.email"
+        />
+        <sh-text-field
+          style="--i: 1"
+          label="Your name"
+          autocomplete="name"
+          [autofocus]="true"
+          [error]="nameError()"
+          [(value)]="name"
+        />
+        <sh-text-field
+          style="--i: 2"
+          label="Username"
+          autocomplete="username"
+          help="3–20 letters, numbers, . or _"
+          [maxlength]="20"
+          [error]="usernameError()"
+          [(value)]="username"
+        />
+        <div class="grid grid--auto passwords" style="--i: 3">
+          <sh-text-field
+            label="Password"
+            type="password"
+            autocomplete="new-password"
+            help="At least 8 characters"
+            [error]="passwordError()"
+            [(value)]="password"
+          />
+          <sh-text-field
+            label="Type it again"
+            type="password"
+            autocomplete="new-password"
+            [error]="confirmError()"
+            [(value)]="confirm"
+          />
+        </div>
+        <sh-button style="--i: 4" [large]="true" [block]="true" [busy]="submitting()">
+          Join the household
+        </sh-button>
+      </form>
+    </div>
+  }
+</sh-auth-layout>

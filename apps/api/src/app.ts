@@ -8,6 +8,8 @@ import type { Mail } from './mail.ts';
 import { booksRouter } from './books.router.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { questionsRouter } from './questions.router.ts';
+import { invitesRouter } from './invites.router.ts';
+import { readersRouter } from './readers.router.ts';
 import { reviewRouter } from './review.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
@@ -42,6 +44,8 @@ export function createApp(db: DatabaseSync, options: { log?: Log; mail?: Mail } 
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
   app.use('/api/settings', settingsRouter(db));
+  app.use('/api/readers', readersRouter(db));
+  app.use('/api/invites', invitesRouter(db, options.mail));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use(problemDetailsHandler);
   return app;

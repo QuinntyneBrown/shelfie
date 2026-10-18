@@ -2,14 +2,19 @@
   <div class="page-header">
     <div>
       <h1>Settings</h1>
-      <p class="subtitle">Who’s in the house, how you sign in, how Shelfie looks.</p>
+      <p class="subtitle">Your house, sign-in and look.</p>
     </div>
   </div>
-  @if (loaded()) {
+  @if (loadFailed()) {
+    <sh-error-state sticker="🛠️" title="Settings didn’t load" text="Nothing has changed. Try again.">
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-error-state>
+  } @else if (view(); as view) {
     <form class="stack form" novalidate (submit)="$event.preventDefault(); save()">
       @if (problems().length) {
         <sh-banner
           severity="danger"
+          [summary]="true"
           [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
         >
           <ul class="summary-list">
@@ -27,61 +32,129 @@
         />
       }
       @if (saved()) {
-        <sh-banner
-          title="Saved"
-          message="Your changes are in. Nia sees them the next time she signs in."
-        />
+        <sh-banner title="Saved" message="Your changes are in." />
       }
-      <section class="card stack" aria-labelledby="reader-title">
-        <h2 id="reader-title" class="section-title">Reader</h2>
-        <sh-text-field label="Name" [error]="readerNameError()" [(value)]="readerName" />
-        <sh-color-picker label="Colour" [colors]="colors" [(value)]="readerColor" />
-        <sh-text-field
-          label="New 4-digit PIN (optional)"
-          type="password"
-          inputmode="numeric"
-          [maxlength]="4"
-          help="Leave blank to keep the current PIN. She uses this to open her shelf."
-          [error]="pinError()"
-          [(value)]="pin"
-        />
+      <section class="card card--flush people" aria-labelledby="parents-title">
+        <div class="cluster cluster--between people__header">
+          <h2 id="parents-title" class="section-title">Parents</h2>
+          <button class="btn btn--sm" type="button" (click)="inviteDialogOpen.set(true)">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M3 6h18v12H3zM3 7l9 6 9-6" />
+            </svg>
+            Invite a parent
+          </button>
+        </div>
+        <ul class="list">
+          @for (parent of view.parents; track parent.id) {
+            <li class="list__item">
+              <span class="avatar" [class]="'avatar--' + parent.color" aria-hidden="true">{{
+                initial(parent.name)
+              }}</span>
+              <div class="list__body">
+                <div class="list__title">{{ parent.name }}</div>
+                <div class="list__meta">
+                  {{ parent.id === view.parents[0].id ? 'You · ' : '' }}&#64;{{ parent.username }}
+                </div>
+              </div>
+            </li>
+          }
+          @for (invite of view.invites; track invite.id) {
+            <li class="list__item">
+              <span class="avatar avatar--lilac" aria-hidden="true">{{ initial(invite.email) }}</span>
+              <div class="list__body">
+                <div class="list__title">
+                  {{ invite.email }} <span class="badge badge--info">Invited</span>
+                </div>
+                <div class="list__meta">Invite sent</div>
+              </div>
+              <button class="btn btn--sm btn--ghost" type="button" (click)="sendAgain(invite)">
+                Send again
+              </button>
+            </li>
+          }
+        </ul>
       </section>
-      <section class="card stack" aria-labelledby="grownup-title">
-        <h2 id="grownup-title" class="section-title">Grown-up</h2>
-        <sh-text-field label="Name Nia sees" [error]="grownUpNameError()" [(value)]="grownUpName" />
+      <sh-invite-parent-dialog
+        [open]="inviteDialogOpen()"
+        (sent)="inviteSent($event)"
+        (closed)="inviteDialogOpen.set(false)"
+      />
+      <section class="card card--flush people" aria-labelledby="readers-title">
+        <div class="cluster cluster--between people__header">
+          <h2 id="readers-title" class="section-title">Readers</h2>
+          <button class="btn btn--sm" type="button" (click)="openReaderDialog(null)">
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            Add a reader
+          </button>
+        </div>
+        <ul class="list">
+          @for (reader of view.readers; track reader.id) {
+            <li class="list__item">
+              <span class="avatar" [class]="'avatar--' + reader.color" aria-hidden="true">{{
+                initial(reader.name)
+              }}</span>
+              <div class="list__body">
+                <div class="list__title">{{ reader.name }}</div>
+                <div class="list__meta">&#64;{{ reader.username }}</div>
+              </div>
+              <button
+                class="btn btn--sm btn--ghost"
+                type="button"
+                [attr.aria-label]="'Edit ' + reader.name"
+                (click)="openReaderDialog(reader)"
+              >
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4" />
+                </svg>
+                Edit
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+      <sh-edit-reader-dialog
+        [open]="readerDialogOpen()"
+        [editing]="editingReader()"
+        (saved)="readerSaved($event)"
+        (closed)="readerDialogOpen.set(false)"
+      />
+      <section class="card stack" aria-labelledby="account-title">
+        <h2 id="account-title" class="section-title">Your account</h2>
+        <sh-text-field label="Your name" [error]="nameError()" [(value)]="name" />
+        <sh-text-field label="Username" [readonly]="true" [value]="view.account.username" />
         <sh-text-field
           label="E-mail address"
           [error]="emailError()"
           type="email"
           autocomplete="email"
-          help="Used to sign in and to reset your password."
           [(value)]="email"
         />
-        <sh-text-field
-          label="New password (optional)"
-          type="password"
-          autocomplete="new-password"
-          [error]="newPasswordError()"
-          [(value)]="newPassword"
-        />
-        <sh-text-field
-          label="Type it again"
-          type="password"
-          autocomplete="new-password"
-          [error]="confirmError()"
-          [(value)]="confirmPassword"
-        />
+        <div class="grid grid--auto passwords">
+          <sh-text-field
+            label="New password (optional)"
+            type="password"
+            autocomplete="new-password"
+            [error]="newPasswordError()"
+            [(value)]="newPassword"
+          />
+          <sh-text-field
+            label="Type it again"
+            type="password"
+            autocomplete="new-password"
+            [error]="confirmError()"
+            [(value)]="confirmPassword"
+          />
+        </div>
         <sh-text-field
           label="Current password"
           type="password"
           autocomplete="current-password"
-          help="Needed only to change your e-mail or password."
+          help="Needed to change e-mail or password."
           [(value)]="currentPassword"
         />
       </section>
-      <fieldset class="card stack" aria-describedby="theme-help">
+      <fieldset class="card stack">
         <legend class="section-title">Appearance</legend>
-        <p class="field__help" id="theme-help">Applies on every device for both of you.</p>
         <label class="choice">
           <input
             type="radio"
@@ -90,11 +163,7 @@
             [checked]="theme() === 'device'"
             (change)="theme.set('device')"
           />
-          <span class="choice__text"
-            >Match the device<small
-              >Light in the day, dark at night if the device does that</small
-            ></span
-          >
+          <span class="choice__text">Match the device</span>
         </label>
         <label class="choice">
           <input
@@ -117,9 +186,25 @@
           <span class="choice__text">Always dark</span>
         </label>
       </fieldset>
-      <div class="form-actions">
+      <div class="form-actions form-actions--between">
+        <button class="btn btn--ghost" type="button" (click)="signOut()">
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" />
+          </svg>
+          Sign out
+        </button>
         <sh-button [busy]="saving()">Save settings</sh-button>
       </div>
     </form>
+  } @else {
+    <div class="stack form" aria-busy="true" aria-label="Loading settings">
+      @for (card of [1, 2, 3, 4]; track card) {
+        <div class="card">
+          <sh-skeleton variant="title" />
+          <sh-skeleton />
+          <sh-skeleton />
+        </div>
+      }
+    </div>
   }
 </div>

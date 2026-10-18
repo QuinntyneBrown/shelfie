@@ -31,12 +31,12 @@ import { requireSession, type RequestSession } from './session.ts';
 export function reviewRouter(db: DatabaseSync) {
   const router = Router();
 
-  router.get('/review', requireSession(db), requireRole('grown_up'), (_req, res) => {
+  router.get('/review', requireSession(db), requireRole('parent'), (_req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     res.json(overview(db, householdId));
   });
 
-  router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('parent'), (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = feedbackSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
@@ -48,7 +48,7 @@ export function reviewRouter(db: DatabaseSync) {
     }
   });
 
-  router.post('/books/:id/reward', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.post('/books/:id/reward', requireSession(db), requireRole('parent'), (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = giveRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));

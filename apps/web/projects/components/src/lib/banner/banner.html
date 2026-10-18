@@ -1,6 +1,9 @@
 <div
+  #alert
   class="alert"
   [class]="'alert--' + severity()"
+  [class.form-summary]="summary()"
+  [attr.tabindex]="summary() ? -1 : null"
   [attr.role]="severity() === 'danger' ? 'alert' : 'status'"
 >
   @if (severity() === 'danger') {

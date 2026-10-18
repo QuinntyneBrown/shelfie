@@ -73,7 +73,7 @@ export class ReviewPage {
         },
         'book-added': {
           emoji: '📚',
-          text: `${item.byRole === 'grown_up' ? 'You' : reader} added ${item.bookTitle}`,
+          text: `${item.byRole === 'parent' ? 'You' : reader} added ${item.bookTitle}`,
         },
         'sticker-given': {
           emoji: sticker?.emoji ?? '⭐',

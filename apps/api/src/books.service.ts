@@ -11,7 +11,7 @@ export interface NewBook {
   sticker: string;
 }
 
-export function createBook(db: DatabaseSync, householdId: string, role: 'reader' | 'grown_up', book: NewBook): { id: string } {
+export function createBook(db: DatabaseSync, householdId: string, role: 'reader' | 'parent', book: NewBook): { id: string } {
   const id = randomUUID();
   db.prepare(
     'INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -54,8 +54,8 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
 
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
-  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
   const logs = db
     .prepare(
       `SELECT c.id, c.chapter_number, c.read_on, c.sticker AS review_sticker, a.text AS first_answer
@@ -90,7 +90,7 @@ export function getBook(db: DatabaseSync, householdId: string, bookId: string): 
     reward: reward ? { text: reward.text, givenOn: dayFormat.format(new Date(reward.given_at)) } : null,
     today: dayFormat.format(new Date()),
     grownUpName: grownUp.name,
-    readerName: reader.name,
+    readerName: reader?.name ?? 'your reader',
     defaultQuestions: DEFAULT_QUESTIONS,
     questions: customQuestions(db, bookId),
     chapters,
@@ -115,7 +115,7 @@ export interface BookList {
 }
 
 export function listBooks(db: DatabaseSync, householdId: string): BookList {
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: time_zone });
   const rows = db
@@ -147,7 +147,7 @@ export function listBooks(db: DatabaseSync, householdId: string): BookList {
     finishedOn: r.finished_at ? dayFormat.format(new Date(r.finished_at)) : null,
     reward: r.reward_text ? { text: r.reward_text } : null,
   }));
-  return { readerName: reader.name, books };
+  return { readerName: reader?.name ?? 'your reader', books };
 }
 
 export interface BookPatch {

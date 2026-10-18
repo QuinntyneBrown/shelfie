@@ -13,3 +13,9 @@
 .choice {
   min-height: var(--target-comfortable);
 }
+.switch {
+  min-height: var(--target-comfortable);
+}
+.input-group__btn {
+  --btn-height: var(--target-comfortable);
+}

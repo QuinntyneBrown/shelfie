@@ -24,19 +24,19 @@ export function questionsRouter(db: DatabaseSync) {
   const router = Router();
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
 
-  router.post('/books/:id/questions', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.post('/books/:id/questions', requireSession(db), requireRole('parent'), (req, res) => {
     const body = questionSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     replying(res, () => addQuestion(db, householdOf(res), String(req.params['id']), body.data.text), 201);
   });
 
-  router.patch('/questions/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.patch('/questions/:id', requireSession(db), requireRole('parent'), (req, res) => {
     const body = questionSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     replying(res, () => updateQuestion(db, householdOf(res), String(req.params['id']), body.data.text));
   });
 
-  router.delete('/questions/:id', requireSession(db), requireRole('grown_up'), (req, res) => {
+  router.delete('/questions/:id', requireSession(db), requireRole('parent'), (req, res) => {
     replying(res, () => removeQuestion(db, householdOf(res), String(req.params['id'])));
   });
 

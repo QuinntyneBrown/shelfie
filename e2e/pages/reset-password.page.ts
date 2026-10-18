@@ -16,8 +16,8 @@ export class ResetPasswordPage {
   }
 
   async choosePassword(password: string, again = password) {
-    await this.page.getByLabel('New password').fill(password);
-    await this.page.getByLabel('Type it again').fill(again);
+    await this.newPasswordField().fill(password);
+    await this.page.getByRole('textbox', { name: 'Type it again' }).fill(again);
     await this.page.getByRole('button', { name: 'Save new password' }).click();
   }
 
@@ -30,11 +30,11 @@ export class ResetPasswordPage {
   }
 
   newPasswordField() {
-    return this.page.getByLabel('New password');
+    return this.page.getByRole('textbox', { name: 'New password' });
   }
 
   confirmField() {
-    return this.page.getByLabel('Type it again');
+    return this.page.getByRole('textbox', { name: 'Type it again' });
   }
 
   private requests = 0;

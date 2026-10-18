@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test';
-import { SAME_SITE } from '../support/same-site';
 
 export class SignInPage {
   private passwordRequests = 0;
@@ -14,29 +13,55 @@ export class SignInPage {
     return this.passwordRequests;
   }
 
-  emailField() {
-    return this.page.getByLabel('Email');
+  async open() {
+    await this.page.goto('/sign-in');
+  }
+
+  heading() {
+    return this.page.getByRole('heading', { level: 1 });
+  }
+
+  usernameField() {
+    return this.page.getByLabel('Username');
   }
 
   passwordField() {
-    return this.page.getByLabel('Password');
+    return this.page.getByLabel('Password', { exact: true });
+  }
+
+  keepMeSignedIn() {
+    return this.page.getByRole('checkbox', { name: 'Keep me signed in' });
   }
 
   failureSummary() {
     return this.page.getByRole('alert');
   }
 
-  async fillCredentials(email: string, password: string) {
-    await this.emailField().fill(email);
+  signInButton() {
+    return this.page.getByRole('button', { name: 'Sign in' });
+  }
+
+  async fillCredentials(username: string, password: string) {
+    await this.usernameField().fill(username);
     await this.passwordField().fill(password);
+  }
+
+  async signInWithPassword(username: string, password: string, { remember = true } = {}) {
+    await this.fillCredentials(username, password);
+    await this.keepMeSignedIn().setChecked(remember);
+    await this.signInButton().click();
+  }
+
+  async pressSignIn() {
+    await this.signInButton().click();
   }
 
   async submitWithEnter() {
     await this.passwordField().press('Enter');
   }
 
-  signInButton() {
-    return this.page.getByRole('button', { name: 'Sign in' });
+  async showPassword() {
+    await this.page.getByRole('button', { name: 'Show password' }).click();
   }
 
   /** Holds the password sign-in response until the returned function is called. */
@@ -62,99 +87,15 @@ export class SignInPage {
     await this.page.getByRole('button', { name: 'Try again' }).click();
   }
 
-  async pressSignIn() {
-    await this.page.getByRole('button', { name: 'Sign in' }).click();
-  }
-
-  async open() {
-    await this.page.goto('/sign-in');
-  }
-
-  async signInWithPassword(email: string, password: string) {
-    await this.page.getByLabel('Email').fill(email);
-    await this.page.getByLabel('Password').fill(password);
-    await this.page.getByRole('button', { name: 'Sign in' }).click();
-  }
-
-  pickerHeading() {
-    return this.page.getByRole('heading', { name: 'Who’s reading today?' });
-  }
-
   signedOutNotice() {
     return this.page.getByRole('status').filter({ hasText: 'You were signed out' });
-  }
-
-  async chooseGrownUp(name: string) {
-    await this.page.getByRole('button', { name: new RegExp(`^${name} Grown-up`) }).click();
-  }
-
-  signingInAs() {
-    return this.page.getByText(/Signing in as/);
   }
 
   async chooseForgotPassword() {
     await this.page.getByRole('link', { name: 'Forgot your password?' }).click();
   }
 
-  async typePasswordAndSignIn(password: string) {
-    await this.passwordField().fill(password);
-    await this.signInButton().click();
-  }
-
-  async choose(name: string) {
-    await this.page.getByRole('button', { name: new RegExp(`^${name} Reader`) }).click();
-    await this.page.getByRole('group', { name: 'PIN keypad' }).waitFor();
-  }
-
-  async enterPin(pin: string) {
-    const keypad = this.page.getByRole('group', { name: 'PIN keypad' });
-    for (const digit of pin) await keypad.getByRole('button', { name: digit, exact: true }).click();
-  }
-
-  async typePin(text: string) {
-    await this.page.keyboard.type(text);
-  }
-
-  async deleteLastDigit() {
-    await this.page.getByRole('button', { name: 'Delete last digit' }).click();
-  }
-
-  /** Enters a wrong PIN `count` times, waiting for each answer before the next try. */
-  async failPin(count: number) {
-    for (let attempt = 1; attempt <= count; attempt++) {
-      await this.enterPin('9999');
-      const left = 5 - attempt;
-      await this.page.getByText(left > 0 ? new RegExp(`${left} tr(y|ies) left`) : /take a short break/).waitFor();
-    }
-  }
-
-  lockNotice() {
-    return this.page.getByRole('status').filter({ hasText: 'take a short break' });
-  }
-
-  digitButton(digit: string) {
-    return this.page.getByRole('group', { name: 'PIN keypad' }).getByRole('button', { name: digit, exact: true });
-  }
-
-  /** Width and height of every digit key on the keypad, in key order. */
-  async digitKeySizes() {
-    const sizes = [];
-    for (const digit of '1234567890') sizes.push(await this.digitButton(digit).boundingBox());
-    return sizes.map((box) => ({ width: Math.round(box!.width), height: Math.round(box!.height) }));
-  }
-
-  /** Posts a PIN straight to the API, as a client that skips the keypad would. */
-  async postPin(profileName: string, pin: string) {
-    const profiles = await (await this.page.request.get('/api/auth/profiles')).json();
-    const profile = profiles.find((p: { name: string }) => p.name === profileName);
-    return this.page.request.post('/api/auth/pin', { ...SAME_SITE, data: { profileId: profile.id, pin } });
-  }
-
-  pinError() {
-    return this.page.getByText(/That PIN didn’t match/);
-  }
-
-  digitsEntered(count: number) {
-    return this.page.getByRole('status', { name: `${count} of 4 digits entered` });
+  async chooseCreateAccount() {
+    await this.page.getByRole('link', { name: 'Create a parent account' }).click();
   }
 }

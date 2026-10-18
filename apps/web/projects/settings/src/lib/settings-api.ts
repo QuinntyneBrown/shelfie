@@ -3,16 +3,38 @@ import { ApiClient } from 'core';
 
 export type Theme = 'device' | 'light' | 'dark';
 
+export interface ParentView {
+  id: string;
+  name: string;
+  username: string;
+  color: string;
+}
+
+export interface InviteView {
+  id: string;
+  email: string;
+  sentAt: string;
+  expiresAt: string;
+}
+
+export interface ReaderView {
+  id: string;
+  name: string;
+  color: string;
+  username: string;
+}
+
 export interface SettingsPatch {
   theme: Theme;
-  reader: { name: string; color: string; pin?: string };
-  grownUp: { name: string; email: string; newPassword?: string; currentPassword?: string };
+  account: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
 export interface SettingsView {
   theme: Theme;
-  reader: { name: string; color: string };
-  grownUp: { name: string; email: string };
+  account: { name: string; username: string; email: string };
+  parents: ParentView[];
+  invites: InviteView[];
+  readers: ReaderView[];
 }
 
 @Injectable({ providedIn: 'root' })

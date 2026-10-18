@@ -2,9 +2,45 @@
 import { test, expect } from '../support/test';
 import { SAME_SITE } from '../support/same-site';
 import { signInAsNia } from '../support/signed-in';
+import { NIA } from '../support/accounts';
 import { ShelfPage } from '../pages/shelf.page';
+import { ShellPage } from '../pages/shell.page';
 import { SignInPage } from '../pages/sign-in.page';
 import { expireSessions, sessionExpiresAt, shortenSessions } from '../support/database';
+
+const DAY = 24 * 60 * 60;
+const sessionCookie = async (page: Parameters<typeof signInAsNia>[0]) => (await page.context().cookies()).find((c) => c.name === 'shelfie_session')!;
+
+test('Given Keep me signed in is on, when Nia signs in, then the session cookie outlives the browser by 30 days', async ({ page }) => {
+  await signInAsNia(page);
+
+  const cookie = await sessionCookie(page);
+  expect(cookie.expires - Date.now() / 1000).toBeGreaterThan(29 * DAY);
+  expect(cookie.expires - Date.now() / 1000).toBeLessThan(31 * DAY);
+});
+
+test('Given Keep me signed in is off, when Nia signs in, then the session cookie ends with the browser', async ({ page }) => {
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.signInWithPassword(NIA.username, NIA.password, { remember: false });
+  await expect(page).toHaveURL(/\/shelf$/);
+
+  expect((await sessionCookie(page)).expires).toBe(-1);
+});
+
+test('Given Nia signs out from her account menu, when she presses Back, then no shelf is shown', async ({ page }) => {
+  await signInAsNia(page);
+  const shell = new ShellPage(page);
+  await expect(new ShelfPage(page).greeting()).toHaveText('Hi Nia');
+  await shell.openAccountMenu('Nia');
+  await shell.menuItem('Sign out').click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+
+  await page.goBack();
+
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await expect(new ShelfPage(page).greeting()).toHaveText('Welcome back');
+});
 
 test('Given Nia is signed in, when the page is reloaded, then she is still signed in on the same page', async ({ page }) => {
   await signInAsNia(page);
