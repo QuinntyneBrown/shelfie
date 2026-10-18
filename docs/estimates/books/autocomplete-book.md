@@ -20,7 +20,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 
 ## Minimal scope
 
-Catalogue only: the search route over Open Library with the session guard and limit, the combobox with keyboard support, and a pick that fills the title and author. No AI fallback, no cover fetch, no chapter count. This still satisfies `L2-069`, `L2-073`, `L2-074` (without the AI branch) and `L2-075`, and most of `L2-070`; it defers `L2-071` and `L2-072`. Total: 17 hours.
+Catalogue only: the search route over Open Library with the session guard and limit, the combobox with keyboard support, and a pick that fills the title and author. No AI fallback, no cover fetch, no chapter count. This still satisfies `L2-074`, `L2-078`, `L2-079` (without the AI branch) and `L2-080`, and most of `L2-075`; it defers `L2-076` and `L2-077`. Total: 17 hours.
 
 ## Partial descoping
 

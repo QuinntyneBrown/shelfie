@@ -1,8 +1,8 @@
-# ADR-001: Look books up through the API, with Open Library first and an AI fallback
+# ADR-0008: Look books up through the API, with Open Library first and an AI fallback
 
-## Status
-
-Accepted, 18 October 2026.
+- Status: Accepted
+- Date: 2026-10-18
+- Requirements: L2-074, L2-076, L2-077, L2-079, L2-080
 
 ## Context
 

@@ -1,4 +1,4 @@
-// Traces to: L2-069, L2-072, L2-073, L2-074
+// Traces to: L2-074, L2-077, L2-078, L2-079
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { AddBookPage } from '../pages/add-book.page';

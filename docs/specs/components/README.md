@@ -4,4 +4,4 @@ One pair of files per `sh-*` component: the requirements (`.md`, ending in Given
 
 | Component | Selector | Status | Traces to | Requirements | Rendering | Design system |
 |---|---|---|---|---|---|---|
-| Combobox | `sh-combobox` | built | L2-025, L2-026, L2-028, L2-069, L2-070, L2-072, L2-073, L2-074 | [combobox.md](combobox.md) | [combobox.html](combobox.html) | [combobox](../../design-system/components/combobox.html) |
+| Combobox | `sh-combobox` | built | L2-025, L2-026, L2-028, L2-074, L2-075, L2-077, L2-078, L2-079 | [combobox.md](combobox.md) | [combobox.html](combobox.html) | [combobox](../../design-system/components/combobox.html) |
