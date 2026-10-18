@@ -58,11 +58,11 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Book card](components/book-card.html) | Data display | reading, up next, finished | — | shelf, book, log-chapter, give-reward |
 | [Chapter row](components/chapter-row.html) | Data display | done, next, future | default, hover, focus | book |
 | [Sticker](components/sticker.html) | Data display | md, lg, xl | — | review, shelf, chapter, book |
-| [Question and answer](components/question-answer.html) | Data display | answered | — | chapter, review-chapter, manage-book |
+| [Question and answer](components/question-answer.html) | Data display | answered, flagged (Dad only) | — | chapter, review-chapter, manage-book |
 | [Feedback note](components/feedback-note.html) | Data display | sticker + note | — | chapter, review-chapter |
 | [Trophy](components/trophy.html) | Data display | reward given, waiting | — | shelf, banner |
 | [Toast](components/toast.html) | Feedback | info, success, warning, danger; with action; stacked | entering, timed, leaving | toast |
-| [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings |
+| [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings, review-chapter |
 | [Inline message](components/inline-message.html) | Feedback | field error, saving, saved | — | add-book, log-chapter, sign-in, settings |
 | [Progress](components/progress.html) | Feedback | default, large, complete; with label | — | shelf, book, log-chapter, manage-book |
 | [Skeleton](components/skeleton.html) | Feedback | text, title, rect, cover | loading | shelf, book, chapter, log-chapter |

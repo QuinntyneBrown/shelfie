@@ -157,6 +157,7 @@
         <tbody>
           <tr><th scope="row">Short answer</th><td><div class="qa"><div class="qa__q"><span class="qa__num">3.</span>What do you think will happen next?</div><div class="qa__a">I think Aslan is going to help Edmund escape and Peter will have to fight something.</div></div></td></tr>
           <tr><th scope="row">Long answer</th><td><div class="qa" style="max-width: 20rem;"><div class="qa__q"><span class="qa__num">1.</span>What happened in this chapter?</div><div class="qa__a">The Witch’s sledge got stuck because the snow was melting and Edmund saw spring coming. The Beavers and the others got to the Stone Table and met Aslan.</div></div></td></tr>
+          <tr><th scope="row">Flagged (Dad only)</th><td><div class="qa" style="max-width: 20rem;"><div class="qa__q"><span class="qa__num">4.</span>Where did the children go in this chapter?</div><div class="qa__a">To the Stone Table on the hill.</div><div class="alert alert--warning" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01"/></svg><div class="alert__body"><div class="alert__title">Talk about this</div><div>Short: it says where they went, not what happened there.</div></div></div></div></td></tr>
           <tr><th scope="row">Loading</th><td><div class="stack" aria-busy="true" aria-label="Loading your answers" style="max-width: 20rem;"><span class="skeleton skeleton--title" aria-hidden="true"></span><span class="skeleton skeleton--text" aria-hidden="true"></span><span class="skeleton skeleton--text" aria-hidden="true"></span></div></td></tr>
         </tbody>
       </table></div>
@@ -167,6 +168,7 @@
       </div>
       <ul>
         <li><b>Loading</b> replaces the whole card body with a title skeleton and text skeletons; the container carries <code>aria-busy="true"</code>. See <a href="skeleton.html">skeleton</a>.</li>
+        <li><b>Flagged</b> appears only on Review a chapter, after Dad asks the review assistant for help: a <a href="alert.html">warning alert</a> ("Talk about this" plus the assistant’s reason, at most 120 characters, as plain text) sits under the answer well. The answer itself is unchanged. Nia never sees a flag, and flags are not kept.</li>
         <li><b>Waiting for Dad</b> is not a state of this block: the chapter page adds an <a href="alert.html">alert</a> above the card ("Dad hasn’t read this yet") and the answers look the same.</li>
       </ul>
     </section>
@@ -262,6 +264,7 @@
         <li><a href="../../mocks/pages/chapter/pending.html">pages/chapter/pending</a> (Chapter 11, waiting for Dad)</li>
         <li><a href="../../mocks/pages/chapter/loading.html">pages/chapter/loading</a> (skeleton)</li>
         <li><a href="../../mocks/pages/review-chapter/default.html">pages/review-chapter/default</a> (Dad reads Chapter 11)</li>
+        <li><a href="../../mocks/pages/review-chapter/assist-flagged.html">pages/review-chapter/assist-flagged</a> (answers flagged by the review assistant)</li>
         <li><a href="../../mocks/pages/review-chapter/reviewed.html">pages/review-chapter/reviewed</a></li>
         <li><a href="../../mocks/pages/manage-book/default.html">pages/manage-book/default</a> (numbers in the question list)</li>
       </ul>

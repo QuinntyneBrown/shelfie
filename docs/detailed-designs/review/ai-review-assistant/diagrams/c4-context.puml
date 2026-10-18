@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — AI review assistant
+
+Person(grownUp, "Parent", "Asks for help reviewing a pending chapter; picks the sticker and sends")
+Person(reader, "Reader", "Sees only the sent sticker and note")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(anthropic, "Anthropic Messages API", "Claude model that flags weak answers and drafts a note")
+
+Rel(grownUp, shelfie, "Presses Help me review, uses the draft, sends feedback", "HTTPS")
+Rel(reader, shelfie, "Opens the reviewed chapter", "HTTPS")
+Rel(shelfie, anthropic, "Book title, chapter number, questions and answers only", "HTTPS, x-api-key")
+@enduml

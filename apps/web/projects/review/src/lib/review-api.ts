@@ -60,6 +60,12 @@ export interface FeedbackResult {
   queueCount: number;
 }
 
+/** The review assistant's advice: shown to the parent only, never stored. */
+export interface Advice {
+  answers: { position: number; verdict: 'ok' | 'weak'; reason: string }[];
+  draft: string;
+}
+
 export interface ReviewOverview {
   activity: ActivityItem[];
   readerName: string;
@@ -79,6 +85,10 @@ export class ReviewApi {
 
   sendFeedback(id: string, body: { sticker: string; note: string }) {
     return this.api.post<FeedbackResult>(`/chapter-logs/${id}/feedback`, body);
+  }
+
+  assist(id: string) {
+    return this.api.post<Advice>(`/chapter-logs/${id}/assist`, {});
   }
 
   giveReward(bookId: string, body: { text: string; note: string }) {

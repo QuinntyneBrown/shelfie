@@ -6,6 +6,7 @@ import { createApp } from '../../apps/api/src/app.ts';
 import { seed } from '../../apps/api/src/seed.ts';
 import { createTestDatabase } from '../../apps/api/src/test-db.ts';
 import { useDatabase } from './database';
+import { fakeAssistant, resetAssistant } from './assistant';
 import { clearMailbox, deliver } from './mailbox';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
@@ -22,7 +23,7 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { st
     async ({}, use) => {
       const db = await createTestDatabase();
       const app = express();
-      app.use(createApp(db.pool, { log: () => {}, mail: deliver }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant }));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
       const server = app.listen(0);
@@ -39,11 +40,12 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { st
   ],
   baseURL: async ({ stack }, use) => use(stack.url),
   shelf: ['books', { option: true }],
-  // Every test starts from the seeded household: no sessions, no mail.
+  // Every test starts from the seeded household: no sessions, no mail, a working assistant.
   seeded: [
     async ({ stack, shelf }, use) => {
       await seed(stack.db.pool, { books: shelf !== 'empty' });
       clearMailbox();
+      resetAssistant();
       await use();
     },
     { auto: true },

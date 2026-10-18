@@ -107,7 +107,7 @@ The one `DELETE` removes the household's profiles, devices, sessions, password r
 
 ## Changing settings
 
-Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work).
+Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work). `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged.
 
 ## Changing the infrastructure
 

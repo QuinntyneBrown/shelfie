@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Help me review
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as grownUp
+box "Frontend — Shelfie web (review library)" #E0F2FE
+  participant "ReviewChapterPage" as page
+  participant "ReviewApi" as client
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "csrfGuard, requireSession,\nrequireRole('parent'), assistLimiter" as guards
+  participant "review.router.ts" as router
+  participant "review-assistant.ts" as assistant
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database" as db
+end box
+participant "Anthropic Messages API" as anthropic
+
+grownUp -> page : Open a pending chapter
+page --> grownUp : Answers, Help me review, stickers, note (nothing sent to the assistant, L2-064)
+grownUp -> page : Press Help me review
+page -> page : assist = busy; form keeps working
+page -> client : assist(id)
+client -> guards : POST /api/chapter-logs/:id/assist
+alt reader, cross-site or over the limit
+  guards --> client : 403 grown-ups-only / 403 cross-site / 429 too-many-attempts (L2-064, L2-068)
+else parent
+  guards -> router : next()
+  router -> db : getChapter(householdId, id)
+  alt other household
+    router --> client : 404 not-found
+  else already reviewed
+    router --> client : 409 already-reviewed
+  else pending
+    router -> assistant : askAssistant(provider, {bookTitle, chapterNumber, answers})
+    assistant -> anthropic : POST /v1/messages; answers inside <answers> as data (L2-068)
+    alt no key
+      assistant --> router : 503 assistant-unavailable (L2-067)
+    else error, timeout, refusal
+      assistant --> router : 502 assistant-failed (L2-067)
+    else JSON result
+      assistant -> assistant : checkAdvice: keep well-formed entries, cut draft to 300
+      assistant --> router : Advice, or 502 when the draft is unusable
+    end
+    router --> client : 200 Advice (nothing stored or logged, L2-068)
+  end
+end
+client --> page : Advice or ApiError
+alt Advice
+  page --> grownUp : Talk about this beside weak answers; Suggested note with Use draft (L2-065, L2-066)
+  grownUp -> page : Use draft (note empty) and edit
+  grownUp -> page : Pick a sticker; Send to Nia (L2-015)
+else 503
+  page --> grownUp : The assistant isn't set up
+else any other error
+  page --> grownUp : The assistant couldn't help this time + Try again; review still works (L2-067)
+end
+@enduml

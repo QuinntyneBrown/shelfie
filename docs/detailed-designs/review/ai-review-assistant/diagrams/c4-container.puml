@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — AI review assistant
+
+Person(grownUp, "Parent", "Reviews a chapter")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ReviewChapterPage: Help me review, flags, Suggested note, Use draft")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "POST /api/chapter-logs/:id/assist; holds ANTHROPIC_API_KEY")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "chapter_log, answer, book; sign_in_attempt counts assist requests")
+}
+System_Ext(anthropic, "Anthropic Messages API", "claude-opus-5-5, structured JSON output")
+Rel(grownUp, web, "Asks for help, edits the draft, sends", "HTTPS")
+Rel(web, api, "POST /api/chapter-logs/:id/assist", "JSON/HTTPS")
+Rel(api, db, "Reads the chapter and its answers; counts requests", "SQL")
+Rel(api, anthropic, "POST /v1/messages (20 s timeout)", "JSON/HTTPS")
+@enduml

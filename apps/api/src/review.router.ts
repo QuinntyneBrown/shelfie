@@ -6,6 +6,9 @@ import { Problem } from './problem.ts';
 import { requireRole } from './authz.ts';
 import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
 import { giveReward } from './rewards.service.ts';
+import { getChapter } from './chapters.service.ts';
+import { askAssistant, type ReviewAssistant } from './review-assistant.ts';
+import { assistLimiter } from './rate-limit.ts';
 
 export const giveRewardSchema = z.object({
   text: z.string().trim().min(1).max(100),
@@ -28,7 +31,7 @@ const feedbackSchema = z.object({
 });
 import { requireSession, type RequestSession } from './session.ts';
 
-export function reviewRouter(db: Pool) {
+export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
   const router = Router();
 
   router.get('/review', requireSession(db), requireRole('parent'), async (_req, res) => {
@@ -42,6 +45,25 @@ export function reviewRouter(db: Pool) {
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       res.json(await sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
+  });
+
+  // Asked for by the parent only; the advice is returned and never stored (L2-064, L2-068).
+  router.post('/chapter-logs/:id/assist', requireSession(db), requireRole('parent'), assistLimiter(db), async (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    try {
+      const chapter = await getChapter(db, householdId, String(req.params['id']));
+      if (chapter.review) throw new Problem(409, 'already-reviewed');
+      res.json(
+        await askAssistant(assistant, {
+          bookTitle: chapter.book.title,
+          chapterNumber: chapter.chapterNumber,
+          answers: chapter.answers.map((a) => ({ position: a.position, question: a.questionText, answer: a.text })),
+        }),
+      );
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });

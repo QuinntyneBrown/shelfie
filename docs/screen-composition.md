@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (28 screens, 140 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (28 screens, 146 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
 - Layout classes from the design-system stylesheet (`container`, `stack`, `cluster`, `grid`, `span-*`, `page-header`, `card`, `section`, `visually-hidden`, `text-*`, `icon`) are global CSS, not components. They are used freely and not listed below.
@@ -73,7 +73,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 | Person list row | settings (Parents, Readers) | `list__item`: `sh-avatar`, name, `@username` or e-mail, optional "Invited" badge, trailing action ("Edit", "Send again") |
 | Book header | book, chapter, log-chapter, review-chapter, manage-book | `book-card` markup in the mocks: `sh-cover` + title + author / "chapter N of M" + optional `sh-progress`. Designs describe it as cover + title + progress, not `sh-book-card` |
 | Breadcrumb | add-book, book, chapter, log-chapter, review-chapter, manage-book | `nav` with links and current page |
-| Question and answer (read-only) | chapter, review-chapter | `qa`: number, question, answer |
+| Question and answer (read-only) | chapter, review-chapter | `qa`: number, question, answer; on review-chapter, after Dad asks the review assistant, a flagged answer gains an `sh-banner` `warning` "Talk about this" with the reason (never shown to the reader) |
 | Feedback note | chapter (default), review-chapter (`reviewed`) | sticker + parent's note + date |
 | Status badge | books, manage-book, shelf (Finished count), settings ("Invited") | `badge--info/success/warning`, plain `badge`. The Review count badge belongs to `sh-top-bar` / `sh-tab-bar` |
 | Book list row | books, review (queue), manage-book (questions list) | `list__item`: `sh-cover` sm, title, meta, trailing action |
@@ -130,9 +130,9 @@ These are local UI that more than one screen needs. Build once in the feature li
 - **Library:** shell parent top bar + `sh-tab-bar`; `sh-cover` sm; `sh-button` sm; `sh-activity-item` (recent activity feed); `sh-skeleton`; `sh-empty-state`; `sh-error-state`. `long` drops the side panel and adds rows.
 - **Local:** queue list rows; "Matilda is finished!" reward card (`sh-cover` + text + "Give a reward" button); stats panel.
 
-#### Review a chapter — `/review/chapters/:id` (`pages/review-chapter`: default, loading, error, invalid, submitting, success, reviewed)
-- **Library:** `sh-cover`; `sh-sticker-picker`; `sh-textarea` (note, optional); `sh-button` primary lg; `sh-banner` `danger` (invalid summary); `sh-skeleton`; `sh-error-state`; `sh-celebration` (success).
-- **Local:** breadcrumb; book header; question and answer list; feedback note (reviewed).
+#### Review a chapter — `/review/chapters/:id` (`pages/review-chapter`: default, loading, error, invalid, submitting, success, reviewed, assist-busy, assist-flagged, assist-clear, assist-drafted, assist-failed, assist-unavailable)
+- **Library:** `sh-cover`; `sh-sticker-picker`; `sh-textarea` (note, optional); `sh-button` primary lg; `sh-banner` `danger` (invalid summary); `sh-skeleton`; `sh-error-state`; `sh-celebration` (success). Review assistant, pending chapters only (absent on `reviewed`): `sh-banner` `warning` "Talk about this" under each flagged answer and "N answers to talk about" in the feedback card (assist-flagged, assist-drafted), `success` "Every answer looks good" (assist-clear), `info` "Suggested note" with a "Use draft" action (disabled with its reason while the note has words), `info` "The assistant isn’t set up" (assist-unavailable), `danger` "The assistant couldn’t help this time" with "Try again" (assist-failed).
+- **Local:** breadcrumb; book header; question and answer list; feedback note (reviewed); "Help me review" button (`btn`, `type="button"`, `aria-busy` while the assistant reads, assist-busy) with its one-line hint, and the banners' small `btn btn--sm` actions, as other non-submit buttons in the app are written (`sh-button` is always a submit button).
 
 #### Books — `/books` (`pages/books`: default, loading, empty, error)
 - **Library:** `sh-cover` sm; `sh-button` primary / sm "Manage"; `sh-skeleton`; `sh-empty-state`; `sh-error-state`.

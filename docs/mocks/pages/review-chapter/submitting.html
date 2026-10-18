@@ -7,6 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="review-chapter">
 <meta name="mock:state" content="submitting">
+<meta name="mock:requirements" content="L2-015 L2-064 L2-065 L2-066 L2-067 L2-068">
 <meta name="description" content="Sending: picker and note locked, button busy.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
@@ -35,6 +36,7 @@
   </section>
   <form class="card stack" style="grid-column: span 5; position: sticky; top: calc(var(--layout-topbar-height) + var(--space-4));" action="success.html" method="get" novalidate aria-labelledby="feedback-title">
     <h2 id="feedback-title" style="font: var(--text-h4);">Your feedback</h2>
+    <div class="stack" style="gap: var(--space-2);"><div><button class="btn" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>Help me review</button></div><p class="text-muted" style="margin: 0; font: var(--text-body-sm);">Suggests a note and points out answers to talk about. Nothing goes to Nia until you press Send.</p></div>
     
     <div class="field">
       <span class="field__label" id="sticker-label">Pick a sticker</span>
@@ -59,7 +61,7 @@
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Review a chapter</span>
-  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html" aria-current="page">submitting</a></li><li><a href="success.html">success</a></li><li><a href="reviewed.html">reviewed</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html" aria-current="page">submitting</a></li><li><a href="success.html">success</a></li><li><a href="reviewed.html">reviewed</a></li><li><a href="assist-busy.html">assist-busy</a></li><li><a href="assist-flagged.html">assist-flagged</a></li><li><a href="assist-clear.html">assist-clear</a></li><li><a href="assist-drafted.html">assist-drafted</a></li><li><a href="assist-failed.html">assist-failed</a></li><li><a href="assist-unavailable.html">assist-unavailable</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>

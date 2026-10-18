@@ -11,7 +11,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { Banner, Button, Cover, FEEDBACK_STICKERS, StickerPicker, Textarea } from 'components';
 import { ApiError, ShellStatusService } from 'core';
-import { ChapterLog, FeedbackResult, ReviewApi } from '../review-api';
+import { Advice, ChapterLog, FeedbackResult, ReviewApi } from '../review-api';
 
 @Component({
   selector: 'sh-review-chapter-page',
@@ -37,6 +37,13 @@ export class ReviewChapterPage {
   protected readonly sentSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.sticker()),
   );
+  protected readonly assist = signal<'idle' | 'busy' | 'done' | 'failed' | 'unavailable'>('idle');
+  protected readonly advice = signal<Advice | null>(null);
+  protected readonly weakCount = computed(
+    () => this.advice()?.answers.filter((a) => a.verdict === 'weak').length ?? 0,
+  );
+  /** "Use draft" never replaces words the parent has typed. */
+  protected readonly noteHasWords = computed(() => this.note().trim() !== '');
   protected readonly givenSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.chapter()?.review?.sticker),
   );
@@ -53,12 +60,46 @@ export class ReviewChapterPage {
     this.sticker.set('');
     this.note.set('');
     this.stickerMissing.set(false);
+    this.assist.set('idle');
+    this.advice.set(null);
     try {
       this.chapter.set(await this.api.chapterLog(id));
     } catch (e) {
       if (!(e instanceof ApiError) || e.status !== 404) throw e;
       await this.router.navigateByUrl('/not-found', { skipLocationChange: true });
     }
+  }
+
+  /** The assistant's reason when it flagged this answer as weak. */
+  protected flagFor(position: number) {
+    return (
+      this.advice()?.answers.find((a) => a.position === position && a.verdict === 'weak')?.reason ??
+      null
+    );
+  }
+
+  protected async askForHelp() {
+    const chapter = this.chapter();
+    if (!chapter || this.assist() === 'busy') return;
+    this.assist.set('busy');
+    let advice: Advice | null = null;
+    let outcome: 'done' | 'failed' | 'unavailable' = 'done';
+    try {
+      advice = await this.api.assist(chapter.id);
+    } catch (e) {
+      // Whatever went wrong, the review itself keeps working (L2-067).
+      outcome =
+        e instanceof ApiError && e.type === 'assistant-unavailable' ? 'unavailable' : 'failed';
+    }
+    // Advice for a chapter the parent has already moved on from is dropped.
+    if (this.chapter() !== chapter) return;
+    this.advice.set(advice);
+    this.assist.set(outcome);
+  }
+
+  protected useDraft() {
+    const draft = this.advice()?.draft;
+    if (draft && !this.noteHasWords()) this.note.set(draft);
   }
 
   protected async send() {

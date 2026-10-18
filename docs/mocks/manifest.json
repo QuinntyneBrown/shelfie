@@ -242,11 +242,25 @@
         "invalid",
         "submitting",
         "success",
-        "reviewed"
+        "reviewed",
+        "assist-busy",
+        "assist-flagged",
+        "assist-clear",
+        "assist-drafted",
+        "assist-failed",
+        "assist-unavailable"
       ],
       "not_applicable": {
         "empty": "Only logged chapters appear in the queue, so there are always answers to show."
-      }
+      },
+      "requirements": [
+        "L2-015",
+        "L2-064",
+        "L2-065",
+        "L2-066",
+        "L2-067",
+        "L2-068"
+      ]
     },
     {
       "id": "books",

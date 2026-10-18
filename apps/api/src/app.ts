@@ -13,11 +13,12 @@ import { questionsRouter } from './questions.router.ts';
 import { invitesRouter } from './invites.router.ts';
 import { readersRouter } from './readers.router.ts';
 import { reviewRouter } from './review.router.ts';
+import { anthropicAssistant, type ReviewAssistant } from './review-assistant.ts';
 import { photosRouter } from './photos.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
-export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
+export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant } = {}) {
   const app = express();
   app.use(requestLogging(options.log ?? stdoutLog));
   app.use(express.json({ limit: '16kb' }));
@@ -45,7 +46,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
   app.use('/api/auth', authRouter(db, options.mail));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db));
-  app.use('/api', reviewRouter(db));
+  app.use('/api', reviewRouter(db, options.assistant ?? anthropicAssistant));
   app.use('/api/books', booksRouter(db));
   app.use('/api/books', chaptersRouter(db));
   app.use('/api/books', coversRouter(db));

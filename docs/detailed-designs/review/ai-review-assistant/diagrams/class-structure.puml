@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — AI review assistant
+
+class ReviewChapterPage {
+  #assist: Signal<AssistState>
+  #advice: Signal<Advice | null>
+  #note: Signal<string>
+  #sticker: Signal<string>
+  #askForHelp(): Promise<void>
+  #useDraft(): void
+  #flagFor(position): string | null
+  #send(): Promise<void>
+}
+enum AssistState {
+  idle
+  busy
+  done
+  failed
+  unavailable
+}
+class ReviewApi {
+  +assist(id: string): Promise<Advice>
+  +sendFeedback(id, body): Promise<FeedbackResult>
+}
+class Advice {
+  +answers: AnswerAdvice[]
+  +draft: string
+}
+class AnswerAdvice {
+  +position: number
+  +verdict: 'ok' | 'weak'
+  +reason: string
+}
+class AssistInput <<API>> {
+  +bookTitle: string
+  +chapterNumber: number
+  +answers: { position, question, answer }[]
+}
+class "ReviewAssistant <<API type>>" as ReviewAssistant {
+  (input: AssistInput) => Promise<unknown>
+}
+class "review-assistant.ts <<API module>>" as Module {
+  +anthropicAssistant: ReviewAssistant
+  +askAssistant(provider, input): Promise<Advice>
+  +checkAdvice(raw, positions): Advice | null
+}
+ReviewChapterPage --> ReviewApi : calls
+ReviewChapterPage --> AssistState
+ReviewApi ..> Advice : returns
+Advice *-- AnswerAdvice
+Module ..> AssistInput : sends
+Module ..> ReviewAssistant : calls
+Module ..> Advice : validates into
+@enduml
