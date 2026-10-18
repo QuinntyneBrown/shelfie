@@ -64,6 +64,51 @@ test('Given the SQLite database of the current release, when it is imported into
   }
 });
 
+/** A database file as the profile-and-PIN release left it: grown-ups, readers with PINs, no usernames, a device table. */
+function pinRelease(): string {
+  const path = join(mkdtempSync(join(tmpdir(), 'shelfie-import-')), 'shelfie.db');
+  const db = new DatabaseSync(path);
+  db.exec(`
+    CREATE TABLE household (id TEXT PRIMARY KEY, time_zone TEXT NOT NULL DEFAULT 'UTC', theme TEXT NOT NULL DEFAULT 'device');
+    CREATE TABLE profile (id TEXT PRIMARY KEY, household_id TEXT NOT NULL, role TEXT NOT NULL, name TEXT NOT NULL, color TEXT NOT NULL, email TEXT, password_hash TEXT, pin_hash TEXT, pin_failed_count INTEGER NOT NULL DEFAULT 0, pin_locked_until TEXT);
+    CREATE TABLE session (id TEXT PRIMARY KEY, profile_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL);
+    CREATE TABLE book (id TEXT PRIMARY KEY, household_id TEXT NOT NULL, title TEXT NOT NULL, author TEXT, chapter_count INTEGER NOT NULL, cover_color TEXT NOT NULL, sticker TEXT NOT NULL, added_by_role TEXT NOT NULL DEFAULT 'grown_up', created_at TEXT NOT NULL, finished_at TEXT);
+    CREATE TABLE device (id TEXT PRIMARY KEY, household_id TEXT NOT NULL, created_at TEXT NOT NULL);
+    INSERT INTO household (id) VALUES ('h1');
+    INSERT INTO profile (id, household_id, role, name, color, email, password_hash, pin_hash) VALUES
+      ('p-nia', 'h1', 'reader', 'Nia', 'rose', NULL, NULL, 'pin$hash'),
+      ('p-dad', 'h1', 'grown_up', 'Dad', 'sky', 'Dad.Brown@example.com', 'pw$hash', NULL),
+      ('p-nia2', 'h1', 'reader', 'Nia', 'sun', NULL, NULL, 'pin$hash');
+    INSERT INTO session (id, profile_id, created_at, expires_at) VALUES ('s1', 'p-dad', '2026-10-01T00:00:00.000Z', '2026-10-31T00:00:00.000Z');
+    INSERT INTO book (id, household_id, title, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES
+      ('b1', 'h1', 'Matilda', 2, 'rose', '📚', 'grown_up', '2026-10-01'), ('b2', 'h1', 'The BFG', 3, 'sky', '🌈', 'reader', '2026-10-02');
+    INSERT INTO device (id, household_id, created_at) VALUES ('d1', 'h1', '2026-10-01T00:00:00.000Z');
+  `);
+  db.close();
+  return path;
+}
+
+test('Given the SQLite database of the profile-and-PIN release, when it is imported, then grown-ups become parents, everyone gets a username, and PINs and devices stay behind', async () => {
+  const db = await createTestDatabase();
+  try {
+    const counts = await importSqlite(pinRelease(), db.pool);
+
+    assert.deepEqual(counts, { household: 1, profile: 3, session: 1, book: 2 });
+    assert.deepEqual(await all(db.pool, 'SELECT id, role, username, email, password_hash FROM profile ORDER BY id'), [
+      { id: 'p-dad', role: 'parent', username: 'dad.brown', email: 'dad.brown@example.com', password_hash: 'pw$hash' },
+      { id: 'p-nia', role: 'reader', username: 'nia', email: null, password_hash: null },
+      { id: 'p-nia2', role: 'reader', username: 'nia2', email: null, password_hash: null },
+    ]);
+    assert.deepEqual(await all(db.pool, 'SELECT id, added_by_role FROM book ORDER BY id'), [
+      { id: 'b1', added_by_role: 'parent' },
+      { id: 'b2', added_by_role: 'reader' },
+    ]);
+    assert.deepEqual(await get(db.pool, "SELECT remember FROM session WHERE id = 's1'"), { remember: 1 });
+  } finally {
+    await db.drop();
+  }
+});
+
 test('Given a database that already holds a household, when an import is attempted, then it is refused and nothing is written', async () => {
   const db = await createTestDatabase();
   try {
