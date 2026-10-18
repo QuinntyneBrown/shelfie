@@ -11,7 +11,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { Banner, Button, Cover, FEEDBACK_STICKERS, StickerPicker, Textarea } from 'components';
 import { ApiError, ShellStatusService } from 'core';
-import { ChapterLog, FeedbackResult, ReviewApi } from '../review-api';
+import { Advice, ChapterLog, FeedbackResult, ReviewApi } from '../review-api';
 
 @Component({
   selector: 'sh-review-chapter-page',
@@ -37,6 +37,11 @@ export class ReviewChapterPage {
   protected readonly sentSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.sticker()),
   );
+  protected readonly assist = signal<'idle' | 'busy' | 'done'>('idle');
+  protected readonly advice = signal<Advice | null>(null);
+  protected readonly weakCount = computed(
+    () => this.advice()?.answers.filter((a) => a.verdict === 'weak').length ?? 0,
+  );
   protected readonly givenSticker = computed(() =>
     FEEDBACK_STICKERS.find((s) => s.value === this.chapter()?.review?.sticker),
   );
@@ -53,12 +58,30 @@ export class ReviewChapterPage {
     this.sticker.set('');
     this.note.set('');
     this.stickerMissing.set(false);
+    this.assist.set('idle');
+    this.advice.set(null);
     try {
       this.chapter.set(await this.api.chapterLog(id));
     } catch (e) {
       if (!(e instanceof ApiError) || e.status !== 404) throw e;
       await this.router.navigateByUrl('/not-found', { skipLocationChange: true });
     }
+  }
+
+  /** The assistant's reason when it flagged this answer as weak. */
+  protected flagFor(position: number) {
+    return (
+      this.advice()?.answers.find((a) => a.position === position && a.verdict === 'weak')?.reason ??
+      null
+    );
+  }
+
+  protected async askForHelp() {
+    const chapter = this.chapter();
+    if (!chapter || this.assist() === 'busy') return;
+    this.assist.set('busy');
+    this.advice.set(await this.api.assist(chapter.id));
+    this.assist.set('done');
   }
 
   protected async send() {
