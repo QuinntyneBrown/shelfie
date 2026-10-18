@@ -11,7 +11,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | `book-search.service.ts`: `BookMatch`, `matchSchema`, `searchBooks` with catalogue-first, AI fallback, timeouts and `lookup-unavailable` | 3 |
 | `catalogue.ts`: `openLibrary` search and `fetchCatalogueCover` (fixed host, 5 MB cap, 5 s, `processCover`) | 3 |
 | `ai.ts`: `claudeSuggestions` over `fetch`, JSON answer parsed through `matchSchema`, not-configured path | 2 |
-| `book-search.router.ts`, `rateLimiter` generalisation with `lookupLimiter`, `createApp` options | 2 |
+| `book-search.router.ts`, `lookupLimiter` over the existing `rateLimiter`, `createApp` options | 2 |
 | `sh-combobox` (combobox and listbox roles, keyboard, announcements, notes, badge, covers) per the CRD | 5 |
 | `ApiClient` abort and blob support; `ShelfApi.searchBooks` and `catalogueCover` | 1 |
 | `AddBookPage`: debounce, abort, option mapping, pick-to-fill, focus to Chapters, cover as `File` | 3 |

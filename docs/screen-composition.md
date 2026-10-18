@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (29 screens, 155 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (29 screens, 161 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
 - Layout classes from the design-system stylesheet (`container`, `stack`, `cluster`, `grid`, `span-*`, `page-header`, `card`, `section`, `visually-hidden`, `text-*`, `icon`) are global CSS, not components. They are used freely and not listed below.
