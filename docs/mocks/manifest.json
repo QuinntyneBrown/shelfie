@@ -302,7 +302,8 @@
       "requirements": [
         "L2-010",
         "L2-046",
-        "L2-048"
+        "L2-048",
+        "L2-064"
       ]
     },
     {
@@ -426,6 +427,30 @@
         "failed"
       ],
       "not_applicable": {}
+    },
+    {
+      "id": "suggest-questions",
+      "kind": "dialog",
+      "title": "Suggested questions",
+      "opens_from": "manage-book",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "none-selected",
+        "saving",
+        "success",
+        "empty",
+        "failed",
+        "unavailable"
+      ],
+      "not_applicable": {},
+      "requirements": [
+        "L2-064",
+        "L2-065",
+        "L2-066",
+        "L2-067"
+      ]
     },
     {
       "id": "edit-reader",
