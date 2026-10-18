@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Ask for suggested questions
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as person
+box "Frontend — Shelfie web" #E0F2FE
+  participant "SuggestQuestionsDialog" as dialog
+  participant "BooksApi" as client
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "questions.router.ts\n+ csrfGuard, requireSession,\nrequireRole, rateLimiter" as router
+  participant "suggestions.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+participant "Anthropic Messages API" as claude
+person -> dialog : Suggest questions (or Ask again, Try again)
+dialog --> person : Busy: skeleton rows, "Thinking up questions…"
+dialog -> client : suggestQuestions(bookId)
+client -> router : POST /api/books/{id}/question-suggestions
+router -> router : Session (401); parent (403); CSRF (403)
+alt no ANTHROPIC_API_KEY
+  router --> client : 503 suggestions-unavailable
+  dialog --> person : Info banner "Suggestions aren’t switched on"
+else configured
+  router -> db : asks by this household in 10 minutes
+  alt 5 or more
+    router --> client : 429 too-many-attempts, Retry-After
+    dialog --> person : Danger banner "You’ve asked for a lot of ideas just now…", Try again
+  else under the limit
+    router -> service : suggestQuestions(householdId, bookId, suggest)
+    service -> db : book in household? (else 404); logged count; questions
+    service -> claude : POST /v1/messages {title, author, chapter, questions} as JSON data (L2-067)
+    alt error, refusal, bad output or no answer in 20 s
+      router --> client : 502 suggestions-failed
+      dialog --> person : Danger banner "Suggestions didn’t come through", Try again
+    else answered
+      service -> service : trim; keep 5–200 characters; drop duplicates; at most 5 (L2-064)
+      router --> client : 200 {chapter, suggestions}
+      alt no suggestions left
+        dialog --> person : "No new ideas this time", Ask again
+      else
+        dialog --> person : Unticked editable rows; Add questions disabled
+      end
+    end
+  end
+end
+@enduml
