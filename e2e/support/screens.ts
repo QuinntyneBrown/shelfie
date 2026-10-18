@@ -6,11 +6,19 @@ import { BooksPage } from '../pages/books.page';
 import { SettingsPage } from '../pages/settings.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { SignInPage } from '../pages/sign-in.page';
+import { SignUpPage } from '../pages/sign-up.page';
 
 export interface Screen {
   name: string;
   /** Takes the page from a blank browser to this screen, fully loaded. */
   open: (page: Page) => Promise<void>;
+}
+
+/** Waits for the entrance animations to finish, so a card is measured at rest; the logo bobs forever and is left alone. */
+async function settled(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)),
+  );
 }
 
 /** Every screen built so far, for checks that must hold on all of them. */
@@ -21,10 +29,16 @@ export const screens: Screen[] = [
       const signIn = new SignInPage(page);
       await signIn.open();
       await signIn.usernameField().waitFor();
-      // Measure the card at rest, not part-way through its entrance animation; the logo bobs forever.
-      await page.evaluate(() =>
-        Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)),
-      );
+      await settled(page);
+    },
+  },
+  {
+    name: 'sign-up',
+    open: async (page) => {
+      const signUp = new SignUpPage(page);
+      await signUp.open();
+      await signUp.nameField().waitFor();
+      await settled(page);
     },
   },
   {

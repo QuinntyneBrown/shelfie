@@ -152,7 +152,7 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
     | { id: string }
     | undefined;
   const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'parent'").get(householdId) as { name: string };
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
   return {
     id: log.id,
     book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
@@ -160,7 +160,7 @@ export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: 
     readOn: log.read_on,
     today: householdToday(db, householdId),
     grownUpName: grownUp.name,
-    readerName: reader.name,
+    readerName: reader?.name ?? 'your reader',
     answers,
     review: log.reviewed_at
       ? { sticker: log.review_sticker!, note: log.note, reviewedAt: log.reviewed_at, feedbackSeenAt: log.feedback_seen_at }

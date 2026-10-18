@@ -13,6 +13,10 @@ export class AuthApi {
     return this.api.post<Session>('/auth/reset-password', { token, password });
   }
 
+  signUp(account: { name: string; email: string; username: string; password: string }) {
+    return this.api.post<Session>('/auth/sign-up', account);
+  }
+
   signInWithPassword(username: string, password: string, remember: boolean) {
     return this.api.post<Session>('/auth/password', { username, password, remember });
   }

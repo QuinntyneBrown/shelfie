@@ -1,6 +1,7 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { sendMail, type Mail } from './mail.ts';
+import { Problem } from './problem.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 import { SESSION_DAYS } from './session.ts';
 
@@ -70,6 +71,51 @@ export function signInWithPassword(db: DatabaseSync, username: string, password:
   const profile = findProfileByUsername(db, username);
   const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
   return profile && profile.password_hash && valid ? createSession(db, profile, remember) : null;
+}
+
+export interface SignUpInput {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+}
+
+/** Which of a new account's username and e-mail another parent or reader already holds. */
+export function takenFields(db: DatabaseSync, username: string, email: string | null, exceptId = ''): string[] {
+  const taken: string[] = [];
+  if (email && db.prepare('SELECT 1 FROM profile WHERE email = ? AND id != ?').get(email, exceptId)) taken.push('email');
+  if (db.prepare('SELECT 1 FROM profile WHERE lower(username) = lower(?) AND id != ?').get(username, exceptId)) taken.push('username');
+  return taken;
+}
+
+/** Starts a household with this parent as its only member and signs them in. */
+export function signUp(db: DatabaseSync, input: SignUpInput): Session {
+  const email = input.email.trim().toLowerCase();
+  const taken = takenFields(db, input.username, email);
+  if (taken.length) throw new Problem(409, 'taken', { fields: taken });
+  const passwordHash = hashSecret(input.password);
+  const householdId = randomUUID();
+  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
+  db.exec('BEGIN');
+  try {
+    db.prepare('INSERT INTO household (id) VALUES (?)').run(householdId);
+    db.prepare('INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+      parent.id,
+      householdId,
+      parent.role,
+      parent.name,
+      parent.color,
+      parent.username,
+      email,
+      passwordHash,
+    );
+    const session = createSession(db, parent);
+    db.exec('COMMIT');
+    return session;
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
 }
 
 const RESET_HOURS = 1;

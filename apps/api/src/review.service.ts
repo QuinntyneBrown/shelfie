@@ -75,7 +75,7 @@ export function pendingChapterLogs(db: DatabaseSync, householdId: string): Queue
 export function overview(db: DatabaseSync, householdId: string, now = new Date()): ReviewOverview {
   const { time_zone } = db.prepare('SELECT time_zone FROM household WHERE id = ?').get(householdId) as { time_zone: string };
   const dayOf = (date: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: time_zone }).format(date);
-  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader' ORDER BY name").get(householdId) as { name: string } | undefined;
   const finished = db
     .prepare(
       `SELECT b.id AS bookId, b.title, b.cover_color AS coverColor, b.sticker AS coverSticker, b.chapter_count AS chapterCount, b.finished_at
@@ -91,7 +91,7 @@ export function overview(db: DatabaseSync, householdId: string, now = new Date()
     .get(householdId, weekStart.toISOString().slice(0, 10)) as { chapters: number };
   return {
     activity: recentActivity(db, householdId),
-    readerName: reader.name,
+    readerName: reader?.name ?? 'your reader',
     thisWeek: { chapters, streak: streakFor(db, householdId, now) },
     today: dayOf(now),
     queue: pendingChapterLogs(db, householdId),

@@ -20,9 +20,10 @@ const ZEDS_DAD_PASSWORD = hashSecret('another-pass-99');
 
 /** Replaces everything in the database with Nia and Dad's household, their books unless `books` is false, and a second family. */
 export function seed(db: DatabaseSync, { books = true } = {}) {
-  db.exec('DELETE FROM session; DELETE FROM sign_in_attempt; DELETE FROM password_reset; DELETE FROM invites; DELETE FROM answer; DELETE FROM chapter_log; DELETE FROM reward; DELETE FROM question; DELETE FROM book');
-  db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
-  db.exec('DELETE FROM profile');
+  db.exec(
+    'DELETE FROM session; DELETE FROM sign_in_attempt; DELETE FROM password_reset; DELETE FROM invites; DELETE FROM answer; DELETE FROM chapter_log; DELETE FROM reward; DELETE FROM question; DELETE FROM book; DELETE FROM profile; DELETE FROM household',
+  );
+  db.prepare("INSERT INTO household (id, time_zone) VALUES (?, 'UTC')").run(SEED.householdId);
   const profile = db.prepare(
     'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
   );
@@ -30,7 +31,7 @@ export function seed(db: DatabaseSync, { books = true } = {}) {
   profile.run(SEED.parentId, SEED.householdId, 'parent', 'Dad', 'sky', SEED.parentUsername, SEED.parentEmail, DAD_PASSWORD);
 
   // A second family, so tests can check that one household never sees another's data.
-  db.prepare("INSERT OR REPLACE INTO household (id, time_zone) VALUES ('h2', 'UTC')").run();
+  db.prepare("INSERT INTO household (id, time_zone) VALUES ('h2', 'UTC')").run();
   profile.run('p-other-reader', 'h2', 'reader', 'Zed', 'sky', 'zed', null, ZED_PASSWORD);
   profile.run('p-other-dad', 'h2', 'parent', 'Zed’s dad', 'rose', 'zedsdad', 'other@example.com', ZEDS_DAD_PASSWORD);
   db.prepare(

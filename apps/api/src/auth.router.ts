@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { passwordSignInLimiter } from './rate-limit.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
-import { requestPasswordReset, resetPassword, signInWithPassword, type Session } from './auth.service.ts';
+import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type Session } from './auth.service.ts';
+import { Problem } from './problem.ts';
 import type { Mail } from './mail.ts';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
@@ -12,6 +13,10 @@ const forgotPasswordSchema = z.object({ email: z.email() });
 const resetPasswordSchema = z.object({ token: z.string(), password: z.string().min(8) });
 
 const passwordSignInSchema = z.object({ username: z.string().trim().min(1), password: z.string().min(1), remember: z.boolean() });
+
+export const username = z.string().regex(/^[A-Za-z0-9._]{3,20}$/);
+export const password = z.string().min(8);
+const signUpSchema = z.object({ name: z.string().trim().min(1).max(40), email: z.email(), username, password });
 
 const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const };
 const REMEMBERED_FOR_MS = 30 * 24 * 60 * 60 * 1000;
@@ -63,6 +68,20 @@ export function authRouter(db: DatabaseSync, mail?: Mail) {
     endPreviousSession(req.headers.cookie);
     setSessionCookie(res, session);
     res.json(sessionSummary(session));
+  });
+
+  router.post('/sign-up', (req, res) => {
+    const body = signUpSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    try {
+      const session = signUp(db, body.data);
+      endPreviousSession(req.headers.cookie);
+      setSessionCookie(res, session);
+      res.status(201).json(sessionSummary(session));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
+    }
   });
 
   router.post('/password', passwordSignInLimiter(db), (req, res) => {
