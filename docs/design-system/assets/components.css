@@ -436,6 +436,12 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .trophy__body { flex: 1; min-width: 0; }
 .trophy__title { font: var(--text-label); }
 .trophy__reward { font: var(--text-body-sm); color: var(--color-fg-muted); }
+/* A gallery reward: a gift in place of the cover, its target, a progress bar once picked as the goal, and an action. */
+.trophy--gallery { flex-wrap: wrap; }
+.trophy--gallery .trophy__body { flex: 1 1 12rem; }
+.trophy--goal { border-color: var(--color-accent); box-shadow: 0 0 0 var(--border-width-hairline) var(--color-accent); }
+.trophy__progress { margin-top: var(--space-2); }
+.trophy__actions { flex: none; margin-left: auto; }
 
 /* ---------- Animations ------------------------------------------------------------------ */
 @keyframes spin { to { rotate: 360deg; } }
