@@ -1,0 +1,28 @@
+1
+00:00:00,400 --> 00:00:03,180
+Adding a book used to mean typing everything.
+
+2
+00:00:03,180 --> 00:00:08,740
+Now Nia starts typing a title, and matching books drop down under it, each with its cover.
+
+3
+00:00:10,679 --> 00:00:11,922
+She picks The Hobbit.
+
+4
+00:00:11,922 --> 00:00:17,660
+The author and the cover fill in by themselves, and she only has to say how many chapters it has.
+
+5
+00:00:19,879 --> 00:00:23,620
+When the catalogue has nothing, Shelfie offers guesses instead.
+
+6
+00:00:23,620 --> 00:00:28,429
+Each one is marked Suggested, with a reminder to check it before adding the book.
+
+7
+00:00:30,559 --> 00:00:36,339
+If the lookup ever fails, a short note says so, and Nia can carry on typing the book in herself.
+

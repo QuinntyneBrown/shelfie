@@ -1,0 +1,6 @@
+[
+ {"id":"type","title":"Just start typing","text":"Adding a book used to mean typing everything. Now Nia starts typing a title, and matching books drop down under it, each with its cover."},
+ {"id":"pick","title":"Pick a match","text":"She picks The Hobbit. The author and the cover fill in by themselves, and she only has to say how many chapters it has."},
+ {"id":"guess","title":"Guesses are labelled","text":"When the catalogue has nothing, Shelfie offers guesses instead. Each one is marked Suggested, with a reminder to check it before adding the book."},
+ {"id":"fail","title":"Never in the way","text":"If the lookup ever fails, a short note says so, and Nia can carry on typing the book in herself."}
+]
