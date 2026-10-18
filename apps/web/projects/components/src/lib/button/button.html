@@ -1,0 +1,12 @@
+<button
+  class="btn"
+  [class.btn--primary]="variant() === 'primary'"
+  [class.btn--ghost]="variant() === 'ghost'"
+  [class.btn--lg]="large()"
+  [class.btn--block]="block()"
+  type="submit"
+  [disabled]="busy()"
+  [attr.aria-busy]="busy() ? true : null"
+>
+  <ng-content />
+</button>

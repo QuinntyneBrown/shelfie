@@ -1,8 +1,9 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import { verifyPin } from './pin.ts';
+import { sendMail } from './mail.ts';
+import { hashSecret, verifySecret } from './secret.ts';
+import { SESSION_DAYS } from './session.ts';
 
-const SESSION_DAYS = 30;
 const MAX_FAILURES = 5;
 const LOCK_MINUTES = 5;
 
@@ -11,6 +12,8 @@ export interface ProfileSummary {
   name: string;
   role: 'reader' | 'grown_up';
   color: string;
+  email: string | null;
+  theme: string;
 }
 
 export interface Session {
@@ -18,25 +21,71 @@ export interface Session {
   profileId: string;
   name: string;
   role: 'reader' | 'grown_up';
-}
-
-export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
-  return db
-    .prepare('SELECT id, name, role, color FROM profile WHERE household_id = ? ORDER BY role DESC')
-    .all(householdId) as unknown as ProfileSummary[];
+  color: string;
+  email: string | null;
+  theme: string;
 }
 
 export type PinResult = { session: Session } | { triesLeft: number } | { lockedUntil: string };
 
+// Verified against when the e-mail is unknown, so both failures take the same time.
+const DUMMY_HASH = hashSecret('not-a-real-password');
+
+function createSession(
+  db: DatabaseSync,
+  profile: { id: string; name: string; role: 'reader' | 'grown_up'; color: string; email: string | null },
+): Session {
+  const id = randomBytes(32).toString('hex');
+  const now = new Date();
+  const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  db.prepare('INSERT INTO session (id, profile_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
+    id,
+    profile.id,
+    now.toISOString(),
+    expires.toISOString(),
+  );
+  const { theme } = db
+    .prepare('SELECT h.theme AS theme FROM household h JOIN profile p ON p.household_id = h.id WHERE p.id = ?')
+    .get(profile.id) as { theme: string };
+  return { id, profileId: profile.id, name: profile.name, role: profile.role, color: profile.color, email: profile.email, theme };
+}
+
+export function listProfiles(db: DatabaseSync, householdId: string): ProfileSummary[] {
+  return db
+    .prepare('SELECT p.id, p.name, p.role, p.color, p.email, h.theme FROM profile p JOIN household h ON h.id = p.household_id WHERE p.household_id = ? ORDER BY p.role DESC')
+    .all(householdId) as unknown as ProfileSummary[];
+}
+
+export function signInWithPassword(db: DatabaseSync, email: string, password: string): (Session & { householdId: string }) | null {
+  const profile = db
+    .prepare("SELECT id, name, role, color, email, household_id, password_hash FROM profile WHERE email = ? AND role = 'grown_up'")
+    .get(email) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string; password_hash: string | null } | undefined;
+  const valid = verifySecret(password, profile?.password_hash ?? DUMMY_HASH);
+  return profile && valid ? { ...createSession(db, profile), householdId: profile.household_id } : null;
+}
+
 export function signInWithPin(db: DatabaseSync, householdId: string, profileId: string, pin: string): PinResult {
   const profile = db
-    .prepare("SELECT id, name, role, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'")
-    .get(profileId, householdId) as { id: string; name: string; role: 'reader'; pin_hash: string | null; pin_failed_count: number; pin_locked_until: string | null } | undefined;
+    .prepare(
+      "SELECT id, name, role, color, email, pin_hash, pin_failed_count, pin_locked_until FROM profile WHERE id = ? AND household_id = ? AND role = 'reader'",
+    )
+    .get(profileId, householdId) as
+    | {
+        id: string;
+        name: string;
+        role: 'reader';
+        color: string;
+        email: string | null;
+        pin_hash: string | null;
+        pin_failed_count: number;
+        pin_locked_until: string | null;
+      }
+    | undefined;
   if (!profile?.pin_hash) return { triesLeft: MAX_FAILURES };
   if (profile.pin_locked_until && profile.pin_locked_until > new Date().toISOString()) {
     return { lockedUntil: profile.pin_locked_until };
   }
-  if (!verifyPin(pin, profile.pin_hash)) {
+  if (!verifySecret(pin, profile.pin_hash)) {
     const failed = profile.pin_failed_count + 1;
     if (failed >= MAX_FAILURES) {
       const lockedUntil = new Date(Date.now() + LOCK_MINUTES * 60 * 1000).toISOString();
@@ -47,15 +96,43 @@ export function signInWithPin(db: DatabaseSync, householdId: string, profileId: 
     return { triesLeft: MAX_FAILURES - failed };
   }
   db.prepare('UPDATE profile SET pin_failed_count = 0 WHERE id = ?').run(profile.id);
+  return { session: createSession(db, profile) };
+}
 
-  const id = randomBytes(32).toString('hex');
-  const now = new Date();
-  const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  db.prepare('INSERT INTO session (id, profile_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
-    id,
-    profile.id,
-    now.toISOString(),
-    expires.toISOString(),
-  );
-  return { session: { id, profileId: profile.id, name: profile.name, role: profile.role } };
+const RESET_HOURS = 1;
+const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
+
+/** Mails a reset link when the address belongs to a grown-up; says nothing either way. */
+export async function requestPasswordReset(db: DatabaseSync, email: string) {
+  const profile = db.prepare("SELECT id FROM profile WHERE email = ? AND role = 'grown_up'").get(email) as { id: string } | undefined;
+  if (!profile) return;
+  const token = randomBytes(32).toString('base64url');
+  const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
+  db.prepare('INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES (?, ?, ?)').run(sha256(token), profile.id, expires);
+  const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  await sendMail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
+}
+
+/** Spends a reset token: sets the new password, ends every session of the grown-up and signs him in. Null when the link is used or expired. */
+export function resetPassword(db: DatabaseSync, token: string, password: string): (Session & { householdId: string }) | null {
+  const reset = db
+    .prepare('SELECT token_hash, profile_id FROM password_reset WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?')
+    .get(sha256(token), new Date().toISOString()) as { token_hash: string; profile_id: string } | undefined;
+  if (!reset) return null;
+  const profile = db
+    .prepare('SELECT id, name, role, color, email, household_id FROM profile WHERE id = ?')
+    .get(reset.profile_id) as { id: string; name: string; role: 'grown_up'; color: string; email: string | null; household_id: string };
+
+  db.exec('BEGIN');
+  try {
+    db.prepare('UPDATE profile SET password_hash = ? WHERE id = ?').run(hashSecret(password), profile.id);
+    db.prepare('UPDATE password_reset SET used_at = ? WHERE token_hash = ?').run(new Date().toISOString(), reset.token_hash);
+    db.prepare('DELETE FROM session WHERE profile_id = ?').run(profile.id);
+    const session = createSession(db, profile);
+    db.exec('COMMIT');
+    return { ...session, householdId: profile.household_id };
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
 }

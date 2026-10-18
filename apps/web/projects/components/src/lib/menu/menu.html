@@ -1,0 +1,31 @@
+<button
+  #trigger
+  type="button"
+  [class]="triggerClass()"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="open()"
+  [attr.aria-label]="label()"
+  (click)="toggle()"
+  (keydown)="triggerKey($event)"
+>
+  <ng-content />
+</button>
+@if (open()) {
+  <div class="menu" role="menu" [attr.aria-label]="label()" (keydown)="menuKey($event)">
+    @if (header()) {
+      <div class="menu__header" role="none">{{ header() }}</div>
+    }
+    @for (item of items(); track item.id) {
+      <button
+        #item
+        class="menu__item"
+        type="button"
+        role="menuitem"
+        tabindex="-1"
+        (click)="choose(item.id)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  </div>
+}

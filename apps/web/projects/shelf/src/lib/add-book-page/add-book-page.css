@@ -1,0 +1,21 @@
+.form {
+  gap: var(--space-6);
+}
+.layout {
+  display: grid;
+  gap: var(--space-6);
+}
+.preview {
+  align-items: center;
+  text-align: center;
+  align-self: start;
+}
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}

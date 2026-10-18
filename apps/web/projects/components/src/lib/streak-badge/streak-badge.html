@@ -1,0 +1,11 @@
+<span
+  class="streak"
+  [class.streak--cold]="days() === 0"
+  role="img"
+  [attr.aria-label]="days() + '-day reading streak'"
+>
+  <svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24">
+    <path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z" />
+  </svg>
+  {{ days() }} {{ days() === 1 ? 'day' : 'days' }}
+</span>

@@ -1,0 +1,21 @@
+.group-title {
+  font: var(--text-h3);
+  margin-bottom: var(--space-4);
+}
+.trophy-card {
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+.finished-label {
+  font: var(--text-label);
+}
+.folded-summary {
+  padding: var(--space-3) var(--space-4);
+  min-height: var(--target-comfortable);
+  cursor: pointer;
+  font: var(--text-label);
+}
+.finished-line {
+  font: var(--text-h4);
+}

@@ -1,0 +1,72 @@
+<div class="container stack page">
+  @if (chapter(); as chapter) {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/shelf">My shelf</a></li>
+        <li>
+          <a [routerLink]="['/book', chapter.book.id]">{{ chapter.book.title }}</a>
+        </li>
+        <li aria-current="page">Chapter {{ chapter.chapterNumber }}</li>
+      </ol>
+    </nav>
+    <div class="book-card">
+      <sh-cover [color]="chapter.book.coverColor" [sticker]="chapter.book.sticker" />
+      <div class="book-card__body">
+        <h1>Chapter {{ chapter.chapterNumber }}</h1>
+        <span class="book-card__author">
+          {{ chapter.book.title }} ·
+          @if (chapter.readOn === chapter.today) {
+            you read it today
+          } @else {
+            you read it on {{ chapter.readOn | date: 'EEE d MMM' : 'UTC' }}
+          }
+        </span>
+      </div>
+    </div>
+
+    @if (chapter.review; as review) {
+      <section class="card stack" aria-labelledby="feedback-title">
+        <h2 id="feedback-title" class="section-title">
+          <span aria-hidden="true">{{ given()?.emoji }}</span> {{ chapter.grownUpName }} gave you a
+          {{ given()?.name }}
+        </h2>
+        @if (review.note) {
+          <p>{{ review.note }}</p>
+        }
+        <p class="text-muted">{{ review.reviewedAt | date: 'EEE d MMM, h:mm a' }}</p>
+      </section>
+    } @else {
+      <section class="card stack" aria-labelledby="waiting-title">
+        <h2 id="waiting-title" class="section-title">
+          {{ chapter.grownUpName }} hasn’t read this yet
+        </h2>
+        <p class="text-muted">When he does, his sticker and note will show up here.</p>
+      </section>
+    }
+
+    <section class="card stack" aria-labelledby="answers-title">
+      <h2 id="answers-title" class="section-title">Your answers</h2>
+      <ol class="answers">
+        @for (answer of chapter.answers; track answer.position) {
+          <li class="qa">
+            <span class="qa__question"
+              ><span class="qa__num">{{ answer.position }}.</span> {{ answer.questionText }}</span
+            >
+            @if (answer.text) {
+              <p class="qa__answer">{{ answer.text }}</p>
+            }
+          </li>
+        }
+      </ol>
+    </section>
+
+    <div class="cluster">
+      <a class="btn" [routerLink]="['/book', chapter.book.id]">Back to the book</a>
+      @if (chapter.nextChapterLogId) {
+        <a class="btn btn--primary" [routerLink]="['/chapter-logs', chapter.nextChapterLogId]"
+          >Chapter {{ chapter.chapterNumber + 1 }}</a
+        >
+      }
+    </div>
+  }
+</div>

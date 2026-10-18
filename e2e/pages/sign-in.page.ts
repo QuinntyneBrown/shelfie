@@ -1,14 +1,108 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class SignInPage {
-  constructor(private readonly page: Page) {}
+  private passwordRequests = 0;
+
+  constructor(private readonly page: Page) {
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/auth/password')) this.passwordRequests++;
+    });
+  }
+
+  passwordRequestCount() {
+    return this.passwordRequests;
+  }
+
+  emailField() {
+    return this.page.getByLabel('Email');
+  }
+
+  passwordField() {
+    return this.page.getByLabel('Password');
+  }
+
+  failureSummary() {
+    return this.page.getByRole('alert');
+  }
+
+  async fillCredentials(email: string, password: string) {
+    await this.emailField().fill(email);
+    await this.passwordField().fill(password);
+  }
+
+  async submitWithEnter() {
+    await this.passwordField().press('Enter');
+  }
+
+  signInButton() {
+    return this.page.getByRole('button', { name: 'Sign in' });
+  }
+
+  /** Holds the password sign-in response until the returned function is called. */
+  async holdPasswordResponse() {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route('**/api/auth/password', async (route) => {
+      await gate;
+      await route.continue();
+    });
+    return release;
+  }
+
+  async breakPasswordRequests() {
+    await this.page.route('**/api/auth/password', (route) => route.abort());
+  }
+
+  async repairPasswordRequests() {
+    await this.page.unroute('**/api/auth/password');
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  async pressSignIn() {
+    await this.page.getByRole('button', { name: 'Sign in' }).click();
+  }
 
   async open() {
     await this.page.goto('/sign-in');
   }
 
+  async signInWithPassword(email: string, password: string) {
+    await this.page.getByLabel('Email').fill(email);
+    await this.page.getByLabel('Password').fill(password);
+    await this.page.getByRole('button', { name: 'Sign in' }).click();
+  }
+
+  pickerHeading() {
+    return this.page.getByRole('heading', { name: 'Who’s reading today?' });
+  }
+
+  signedOutNotice() {
+    return this.page.getByRole('status').filter({ hasText: 'You were signed out' });
+  }
+
+  async chooseGrownUp(name: string) {
+    await this.page.getByRole('button', { name: new RegExp(`^${name} Grown-up`) }).click();
+  }
+
+  signingInAs() {
+    return this.page.getByText(/Signing in as/);
+  }
+
+  async chooseForgotPassword() {
+    await this.page.getByRole('link', { name: 'Forgot your password?' }).click();
+  }
+
+  async typePasswordAndSignIn(password: string) {
+    await this.passwordField().fill(password);
+    await this.signInButton().click();
+  }
+
   async choose(name: string) {
-    await this.page.getByRole('button', { name: new RegExp(name) }).click();
+    await this.page.getByRole('button', { name: new RegExp(`^${name} Reader`) }).click();
     await this.page.getByRole('group', { name: 'PIN keypad' }).waitFor();
   }
 
@@ -46,7 +140,7 @@ export class SignInPage {
   async postPin(profileName: string, pin: string) {
     const profiles = await (await this.page.request.get('/api/auth/profiles')).json();
     const profile = profiles.find((p: { name: string }) => p.name === profileName);
-    return this.page.request.post('/api/auth/pin', { data: { profileId: profile.id, pin } });
+    return this.page.request.post('/api/auth/pin', { ...SAME_SITE, data: { profileId: profile.id, pin } });
   }
 
   pinError() {

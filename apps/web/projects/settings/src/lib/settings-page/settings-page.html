@@ -1,0 +1,125 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Settings</h1>
+      <p class="subtitle">Who’s in the house, how you sign in, how Shelfie looks.</p>
+    </div>
+  </div>
+  @if (loaded()) {
+    <form class="stack form" novalidate (submit)="$event.preventDefault(); save()">
+      @if (problems().length) {
+        <sh-banner
+          severity="danger"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
+      @if (failure(); as message) {
+        <sh-banner
+          severity="danger"
+          title="Couldn’t save your settings"
+          [message]="message + ' Nothing was changed; what you typed is still here.'"
+        />
+      }
+      @if (saved()) {
+        <sh-banner
+          title="Saved"
+          message="Your changes are in. Nia sees them the next time she signs in."
+        />
+      }
+      <section class="card stack" aria-labelledby="reader-title">
+        <h2 id="reader-title" class="section-title">Reader</h2>
+        <sh-text-field label="Name" [error]="readerNameError()" [(value)]="readerName" />
+        <sh-color-picker label="Colour" [colors]="colors" [(value)]="readerColor" />
+        <sh-text-field
+          label="New 4-digit PIN (optional)"
+          type="password"
+          inputmode="numeric"
+          [maxlength]="4"
+          help="Leave blank to keep the current PIN. She uses this to open her shelf."
+          [error]="pinError()"
+          [(value)]="pin"
+        />
+      </section>
+      <section class="card stack" aria-labelledby="grownup-title">
+        <h2 id="grownup-title" class="section-title">Grown-up</h2>
+        <sh-text-field label="Name Nia sees" [error]="grownUpNameError()" [(value)]="grownUpName" />
+        <sh-text-field
+          label="E-mail address"
+          [error]="emailError()"
+          type="email"
+          autocomplete="email"
+          help="Used to sign in and to reset your password."
+          [(value)]="email"
+        />
+        <sh-text-field
+          label="New password (optional)"
+          type="password"
+          autocomplete="new-password"
+          [error]="newPasswordError()"
+          [(value)]="newPassword"
+        />
+        <sh-text-field
+          label="Type it again"
+          type="password"
+          autocomplete="new-password"
+          [error]="confirmError()"
+          [(value)]="confirmPassword"
+        />
+        <sh-text-field
+          label="Current password"
+          type="password"
+          autocomplete="current-password"
+          help="Needed only to change your e-mail or password."
+          [(value)]="currentPassword"
+        />
+      </section>
+      <fieldset class="card stack" aria-describedby="theme-help">
+        <legend class="section-title">Appearance</legend>
+        <p class="field__help" id="theme-help">Applies on every device for both of you.</p>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="device"
+            [checked]="theme() === 'device'"
+            (change)="theme.set('device')"
+          />
+          <span class="choice__text"
+            >Match the device<small
+              >Light in the day, dark at night if the device does that</small
+            ></span
+          >
+        </label>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="light"
+            [checked]="theme() === 'light'"
+            (change)="theme.set('light')"
+          />
+          <span class="choice__text">Always light</span>
+        </label>
+        <label class="choice">
+          <input
+            type="radio"
+            name="theme"
+            value="dark"
+            [checked]="theme() === 'dark'"
+            (change)="theme.set('dark')"
+          />
+          <span class="choice__text">Always dark</span>
+        </label>
+      </fieldset>
+      <div class="form-actions">
+        <sh-button [busy]="saving()">Save settings</sh-button>
+      </div>
+    </form>
+  }
+</div>

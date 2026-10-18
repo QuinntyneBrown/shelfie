@@ -1,0 +1,27 @@
+<div class="field">
+  <span class="field__label" [id]="group + '-label'">{{ label() }}</span>
+  <div
+    class="stickers"
+    role="radiogroup"
+    [attr.aria-labelledby]="group + '-label'"
+    [attr.aria-describedby]="error() ? group + '-error' : null"
+    [attr.aria-invalid]="error() ? true : null"
+  >
+    @for (sticker of options(); track sticker.name) {
+      <label class="sticker-choice">
+        <input
+          type="radio"
+          [name]="group"
+          [value]="valueOf(sticker)"
+          [checked]="value() === valueOf(sticker)"
+          (change)="value.set(valueOf(sticker))"
+        />
+        <span aria-hidden="true">{{ sticker.emoji }}</span>
+        <span class="visually-hidden">{{ sticker.name }}</span>
+      </label>
+    }
+  </div>
+  @if (error(); as message) {
+    <div class="field__error" [id]="group + '-error'">{{ message }}</div>
+  }
+</div>

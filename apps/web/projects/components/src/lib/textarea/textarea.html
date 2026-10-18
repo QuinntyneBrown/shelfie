@@ -1,0 +1,19 @@
+<div class="field">
+  <label class="field__label" [for]="id">{{ label() }}</label>
+  @if (help(); as help) {
+    <div class="field__help" [id]="id + '-help'">{{ help }}</div>
+  }
+  <textarea
+    class="textarea"
+    [id]="id"
+    [rows]="rows()"
+    [attr.maxlength]="maxlength()"
+    [value]="value()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="edit($event)"
+  ></textarea>
+  @if (error(); as message) {
+    <div class="field__error" [id]="id + '-error'">{{ message }}</div>
+  }
+</div>

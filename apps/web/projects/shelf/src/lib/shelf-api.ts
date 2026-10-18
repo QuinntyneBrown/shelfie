@@ -1,5 +1,38 @@
 import { Injectable, inject } from '@angular/core';
-import { ApiClient } from 'core';
+import { ApiClient, ApiError } from 'core';
+
+/** The last shelf seen on this device, shown when there is no connection. */
+const CACHE_KEY = 'shelfie.shelf';
+
+export interface ChapterSummary {
+  number: number;
+  state: 'logged' | 'next' | 'future';
+  log: { id: string; readOn: string; firstLine: string; reviewSticker: string | null } | null;
+}
+
+export interface BookResponse {
+  id: string;
+  title: string;
+  author: string | null;
+  chapterCount: number;
+  coverColor: string;
+  sticker: string;
+  loggedCount: number;
+  finishedAt: string | null;
+  finishedOn: string | null;
+  reward: { text: string; givenOn: string } | null;
+  today: string;
+  grownUpName: string;
+  chapters: ChapterSummary[];
+}
+
+export interface NewBook {
+  title: string;
+  author: string;
+  chapterCount: number;
+  coverColor: string;
+  sticker: string;
+}
 
 export interface ShelfBook {
   id: string;
@@ -21,7 +54,17 @@ export interface FinishedBook {
   reward: { text: string; givenOn: string } | null;
 }
 
+export interface UnseenFeedback {
+  chapterLogId: string;
+  bookId: string;
+  bookTitle: string;
+  chapterNumber: number;
+  sticker: string;
+}
+
 export interface ShelfResponse {
+  unseenFeedback: UnseenFeedback[];
+  streak: number;
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];
@@ -32,7 +75,51 @@ export interface ShelfResponse {
 export class ShelfApi {
   private readonly api = inject(ApiClient);
 
-  shelf() {
-    return this.api.get<ShelfResponse>('/shelf');
+  /** A book page seen before stays readable offline, from the copy kept on this device. */
+  async book(id: string): Promise<BookResponse> {
+    const key = `shelfie.book.${id}`;
+    try {
+      const book = await this.api.get<BookResponse>(`/books/${id}`);
+      writeCache(key, book);
+      return book;
+    } catch (e) {
+      const cached = e instanceof ApiError && e.status === 0 ? readCache<BookResponse>(key) : null;
+      if (cached) return cached;
+      throw e;
+    }
+  }
+
+  addBook(book: NewBook) {
+    return this.api.post<{ id: string }>('/books', book);
+  }
+
+  async shelf(): Promise<ShelfResponse> {
+    try {
+      const shelf = await this.api.get<ShelfResponse>('/shelf');
+      writeCache(CACHE_KEY, shelf);
+      return shelf;
+    } catch (e) {
+      const cached =
+        e instanceof ApiError && e.status === 0 ? readCache<ShelfResponse>(CACHE_KEY) : null;
+      if (cached) return cached;
+      throw e;
+    }
+  }
+}
+
+function readCache<T>(key: string): T | null {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? (JSON.parse(stored) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Without storage there is simply no offline copy.
   }
 }

@@ -6,7 +6,8 @@
     "start": "ng serve shelfie",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "check:bundle": "node scripts/check-bundle.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",

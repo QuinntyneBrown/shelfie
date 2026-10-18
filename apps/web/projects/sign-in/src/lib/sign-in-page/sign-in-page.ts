@@ -1,31 +1,97 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { PinKeypad, ProfileCard } from 'components';
-import { ApiError, SessionService } from 'core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { Button, PinKeypad, ProfileCard, TextField } from 'components';
+import { ApiError, SessionService, ThemeService } from 'core';
 import { AuthApi, ProfileSummary } from '../auth-api';
 
 @Component({
   selector: 'sh-sign-in-page',
-  imports: [PinKeypad, ProfileCard],
+  imports: [Button, PinKeypad, ProfileCard, RouterLink, TextField],
   templateUrl: './sign-in-page.html',
   styleUrl: './sign-in-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
+  /** Query parameter: 'expired' when the session ran out. */
+  readonly reason = input<string>();
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly themes = inject(ThemeService);
 
-  protected readonly readers = signal<ProfileSummary[]>([]);
+  protected readonly profiles = signal<ProfileSummary[]>([]);
+  private readonly loaded = signal(false);
+  protected readonly email = signal('');
+  protected readonly password = signal('');
+  protected readonly emailError = signal<string | null>(null);
+  protected readonly passwordError = signal<string | null>(null);
+  /** The reader's PIN step; the grown-up's password step has no keypad. */
+  protected readonly pinProfile = computed(() =>
+    this.chosen()?.role === 'reader' ? this.chosen() : null,
+  );
+  // With no device cookie there are no profiles to pick from, so the grown-up types his e-mail.
+  protected readonly passwordStep = computed(
+    () => this.loaded() && (this.profiles().length === 0 || this.chosen()?.role === 'grown_up'),
+  );
   protected readonly chosen = signal<ProfileSummary | null>(null);
   protected readonly pinError = signal<string | null>(null);
   protected readonly lockedUntil = signal<number | null>(null);
+  protected readonly credentialsWrong = signal(false);
+  protected readonly tooManyTries = signal(false);
+  protected readonly submitting = signal(false);
+  protected readonly unreachable = signal(false);
   private readonly keypad = viewChild(PinKeypad);
+  private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
 
   constructor() {
-    this.api
-      .profiles()
-      .then((profiles) => this.readers.set(profiles.filter((p) => p.role === 'reader')));
+    this.api.profiles().then((profiles) => {
+      this.profiles.set(profiles);
+      this.loaded.set(true);
+    });
+  }
+
+  protected async submitPassword() {
+    if (this.submitting()) return;
+    const email = (this.chosen()?.email ?? this.email()).trim();
+    this.emailError.set(
+      !email ? 'Enter your e-mail' : !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid e-mail' : null,
+    );
+    this.passwordError.set(this.password() ? null : 'Enter your password');
+    if (this.emailError() || this.passwordError()) return;
+
+    this.credentialsWrong.set(false);
+    this.tooManyTries.set(false);
+    this.unreachable.set(false);
+    this.submitting.set(true);
+    try {
+      this.session.current.set(await this.api.signInWithPassword(email, this.password()));
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 429) {
+        this.tooManyTries.set(true);
+        setTimeout(() => this.summary()?.nativeElement.focus());
+        return;
+      }
+      if (e instanceof ApiError && e.type === 'credentials-invalid') {
+        this.credentialsWrong.set(true);
+        setTimeout(() => this.summary()?.nativeElement.focus());
+        return;
+      }
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.unreachable.set(true);
+      return;
+    } finally {
+      this.submitting.set(false);
+    }
+    await this.router.navigateByUrl('/review');
   }
 
   protected async submit(pin: string) {

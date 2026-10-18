@@ -1,0 +1,101 @@
+<div class="container stack page">
+  <div class="page-header">
+    <div>
+      <h1>Review</h1>
+      @if (overview()) {
+        <p class="subtitle">{{ summary() }}</p>
+      }
+    </div>
+  </div>
+  @if (overview(); as overview) {
+    <section class="card stack" aria-labelledby="this-week">
+      <h2 id="this-week" class="section-title">This week</h2>
+      <div class="cluster stats">
+        <div class="stat">
+          <span class="stat__label">Chapters</span>
+          <strong class="stat__value">{{ overview.thisWeek.chapters }}</strong>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Streak</span>
+          <strong class="stat__value">🔥 {{ overview.thisWeek.streak }}</strong>
+        </div>
+      </div>
+    </section>
+
+    @if (overview.queue.length === 0) {
+      <sh-empty-state
+        title="All caught up"
+        [text]="'Nothing is waiting. ' + overview.readerName + '’s next chapter will show up here.'"
+      />
+    } @else {
+      <section class="card card--flush" aria-labelledby="waiting">
+        <h2 id="waiting" class="section-title">Waiting for you</h2>
+        <ul class="list">
+          @for (item of overview.queue; track item.chapterLogId; let first = $first) {
+            <li class="list__item">
+              <sh-cover [color]="item.coverColor" [sticker]="item.coverSticker" size="sm" />
+              <div class="list__body">
+                <div class="list__title">
+                  Chapter {{ item.chapterNumber }} · {{ item.bookTitle }}
+                </div>
+                <div class="list__meta">
+                  {{ overview.readerName }} read it
+                  {{ relativeDay(overview, item) ?? (item.readOn | date: 'EEE d MMM' : 'UTC') }}
+                </div>
+              </div>
+              <a
+                class="btn btn--sm"
+                [class.btn--primary]="first"
+                [routerLink]="['/review/chapters', item.chapterLogId]"
+                >Review</a
+              >
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @for (book of overview.finishedUnrewarded; track book.bookId) {
+      <section class="card stack reward-card" [attr.aria-labelledby]="'finished-' + book.bookId">
+        <div class="book-card">
+          <sh-cover [color]="book.coverColor" [sticker]="book.coverSticker" size="sm" />
+          <div class="book-card__body">
+            <h2 [id]="'finished-' + book.bookId" class="section-title">
+              {{ book.title }} is finished!
+            </h2>
+            <span class="book-card__author">
+              {{ overview.readerName }} logged the last chapter on
+              {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }} · {{ book.chapterCount }} chapters
+            </span>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn--primary" type="button" (click)="rewarding.set(book)">
+            Give a reward
+          </button>
+        </div>
+      </section>
+    }
+
+    <section class="card stack" aria-labelledby="activity-title">
+      <h2 id="activity-title" class="section-title">Recent activity</h2>
+      <ul class="activity">
+        @for (line of activity(); track line.key) {
+          <li>
+            <sh-activity-item
+              [emoji]="line.emoji"
+              [text]="line.text"
+              [when]="(line.at | date: 'EEE d MMM') ?? ''"
+            />
+          </li>
+        }
+      </ul>
+    </section>
+    <sh-give-reward-dialog
+      [book]="rewarding()"
+      [readerName]="overview.readerName"
+      (given)="rewarded($event)"
+      (closed)="rewarding.set(null)"
+    />
+  }
+</div>

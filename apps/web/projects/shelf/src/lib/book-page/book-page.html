@@ -1,0 +1,121 @@
+<div class="container">
+  @if (failed()) {
+    <sh-empty-state
+      tone="error"
+      title="The chapters didn’t load"
+      text="Shelfie couldn’t reach the server. Your books and answers are safe; try again in a moment."
+    >
+      <button class="btn btn--primary" type="button" (click)="load(id())">Try again</button>
+      <a class="btn" routerLink="/shelf">Back to my shelf</a>
+    </sh-empty-state>
+  } @else if (book(); as book) {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/shelf">My shelf</a></li>
+        <li aria-current="page">{{ book.title }}</li>
+      </ol>
+    </nav>
+    <div class="page-header">
+      <div class="book-card">
+        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="lg" />
+        <div class="book-card__body">
+          <h1>{{ book.title }}</h1>
+          @if (book.author) {
+            <span class="book-card__author">{{ book.author }}</span>
+          }
+          <sh-progress
+            [value]="book.loggedCount"
+            [max]="book.chapterCount"
+            [label]="book.loggedCount + ' of ' + book.chapterCount + ' chapters read'"
+          />
+          @if (book.finishedAt) {
+            <span class="finished-label"
+              >{{ book.loggedCount }} of {{ book.chapterCount }} · finished!</span
+            >
+          } @else if (next(); as next) {
+            <a
+              class="btn btn--primary btn--lg"
+              [routerLink]="['/books', book.id, 'chapters', next.number, 'log']"
+            >
+              I read Chapter {{ next.number }}
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+    @if (book.finishedAt) {
+      <section class="card stack trophy-card" aria-label="Reward">
+        <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
+        <p class="finished-line">
+          You finished {{ book.title }} on {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}!
+        </p>
+        @if (book.reward; as reward) {
+          <h2>{{ reward.text }}</h2>
+          <p class="text-muted">Given on {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>
+        } @else {
+          <p>
+            {{ book.grownUpName }} is picking your reward. It will show up here and on your shelf.
+          </p>
+          <a class="btn btn--primary" routerLink="/shelf">Back to my shelf</a>
+        }
+      </section>
+    }
+    <ng-template #row let-chapter>
+      @if (offline.isPending(book.id, chapter.number)) {
+        <sh-chapter-row
+          [number]="chapter.number"
+          state="future"
+          meta="Saved on this device"
+          status="Will send"
+        />
+      } @else {
+        @switch (chapter.state) {
+          @case ('logged') {
+            <sh-chapter-row
+              [number]="chapter.number"
+              state="logged"
+              [link]="['/chapter-logs', chapter.log.id]"
+              [meta]="
+                (whenRead(book, chapter) ?? (chapter.log.readOn | date: 'EEE d MMM' : 'UTC')) +
+                ' · ' +
+                chapter.log.firstLine
+              "
+              [status]="
+                chapter.log.reviewSticker
+                  ? stickerEmoji(chapter.log.reviewSticker) + ' ' + book.grownUpName + ' read it'
+                  : 'Waiting for ' + book.grownUpName
+              "
+            />
+          }
+          @case ('next') {
+            <sh-chapter-row
+              [number]="chapter.number"
+              state="next"
+              [link]="['/books', book.id, 'chapters', chapter.number, 'log']"
+              meta="Up next · tap when you’ve read it"
+            />
+          }
+          @default {
+            <sh-chapter-row [number]="chapter.number" state="future" />
+          }
+        }
+      }
+    </ng-template>
+    <section aria-labelledby="chapters">
+      <h2 id="chapters" class="group-title">Chapters</h2>
+      <div class="card card--flush">
+        @for (chapter of shown(); track chapter.number) {
+          <ng-container *ngTemplateOutlet="row; context: { $implicit: chapter }" />
+        }
+        @if (folded().length) {
+          <details>
+            <summary class="folded-summary">{{ foldedLabel() }}</summary>
+            @for (chapter of folded(); track chapter.number) {
+              <ng-container *ngTemplateOutlet="row; context: { $implicit: chapter }" />
+            }
+          </details>
+        }
+      </div>
+    </section>
+  }
+</div>

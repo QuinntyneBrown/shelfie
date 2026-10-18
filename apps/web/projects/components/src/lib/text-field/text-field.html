@@ -1,0 +1,22 @@
+<div class="field">
+  <label class="field__label" [for]="inputId()">{{ label() }}</label>
+  @if (help(); as help) {
+    <div class="field__help" [id]="inputId() + '-help'">{{ help }}</div>
+  }
+  <input
+    class="input"
+    [id]="inputId()"
+    [type]="type()"
+    [attr.autocomplete]="autocomplete()"
+    [attr.inputmode]="inputmode()"
+    [attr.maxlength]="maxlength()"
+    [attr.autofocus]="autofocus() ? '' : null"
+    [value]="value()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="edit($event)"
+  />
+  @if (error(); as message) {
+    <div class="field__error" [id]="inputId() + '-error'">{{ message }}</div>
+  }
+</div>

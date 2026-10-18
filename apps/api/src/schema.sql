@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS household (
   id TEXT PRIMARY KEY,
-  time_zone TEXT NOT NULL DEFAULT 'UTC'
+  time_zone TEXT NOT NULL DEFAULT 'UTC',
+  theme TEXT NOT NULL DEFAULT 'device' CHECK (theme IN ('device','light','dark'))
 );
 CREATE TABLE IF NOT EXISTS profile (
   id TEXT PRIMARY KEY,
@@ -8,6 +9,8 @@ CREATE TABLE IF NOT EXISTS profile (
   role TEXT NOT NULL CHECK (role IN ('reader','grown_up')),
   name TEXT NOT NULL,
   color TEXT NOT NULL,
+  email TEXT UNIQUE,
+  password_hash TEXT,
   pin_hash TEXT,
   pin_failed_count INTEGER NOT NULL DEFAULT 0,
   pin_locked_until TEXT
@@ -37,11 +40,16 @@ CREATE TABLE IF NOT EXISTS chapter_log (
   read_on TEXT NOT NULL,
   logged_at TEXT NOT NULL,
   undo_until TEXT NOT NULL,
+  reviewed_at TEXT,
+  sticker TEXT,
+  note TEXT,
+  feedback_seen_at TEXT,
   UNIQUE (book_id, chapter_number)
 );
 CREATE TABLE IF NOT EXISTS reward (
   book_id TEXT PRIMARY KEY REFERENCES book(id),
   text TEXT NOT NULL,
+  note TEXT,
   given_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS answer (
@@ -51,3 +59,27 @@ CREATE TABLE IF NOT EXISTS answer (
   question_text TEXT NOT NULL,
   text TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS device (
+  id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES household(id),
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS password_reset (
+  token_hash TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profile(id),
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
+CREATE TABLE IF NOT EXISTS question (
+  id TEXT PRIMARY KEY,
+  book_id TEXT NOT NULL REFERENCES book(id),
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  removed_at TEXT
+);
+CREATE TABLE IF NOT EXISTS sign_in_attempt (
+  source TEXT NOT NULL,
+  at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS book_household ON book (household_id);
+CREATE INDEX IF NOT EXISTS chapter_log_reviewed ON chapter_log (reviewed_at);

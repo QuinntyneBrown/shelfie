@@ -3,6 +3,22 @@ import type { Page } from '@playwright/test';
 export class ShelfPage {
   constructor(private readonly page: Page) {}
 
+  summary() {
+    return this.page.getByText(/day streak/);
+  }
+
+  feedbackBanner() {
+    return this.page.getByRole('status').filter({ hasText: /read Chapter \d+ and gave you/ });
+  }
+
+  async openFeedback(chapter: number) {
+    await this.page.getByRole('link', { name: `Open Chapter ${chapter}` }).click();
+  }
+
+  async dismissFeedback() {
+    await this.feedbackBanner().getByRole('button', { name: 'Dismiss' }).click();
+  }
+
   greeting() {
     return this.page.getByRole('heading', { level: 1 });
   }
@@ -13,6 +29,22 @@ export class ShelfPage {
 
   book(group: 'On the go' | 'Up next', title: string) {
     return this.group(group).getByRole('article').filter({ hasText: title });
+  }
+
+  async openBook(group: 'On the go' | 'Up next', title: string) {
+    await this.book(group, title).getByRole('link', { name: title, exact: true }).click();
+  }
+
+  async openFinishedBook(title: string) {
+    await this.finishedBook(title).getByRole('link', { name: title }).click();
+  }
+
+  async addBook() {
+    await this.page.getByRole('link', { name: 'Add a book' }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
   }
 
   async logChapter(group: 'On the go' | 'Up next', title: string, chapter: number) {

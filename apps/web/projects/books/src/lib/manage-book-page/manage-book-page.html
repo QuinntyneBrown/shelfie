@@ -1,0 +1,200 @@
+<div class="container">
+  @if (book(); as book) {
+    <div class="page-header">
+      <div class="book-card">
+        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="lg" />
+        <div class="book-card__body">
+          <h1>{{ book.title }}</h1>
+          @if (book.author) {
+            <span class="book-card__author">{{ book.author }}</span>
+          }
+          <sh-progress
+            [value]="book.loggedCount"
+            [max]="book.chapterCount"
+            [label]="book.loggedCount + ' of ' + book.chapterCount + ' chapters read'"
+          />
+        </div>
+      </div>
+    </div>
+
+    @if (book.reward; as reward) {
+      <section class="card stack rewarded" aria-labelledby="rewarded-title">
+        <h2 id="rewarded-title" class="section-title">🏆 Rewarded: {{ reward.text }}</h2>
+        <p class="text-muted">Reward given {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>
+      </section>
+    }
+
+    <section class="card stack" aria-labelledby="questions-title">
+      <h2 id="questions-title" class="section-title">
+        Questions {{ book.readerName }} answers for every chapter
+      </h2>
+      <ol class="list questions">
+        @for (text of book.defaultQuestions; track $index) {
+          <li class="list__item">
+            <span class="qa__num">{{ $index + 1 }}.</span>
+            <div class="list__body">
+              <div class="list__title">{{ text }}</div>
+              <div class="list__meta">Default question</div>
+            </div>
+          </li>
+        }
+        @for (question of book.questions; track question.id) {
+          <li class="list__item">
+            <span class="qa__num">{{ book.defaultQuestions.length + $index + 1 }}.</span>
+            <div class="list__body">
+              <div class="list__title">{{ question.text }}</div>
+              <div class="list__meta">
+                Added by you · {{ question.createdAt | date: 'EEE d MMM' }}
+              </div>
+            </div>
+            <button
+              class="btn btn--sm btn--ghost"
+              type="button"
+              (click)="openEditQuestion(question)"
+            >
+              Edit
+            </button>
+            <button class="btn btn--sm btn--ghost" type="button" (click)="removeQuestion(question)">
+              Remove
+            </button>
+          </li>
+        }
+      </ol>
+      <div>
+        <button class="btn" type="button" (click)="openAddQuestion()">Add a question</button>
+      </div>
+    </section>
+    <sh-question-dialog
+      [open]="questionOpen()"
+      [editing]="editingQuestion()?.text ?? null"
+      [readerName]="book.readerName"
+      [bookTitle]="book.title"
+      [busy]="questionBusy()"
+      [failed]="questionFailed()"
+      (saved)="saveQuestion($event)"
+      (closed)="questionOpen.set(false)"
+    />
+
+    <section class="card stack" aria-labelledby="logged-title">
+      <h2 id="logged-title" class="section-title">Chapters logged</h2>
+      @if (logged().length) {
+        <div class="table-wrap">
+          <table class="table" aria-label="Chapters logged">
+            <thead>
+              <tr>
+                <th scope="col">Chapter</th>
+                <th scope="col">Read</th>
+                <th scope="col">What happened</th>
+                <th scope="col">Review</th>
+                <th scope="col"><span class="visually-hidden">Open</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (chapter of logged(); track chapter.number) {
+                <tr>
+                  <td>{{ chapter.number }}</td>
+                  <td>{{ chapter.log!.readOn | date: 'EEE d MMM' : 'UTC' }}</td>
+                  <td class="first-line">{{ chapter.log!.firstLine }}</td>
+                  <td>{{ chapter.log!.reviewSticker ? 'Reviewed' : 'To review' }}</td>
+                  <td><a [routerLink]="['/review/chapters', chapter.log!.id]">Open</a></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="text-muted">{{ book.readerName }} hasn’t logged a chapter of this book yet.</p>
+      }
+    </section>
+
+    <form
+      class="card stack"
+      aria-labelledby="details-title"
+      (submit)="$event.preventDefault(); save()"
+      novalidate
+    >
+      <h2 id="details-title" class="section-title">Details</h2>
+      <sh-text-field label="Title" [maxlength]="120" [error]="titleError()" [(value)]="title" />
+      <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
+      <sh-text-field
+        label="Chapters"
+        type="number"
+        inputmode="numeric"
+        [help]="
+          book.loggedCount
+            ? book.readerName +
+              ' has logged ' +
+              book.loggedCount +
+              ' chapters, so this can’t go below ' +
+              book.loggedCount +
+              '.'
+            : null
+        "
+        [error]="chaptersError()"
+        [(value)]="chapters"
+      />
+      <div class="form-actions">
+        @if (saved()) {
+          <span role="status" class="text-muted">Saved just now</span>
+        }
+        <sh-button [busy]="saving()">Save details</sh-button>
+      </div>
+    </form>
+
+    <section class="card stack" aria-labelledby="remove-title">
+      <h2 id="remove-title" class="section-title">Remove this book</h2>
+      <p class="text-muted">
+        This deletes the book with every chapter {{ book.readerName }} logged for it.
+      </p>
+      <div>
+        <button class="btn btn--danger" type="button" (click)="openRemove()">Remove book</button>
+      </div>
+    </section>
+
+    <sh-dialog
+      [heading]="'Remove “' + book.title + '”?'"
+      [open]="removeOpen()"
+      (closed)="removeOpen.set(false)"
+    >
+      @if (removeFailed()) {
+        <sh-banner
+          severity="danger"
+          title="The book wasn’t removed"
+          message="Shelfie couldn’t reach the server. Nothing has changed; try again."
+        />
+      }
+      <div class="book-card">
+        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="sm" />
+        <div class="book-card__body">
+          <strong>{{ book.title }}</strong>
+          <span class="book-card__author"
+            >{{ book.author ? book.author + ' · ' : '' }}{{ book.loggedCount }} of
+            {{ book.chapterCount }} chapters logged</span
+          >
+        </div>
+      </div>
+      <p>
+        {{ book.readerName }}’s {{ book.loggedCount }} logged chapters and answers for this book
+        will be deleted too, along with your feedback. This can’t be undone.
+      </p>
+      <p class="text-muted">
+        If she just finished it, give a reward instead of removing it; finished books live on her
+        trophy shelf.
+      </p>
+      <div dialog-actions class="cluster">
+        <button class="btn" type="button" autofocus (click)="removeOpen.set(false)">
+          Keep the book
+        </button>
+        <button
+          class="btn btn--danger"
+          type="button"
+          [disabled]="removing()"
+          [attr.aria-busy]="removing() ? true : null"
+          (click)="remove()"
+        >
+          Remove book and answers
+        </button>
+      </div>
+    </sh-dialog>
+  }
+</div>

@@ -1,0 +1,10 @@
+main:focus {
+  outline: none;
+}
+.more-toasts {
+  align-self: flex-end;
+  pointer-events: auto;
+}
+.shell-banner {
+  margin: var(--space-4) var(--layout-margin) 0;
+}

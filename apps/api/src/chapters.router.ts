@@ -1,7 +1,9 @@
 import { Router, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
-import { Problem, getForm, logChapter, undoLog } from './chapters.service.ts';
+import { validationProblem } from './validation.ts';
+import { getChapter, getForm, logChapter, markFeedbackSeen, undoLog } from './chapters.service.ts';
+import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 const params = z.object({ id: z.string(), n: z.coerce.number().int().min(1) });
@@ -29,6 +31,16 @@ function replying(res: Response, run: () => unknown, status = 200) {
 export function chapterLogsRouter(db: DatabaseSync) {
   const router = Router();
   router.use(requireSession(db));
+  router.get('/:id', (req, res) => {
+    const householdId = (res.locals['session'] as RequestSession).householdId;
+    replying(res, () => getChapter(db, householdId, String(req.params['id'])));
+  });
+
+  router.post('/:id/seen', (req, res) => {
+    const householdId = (res.locals['session'] as RequestSession).householdId;
+    replying(res, () => markFeedbackSeen(db, householdId, String(req.params['id'])));
+  });
+
   router.delete('/:id', (req, res) => {
     const householdId = (res.locals['session'] as RequestSession).householdId;
     replying(res, () => undoLog(db, householdId, String(req.params['id'])));
@@ -53,7 +65,7 @@ export function chaptersRouter(db: DatabaseSync) {
     if (!p.success) return res.status(404).json({ type: 'not-found' });
     const body = logChapterSchema.safeParse(req.body);
     if (!body.success) {
-      return res.status(400).json({ type: 'validation', errors: body.error.issues.map((i) => ({ path: ['answers', ...i.path].join('.'), message: i.message })) });
+      return res.status(400).json(validationProblem(body.error));
     }
     replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
   });

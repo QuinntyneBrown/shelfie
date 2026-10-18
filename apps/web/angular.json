@@ -225,6 +225,84 @@
           }
         }
       }
+    },
+    "review": {
+      "projectType": "library",
+      "root": "projects/review",
+      "sourceRoot": "projects/review/src",
+      "prefix": "sh",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/review/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/review/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/review/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "settings": {
+      "projectType": "library",
+      "root": "projects/settings",
+      "sourceRoot": "projects/settings/src",
+      "prefix": "sh",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/settings/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/settings/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/settings/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "books": {
+      "projectType": "library",
+      "root": "projects/books",
+      "sourceRoot": "projects/books/src",
+      "prefix": "sh",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/books/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/books/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/books/tsconfig.spec.json"
+          }
+        }
+      }
     }
   }
 }

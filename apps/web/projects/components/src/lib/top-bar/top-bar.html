@@ -1,0 +1,35 @@
+<header class="topbar">
+  <a class="topbar__brand" [routerLink]="home()">
+    <svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6" />
+    </svg>
+    Shelfie
+  </a>
+  @if (links().length) {
+    <nav class="topbar__nav" aria-label="Primary">
+      @for (link of links(); track link.route) {
+        <a class="nav-link" [routerLink]="link.route" routerLinkActive ariaCurrentWhenActive="page"
+          >{{ link.label }}
+          @if (link.badge?.count) {
+            <span class="badge badge--count" [attr.aria-label]="link.badge!.label">{{
+              link.badge!.count
+            }}</span>
+          }
+        </a>
+      }
+    </nav>
+  }
+  <span class="topbar__spacer"></span>
+  @if (streak() !== null) {
+    <sh-streak-badge [days]="streak()!" />
+  }
+  <sh-menu
+    [label]="'Account menu for ' + name()"
+    [triggerClass]="'avatar avatar--sm avatar--' + color()"
+    [header]="menuHeader()"
+    [items]="menuItems()"
+    (select)="menuSelect.emit($event)"
+  >
+    {{ initial() }}
+  </sh-menu>
+</header>

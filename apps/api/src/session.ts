@@ -2,8 +2,15 @@ import type { NextFunction, Request, Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { readCookie } from './device.ts';
 
+/** A session lasts this long after its last request. */
+export const SESSION_DAYS = 30;
+
 export interface RequestSession {
   profileId: string;
+  name: string;
+  color: string;
+  email: string | null;
+  theme: string;
   householdId: string;
   role: 'reader' | 'grown_up';
 }
@@ -15,11 +22,18 @@ export function requireSession(db: DatabaseSync) {
     const row = id
       ? (db
           .prepare(
-            'SELECT p.id AS profileId, p.household_id AS householdId, p.role AS role FROM session s JOIN profile p ON p.id = s.profile_id WHERE s.id = ? AND s.expires_at > ?',
+            'SELECT p.id AS profileId, p.name AS name, p.color AS color, p.email AS email, h.theme AS theme, p.household_id AS householdId, p.role AS role, s.expires_at AS expiresAt FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id WHERE s.id = ?',
           )
-          .get(id, new Date().toISOString()) as RequestSession | undefined)
+          .get(id) as (RequestSession & { expiresAt: string }) | undefined)
       : undefined;
     if (!row) return res.status(401).json({ type: 'no-session' });
+    if (row.expiresAt <= new Date().toISOString()) {
+      db.prepare('DELETE FROM session WHERE id = ?').run(id);
+      res.clearCookie('shelfie_session');
+      return res.status(401).json({ type: 'session-expired' });
+    }
+    const slidTo = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    db.prepare('UPDATE session SET expires_at = ? WHERE id = ?').run(slidTo, id);
     res.locals['session'] = row;
     next();
   };

@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Add a book</h1>
+  </div>
+  <div class="layout">
+    <form class="stack form" (submit)="$event.preventDefault(); submit()" novalidate>
+      @if (failed()) {
+        <sh-banner
+          severity="danger"
+          title="The book wasn’t saved"
+          message="Shelfie couldn’t be reached. What you typed is still here."
+        >
+          <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
+        </sh-banner>
+      }
+      @if (problems().length) {
+        <sh-banner
+          severity="danger"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
+      <div class="card stack">
+        <sh-text-field label="Title" [error]="titleError()" [maxlength]="120" [(value)]="title" />
+        <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
+        <sh-text-field
+          label="Chapters"
+          [error]="chaptersError()"
+          type="number"
+          inputmode="numeric"
+          help="Count them in the contents page. You can change this later."
+          [(value)]="chapters"
+        />
+        <sh-color-picker label="Cover colour" [colors]="colors" [(value)]="color" />
+        <sh-sticker-picker label="Sticker" [(value)]="sticker" />
+      </div>
+      <div class="form-actions">
+        <a class="btn btn--ghost" routerLink="/shelf">Cancel</a>
+        <sh-button [large]="true" [busy]="saving()">Add to my shelf</sh-button>
+      </div>
+    </form>
+    <aside class="card stack preview" aria-label="Cover preview">
+      <span class="overline">Preview</span>
+      <sh-cover [color]="color()" [sticker]="sticker()" size="xl" />
+      <strong>{{ title().trim() || 'Untitled book' }}</strong>
+      <span class="text-caption">{{ previewDetail() }}</span>
+    </aside>
+  </div>
+</div>

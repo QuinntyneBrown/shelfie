@@ -95,3 +95,9 @@ Edit `infra/main.bicep` and rerun `infra/bootstrap.sh`. The VM's cloud-init (`in
 ## Still deferred
 
 Uptime monitoring, log shipping beyond journald and the production e-mail provider (AGENTS.md, Deferred work).
+
+## Health and logs
+
+- `GET /api/health` answers `200 {"status":"ok"}` while the database is reachable and `503 {"status":"unavailable"}` when it is not.
+- The API writes one JSON line per request to stdout: `requestId`, `method`, `route`, `status`, `durationMs`. Bodies, headers and URLs are never logged.
+- When someone reports "something went wrong" with a code such as `SHF-4F2A`, search the log for that `requestId`; the matching `level: "error"` line holds the full error.

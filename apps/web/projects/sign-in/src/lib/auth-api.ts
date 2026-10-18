@@ -6,6 +6,8 @@ export interface ProfileSummary {
   name: string;
   role: 'reader' | 'grown_up';
   color: string;
+  email: string | null;
+  theme: 'device' | 'light' | 'dark';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -14,6 +16,18 @@ export class AuthApi {
 
   profiles() {
     return this.api.get<ProfileSummary[]>('/auth/profiles');
+  }
+
+  forgotPassword(email: string) {
+    return this.api.post<void>('/auth/forgot-password', { email });
+  }
+
+  resetPassword(token: string, password: string) {
+    return this.api.post<Session>('/auth/reset-password', { token, password });
+  }
+
+  signInWithPassword(email: string, password: string) {
+    return this.api.post<Session>('/auth/password', { email, password });
   }
 
   signInWithPin(profileId: string, pin: string) {

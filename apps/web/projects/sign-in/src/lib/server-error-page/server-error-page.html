@@ -1,0 +1,20 @@
+<div class="container">
+  <sh-error-state
+    sticker="🛠️"
+    title="Something went wrong on our side"
+    text="Nothing you did caused this and nothing was lost. Try again in a moment."
+  >
+    @if (requestId()) {
+      <p class="code">
+        If it keeps happening, mention code <code>{{ requestId() }}</code
+        >.
+      </p>
+    }
+    <button class="btn btn--primary" type="button" (click)="tryAgain()">Try again</button>
+    @if (role === 'reader') {
+      <a class="btn" routerLink="/shelf">Back to my shelf</a>
+    } @else if (role === 'grown_up') {
+      <a class="btn" routerLink="/review">Go to Review</a>
+    }
+  </sh-error-state>
+</div>

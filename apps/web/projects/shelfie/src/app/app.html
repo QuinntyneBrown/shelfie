@@ -1,7 +1,39 @@
-<router-outlet />
+<a class="skip-link" href="#main" (click)="skipToContent($event)">Skip to content</a>
+@if (session(); as current) {
+  <sh-top-bar
+    [name]="current.name"
+    [color]="current.color"
+    [home]="home()"
+    [links]="navLinks()"
+    [streak]="current.role === 'reader' ? status.streak() : null"
+    [menuHeader]="menuHeader()"
+    [menuItems]="menuItems()"
+    (menuSelect)="chooseFromMenu($event)"
+  />
+}
+@for (banner of banners.banners(); track banner.id) {
+  <sh-banner
+    class="shell-banner"
+    [severity]="banner.severity"
+    [title]="banner.title"
+    [message]="banner.message ?? null"
+  />
+}
+<main #main id="main" tabindex="-1" [class.has-tabbar]="navLinks().length > 0">
+  <router-outlet />
+</main>
+@if (navLinks().length) {
+  <sh-tab-bar [links]="navLinks()" />
+}
 <div class="toast-region" role="status" aria-live="polite">
-  @for (toast of toasts.toasts(); track toast.id) {
+  @if (hiddenToasts() > 0) {
+    <button class="btn btn--sm more-toasts" type="button" (click)="showAllToasts.set(true)">
+      +{{ hiddenToasts() }} more
+    </button>
+  }
+  @for (toast of visibleToasts(); track toast.id) {
     <sh-toast
+      [severity]="toast.severity"
       [title]="toast.title"
       [text]="toast.text ?? null"
       [actionLabel]="toast.action?.label ?? null"

@@ -1,0 +1,17 @@
+.page {
+  gap: var(--space-6);
+}
+.section-title {
+  font: var(--text-h4);
+}
+.card--flush > .section-title {
+  padding: var(--space-4) var(--space-4) 0;
+}
+.reward-card {
+  background: linear-gradient(135deg, var(--color-warning-bg), var(--color-bg-surface) 70%);
+}
+.activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

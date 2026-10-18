@@ -1,6 +1,40 @@
-<main id="main" class="container">
+<div class="container">
+  @for (item of feedback(); track item.chapterLogId) {
+    <sh-banner
+      severity="info"
+      [title]="
+        (shelf()?.grownUpName ?? '') +
+        ' read Chapter ' +
+        item.chapterNumber +
+        ' and gave you a ' +
+        (item.given?.name ?? 'sticker') +
+        ' ' +
+        (item.given?.emoji ?? '')
+      "
+      message="See what he said."
+    >
+      <div class="alert__actions cluster">
+        <a class="btn btn--sm" [routerLink]="['/chapter-logs', item.chapterLogId]"
+          >Open Chapter {{ item.chapterNumber }}</a
+        >
+        <button
+          class="btn btn--sm btn--ghost"
+          type="button"
+          (click)="dismissed.update((ids) => [...ids, item.chapterLogId])"
+        >
+          Dismiss
+        </button>
+      </div>
+    </sh-banner>
+  }
   <div class="page-header">
-    <h1>Hi {{ session.current()?.name }}</h1>
+    <div>
+      <h1>Hi {{ session.current()?.name }}</h1>
+      @if (shelf(); as loaded) {
+        <p class="subtitle">🔥 {{ loaded.streak }}-day streak</p>
+      }
+    </div>
+    <a class="btn" routerLink="/add-book">Add a book</a>
   </div>
   @if (failed()) {
     <sh-empty-state
@@ -38,6 +72,7 @@
           @for (book of data.reading; track book.id) {
             <sh-book-card
               [title]="book.title"
+              [link]="['/book', book.id]"
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"
@@ -61,6 +96,7 @@
           @for (book of data.upNext; track book.id) {
             <sh-book-card
               [title]="book.title"
+              [link]="['/book', book.id]"
               [author]="book.author"
               [coverColor]="book.coverColor"
               [sticker]="book.sticker"
@@ -85,6 +121,7 @@
             <li>
               <sh-reward-card
                 [title]="book.title"
+                [link]="['/book', book.id]"
                 [coverColor]="book.coverColor"
                 [sticker]="book.sticker"
                 [note]="
@@ -103,4 +140,4 @@
       </section>
     }
   }
-</main>
+</div>

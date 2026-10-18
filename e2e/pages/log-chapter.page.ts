@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { SAME_SITE } from '../support/same-site';
 
 export class LogChapterPage {
   constructor(private readonly page: Page) {}
@@ -29,7 +30,7 @@ export class LogChapterPage {
 
   /** Posts a log straight to the API, as a client that skips the form would. */
   postLog(bookId: string, chapter: number, data: unknown) {
-    return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { data });
+    return this.page.request.post(`/api/books/${bookId}/chapters/${chapter}`, { ...SAME_SITE, data });
   }
 
   async chooseDay(day: 'Today' | 'Yesterday' | 'Another day') {
@@ -88,7 +89,15 @@ export class LogChapterPage {
 
   /** Asks the API to undo a log, as a client that skips the toast would. */
   undoViaApi(chapterLogId: string) {
-    return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`);
+    return this.page.request.delete(`/api/chapter-logs/${chapterLogId}`, SAME_SITE);
+  }
+
+  confetti() {
+    return this.page.locator('.confetti');
+  }
+
+  async addNextBook() {
+    await this.page.getByRole('link', { name: 'Add my next book' }).click();
   }
 
   finishedHeading() {
@@ -97,6 +106,42 @@ export class LogChapterPage {
 
   async notYet() {
     await this.page.getByRole('link', { name: 'Not yet' }).click();
+  }
+
+  /** Makes saving a chapter fail as if the connection dropped; other requests are unaffected. */
+  async failSaving() {
+    await this.page.route('**/api/books/*/chapters/*', (route) =>
+      route.request().method() === 'POST' ? route.abort() : route.continue(),
+    );
+  }
+
+  async repairSaving() {
+    await this.page.unroute('**/api/books/*/chapters/*');
+  }
+
+  failureToasts() {
+    return this.page.getByRole('status').getByText('Couldn’t save your answers');
+  }
+
+  async showMoreToasts() {
+    await this.page.getByRole('button', { name: /more/ }).click();
+  }
+
+  moreToasts() {
+    return this.page.getByRole('button', { name: /^\+\d+ more$/ });
+  }
+
+  async retry() {
+    await this.page.getByRole('button', { name: 'Retry' }).click();
+  }
+
+  /** Presses I’m done! from the keyboard, which works even when something is drawn over the button. */
+  async doneByKeyboard() {
+    await this.page.getByRole('button', { name: 'I’m done!' }).press('Enter');
+  }
+
+  toast(text: string | RegExp) {
+    return this.page.getByRole('status').getByText(text);
   }
 
   async done() {

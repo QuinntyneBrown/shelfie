@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+/* Application-wide rules the design system leaves to the shell (L2-025). */
+
+/* Every control is at least a comfortable 44 × 44 px touch target. */
+.btn--sm {
+  --btn-height: var(--target-comfortable);
+}
+.chip {
+  min-height: var(--target-comfortable);
+}
+.topbar .avatar {
+  --avatar-size: var(--target-comfortable);
+}
+.choice {
+  min-height: var(--target-comfortable);
+}

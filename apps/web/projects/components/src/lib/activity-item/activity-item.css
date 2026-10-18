@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+.text {
+  flex: 1;
+  min-width: 0;
+}
+.when {
+  flex: none;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}

@@ -1,11 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-
-export const DEFAULT_QUESTIONS = [
-  'What happened in this chapter?',
-  'Who was your favourite character in this chapter, and why?',
-  'What do you think will happen next?',
-];
+import { Problem } from './problem.ts';
+import { questionsForBook } from './questions.service.ts';
 
 const UNDO_SECONDS = 10;
 
@@ -16,18 +12,6 @@ function householdToday(db: DatabaseSync, householdId: string): string {
   return dayIn(time_zone, new Date());
 }
 
-export class Problem extends Error {
-  status: number;
-  type: string;
-  extra: Record<string, unknown>;
-
-  constructor(status: number, type: string, extra: Record<string, unknown> = {}) {
-    super(type);
-    this.status = status;
-    this.type = type;
-    this.extra = extra;
-  }
-}
 
 export interface LogRequest {
   readOn: string;
@@ -69,7 +53,7 @@ export function getForm(db: DatabaseSync, householdId: string, bookId: string, n
     chapterNumber: n,
     today: householdToday(db, householdId),
     grownUpName: grownUp.name,
-    questions: DEFAULT_QUESTIONS.map((text, i) => ({ position: i + 1, text, required: i === 0 })),
+    questions: questionsForBook(db, bookId).map((text, i) => ({ position: i + 1, text, required: i === 0 })),
   };
 }
 
@@ -93,7 +77,7 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
       undoUntil.toISOString(),
     );
     const insertAnswer = db.prepare('INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES (?, ?, ?, ?, ?)');
-    DEFAULT_QUESTIONS.forEach((question, i) => {
+    questionsForBook(db, bookId).forEach((question, i) => {
       const text = request.answers.find((a) => a.position === i + 1)?.text ?? '';
       insertAnswer.run(randomUUID(), id, i + 1, question, text);
     });
@@ -119,10 +103,80 @@ export function logChapter(db: DatabaseSync, householdId: string, bookId: string
 
 export function undoLog(db: DatabaseSync, householdId: string, chapterLogId: string) {
   const log = db
-    .prepare('SELECT c.id, c.book_id, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
-    .get(chapterLogId, householdId) as { id: string; book_id: string; undo_until: string } | undefined;
+    .prepare('SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId) as { id: string; book_id: string; chapter_number: number; undo_until: string } | undefined;
   if (!log) throw new Problem(404, 'not-found');
   if (log.undo_until < new Date().toISOString()) throw new Problem(409, 'undo-expired');
+  // Only the newest chapter of a book can be undone, so the logged chapters never have a gap.
+  const { latest } = db.prepare('SELECT MAX(chapter_number) AS latest FROM chapter_log WHERE book_id = ?').get(log.book_id) as { latest: number };
+  if (log.chapter_number !== latest) throw new Problem(409, 'undo-not-latest');
   db.prepare('DELETE FROM chapter_log WHERE id = ?').run(log.id);
   db.prepare('UPDATE book SET finished_at = NULL WHERE id = ?').run(log.book_id);
+}
+
+export interface ChapterView {
+  id: string;
+  book: { id: string; title: string; coverColor: string; sticker: string; chapterCount: number };
+  chapterNumber: number;
+  readOn: string;
+  today: string;
+  grownUpName: string;
+  readerName: string;
+  answers: { position: number; questionText: string; text: string }[];
+  review: { sticker: string; note: string | null; reviewedAt: string; feedbackSeenAt: string | null } | null;
+  nextChapterLogId: string | null;
+}
+
+export function getChapter(db: DatabaseSync, householdId: string, chapterLogId: string): ChapterView {
+  const log = db
+    .prepare(
+      `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count
+         FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?`,
+    )
+    .get(chapterLogId, householdId) as
+    | {
+        id: string;
+        chapter_number: number;
+        read_on: string;
+        reviewed_at: string | null;
+        review_sticker: string | null;
+        note: string | null;
+        feedback_seen_at: string | null;
+        book_id: string; title: string; cover_color: string; sticker: string; chapter_count: number }
+    | undefined;
+  if (!log) throw new Problem(404, 'not-found');
+  const answers = db
+    .prepare('SELECT position, question_text AS questionText, text FROM answer WHERE chapter_log_id = ? ORDER BY position')
+    .all(log.id) as unknown as ChapterView['answers'];
+  const next = db.prepare('SELECT id FROM chapter_log WHERE book_id = ? AND chapter_number = ?').get(log.book_id, log.chapter_number + 1) as
+    | { id: string }
+    | undefined;
+  const grownUp = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'grown_up'").get(householdId) as { name: string };
+  const reader = db.prepare("SELECT name FROM profile WHERE household_id = ? AND role = 'reader'").get(householdId) as { name: string };
+  return {
+    id: log.id,
+    book: { id: log.book_id, title: log.title, coverColor: log.cover_color, sticker: log.sticker, chapterCount: log.chapter_count },
+    chapterNumber: log.chapter_number,
+    readOn: log.read_on,
+    today: householdToday(db, householdId),
+    grownUpName: grownUp.name,
+    readerName: reader.name,
+    answers,
+    review: log.reviewed_at
+      ? { sticker: log.review_sticker!, note: log.note, reviewedAt: log.reviewed_at, feedbackSeenAt: log.feedback_seen_at }
+      : null,
+    nextChapterLogId: next?.id ?? null,
+  };
+}
+
+/** Notes that the reader has opened her feedback, so the shelf stops announcing it. */
+export function markFeedbackSeen(db: DatabaseSync, householdId: string, chapterLogId: string) {
+  const log = db
+    .prepare('SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = ? AND b.household_id = ?')
+    .get(chapterLogId, householdId);
+  if (!log) throw new Problem(404, 'not-found');
+  db.prepare('UPDATE chapter_log SET feedback_seen_at = ? WHERE id = ? AND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL').run(
+    new Date().toISOString(),
+    chapterLogId,
+  );
 }
