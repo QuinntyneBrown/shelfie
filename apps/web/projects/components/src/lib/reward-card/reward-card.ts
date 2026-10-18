@@ -25,6 +25,8 @@ export class RewardCard {
   readonly note = input.required<string>();
   /** Finished books a gallery reward takes; set, the card is a gallery reward. */
   readonly target = input<number | null>(null);
+  /** A gallery reward's description; nothing shows when it is empty. */
+  readonly description = input<string | null>(null);
   /** Books finished toward it, when it is the goal. */
   readonly progress = input<number | null>(null);
   protected readonly reached = computed(

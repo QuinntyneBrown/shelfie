@@ -11,6 +11,9 @@
         }
       </div>
       <div class="trophy__reward">{{ note() }}</div>
+      @if (description()) {
+        <p class="trophy__description">{{ description() }}</p>
+      }
       @if (progress() !== null) {
         <sh-progress
           class="trophy__progress"

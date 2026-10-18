@@ -26,12 +26,17 @@ export class GalleryRewardDialog {
     return this.dialog().getByRole('textbox', { name: 'The reward' });
   }
 
+  descriptionField() {
+    return this.dialog().getByRole('textbox', { name: 'Description (optional)' });
+  }
+
   targetField() {
     return this.dialog().getByRole('spinbutton', { name: 'Books to finish' });
   }
 
-  async fill(reward: { name?: string; target?: string }) {
+  async fill(reward: { name?: string; description?: string; target?: string }) {
     if (reward.name !== undefined) await this.nameField().fill(reward.name);
+    if (reward.description !== undefined) await this.descriptionField().fill(reward.description);
     if (reward.target !== undefined) await this.targetField().fill(reward.target);
   }
 

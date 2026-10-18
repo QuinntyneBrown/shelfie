@@ -8,14 +8,14 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { Banner, Dialog, TextField } from 'components';
+import { Banner, Dialog, TextField, Textarea } from 'components';
 import { ApiError } from 'core';
 import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
 
 /** Adds a reward to the gallery, or edits one; saves through the API and reports the saved reward. */
 @Component({
   selector: 'sh-gallery-reward-dialog',
-  imports: [Banner, Dialog, TextField],
+  imports: [Banner, Dialog, TextField, Textarea],
   templateUrl: './gallery-reward-dialog.html',
   styleUrl: './gallery-reward-dialog.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,13 +32,17 @@ export class GalleryRewardDialog {
   readonly closed = output<void>();
 
   protected readonly name = signal('');
+  protected readonly description = signal('');
   protected readonly target = signal('');
   protected readonly nameError = signal<string | null>(null);
   protected readonly targetError = signal<string | null>(null);
+  protected readonly descriptionError = signal<string | null>(null);
   protected readonly problems = computed(() =>
-    [this.nameError() && 'Name the reward', this.targetError() && 'Use 1 to 20 books'].filter(
-      (p): p is string => !!p,
-    ),
+    [
+      this.nameError() && 'Name the reward',
+      this.targetError() && 'Use 1 to 20 books',
+      this.descriptionError() && 'Shorten the description',
+    ].filter((p): p is string => !!p),
   );
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
@@ -52,8 +56,10 @@ export class GalleryRewardDialog {
       if (!this.open()) return;
       const reward = this.editing();
       this.name.set(reward?.name ?? '');
+      this.description.set(reward?.description ?? '');
       this.target.set(reward ? String(reward.target) : '');
       this.nameError.set(null);
+      this.descriptionError.set(null);
       this.targetError.set(null);
       this.failed.set(false);
     });
@@ -63,6 +69,7 @@ export class GalleryRewardDialog {
     if (this.busy()) return;
     this.failed.set(false);
     const name = this.name().trim();
+    const description = this.description().trim();
     const target = Number(this.target());
     this.nameError.set(
       !name ? 'Name the reward.' : name.length > 100 ? 'Use 100 characters or fewer.' : null,
@@ -72,6 +79,7 @@ export class GalleryRewardDialog {
         ? null
         : 'Use a whole number from 1 to 20.',
     );
+    this.descriptionError.set(description.length > 500 ? 'Use 500 characters or fewer.' : null);
     if (this.problems().length) return;
 
     this.busy.set(true);
@@ -79,8 +87,8 @@ export class GalleryRewardDialog {
       const reward = this.editing();
       this.saved.emit(
         reward
-          ? await this.api.update(reward.id, { name, target })
-          : await this.api.add({ name, target }),
+          ? await this.api.update(reward.id, { name, description, target })
+          : await this.api.add({ name, description, target }),
       );
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;

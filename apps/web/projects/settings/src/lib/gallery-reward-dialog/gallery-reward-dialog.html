@@ -37,6 +37,12 @@
       [error]="nameError()"
       [(value)]="name"
     />
+    <sh-textarea
+      label="Description (optional)"
+      help="What makes it special. Up to 500 characters."
+      [error]="descriptionError()"
+      [(value)]="description"
+    />
     <sh-text-field
       class="target"
       label="Books to finish"

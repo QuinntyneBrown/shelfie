@@ -9,6 +9,7 @@ import { validationProblem } from './validation.ts';
 
 const galleryRewardSchema = z.object({
   name: z.string().trim().min(1).max(100),
+  description: z.string().trim().max(500).default(''),
   target: z.number().int().min(1).max(20),
 });
 

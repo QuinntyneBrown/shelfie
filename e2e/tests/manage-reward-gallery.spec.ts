@@ -1,4 +1,4 @@
-// Traces to: L2-081, L2-082, L2-083
+// Traces to: L2-081, L2-082, L2-083, L2-093
 import { test, expect } from '../support/test';
 import { signInAsDad } from '../support/signed-in';
 import { addGalleryReward } from '../support/database';
@@ -76,6 +76,42 @@ test('Given an empty name and 25 books, when Dad saves, then each field says wha
   await expect(dialog.problemSummary()).toContainText('Fix 2 things');
   await expect(dialog.dialog()).toContainText('Name the reward.');
   await expect(dialog.dialog()).toContainText('Use a whole number from 1 to 20.');
+  expect(dialog.requestCount()).toBe(0);
+});
+
+test('Given Dad adds a reward with a description, when he edits it, then the description is there to change, and clearing it saves no description', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.addGalleryReward();
+  const dialog = new GalleryRewardDialog(page);
+  await dialog.fill({ name: 'Trip to the zoo', description: 'We’ll see the penguins and have ice cream after.', target: '3' });
+  await dialog.save();
+  await expect(dialog.dialog()).toBeHidden();
+
+  await settings.editGalleryReward('Trip to the zoo');
+  await expect(dialog.descriptionField()).toHaveValue('We’ll see the penguins and have ice cream after.');
+  await dialog.fill({ description: '   ' });
+  await dialog.save();
+  await expect(settings.toast('Trip to the zoo saved')).toBeVisible();
+
+  await settings.editGalleryReward('Trip to the zoo');
+  await expect(dialog.descriptionField()).toHaveValue('');
+});
+
+test('Given a description of 501 characters, when Dad saves, then it says to shorten it and nothing is sent', async ({ page }) => {
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.addGalleryReward();
+  const dialog = new GalleryRewardDialog(page);
+
+  await dialog.fill({ name: 'Trip to the zoo', description: ` ${'x'.repeat(501)} `, target: '3' });
+  await dialog.save();
+
+  await expect(dialog.problemSummary()).toContainText('Fix 1 thing');
+  await expect(dialog.problemSummary()).toContainText('Shorten the description');
+  await expect(dialog.dialog()).toContainText('Use 500 characters or fewer.');
   expect(dialog.requestCount()).toBe(0);
 });
 

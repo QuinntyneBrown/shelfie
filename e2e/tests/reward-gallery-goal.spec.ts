@@ -1,4 +1,4 @@
-// Traces to: L2-086, L2-087
+// Traces to: L2-086, L2-087, L2-096
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { addGalleryReward, finishBook } from '../support/database';
@@ -28,6 +28,17 @@ test('Given gallery rewards, when Nia picks one, then it is her goal at 0 and bo
   await shelf.reload();
   await expect(shelf.goalProgress('Trip to the zoo')).toHaveAccessibleName('1 of 3 books finished');
   await expect(shelf.galleryReward('Trip to the zoo')).toContainText('2 more to go!');
+});
+
+test('Given a reward with a description and one without, when Nia opens her shelf, then only the first card shows a description', async ({ page }) => {
+  await addGalleryReward('Trip to the zoo', 3, 'We’ll see the penguins and have ice cream after.');
+  await addGalleryReward('Sleepover with Ava', 5);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.galleryRewardDescription('Trip to the zoo')).toHaveText('We’ll see the penguins and have ice cream after.');
+  await expect(shelf.galleryReward('Sleepover with Ava')).toBeVisible();
+  await expect(shelf.galleryRewardDescription('Sleepover with Ava')).toHaveCount(0);
 });
 
 test('Given a goal with progress, when Nia picks a different reward, then that one is her goal and starts again at 0', async ({ page }) => {

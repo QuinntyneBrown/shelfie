@@ -5,10 +5,16 @@ export interface GalleryReward {
   id: string;
   name: string;
   target: number;
+  /** Empty when Dad wrote none. */
+  description: string;
+  /** Oldest first. */
+  pictures: { id: string; url: string }[];
+  featuredPicture: string | null;
 }
 
 export interface GalleryRewardInput {
   name: string;
+  description: string;
   target: number;
 }
 

@@ -3,16 +3,30 @@ import type { Pool } from 'pg';
 import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 
+export interface RewardPicture {
+  id: string;
+  url: string;
+}
+
 export interface GalleryReward {
   id: string;
   name: string;
   target: number;
+  /** Empty when the parent wrote none. */
+  description: string;
+  /** Oldest first. */
+  pictures: RewardPicture[];
+  /** The URL of the featured picture; null without pictures. */
+  featuredPicture: string | null;
 }
 
 export interface GalleryRewardInput {
   name: string;
+  description: string;
   target: number;
 }
+
+type RewardRow = Pick<GalleryReward, 'id' | 'name' | 'target' | 'description'>;
 
 export interface Goal {
   rewardId: string;
@@ -29,9 +43,27 @@ export interface GalleryView {
   goal: Goal | null;
 }
 
+/** The URL every reward picture loads; the version changes with each new picture. */
+export function rewardPictureUrl(rewardId: string, pictureId: string, etag: string) {
+  return `/api/gallery-rewards/${rewardId}/pictures/${pictureId}?v=${etag}`;
+}
+
+/** The rewards with their pictures; the image bytes are never read here. */
+async function withPictures(db: Db, rows: RewardRow[]): Promise<GalleryReward[]> {
+  const pictures = await all<{ id: string; reward_id: string; etag: string; featured: boolean }>(
+    db,
+    'SELECT id, reward_id, etag, featured FROM reward_picture WHERE reward_id = ANY($1) ORDER BY created_at, id',
+    [rows.map((r) => r.id)],
+  );
+  return rows.map((row) => {
+    const own = pictures.filter((p) => p.reward_id === row.id).map((p) => ({ ...p, url: rewardPictureUrl(row.id, p.id, p.etag) }));
+    return { ...row, pictures: own.map(({ id, url }) => ({ id, url })), featuredPicture: own.find((p) => p.featured)?.url ?? null };
+  });
+}
+
 export async function getGallery(db: Db, householdId: string): Promise<GalleryView> {
-  const rewards = await all<GalleryReward>(db, 'SELECT id, name, target FROM gallery_reward WHERE household_id = $1 ORDER BY created_at, id', [householdId]);
-  return { rewards, goal: await goalOf(db, householdId) };
+  const rows = await all<RewardRow>(db, 'SELECT id, name, target, description FROM gallery_reward WHERE household_id = $1 ORDER BY created_at, id', [householdId]);
+  return { rewards: await withPictures(db, rows), goal: await goalOf(db, householdId) };
 }
 
 /**
@@ -40,7 +72,7 @@ export async function getGallery(db: Db, householdId: string): Promise<GalleryVi
  * goal is complete and there is none.
  */
 export async function goalOf(db: Db, householdId: string): Promise<Goal | null> {
-  const picked = await get<GalleryReward & { picked_at: string }>(
+  const picked = await get<RewardRow & { picked_at: string }>(
     db,
     'SELECT id, name, target, picked_at FROM gallery_reward WHERE household_id = $1 AND picked_at IS NOT NULL',
     [householdId],
@@ -65,26 +97,26 @@ export async function goalOf(db: Db, householdId: string): Promise<Goal | null> 
 }
 
 export async function addGalleryReward(db: Db, householdId: string, input: GalleryRewardInput): Promise<GalleryReward> {
-  const reward = { id: randomUUID(), name: input.name, target: input.target };
-  await db.query('INSERT INTO gallery_reward (id, household_id, name, target, created_at) VALUES ($1, $2, $3, $4, $5)', [
+  const reward = { id: randomUUID(), name: input.name, target: input.target, description: input.description, pictures: [], featuredPicture: null };
+  await db.query('INSERT INTO gallery_reward (id, household_id, name, target, description, created_at) VALUES ($1, $2, $3, $4, $5, $6)', [
     reward.id,
     householdId,
     reward.name,
     reward.target,
+    reward.description,
     new Date().toISOString(),
   ]);
   return reward;
 }
 
 export async function updateGalleryReward(db: Db, householdId: string, id: string, input: GalleryRewardInput): Promise<GalleryReward> {
-  const reward = await get<GalleryReward>(db, 'UPDATE gallery_reward SET name = $1, target = $2 WHERE id = $3 AND household_id = $4 RETURNING id, name, target', [
-    input.name,
-    input.target,
-    id,
-    householdId,
-  ]);
+  const reward = await get<RewardRow>(
+    db,
+    'UPDATE gallery_reward SET name = $1, target = $2, description = $3 WHERE id = $4 AND household_id = $5 RETURNING id, name, target, description',
+    [input.name, input.target, input.description, id, householdId],
+  );
   if (!reward) throw new Problem(404, 'not-found');
-  return reward;
+  return (await withPictures(db, [reward]))[0]!;
 }
 
 /** Removing the goal removes it with its row; rewards already given stay on their books. */

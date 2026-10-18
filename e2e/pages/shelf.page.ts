@@ -136,6 +136,11 @@ export class ShelfPage {
     return this.gallery().getByRole('listitem').filter({ hasText: name });
   }
 
+  /** The description under a gallery reward, when it has one. */
+  galleryRewardDescription(name: string) {
+    return this.galleryReward(name).locator('.trophy__description');
+  }
+
   async pickGoal(name: string) {
     await this.gallery().getByRole('button', { name: `Pick ${name}` }).click();
   }
