@@ -1,5 +1,6 @@
 import type { Pool } from 'pg';
 import { all, get, run, transaction, type Db } from './db.ts';
+import { PHOTO_COLUMN } from './photos.service.ts';
 import { Problem } from './problem.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 
@@ -8,6 +9,7 @@ export interface ParentView {
   name: string;
   username: string;
   color: string;
+  photo: string | null;
 }
 
 export interface InviteView {
@@ -22,6 +24,7 @@ export interface ReaderView {
   name: string;
   color: string;
   username: string;
+  photo: string | null;
 }
 
 export interface SettingsView {
@@ -33,7 +36,12 @@ export interface SettingsView {
 }
 
 export function listReaders(db: Db, householdId: string): Promise<ReaderView[]> {
-  return all<ReaderView>(db, "SELECT id, name, color, username FROM profile WHERE household_id = $1 AND role = 'reader' ORDER BY name", [householdId]);
+  return all<ReaderView>(
+    db,
+    `SELECT p.id, p.name, p.color, p.username, ${PHOTO_COLUMN}
+       FROM profile p LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE p.household_id = $1 AND p.role = 'reader' ORDER BY p.name`,
+    [householdId],
+  );
 }
 
 export function listPendingInvites(db: Db, householdId: string): Promise<InviteView[]> {
@@ -52,7 +60,8 @@ export async function getSettings(db: Db, householdId: string, profileId: string
   const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [householdId]))!;
   const parents = await all<ParentView>(
     db,
-    "SELECT id, name, username, color FROM profile WHERE household_id = $1 AND role = 'parent' ORDER BY (id = $2) DESC, name",
+    `SELECT p.id, p.name, p.username, p.color, ${PHOTO_COLUMN}
+       FROM profile p LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE p.household_id = $1 AND p.role = 'parent' ORDER BY (p.id = $2) DESC, p.name`,
     [householdId, profileId],
   );
   return { account, theme, parents, invites: await listPendingInvites(db, householdId), readers: await listReaders(db, householdId) };

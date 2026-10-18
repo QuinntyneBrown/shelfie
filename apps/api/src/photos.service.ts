@@ -14,6 +14,9 @@ export interface ProfilePhoto {
   etag: string;
 }
 
+/** The photo URL as a column, for queries over `profile p LEFT JOIN profile_photo pp`; null without a photo. */
+export const PHOTO_COLUMN = "CASE WHEN pp.etag IS NULL THEN NULL ELSE '/api/photos/' || p.id || '?v=' || pp.etag END AS photo";
+
 /** The URL every avatar loads; the version changes with each new photo. */
 export function photoUrl(profileId: string, etag: string) {
   return `/api/photos/${profileId}?v=${etag}`;

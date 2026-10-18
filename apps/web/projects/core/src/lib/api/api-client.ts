@@ -27,6 +27,11 @@ export class ApiClient {
     return this.send(this.http.post<T>(`/api${path}`, body, { headers: HEADERS }));
   }
 
+  /** A `File` or `Blob` body is sent as it is, with its own content type. */
+  put<T>(path: string, body: unknown): Promise<T> {
+    return this.send(this.http.put<T>(`/api${path}`, body, { headers: HEADERS }));
+  }
+
   patch<T>(path: string, body: unknown): Promise<T> {
     return this.send(this.http.patch<T>(`/api${path}`, body, { headers: HEADERS }));
   }

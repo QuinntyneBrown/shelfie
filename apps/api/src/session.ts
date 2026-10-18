@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { get, run, type Db } from './db.ts';
+import { PHOTO_COLUMN } from './photos.service.ts';
 
 /** A session lasts this long after its last request. */
 export const SESSION_DAYS = 30;
@@ -33,7 +34,7 @@ export function requireSession(db: Db) {
       ? await get<RequestSession & { expiresAt: string }>(
           db,
           `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt",
-                  CASE WHEN pp.etag IS NULL THEN NULL ELSE '/api/photos/' || p.id || '?v=' || pp.etag END AS photo
+                  ${PHOTO_COLUMN}
              FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id
              LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,
           [id],

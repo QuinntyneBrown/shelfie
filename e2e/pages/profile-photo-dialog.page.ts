@@ -11,6 +11,23 @@ export function fixture(name: string) {
 export class ProfilePhotoDialog {
   constructor(private readonly page: Page) {}
 
+  dialog() {
+    return this.page.getByRole('dialog', { name: 'Your photo' });
+  }
+
+  /** Picks a file in the device's chooser behind "Choose a photo" or "Choose another". */
+  async choose(file: string) {
+    await this.dialog().getByLabel(/Choose a photo|Choose another/).setInputFiles(file);
+  }
+
+  success() {
+    return this.dialog().getByRole('status').filter({ hasText: 'Looking great' });
+  }
+
+  async done() {
+    await this.dialog().getByRole('button', { name: 'Done' }).click();
+  }
+
   /** Uploads a photo for whoever is signed in, straight through the API. */
   uploadViaApi(file: string, type = 'image/jpeg') {
     return this.page.request.put('/api/profile/photo', {

@@ -21,6 +21,12 @@ export class ShellPage {
     return this.page.getByRole('button', { name: `Account menu for ${name}` });
   }
 
+  /** The colour of the avatar on the account menu button, such as "mint". */
+  async accountColour(name: string) {
+    const classes = (await this.accountMenuButton(name).locator('.avatar').getAttribute('class')) ?? '';
+    return classes.split(' ').map((c) => /^avatar--(\w+)$/.exec(c)?.[1]).find((c) => c && !['sm', 'lg', 'xl'].includes(c));
+  }
+
   /** The photo on the account menu button, when there is one. */
   accountPhoto(name: string) {
     return this.accountMenuButton(name).locator('img');
