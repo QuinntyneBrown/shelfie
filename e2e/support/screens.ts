@@ -154,7 +154,7 @@ export const screens: Screen[] = [
       await dialog.done();
       await settings.signOut();
       const accept = new AcceptInvitePage(page);
-      await accept.openLink(inviteLinkFor('priya@example.com'));
+      await accept.openLink(await inviteLinkFor('priya@example.com'));
       await accept.nameField().waitFor();
       await settled(page);
     },
