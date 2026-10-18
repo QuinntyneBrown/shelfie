@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { all, type Db } from './db.ts';
+import { all, get, run, type Db } from './db.ts';
+import { Problem } from './problem.ts';
 
 export interface GalleryReward {
   id: string;
@@ -42,4 +43,20 @@ export async function addGalleryReward(db: Db, householdId: string, input: Galle
     new Date().toISOString(),
   ]);
   return reward;
+}
+
+export async function updateGalleryReward(db: Db, householdId: string, id: string, input: GalleryRewardInput): Promise<GalleryReward> {
+  const reward = await get<GalleryReward>(db, 'UPDATE gallery_reward SET name = $1, target = $2 WHERE id = $3 AND household_id = $4 RETURNING id, name, target', [
+    input.name,
+    input.target,
+    id,
+    householdId,
+  ]);
+  if (!reward) throw new Problem(404, 'not-found');
+  return reward;
+}
+
+/** Removing the goal removes it with its row; rewards already given stay on their books. */
+export async function removeGalleryReward(db: Db, householdId: string, id: string): Promise<void> {
+  if (!(await run(db, 'DELETE FROM gallery_reward WHERE id = $1 AND household_id = $2', [id, householdId]))) throw new Problem(404, 'not-found');
 }

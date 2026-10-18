@@ -133,3 +133,46 @@ test('Given gallery requests, then the log never holds a reward name', async () 
   assert.ok(logged.length >= 2);
   assert.ok(logged.every((line) => !line.includes('Secret sleepover')));
 });
+
+test('Given a gallery reward, when Dad edits it, then the gallery shows the new name and target; invalid values are refused', async () => {
+  const cookie = await dad();
+  const { id } = await add(cookie, 'Trip to the zoo', 3);
+
+  const response = await call(cookie, 'PATCH', `/${id}`, { name: 'Trip to the aquarium', target: 4 });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { id, name: 'Trip to the aquarium', target: 4 });
+  assert.equal((await call(cookie, 'PATCH', `/${id}`, { name: '', target: 4 })).status, 400);
+  assert.equal((await call(cookie, 'PATCH', `/${id}`, { name: 'Zoo', target: 21 })).status, 400);
+  assert.deepEqual((await gallery(cookie)).rewards, [{ id, name: 'Trip to the aquarium', target: 4 }]);
+});
+
+test('Given a gallery reward, when Dad removes it, then it leaves the gallery', async () => {
+  const cookie = await dad();
+  const { id } = await add(cookie, 'Trip to the zoo', 3);
+  const kept = await add(cookie, 'New art set', 2);
+
+  const response = await call(cookie, 'DELETE', `/${id}`);
+
+  assert.equal(response.status, 204);
+  assert.deepEqual((await gallery(cookie)).rewards, [kept]);
+});
+
+test('Given Nia, when she edits or removes a gallery reward, then the API answers 403 and nothing changes', async () => {
+  const reward = await add(await dad(), 'Trip to the zoo', 3);
+  const cookie = await nia();
+
+  assert.equal((await call(cookie, 'PATCH', `/${reward.id}`, { name: 'Pony', target: 1 })).status, 403);
+  assert.equal((await call(cookie, 'DELETE', `/${reward.id}`)).status, 403);
+  assert.deepEqual((await gallery(cookie)).rewards, [reward]);
+});
+
+test('Given a gallery reward of another household, or an unknown id, when it is edited or removed, then the API answers 404 and nothing changes', async () => {
+  const reward = await add(await dad(), 'Trip to the zoo', 3);
+  const cookie = await zedsDad();
+
+  assert.equal((await call(cookie, 'PATCH', `/${reward.id}`, { name: 'Mine now', target: 1 })).status, 404);
+  assert.equal((await call(cookie, 'DELETE', `/${reward.id}`)).status, 404);
+  assert.equal((await call(await dad(), 'DELETE', '/no-such-reward')).status, 404);
+  assert.deepEqual((await gallery(await dad())).rewards, [reward]);
+});
