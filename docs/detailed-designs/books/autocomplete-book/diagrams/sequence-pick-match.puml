@@ -34,14 +34,14 @@ box "Backend — outside Shelfie and infrastructure" #FFF4E5
   database "Shelfie database (PostgreSQL)" as db
 end box
 
-user -> combobox : ArrowDown / Enter, or click a row (L2-068)
+user -> combobox : ArrowDown / Enter, or click a row (L2-073)
 combobox -> page : picked(option)
-page -> page : title = match title; author if any;\nchapters if any, else focus Chapters (L2-065)
+page -> page : title = match title; author if any;\nchapters if any, else focus Chapters (L2-070)
 page -> combobox : options = [], status = idle; status line "Filled in from the match. Check the chapters."
 alt match has a coverId
   page -> client : catalogueCover(coverId)
   client -> searchRouter : GET /api/books/search/covers/8739161
-  searchRouter -> searchRouter : Require session; id is 1–12 digits (L2-066)
+  searchRouter -> searchRouter : Require session; id is 1–12 digits (L2-071)
   searchRouter -> catalogue : fetchCatalogueCover(id, 5 s)
   catalogue -> coverHost : GET /b/id/8739161-L.jpg (fixed host, 5 MB cap)
   coverHost --> catalogue : bytes
@@ -49,7 +49,7 @@ alt match has a coverId
   alt accepted
     covers --> catalogue : WebP
     catalogue --> searchRouter : WebP
-    searchRouter --> client : 200 image/webp, private, sandboxed (L2-066)
+    searchRouter --> client : 200 image/webp, private, sandboxed (L2-071)
     client --> page : File "cover.webp"
     page -> page : choosePicture(file) — the same path as a chosen file
     page -> preview : image = object URL
@@ -57,7 +57,7 @@ alt match has a coverId
   else refused or unreachable
     searchRouter --> client : 404 photo-type or not-found
     client --> page : ApiError, swallowed
-    page --> user : No picture; colour and sticker stay (L2-066)
+    page --> user : No picture; colour and sticker stay (L2-071)
   end
 end
 user -> page : Edit any field; press "Add to my shelf"

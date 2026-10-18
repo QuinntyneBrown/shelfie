@@ -1,4 +1,4 @@
-// Traces to: L2-064, L2-068, L2-070
+// Traces to: L2-069, L2-073, L2-075
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';

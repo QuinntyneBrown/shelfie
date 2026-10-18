@@ -5,7 +5,7 @@
 | Selector | `sh-combobox` |
 | Library path | `apps/web/projects/components/src/lib/combobox/` |
 | Status | built |
-| Traces to | L2-025, L2-026, L2-028, L2-064, L2-065, L2-067, L2-068, L2-069 |
+| Traces to | L2-025, L2-026, L2-028, L2-069, L2-070, L2-072, L2-073, L2-074 |
 | Design system | [`combobox.html`](../../design-system/components/combobox.html) |
 | Source mocks | [`pages/add-book/suggestions`](../../mocks/pages/add-book/suggestions.html), [`pages/add-book/suggestions-ai`](../../mocks/pages/add-book/suggestions-ai.html), [`pages/add-book/searching`](../../mocks/pages/add-book/searching.html), [`pages/add-book/no-matches`](../../mocks/pages/add-book/no-matches.html), [`pages/add-book/lookup-failed`](../../mocks/pages/add-book/lookup-failed.html), [`pages/add-book/picked`](../../mocks/pages/add-book/picked.html) |
 | Rendering | [`combobox.html`](combobox.html) |
@@ -18,7 +18,7 @@ Use a [menu](../../design-system/components/menu.html) for actions and a [radio 
 
 Out of scope:
 
-- Deciding when to search, what to search and what a pick fills in. The page owns the debounce, the request, the stale-request handling and the fill; the combobox renders what it is given and reports the pick (L2-064, L2-065).
+- Deciding when to search, what to search and what a pick fills in. The page owns the debounce, the request, the stale-request handling and the fill; the combobox renders what it is given and reports the pick (L2-069, L2-070).
 - Fetching or storing covers. A row shows the `image` URL it is given; the page's [cover picker](../../design-system/components/cover-picker.html) and [book cover](../../design-system/components/cover.html) handle the chosen picture.
 - Multi-select, chips, free-text "create" rows and grouping.
 
@@ -237,35 +237,35 @@ The panel scales in over `--duration-fast`; `prefers-reduced-motion: reduce` rem
 
 ### Rendering
 
-- **AC-1** Given the Title combobox with three catalogue options, when it renders open, then the panel shows three `.combobox__option` rows in order, each with an `sh-cover` sm, a `.combobox__title` and a `.combobox__detail`, and the row whose option has an `image` shows it over the 📖 placeholder. (L2-064)
-- **AC-2** Given seven options, when the list renders, then only the first five rows show. (L2-064)
+- **AC-1** Given the Title combobox with three catalogue options, when it renders open, then the panel shows three `.combobox__option` rows in order, each with an `sh-cover` sm, a `.combobox__title` and a `.combobox__detail`, and the row whose option has an `image` shows it over the 📖 placeholder. (L2-069)
+- **AC-2** Given seven options, when the list renders, then only the first five rows show. (L2-069)
 - **AC-3** Given an option whose title is `<b>Matilda</b>`, when the row renders, then the text "<b>Matilda</b>" is visible and no `b` element exists inside the row. (L2-028)
-- **AC-4** Given an option with `suggested: true`, when the row renders, then it carries a `.badge` reading "Suggested" and no `img`, and the `note` renders in a `.combobox__note` above the list. (L2-067)
+- **AC-4** Given an option with `suggested: true`, when the row renders, then it carries a `.badge` reading "Suggested" and no `img`, and the `note` renders in a `.combobox__note` above the list. (L2-072)
 
 ### States
 
-- **AC-5** Given `status` `'searching'` and no options, when it renders, then a `.combobox__note[role=status][aria-busy=true]` reads "Looking that up…" and `aria-expanded` is "false". (L2-064)
-- **AC-6** Given `status` `'empty'` and no options, when it renders, then a `role="status"` note reads "No matches. Keep typing, or fill the rest in yourself." (L2-064)
-- **AC-7** Given `status` `'failed'` and no options, when it renders, then a `role="status"` note reads "Shelfie couldn’t look that up. You can still fill it in yourself." (L2-069)
-- **AC-8** Given `status` `'idle'` and no options, when it renders, then there is no panel and the field is an ordinary text field. (L2-064)
-- **AC-9** Given `error` "The book needs a title.", when it renders, then the input has `aria-invalid="true"` and is described by a `.field__error` with that text. (L2-065)
+- **AC-5** Given `status` `'searching'` and no options, when it renders, then a `.combobox__note[role=status][aria-busy=true]` reads "Looking that up…" and `aria-expanded` is "false". (L2-069)
+- **AC-6** Given `status` `'empty'` and no options, when it renders, then a `role="status"` note reads "No matches. Keep typing, or fill the rest in yourself." (L2-069)
+- **AC-7** Given `status` `'failed'` and no options, when it renders, then a `role="status"` note reads "Shelfie couldn’t look that up. You can still fill it in yourself." (L2-074)
+- **AC-8** Given `status` `'idle'` and no options, when it renders, then there is no panel and the field is an ordinary text field. (L2-069)
+- **AC-9** Given `error` "The book needs a title.", when it renders, then the input has `aria-invalid="true"` and is described by a `.field__error` with that text. (L2-070)
 
 ### Keyboard and focus
 
-- **AC-10** Given the list open with "Because of Winn-Dixie" first, when ArrowDown is pressed twice and ArrowUp once, then the second row is active, has `aria-selected="true"`, and `aria-activedescendant` is its id while focus stays in the input. (L2-068)
-- **AC-11** Given the list open on the last row, when ArrowDown is pressed, then the first row becomes active. (L2-068)
-- **AC-12** Given the list open, when Enter is pressed, then `picked` emits the active option, the list closes and the surrounding form is not submitted. (L2-068)
-- **AC-13** Given the list open, when Escape is pressed, then the list closes, the input still holds "Winn" and keeps focus. (L2-068)
-- **AC-14** Given the list open, when Tab is pressed, then the list closes, nothing is picked and focus moves to the next field. (L2-068)
-- **AC-15** Given the list closed with options still set, when ArrowDown is pressed, then the list opens with the first row active. (L2-068)
-- **AC-16** Given the list open, when a row is clicked, then `picked` emits that option and the list closes. (L2-065)
+- **AC-10** Given the list open with "Because of Winn-Dixie" first, when ArrowDown is pressed twice and ArrowUp once, then the second row is active, has `aria-selected="true"`, and `aria-activedescendant` is its id while focus stays in the input. (L2-073)
+- **AC-11** Given the list open on the last row, when ArrowDown is pressed, then the first row becomes active. (L2-073)
+- **AC-12** Given the list open, when Enter is pressed, then `picked` emits the active option, the list closes and the surrounding form is not submitted. (L2-073)
+- **AC-13** Given the list open, when Escape is pressed, then the list closes, the input still holds "Winn" and keeps focus. (L2-073)
+- **AC-14** Given the list open, when Tab is pressed, then the list closes, nothing is picked and focus moves to the next field. (L2-073)
+- **AC-15** Given the list closed with options still set, when ArrowDown is pressed, then the list opens with the first row active. (L2-073)
+- **AC-16** Given the list open, when a row is clicked, then `picked` emits that option and the list closes. (L2-070)
 
 ### Screen readers
 
-- **AC-17** Given the field, when it renders, then the input has `role="combobox"`, `aria-autocomplete="list"`, `autocomplete="off"`, `aria-controls` naming the listbox and `aria-expanded` matching whether rows show. (L2-068)
-- **AC-18** Given three catalogue options, when the list opens, then the listbox is named "Matching books" and the polite status reads "3 matches. Use the up and down arrows to pick one, or keep typing." (L2-068)
-- **AC-19** Given two suggested options, when the list opens, then the status reads "2 suggestions. Use the up and down arrows to pick one, or keep typing." and each row's accessible name ends with "Suggested". (L2-067)
-- **AC-20** Given the list open, when a row is picked, then the status reads "Filled in from the match. Check the chapters." (L2-068)
+- **AC-17** Given the field, when it renders, then the input has `role="combobox"`, `aria-autocomplete="list"`, `autocomplete="off"`, `aria-controls` naming the listbox and `aria-expanded` matching whether rows show. (L2-073)
+- **AC-18** Given three catalogue options, when the list opens, then the listbox is named "Matching books" and the polite status reads "3 matches. Use the up and down arrows to pick one, or keep typing." (L2-073)
+- **AC-19** Given two suggested options, when the list opens, then the status reads "2 suggestions. Use the up and down arrows to pick one, or keep typing." and each row's accessible name ends with "Suggested". (L2-072)
+- **AC-20** Given the list open, when a row is picked, then the status reads "Filled in from the match. Check the chapters." (L2-073)
 - **AC-21** Given Add a book with the list open, when axe runs, then it reports no serious or critical violations. (L2-026)
 
 ### Theming
@@ -283,7 +283,7 @@ The panel scales in over `--duration-fast`; `prefers-reduced-motion: reduce` rem
 
 ### Performance
 
-- **AC-26** Given the list opens, changes from three rows to a note, and closes, when the Author field's position is measured each time, then it does not move. (L2-064)
+- **AC-26** Given the list opens, changes from three rows to a note, and closes, when the Author field's position is measured each time, then it does not move. (L2-069)
 
 ## Implementation notes
 
@@ -295,9 +295,9 @@ The panel scales in over `--duration-fast`; `prefers-reduced-motion: reduce` rem
 
 ## Decisions
 
-- **D-1** *Does the combobox search, or does the page?* The page. The mocks and L2-064 put the debounce, the 3-character threshold and the stale-request rule in the page's hands, and the component stays a pure renderer that any later lookup can reuse.
-- **D-2** *Where does focus go after a pick?* It stays in the input; the owner may move it. L2-065 sends it to Chapters only when the match has no chapter count, which the component cannot know.
+- **D-1** *Does the combobox search, or does the page?* The page. The mocks and L2-069 put the debounce, the 3-character threshold and the stale-request rule in the page's hands, and the component stays a pure renderer that any later lookup can reuse.
+- **D-2** *Where does focus go after a pick?* It stays in the input; the owner may move it. L2-070 sends it to Chapters only when the match has no chapter count, which the component cannot know.
 - **D-3** *Is the searching note a listbox state?* No: while searching there are no options, so `aria-expanded` is false and the note is a plain status. A listbox with no options would be announced as an empty list.
 - **D-4** *Wrap `sh-text-field` or repeat its markup?* Repeat it. The text field exposes no way to set `role`, `aria-expanded`, `aria-controls` or `aria-activedescendant` on its input, and widening its API for one consumer would cost every other consumer a review.
-- **D-5** *How many rows at most?* Five, enforced by the component as well as by the API (L2-064), so a later caller cannot drop a long list on a phone.
+- **D-5** *How many rows at most?* Five, enforced by the component as well as by the API (L2-069), so a later caller cannot drop a long list on a phone.
 - **D-6** *The placeholder cover.* Sage with 📖, because the mocks draw it so and the colour and sticker are not the book's; the book's own colour and sticker come from the form.
