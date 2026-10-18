@@ -309,3 +309,115 @@ test('Given the AI answers with no JSON, with an error status, or the key is mis
   assert.equal(configuredAi({}), null);
   assert.notEqual(configuredAi({ ANTHROPIC_API_KEY: 'k' }), null);
 });
+
+// The catalogue cover, fetched by the API and put through the cover rules.
+
+async function coverImage(width = 900, height = 1200) {
+  const sharp = (await import('sharp')).default;
+  return sharp({ create: { width, height, channels: 3, background: '#f4a6b8' } })
+    .withExif({ IFD0: { Make: 'Pear' } })
+    .jpeg()
+    .toBuffer();
+}
+
+/** Stands in for covers.openlibrary.org: answers each URL with the given status and bytes, and remembers the requests. */
+function fakeCoverHost(answer: (url: string) => { status?: number; body: Buffer | string; type?: string; length?: string }) {
+  const urls: string[] = [];
+  const fetchFn = (async (url: string | URL) => {
+    urls.push(String(url));
+    const { status = 200, body, type = 'image/jpeg', length } = answer(String(url));
+    const headers: Record<string, string> = { 'Content-Type': type };
+    if (length) headers['Content-Length'] = length;
+    return new Response(typeof body === 'string' ? body : new Uint8Array(body), { status, headers });
+  }) as typeof fetch;
+  return { fetchFn, urls };
+}
+
+const fetchCover = (url: string, cookie: string | null, id: string) => fetch(`${url}/api/books/search/covers/${id}`, { headers: cookie ? { Cookie: cookie } : {} });
+
+async function withCoverHost(host: ReturnType<typeof fakeCoverHost>, run: (url: string, cookie: string) => Promise<void>) {
+  await seed(db.pool);
+  const server = createApp(db.pool, { log: () => {}, catalogue: fakeCatalogue().provider, ai: null, coverFetch: host.fetchFn }).listen(0);
+  try {
+    const url = `http://localhost:${(server.address() as { port: number }).port}`;
+    await run(url, await signIn(url, SEED.readerUsername, SEED.readerPassword));
+  } finally {
+    server.close();
+  }
+}
+
+test('Given a catalogue cover id, when the cover is requested, then the API fetches it from the catalogue’s cover host only and serves a 320 × 480 WebP without metadata, private and sandboxed', async () => {
+  const jpeg = await coverImage();
+  const host = fakeCoverHost(() => ({ body: jpeg }));
+  await withCoverHost(host, async (url, cookie) => {
+    const response = await fetchCover(url, cookie, '8739161');
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(host.urls, ['https://covers.openlibrary.org/b/id/8739161-L.jpg']);
+    assert.equal(response.headers.get('content-type'), 'image/webp');
+    assert.equal(response.headers.get('cache-control'), 'private, max-age=3600');
+    assert.equal(response.headers.get('content-security-policy'), "default-src 'none'; sandbox");
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+    const sharp = (await import('sharp')).default;
+    const served = Buffer.from(await response.arrayBuffer());
+    const image = await sharp(served).metadata();
+    assert.deepEqual([image.format, image.width, image.height], ['webp', 320, 480]);
+    assert.equal(image.exif, undefined);
+    assert.ok(!served.includes(Buffer.from('Pear')));
+  });
+});
+
+test('Given no session or an id that is not digits, when a cover is requested, then the API answers 401 or 400 and fetches nothing', async () => {
+  const host = fakeCoverHost(() => ({ body: 'never' }));
+  await withCoverHost(host, async (url, cookie) => {
+    assert.equal((await fetchCover(url, null, '8739161')).status, 401);
+    for (const id of ['abc', '12a', '1234567890123', '..%2Fetc', 'http%3A%2F%2Fevil.example']) {
+      const response = await fetchCover(url, cookie, id);
+      assert.equal(response.status, 400, id);
+      assert.equal(((await response.json()) as { type: string }).type, 'validation');
+    }
+    assert.deepEqual(host.urls, []);
+  });
+});
+
+test('Given the cover host has no such cover or cannot be reached, then the API answers 404 not-found and the search still lists the match', async () => {
+  const host = fakeCoverHost(() => ({ status: 404, body: 'gone' }));
+  await withCoverHost(host, async (url, cookie) => {
+    const missing = await fetchCover(url, cookie, '8739161');
+    assert.deepEqual([missing.status, ((await missing.json()) as { type: string }).type], [404, 'not-found']);
+    const { matches } = (await (await search(url, cookie, 'Winn')).json()) as { matches: BookMatch[] };
+    assert.equal(matches[0]!.coverId, '8739161');
+  });
+  const down = fakeCoverHost(() => {
+    throw new Error('connection refused');
+  });
+  await withCoverHost(down, async (url, cookie) => {
+    assert.equal((await fetchCover(url, cookie, '1')).status, 404);
+  });
+});
+
+test('Given the cover host serves something that is not a JPEG, PNG or WebP, or more than 5 MB, then the API answers 404 photo-type without decoding it', async () => {
+  const svg = fakeCoverHost(() => ({ body: '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', type: 'image/svg+xml' }));
+  await withCoverHost(svg, async (url, cookie) => {
+    const response = await fetchCover(url, cookie, '2');
+    assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [404, 'photo-type']);
+  });
+  const declared = fakeCoverHost(() => ({ body: 'x', length: String(5 * 1024 * 1024 + 1) }));
+  await withCoverHost(declared, async (url, cookie) => {
+    const response = await fetchCover(url, cookie, '3');
+    assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [404, 'photo-type']);
+  });
+  const oversized = fakeCoverHost(() => ({ body: Buffer.alloc(5 * 1024 * 1024 + 1, 1) }));
+  await withCoverHost(oversized, async (url, cookie) => {
+    const response = await fetchCover(url, cookie, '4');
+    assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [404, 'photo-type']);
+  });
+  const huge = fakeCoverHost(() => ({ body: Buffer.alloc(0) }));
+  const sharp = (await import('sharp')).default;
+  const bomb = await sharp({ create: { width: 7000, height: 6000, channels: 3, background: '#fff' } }).png().toBuffer();
+  huge.fetchFn = fakeCoverHost(() => ({ body: bomb, type: 'image/png' })).fetchFn;
+  await withCoverHost(huge, async (url, cookie) => {
+    const response = await fetchCover(url, cookie, '5');
+    assert.deepEqual([response.status, ((await response.json()) as { type: string }).type], [404, 'photo-type']);
+  });
+});

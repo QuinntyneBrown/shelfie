@@ -18,6 +18,8 @@ export interface Providers {
   catalogue: Provider;
   /** Null when no AI key is configured. */
   ai: Provider | null;
+  /** Reaches the catalogue's cover host; tests pass a fake. */
+  coverFetch?: typeof fetch;
 }
 
 const MAX_MATCHES = 5;
