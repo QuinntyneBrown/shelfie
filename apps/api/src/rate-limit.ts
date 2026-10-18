@@ -1,13 +1,13 @@
 import type { NextFunction, Request, Response } from 'express';
 import { get, run, type Db } from './db.ts';
+import type { RequestSession } from './session.ts';
 
 const WINDOW_MINUTES = 10;
-const LIMIT = 10;
 
-/** At most ten password sign-ins from one source in ten minutes; attempts are kept in the database. */
-export function passwordSignInLimiter(db: Db) {
+/** At most `limit` requests per key in ten minutes; requests are kept in the sign_in_attempt table. */
+function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response) => string) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const source = req.ip ?? 'unknown';
+    const source = keyOf(req, res);
     const now = Date.now();
     const since = new Date(now - WINDOW_MINUTES * 60 * 1000).toISOString();
     await run(db, 'DELETE FROM sign_in_attempt WHERE at < $1', [since]);
@@ -16,7 +16,7 @@ export function passwordSignInLimiter(db: Db) {
       'SELECT COUNT(*) AS attempts, MIN(at) AS oldest FROM sign_in_attempt WHERE source = $1',
       [source],
     ))!;
-    if (attempts >= LIMIT) {
+    if (attempts >= limit) {
       const retryAfter = Math.max(1, Math.ceil((Date.parse(oldest!) + WINDOW_MINUTES * 60 * 1000 - now) / 1000));
       res.set('Retry-After', String(retryAfter));
       return res.status(429).json({ type: 'too-many-attempts' });
@@ -25,3 +25,10 @@ export function passwordSignInLimiter(db: Db) {
     next();
   };
 }
+
+/** At most ten password sign-ins from one source in ten minutes. */
+export const passwordSignInLimiter = (db: Db) => rateLimiter(db, 10, (req) => req.ip ?? 'unknown');
+
+/** At most five review-assistant requests per parent in ten minutes. Use after `requireSession`. */
+export const assistLimiter = (db: Db) =>
+  rateLimiter(db, 5, (_req, res) => `assist:${(res.locals['session'] as RequestSession).profileId}`);

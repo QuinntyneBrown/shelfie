@@ -8,6 +8,7 @@ import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
 import { giveReward } from './rewards.service.ts';
 import { getChapter } from './chapters.service.ts';
 import { askAssistant, type ReviewAssistant } from './review-assistant.ts';
+import { assistLimiter } from './rate-limit.ts';
 
 export const giveRewardSchema = z.object({
   text: z.string().trim().min(1).max(100),
@@ -51,7 +52,7 @@ export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
   });
 
   // Asked for by the parent only; the advice is returned and never stored (L2-049, L2-053).
-  router.post('/chapter-logs/:id/assist', requireSession(db), requireRole('parent'), async (req, res) => {
+  router.post('/chapter-logs/:id/assist', requireSession(db), requireRole('parent'), assistLimiter(db), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     try {
       const chapter = await getChapter(db, householdId, String(req.params['id']));
