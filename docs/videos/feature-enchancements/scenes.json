@@ -1,0 +1,9 @@
+[
+ {"id":"intro","title":"Meet the new Shelfie","text":"Two new touches just landed in Shelfie. Books can have real cover pictures, and a review assistant helps the grown up give kind, useful feedback."},
+ {"id":"add","title":"Add a book with a picture","text":"Nia adds The Hobbit. She types the title, picks a colour and a sticker, then chooses a picture. The preview shows her cover straight away."},
+ {"id":"shelf","title":"On the shelf","text":"The book goes on her shelf with its picture, right next to the others."},
+ {"id":"manage","title":"Change or remove a cover","text":"A grown up can change a cover any time from Manage book. The new picture appears as soon as it uploads."},
+ {"id":"assist","title":"Help me review","text":"Over in Review, Dad opens a chapter and presses Help me review. The assistant flags short answers that deserve a conversation, with a reason for each."},
+ {"id":"draft","title":"A kind note, ready to edit","text":"It also drafts an encouraging note. Dad can use it as it is, or make it his own, pick a sticker, and send it to Nia."},
+ {"id":"outro","title":"Always in the parent's hands","text":"Nothing is sent until Dad says so, and if the assistant is ever unavailable, reviewing works just as before."}
+]

@@ -1,0 +1,6 @@
+[
+ {"id":"intro","title":"Questions without the typing","text":"Writing good questions for every book takes time. Now Shelfie can suggest them. On Manage book, Dad presses Suggest questions."},
+ {"id":"ideas","title":"Ideas, ready to pick","text":"A short list of ideas for this book appears. Nothing is added until Dad ticks it, and every idea can be reworded first."},
+ {"id":"add","title":"Tick, reword, add","text":"He ticks two, changes the wording of one, and adds them. They join the book's questions, and Nia answers them from her next chapter."},
+ {"id":"unavailable","title":"If the assistant is away","text":"If the assistant is ever unavailable, Dad is told plainly, and he can still write his own questions as before."}
+]
