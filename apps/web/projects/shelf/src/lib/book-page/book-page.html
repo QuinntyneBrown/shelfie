@@ -17,7 +17,7 @@
     </nav>
     <div class="page-header">
       <div class="book-card">
-        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" size="lg" />
+        <sh-cover [color]="book.coverColor" [sticker]="book.sticker" [image]="book.coverImage" size="lg" />
         <div class="book-card__body">
           <h1>{{ book.title }}</h1>
           @if (book.author) {

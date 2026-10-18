@@ -214,6 +214,10 @@ export class ManageBookPage {
     return this.page.getByRole('dialog', { name: /^Remove/ });
   }
 
+  removeDialogCoverPicture() {
+    return this.removeDialog().locator('.cover img');
+  }
+
   keepButton() {
     return this.removeDialog().getByRole('button', { name: 'Keep the book' });
   }

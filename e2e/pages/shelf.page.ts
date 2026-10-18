@@ -64,6 +64,10 @@ export class ShelfPage {
     return this.group('Finished').getByRole('listitem').filter({ hasText: title });
   }
 
+  finishedCoverPicture(title: string) {
+    return this.finishedBook(title).locator('.cover img');
+  }
+
   emptyTitle() {
     return this.page.getByRole('heading', { name: 'Your shelf is empty' });
   }
