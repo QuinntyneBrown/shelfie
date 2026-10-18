@@ -46,7 +46,8 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [List](components/list.html) | Data display | title + meta, with cover/avatar | — | review, books, manage-book |
 | [Table](components/table.html) | Data display | in a card (flush) | row hover | manage-book, delete-book |
 | [Activity feed](components/feed.html) | Data display | activity | — | review, give-reward |
-| [Avatar](components/avatar.html) | Data display | rose, sky, sun, mint, lilac, sage, peach; button · sm/md/lg | hover, focus (button) | shelf, review, sign-in, account-menu |
+| [Avatar](components/avatar.html) | Data display | rose, sky, sun, mint, lilac, sage, peach; photo; button · sm/md/lg/xl | hover, focus (button); photo loading, broken, uploading | shelf, review, sign-in, account-menu, settings, profile-photo |
+| [Photo picker](components/photo-picker.html) | Input | no photo, with photo | focus, uploading, too large, wrong type | profile-photo |
 | [Logo mark](components/logo-mark.html) | Identity | 64px tile | default | sign-in, sign-up, accept-invite, forgot-password, reset-password |
 | [Badge](components/badge.html) | Data display | neutral, info, success, warning, count | — | books, manage-book, review, shelf |
 | [Chip](components/chip.html) | Data display | toggle | default, hover, focus, pressed, disabled | log-chapter, give-reward |
@@ -130,6 +131,12 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Changelog
+
+### 2026-10-18: profile photos
+
+- **Added:** [Photo picker](components/photo-picker.html) (`.photo-picker`), the photo variant of [Avatar](components/avatar.html) (`img.avatar__img` over the initial, loading, broken and uploading states) and the extra-large avatar size (`.avatar--xl`, already tokenised as `--size-avatar-xl`). Sample photos in `assets/photos/`.
+- **Changed:** Avatar overview, accessibility, content, do/don't, tokens, code and sources.
+- **Tokens:** none added or changed.
 
 ### 2026-10-18: accounts and profiles
 
