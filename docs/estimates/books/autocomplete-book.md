@@ -18,7 +18,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | API tests (session, limit, validation, providers, fallback, failure, cover rules) and Playwright acceptance tests (typing, keyboard and ARIA, pick and save with cover, suggested, empty, failed, manual add) | 9 |
 | **Total** | **28** |
 
-## Cover photo picker (L1-021)
+## Cover photo picker (L1-022)
 
 | Work item | Hours |
 |-----------|------:|

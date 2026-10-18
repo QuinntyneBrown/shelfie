@@ -1,4 +1,4 @@
-// Traces to: L2-074, L2-075, L2-076, L2-077, L2-079, L2-080, L2-081
+// Traces to: L2-074, L2-075, L2-076, L2-077, L2-079, L2-080, L2-090
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from './app.ts';
@@ -422,7 +422,7 @@ test('Given the cover host serves something that is not a JPEG, PNG or WebP, or 
   });
 });
 
-// L2-081: the other covers of a picked book
+// L2-090: the other covers of a picked book
 
 const coversOf = (url: string, cookie: string | null, work: string | null) =>
   fetch(`${url}/api/books/search/covers${work === null ? '' : `?work=${encodeURIComponent(work)}`}`, { headers: cookie ? { Cookie: cookie } : {} });
