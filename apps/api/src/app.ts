@@ -11,6 +11,7 @@ import { questionsRouter } from './questions.router.ts';
 import { invitesRouter } from './invites.router.ts';
 import { readersRouter } from './readers.router.ts';
 import { reviewRouter } from './review.router.ts';
+import { photosRouter } from './photos.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 
@@ -47,6 +48,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail } = {}) {
   app.use('/api/readers', readersRouter(db));
   app.use('/api/invites', invitesRouter(db, options.mail));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
+  app.use('/api', photosRouter(db));
   app.use(problemDetailsHandler);
   return app;
 }
