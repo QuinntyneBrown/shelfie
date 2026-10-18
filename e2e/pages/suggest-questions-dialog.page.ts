@@ -53,4 +53,47 @@ export class SuggestQuestionsDialog {
   async repairAdding() {
     await this.page.unroute('**/api/books/*/questions');
   }
+
+  /** The live status line, banner or empty state that says what the dialog is doing. */
+  status() {
+    return this.dialog().getByRole('status');
+  }
+
+  emptyState() {
+    return this.dialog().getByRole('heading', { name: 'No new ideas this time' });
+  }
+
+  async askAgain() {
+    await this.dialog().getByRole('button', { name: 'Ask again' }).first().click();
+  }
+
+  tryAgainButton() {
+    return this.failure().getByRole('button', { name: 'Try again' });
+  }
+
+  async tryAgain() {
+    await this.tryAgainButton().click();
+  }
+
+  async close() {
+    await this.dialog().getByRole('button', { name: /^(Close|Cancel)$/ }).click();
+  }
+
+  /** Holds the request for suggestions until the returned function is called. */
+  async holdSuggestions() {
+    let release!: () => void;
+    const released = new Promise<void>((resolve) => (release = resolve));
+    await this.page.route('**/api/books/*/question-suggestions', async (route) => {
+      await released;
+      await route.continue();
+    });
+    return release;
+  }
+
+  /** Answers as a server without an AI key does. */
+  async switchOffSuggestions() {
+    await this.page.route('**/api/books/*/question-suggestions', (route) =>
+      route.fulfill({ status: 503, json: { type: 'suggestions-unavailable' } }),
+    );
+  }
 }

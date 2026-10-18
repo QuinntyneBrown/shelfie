@@ -12,7 +12,7 @@ import {
   untracked,
   viewChildren,
 } from '@angular/core';
-import { Banner, Dialog, Suggestion } from 'components';
+import { Banner, Dialog, EmptyState, Skeleton, Suggestion } from 'components';
 import { ApiError, ToastService } from 'core';
 import { BooksApi, CustomQuestion } from '../books-api';
 
@@ -22,7 +22,10 @@ interface Row {
   error: string | null;
 }
 
-const TOO_SHORT_OR_LONG = 'Finish the question — at least a few words, ending in a question mark helps.';
+type State = 'busy' | 'ready' | 'empty' | 'failed' | 'unavailable';
+
+const TOO_SHORT_OR_LONG =
+  'Finish the question — at least a few words, ending in a question mark helps.';
 
 /**
  * Asks for suggested questions each time it opens; the parent ticks and rewords the ones to keep, and each is added
@@ -30,7 +33,7 @@ const TOO_SHORT_OR_LONG = 'Finish the question — at least a few words, ending 
  */
 @Component({
   selector: 'sh-suggest-questions-dialog',
-  imports: [Banner, Dialog, Suggestion],
+  imports: [Banner, Dialog, EmptyState, Skeleton, Suggestion],
   templateUrl: './suggest-questions-dialog.html',
   styleUrl: './suggest-questions-dialog.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,12 +51,16 @@ export class SuggestQuestionsDialog {
   readonly added = output<CustomQuestion>();
   readonly closed = output<void>();
 
+  protected readonly state = signal<State>('busy');
+  protected readonly rateLimited = signal(false);
   protected readonly chapter = signal(1);
   protected readonly rows = signal<Row[]>([]);
   protected readonly saving = signal(false);
   protected readonly saveFailed = signal(false);
   protected readonly chosenCount = computed(() => this.rows().filter((r) => r.chosen).length);
   private readonly suggestions = viewChildren(Suggestion);
+  /** Only the latest ask may fill the list. */
+  private asks = 0;
 
   constructor() {
     effect(() => {
@@ -62,11 +69,24 @@ export class SuggestQuestionsDialog {
   }
 
   protected async ask() {
+    const ask = ++this.asks;
+    this.state.set('busy');
     this.rows.set([]);
     this.saveFailed.set(false);
-    const { chapter, suggestions } = await this.api.suggestQuestions(this.bookId());
-    this.chapter.set(chapter);
-    this.rows.set(suggestions.map((text) => ({ text, chosen: false, error: null })));
+    try {
+      const { chapter, suggestions } = await this.api.suggestQuestions(this.bookId());
+      if (ask !== this.asks) return;
+      this.chapter.set(chapter);
+      this.rows.set(suggestions.map((text) => ({ text, chosen: false, error: null })));
+      this.state.set(suggestions.length ? 'ready' : 'empty');
+    } catch (e) {
+      if (ask !== this.asks) return;
+      const status = e instanceof ApiError ? e.status : 0;
+      if (status === 503) return this.state.set('unavailable');
+      if (status > 0 && status < 500 && status !== 429) throw e;
+      this.rateLimited.set(status === 429);
+      this.state.set('failed');
+    }
   }
 
   protected update(index: number, change: Partial<Row>) {
@@ -78,7 +98,10 @@ export class SuggestQuestionsDialog {
     this.rows.update((rows) =>
       rows.map((row) => {
         const length = row.text.trim().length;
-        return { ...row, error: row.chosen && (length < 5 || length > 200) ? TOO_SHORT_OR_LONG : null };
+        return {
+          ...row,
+          error: row.chosen && (length < 5 || length > 200) ? TOO_SHORT_OR_LONG : null,
+        };
       }),
     );
     const invalid = this.rows().findIndex((row) => row.error);

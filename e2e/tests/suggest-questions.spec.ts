@@ -3,7 +3,7 @@ import { test, expect } from '../support/test';
 import { SAME_SITE } from '../support/same-site';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { questionsAnswered } from '../support/database';
-import { IDEAS } from '../support/suggestions';
+import { IDEAS, breakSuggestions, suggestIdeas } from '../support/suggestions';
 import { BooksPage } from '../pages/books.page';
 import { LogChapterPage } from '../pages/log-chapter.page';
 import { ManageBookPage } from '../pages/manage-book.page';
@@ -103,4 +103,81 @@ test('Given adding fails part-way, then the saved question stays, the rest stay 
   await expect(dialog.dialog()).toBeHidden();
   await expect(manage.toast('1 question added')).toBeVisible();
   await expect(manage.questions()).toHaveCount(5);
+});
+
+test('Given the AI is still thinking, then the dialog says so and nothing can be added until the ideas arrive', async ({ page }) => {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage(LION);
+  const dialog = new SuggestQuestionsDialog(page);
+  const release = await dialog.holdSuggestions();
+  await new ManageBookPage(page).suggestQuestions();
+
+  await expect(dialog.status()).toHaveText('Thinking up questions…');
+  await expect(dialog.addButton()).toBeDisabled();
+
+  release();
+  await expect(dialog.suggestions()).toHaveCount(5);
+});
+
+test('Given every idea is already asked or unusable, then the dialog says there are no new ideas, and Ask again brings new ones', async ({ page }) => {
+  suggestIdeas(['Why?', 'What happened in this chapter?']);
+  const { dialog } = await suggestForLion(page);
+
+  await expect(dialog.emptyState()).toBeVisible();
+  await expect(dialog.suggestions()).toHaveCount(0);
+
+  suggestIdeas();
+  await dialog.askAgain();
+  await expect(dialog.suggestions()).toHaveCount(5);
+});
+
+test('Given the AI fails, then the dialog offers Try again, and Add a question still works', async ({ page }) => {
+  breakSuggestions();
+  const { manage, dialog } = await suggestForLion(page);
+
+  await expect(dialog.failure()).toContainText('Suggestions didn’t come through');
+
+  suggestIdeas();
+  await dialog.tryAgain();
+  await expect(dialog.suggestions()).toHaveCount(5);
+
+  breakSuggestions();
+  await dialog.askAgain();
+  await expect(dialog.failure()).toBeVisible();
+  await dialog.close();
+  await manage.addQuestion('Where did the children go in this chapter?');
+  await expect(manage.questions()).toHaveCount(4);
+});
+
+test('Given Dad has asked 5 times in 10 minutes, when he asks again, then the dialog says to wait a few minutes', async ({ page }) => {
+  const { dialog } = await suggestForLion(page);
+  for (let asked = 1; asked < 5; asked++) {
+    await expect(dialog.suggestions()).toHaveCount(5);
+    await dialog.askAgain();
+  }
+  await expect(dialog.suggestions()).toHaveCount(5);
+
+  await dialog.askAgain();
+
+  await expect(dialog.failure()).toContainText('You’ve asked for a lot of ideas just now. Try again in a few minutes.');
+});
+
+test('Given suggestions are not switched on, then the dialog says so without a retry, and Add a question still works', async ({ page }) => {
+  await signInAsDad(page);
+  const books = new BooksPage(page);
+  await books.open();
+  await books.manage(LION);
+  const manage = new ManageBookPage(page);
+  const dialog = new SuggestQuestionsDialog(page);
+  await dialog.switchOffSuggestions();
+  await manage.suggestQuestions();
+
+  await expect(dialog.status()).toContainText('Suggestions aren’t switched on');
+  await expect(dialog.tryAgainButton()).toHaveCount(0);
+
+  await dialog.close();
+  await manage.addQuestion('Where did the children go in this chapter?');
+  await expect(manage.questions()).toHaveCount(4);
 });
