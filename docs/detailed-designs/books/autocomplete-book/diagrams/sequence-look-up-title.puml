@@ -1,0 +1,79 @@
+@startuml
+title UML sequence behaviour — Look up a title
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader or Parent" as user
+box "Frontend — Shelfie web (shelf and components libraries)" #E0F2FE
+  participant "sh-combobox" as combobox
+  participant "AddBookPage" as page
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "book-search.router.ts\n+ requireSession\n+ lookupLimiter\n+ q schema" as router
+end box
+box "Backend — Shelfie API (services and providers)" #ECFDF3
+  participant "book-search.service.ts" as service
+  participant "catalogue.ts" as catalogue
+  participant "ai.ts" as ai
+end box
+box "Backend — outside Shelfie" #FFF4E5
+  participant "Open Library" as openLibrary
+  participant "Claude API" as claude
+end box
+
+user -> combobox : Type "Win" (3 characters)
+combobox -> page : valueChange
+page -> page : Wait 300 ms after the last keystroke;\nabort the previous lookup (L2-074)
+page -> combobox : status = searching ("Looking that up…")
+page -> client : searchBooks("Win", signal)
+client -> router : GET /api/books/search?q=Win
+router -> router : Require session (401);\nlookupLimiter 60 per 10 min (429) (L2-080);\nq 3–120 characters (400)
+router -> service : searchBooks(providers, "Win")
+service -> catalogue : openLibrary("Win", 5 s timeout)
+catalogue -> openLibrary : GET search.json?title=Win&limit=5 (title only — L2-080)
+alt catalogue answers with matches
+  openLibrary --> catalogue : docs
+  catalogue --> service : BookMatch[] (chapterCount null — L2-074)
+  service -> service : matchSchema: trim, bound, at most 5
+  service --> router : matches
+  router --> client : 200 { matches }
+  client --> page : matches
+  page -> combobox : options (cover URL = /api/books/search/covers/:id)
+  combobox --> user : List open, first row active;\n"3 matches. Use the up and down arrows…" (L2-078)
+else catalogue empty, failed or timed out; AI configured
+  service -> ai : claudeSuggestions("Win", 10 s timeout)
+  ai -> claude : POST v1/messages (title only — L2-080)
+  claude --> ai : JSON text
+  ai --> service : BookMatch[] parsed as data
+  service -> service : matchSchema; at most 3; suggested = true (L2-077)
+  service --> router : matches
+  router --> client : 200 { matches }
+  client --> page : matches
+  page -> combobox : options with suggested rows and the "guesses" note
+  combobox --> user : Rows badged "Suggested" (L2-077)
+else catalogue empty; AI empty or not configured
+  service --> router : []
+  router --> client : 200 { matches: [] }
+  client --> page : no matches
+  page -> combobox : status = empty
+  combobox --> user : "No matches. Keep typing, or fill the rest in yourself." (L2-074)
+else catalogue failed; AI failed or not configured
+  service --> router : throw Problem(503, 'lookup-unavailable')
+  router --> client : 503 lookup-unavailable
+  client --> page : ApiError
+  page -> combobox : status = failed
+  combobox --> user : "Shelfie couldn’t look that up. You can still fill it in yourself." (L2-079)
+end
+@enduml

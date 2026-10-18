@@ -164,6 +164,12 @@
       "route": "/books/new",
       "states": [
         "default",
+        "suggestions",
+        "suggestions-ai",
+        "searching",
+        "no-matches",
+        "lookup-failed",
+        "picked",
         "invalid",
         "submitting",
         "error",
@@ -180,7 +186,14 @@
       "requirements": [
         "L2-009",
         "L2-046",
-        "L2-048"
+        "L2-048",
+        "L2-074",
+        "L2-075",
+        "L2-076",
+        "L2-077",
+        "L2-078",
+        "L2-079",
+        "L2-080"
       ]
     },
     {

@@ -27,6 +27,18 @@ export interface BookResponse {
   chapters: ChapterSummary[];
 }
 
+/** A book the lookup offers for the typed title; `suggested` marks a guess from the AI helper. */
+export interface BookMatch {
+  title: string;
+  author: string | null;
+  chapterCount: number | null;
+  coverId: string | null;
+  suggested: boolean;
+}
+
+/** Where a catalogue cover is loaded from: the API fetches and re-encodes it; the browser never calls the catalogue. */
+export const catalogueCoverUrl = (coverId: string) => `/api/books/search/covers/${coverId}`;
+
 export interface NewBook {
   title: string;
   author: string;
@@ -94,6 +106,19 @@ export class ShelfApi {
 
   addBook(book: NewBook) {
     return this.api.post<{ id: string }>('/books', book);
+  }
+
+  /** Looks a typed title up; aborting the signal drops a lookup that is no longer wanted. */
+  searchBooks(title: string, signal: AbortSignal) {
+    return this.api.get<{ matches: BookMatch[] }>(`/books/search?q=${encodeURIComponent(title)}`, {
+      signal,
+    });
+  }
+
+  /** A catalogue cover as a file, so it travels the same way as a picture chosen from the device. */
+  async catalogueCover(coverId: string): Promise<File> {
+    const blob = await this.api.blob(`/books/search/covers/${coverId}`);
+    return new File([blob], 'cover.webp', { type: 'image/webp' });
   }
 
   /** Uploads a book's cover picture and returns its URL. */

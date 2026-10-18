@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Autocomplete a book
+
+Person(reader, "Reader", "Types a title on Add a book and picks a match")
+Person(grownUp, "Parent", "Types a title on Add a book and picks a match")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(openLibrary, "Open Library", "Public book catalogue and cover host; no key")
+System_Ext(claude, "Claude API", "AI helper asked only when the catalogue has nothing")
+
+Rel(reader, shelfie, "Types a title, picks a match, adds the book", "HTTPS")
+Rel(grownUp, shelfie, "Types a title, picks a match, adds the book", "HTTPS")
+Rel(shelfie, openLibrary, "Searches by title; fetches a cover", "HTTPS, title only")
+Rel(shelfie, claude, "Asks for up to 3 likely matches", "HTTPS, title only")
+@enduml

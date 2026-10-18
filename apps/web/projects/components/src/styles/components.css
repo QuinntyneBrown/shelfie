@@ -546,3 +546,19 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .suggestion .field { flex: 1; min-width: 0; }
 .suggestion .textarea { min-height: calc(var(--control-height-md) * 1.75); }
 .suggestions { display: flex; flex-direction: column; gap: var(--space-3); list-style: none; margin: 0; padding: 0; }
+
+
+/* Combobox: a text field whose matches drop down as a listbox (APG combobox with list autocomplete). */
+.combobox { position: relative; }
+.combobox__panel { position: absolute; left: 0; right: 0; top: 100%; z-index: var(--z-dropdown); margin: var(--space-1) 0 0; padding: var(--space-1); background: var(--color-bg-surface-raised); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-3); animation: scale-in var(--duration-fast) var(--ease-enter); transform-origin: top; }
+.combobox__list { list-style: none; margin: 0; padding: 0; }
+.combobox__option { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-height: var(--target-comfortable); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); cursor: pointer; }
+.combobox__option .badge { margin-left: auto; }
+.combobox__option:hover, .combobox__option[data-state="hover"] { background: var(--color-bg-subtle); }
+.combobox__option[aria-selected="true"] { background: var(--color-accent-subtle); outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: calc(-1 * var(--focus-ring-width)); }
+.combobox__text { flex: 1 1 12rem; min-width: 0; display: flex; flex-direction: column; }
+.combobox__title { font: var(--text-label); color: var(--color-fg-default); overflow-wrap: anywhere; }
+.combobox__detail { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.combobox__note { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3); font: var(--text-body-sm); color: var(--color-fg-muted); }
+.combobox__note[aria-busy="true"]::before { content: ""; flex: none; width: 1em; height: 1em; border: var(--border-width-thick) solid currentColor; border-right-color: transparent; border-radius: var(--radius-full); animation: spin calc(var(--duration-loop) / 2) linear infinite; }
+@media (prefers-reduced-motion: reduce) { .combobox__panel { animation: none; } }

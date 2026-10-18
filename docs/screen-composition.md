@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (29 screens, 155 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (29 screens, 161 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
 - Layout classes from the design-system stylesheet (`container`, `stack`, `cluster`, `grid`, `span-*`, `page-header`, `card`, `section`, `visually-hidden`, `text-*`, `icon`) are global CSS, not components. They are used freely and not listed below.
@@ -13,6 +13,7 @@ Which `components` library parts build each page, dialog, notification and shell
 |---|---|---|---|
 | `sh-button` | `Button` | no | sign-in/sign-in-with-password |
 | `sh-text-field` | `TextField` | no | sign-in/sign-in-with-password |
+| `sh-combobox` | `Combobox` | no | books/autocomplete-book |
 | `sh-textarea` | `Textarea` | no | reading-log/log-chapter |
 | `sh-question-field` | `QuestionField` | no | reading-log/log-chapter |
 | `sh-segmented` | `Segmented` | no | reading-log/log-chapter |
@@ -113,9 +114,9 @@ These are local UI that more than one screen needs. Build once in the feature li
 - **Library:** `sh-cover` lg; `sh-progress` lg; `sh-button` primary "I read Chapter N"; `sh-chapter-row` per chapter (done, next, future); `sh-reward-card` (finished, or "Dad is picking your reward"); `sh-skeleton`; `sh-error-state`.
 - **Local:** breadcrumb; book header; finished hero with large sticker (finished); accordion "Earlier chapters" collapsing a long list (edge). `picture` is the same page with a cover picture on the `sh-cover`; no new UI.
 
-#### Add a book — `/books/new` (`pages/add-book`: default, invalid, submitting, error, picture, wrong-file, too-large)
-- **Library:** `sh-text-field` ×3 (title, author optional, chapter count `number` with help); `sh-color-picker` (7 cover colours); `sh-sticker-picker` (emoji grid); `sh-cover-picker` ("Cover picture (optional)": Add a picture / Change picture, Remove picture, inline type and size errors); `sh-cover` xl (live preview, with the chosen picture); `sh-button` primary lg + ghost "Cancel"; `sh-banner` `danger` (invalid summary; error with "Try again").
-- **Local:** breadcrumb; preview panel layout; form actions bar. A picture that fails to upload after the book is saved → `ToastService` `warning` on the shelf; no new UI.
+#### Add a book — `/books/new` (`pages/add-book`: default, suggestions, suggestions-ai, searching, no-matches, lookup-failed, picked, invalid, submitting, error, picture, wrong-file, too-large)
+- **Library:** `sh-combobox` (title: the text field with its dropped list of matches, each row an `sh-cover` sm with the catalogue cover or the 📖 placeholder, title and author, a `Suggested` badge on AI rows; its own searching, no-matches and lookup-failed notes); `sh-text-field` ×2 (author optional, chapter count `number` with help); `sh-color-picker` (7 cover colours); `sh-sticker-picker` (emoji grid); `sh-cover-picker` ("Cover picture (optional)": Add a picture / Change picture, Remove picture, inline type and size errors); `sh-cover` xl (live preview, with the chosen or fetched picture); `sh-button` primary lg + ghost "Cancel"; `sh-banner` `danger` (invalid summary; error with "Try again").
+- **Local:** breadcrumb; preview panel layout; form actions bar; the pick handler that fills author, chapters and picture from the chosen match. A picture that fails to upload after the book is saved → `ToastService` `warning` on the shelf; no new UI.
 
 #### Log a chapter — `/books/:id/chapters/:n/log` (`pages/log-chapter`: default, loading, error, invalid, submitting, success, finished)
 - **Library:** `sh-cover`; `sh-segmented` (Today / Yesterday / Another day); `sh-question-field` per question; `sh-button` primary lg "I'm done!" + ghost "Not yet"; `sh-banner` `danger` (invalid summary); `sh-skeleton`; `sh-error-state`; `sh-celebration` (`variant: 'chapter'` on success with `sh-progress` lg; `variant: 'book'` on finished with `sh-cover` xl).

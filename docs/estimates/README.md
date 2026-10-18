@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 91 days
+- Overall effort: 95 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |
@@ -12,7 +12,7 @@
 | [review](review.md) | 8 days | 98% |
 | [admin-api](admin-api.md) | 6 days | 100% |
 | [admin-cli](admin-cli.md) | 7 days | 100% |
-| [books](books.md) | 16 days | 100% |
+| [books](books.md) | 20 days | 100% |
 | [reading-log](reading-log.md) | 6 days | 100% |
 
 ## Roadmap

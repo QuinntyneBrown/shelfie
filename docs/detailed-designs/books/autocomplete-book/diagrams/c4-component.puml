@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Autocomplete a book
+
+Container(web, "Shelfie web", "Angular", "AddBookPage debounces, aborts stale lookups and fills the form; sh-combobox renders the list")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "book-search.router.ts", "Express Router", "GET /search (requireSession, lookupLimiter, q schema); GET /search/covers/:coverId (requireSession, digits only)")
+  Component(limiter, "rate-limit.ts", "Middleware", "rateLimiter over sign_in_attempt: 60 lookups per source in 10 minutes")
+  Component(service, "book-search.service.ts", "Service", "searchBooks: catalogue first (5 s), AI fallback (10 s), matchSchema bounds every row, 503 lookup-unavailable")
+  Component(catalogue, "catalogue.ts", "Provider", "openLibrary(title): search.json; fetchCatalogueCover(id): fixed host, 5 MB, 5 s")
+  Component(ai, "ai.ts", "Provider", "claudeSuggestions(title): v1/messages, JSON answer parsed as data")
+  Component(covers, "covers.service.ts", "Service (existing)", "processCover: JPEG, PNG or WebP, 40 MP, 320 × 480 WebP without metadata")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "sign_in_attempt")
+}
+System_Ext(openLibrary, "Open Library", "")
+System_Ext(claude, "Claude API", "")
+
+Rel(web, router, "GET /api/books/search?q=; GET /api/books/search/covers/:id", "JSON/HTTPS")
+Rel(router, limiter, "Applies")
+Rel(limiter, db, "Counts attempts", "SQL")
+Rel(router, service, "searchBooks(providers, q)")
+Rel(service, catalogue, "openLibrary(title, signal)")
+Rel(service, ai, "claudeSuggestions(title, signal) when the catalogue has nothing")
+Rel(router, catalogue, "fetchCatalogueCover(id, signal)")
+Rel(catalogue, covers, "processCover(bytes)")
+Rel(catalogue, openLibrary, "Searches; fetches a cover", "HTTPS")
+Rel(ai, claude, "Asks for suggestions", "HTTPS")
+@enduml

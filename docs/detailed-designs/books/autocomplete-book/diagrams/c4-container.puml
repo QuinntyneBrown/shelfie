@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Autocomplete a book
+
+Person(person, "Reader or Parent", "Types a title on Add a book")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "AddBookPage with sh-combobox; fills author, chapters and picture from the pick")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "GET /api/books/search and /search/covers/:id; POST /api/books unchanged")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "sign_in_attempt (lookup limit); book and book_cover when the book is added")
+}
+System_Ext(openLibrary, "Open Library", "search.json and covers.openlibrary.org")
+System_Ext(claude, "Claude API", "v1/messages")
+
+Rel(person, web, "Types, picks, adds", "HTTPS")
+Rel(web, api, "GET /api/books/search?q=, GET /api/books/search/covers/:id, then POST /api/books and PUT /api/books/:id/cover", "JSON/HTTPS")
+Rel(api, db, "Counts lookups; inserts the book and its picture", "SQL")
+Rel(api, openLibrary, "Searches the title; fetches the cover", "HTTPS")
+Rel(api, claude, "Asks for suggestions when the catalogue has nothing", "HTTPS")
+@enduml

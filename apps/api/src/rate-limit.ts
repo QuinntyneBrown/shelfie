@@ -36,3 +36,6 @@ export const assistLimiter = (db: Db) =>
 /** At most five asks for suggested questions per household in ten minutes, since each one costs money. Use after `requireSession`. */
 export const suggestionLimiter = (db: Db) =>
   rateLimiter(db, 5, (_req, res) => `suggest:${(res.locals['session'] as RequestSession).householdId}`);
+
+/** At most sixty title lookups from one source in ten minutes: a typist pauses a few times per book, not sixty. */
+export const lookupLimiter = (db: Db) => rateLimiter(db, 60, (req) => `lookup:${req.ip ?? 'unknown'}`);

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add a book · suggestions — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="add-book">
+<meta name="mock:state" content="suggestions">
+<meta name="mock:requirements" content="L2-009 L2-046 L2-048 L2-074 L2-075 L2-076 L2-077 L2-078 L2-079 L2-080">
+<meta name="description" content="Nia has typed three letters: the matching books drop down under the title, with their covers.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div>
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/shelf/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <span class="topbar__spacer"></span>
+  <span class="streak" aria-label="5-day reading streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days</span>
+  <button class="avatar avatar--sm avatar--rose" type="button" aria-label="Account menu for Nia" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">N</button>
+</header>
+
+<main id="main" class="container">
+<nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="../../pages/shelf/default.html">My shelf</a></li><li aria-current="page">Add a book</li></ol></nav>
+<div class="page-header"><div><h1>Add a book</h1><p class="subtitle">Tell Shelfie what you’re reading and pick a cover.</p></div></div>
+<div class="grid" style="align-items: start;">
+  <form class="stack span-full" style="grid-column: span 8;" action="../../pages/book/default.html" method="get" novalidate>
+    
+    <div class="card stack">
+      <div class="field combobox"><label class="field__label" for="title">Title</label><input class="input input--lg" id="title" name="title" type="text" required value="Winn" autofocus role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="title-matches" aria-activedescendant="title-match-1" autocomplete="off"><div class="combobox__panel"><ul class="combobox__list" id="title-matches" role="listbox" aria-label="Matching books"><li class="combobox__option" id="title-match-1" role="option" aria-selected="true"><span class="cover cover--sm cover--sage" aria-hidden="true">📖<img class="cover__img" src="../../assets/covers/winn-dixie.jpg" alt=""></span><span class="combobox__text"><span class="combobox__title">Because of Winn-Dixie</span><span class="combobox__detail">Kate DiCamillo</span></span></li><li class="combobox__option" id="title-match-2" role="option" aria-selected="false"><span class="cover cover--sm cover--sage" aria-hidden="true">📖</span><span class="combobox__text"><span class="combobox__title">Because of Winn-Dixie: Read-Along Edition</span><span class="combobox__detail">Kate DiCamillo</span></span></li><li class="combobox__option" id="title-match-3" role="option" aria-selected="false"><span class="cover cover--sm cover--sage" aria-hidden="true">📖</span><span class="combobox__text"><span class="combobox__title">Winnie-the-Pooh</span><span class="combobox__detail">A. A. Milne</span></span></li></ul></div><p class="visually-hidden" role="status">3 matches. Use the up and down arrows to pick one, or keep typing.</p></div>
+      <div class="field"><label class="field__label" for="author">Author <span class="optional">(optional)</span></label><input class="input" id="author" name="author" type="text" value=""></div>
+      <div class="field"><label class="field__label" for="chapters">How many chapters?</label><div class="field__help" id="chapters-help">Count them in the contents page. You can change this later.</div><input class="input" id="chapters" name="chapters" type="number" inputmode="numeric" min="1" max="200" required value="" style="max-width: 8rem;" aria-describedby="chapters-help"></div>
+    </div>
+    <fieldset class="card stack">
+      <legend style="font: var(--text-h4); margin-bottom: var(--space-4);">Make a cover</legend>
+      <div class="field"><span class="field__label" id="cover-colour-label">Colour</span><div class="swatches" role="radiogroup" aria-labelledby="cover-colour-label"><label class="swatch cover--sage" style="--cover: var(--color-cover-sage);"><input type="radio" name="cover" value="sage"><span class="visually-hidden">Sage</span></label><label class="swatch cover--rose" style="--cover: var(--color-cover-rose);"><input type="radio" name="cover" value="rose"><span class="visually-hidden">Rose</span></label><label class="swatch cover--sky" style="--cover: var(--color-cover-sky);"><input type="radio" name="cover" value="sky"><span class="visually-hidden">Sky</span></label><label class="swatch cover--sun" style="--cover: var(--color-cover-sun);"><input type="radio" name="cover" value="sun" checked><span class="visually-hidden">Sun</span></label><label class="swatch cover--lilac" style="--cover: var(--color-cover-lilac);"><input type="radio" name="cover" value="lilac"><span class="visually-hidden">Lilac</span></label><label class="swatch cover--mint" style="--cover: var(--color-cover-mint);"><input type="radio" name="cover" value="mint"><span class="visually-hidden">Mint</span></label><label class="swatch cover--peach" style="--cover: var(--color-cover-peach);"><input type="radio" name="cover" value="peach"><span class="visually-hidden">Peach</span></label></div></div>
+      <div class="field"><span class="field__label" id="sticker-label">Sticker</span><div class="emoji-grid" role="radiogroup" aria-labelledby="sticker-label"><label class="swatch"><input type="radio" name="sticker" value="🦁"><span aria-hidden="true">🦁</span><span class="visually-hidden">Lion</span></label><label class="swatch"><input type="radio" name="sticker" value="🤖"><span aria-hidden="true">🤖</span><span class="visually-hidden">Robot</span></label><label class="swatch"><input type="radio" name="sticker" value="🐕" checked><span aria-hidden="true">🐕</span><span class="visually-hidden">Dog</span></label><label class="swatch"><input type="radio" name="sticker" value="📚"><span aria-hidden="true">📚</span><span class="visually-hidden">Books</span></label><label class="swatch"><input type="radio" name="sticker" value="🕷️"><span aria-hidden="true">🕷️</span><span class="visually-hidden">Spider</span></label><label class="swatch"><input type="radio" name="sticker" value="🐰"><span aria-hidden="true">🐰</span><span class="visually-hidden">Rabbit</span></label><label class="swatch"><input type="radio" name="sticker" value="🧙"><span aria-hidden="true">🧙</span><span class="visually-hidden">Wizard</span></label><label class="swatch"><input type="radio" name="sticker" value="🚀"><span aria-hidden="true">🚀</span><span class="visually-hidden">Rocket</span></label><label class="swatch"><input type="radio" name="sticker" value="🐉"><span aria-hidden="true">🐉</span><span class="visually-hidden">Dragon</span></label><label class="swatch"><input type="radio" name="sticker" value="🌳"><span aria-hidden="true">🌳</span><span class="visually-hidden">Tree</span></label><label class="swatch"><input type="radio" name="sticker" value="🐘"><span aria-hidden="true">🐘</span><span class="visually-hidden">Elephant</span></label><label class="swatch"><input type="radio" name="sticker" value="🍫"><span aria-hidden="true">🍫</span><span class="visually-hidden">Chocolate</span></label></div></div>
+      <div class="field" role="group" aria-labelledby="picture-label"><span class="field__label" id="picture-label">Cover picture (optional)</span><div class="cover-picker__actions"><label class="btn btn--sm"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a picture<input class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="picture-help"></label></div><p class="field__help" id="picture-help" role="status">A photo of the real cover. JPEG, PNG or WebP, up to 5 MB.</p></div>
+    </fieldset>
+    <div class="form-actions">
+      <a class="btn btn--ghost" href="../../pages/shelf/default.html">Cancel</a>
+      <button class="btn btn--primary btn--lg" type="submit"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add to my shelf</button>
+    </div>
+  </form>
+  <aside class="card stack" style="grid-column: span 4; align-items: center; text-align: center;" aria-label="Cover preview">
+    <span class="overline">Preview</span>
+    <span class="cover cover--xl cover--sun" aria-hidden="true">🐕</span>
+    <strong>Winn</strong>
+    <span class="text-caption">Unknown author</span>
+  </aside>
+</div>
+<style>@media (max-width: 63.99rem) { .grid > form, .grid > aside { grid-column: 1 / -1 !important; } }</style>
+</main>
+</div>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">Searching starts after 3 letters and a short pause; at most 5 matches show. Up and down arrows move through the list, Enter picks, Escape closes it. Only the typed title leaves the browser, and only to Shelfie.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Add a book</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="suggestions.html" aria-current="page">suggestions</a></li><li><a href="suggestions-ai.html">suggestions-ai</a></li><li><a href="searching.html">searching</a></li><li><a href="no-matches.html">no-matches</a></li><li><a href="lookup-failed.html">lookup-failed</a></li><li><a href="picked.html">picked</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="picture.html">picture</a></li><li><a href="wrong-file.html">wrong-file</a></li><li><a href="too-large.html">too-large</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>
