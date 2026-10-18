@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   computed,
   effect,
   inject,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -81,6 +83,7 @@ export class AddBookPage {
   private lookupController: AbortController | null = null;
   /** The title the current rows answer, so a picked title is not looked up again. */
   private lookedUp = '';
+  private readonly chaptersField = viewChild.required('chaptersField', { read: ElementRef });
   protected readonly previewDetail = computed(() => {
     const chapters = Number(this.chapters());
     const count = chapters >= 1 ? `${chapters} chapter${chapters === 1 ? '' : 's'}` : null;
@@ -141,7 +144,8 @@ export class AddBookPage {
     }
   }
 
-  protected pick(option: ComboboxOption) {
+  /** Fills the form from the picked match; every value stays hers to change before the book is added. */
+  protected async pick(option: ComboboxOption) {
     const match = this.found[Number(option.id)];
     if (!match) return;
     this.cancelLookup();
@@ -150,6 +154,15 @@ export class AddBookPage {
     this.matches.set([]);
     this.lookup.set('idle');
     this.title.set(match.title);
+    if (match.author) this.author.set(match.author);
+    if (match.chapterCount) this.chapters.set(String(match.chapterCount));
+    // The catalogue states no chapter count, so the next thing to do is count them.
+    else this.chaptersField().nativeElement.querySelector('input')?.focus();
+    if (match.coverId) {
+      // A cover the API cannot fetch or refuses is only a missed convenience; the colour and sticker stay.
+      const picture = await this.api.catalogueCover(match.coverId).catch(() => null);
+      if (picture && this.title() === match.title) this.choosePicture(picture);
+    }
   }
 
   protected choosePicture(file: File | null) {

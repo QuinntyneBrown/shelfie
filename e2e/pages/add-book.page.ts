@@ -161,7 +161,7 @@ export class AddBookPage {
   }
 
   match(title: string) {
-    return this.matches().filter({ hasText: title });
+    return this.matches().filter({ has: this.page.getByText(title, { exact: true }) });
   }
 
   activeMatch() {

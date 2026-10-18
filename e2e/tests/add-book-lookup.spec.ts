@@ -42,8 +42,8 @@ test('Given a match whose title holds markup, then it is shown as text', async (
 
   await add.typeTitle('Bold');
 
-  await expect(add.match('Bold')).toContainText('<b>Bold</b> Title');
-  await expect(add.match('Bold')).toContainText('<i>Emphatic</i> Author');
+  await expect(add.match('<b>Bold</b> Title')).toContainText('<b>Bold</b> Title');
+  await expect(add.match('<b>Bold</b> Title')).toContainText('<i>Emphatic</i> Author');
 });
 
 test('Given Nia keeps typing while a slow lookup is out, then only the answer to what she typed last is shown', async ({ page }) => {

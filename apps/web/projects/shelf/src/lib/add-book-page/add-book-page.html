@@ -39,6 +39,7 @@
         />
         <sh-text-field label="Author (optional)" [maxlength]="120" [(value)]="author" />
         <sh-text-field
+          #chaptersField
           label="Chapters"
           [error]="chaptersError()"
           type="number"
