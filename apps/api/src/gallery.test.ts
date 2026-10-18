@@ -176,3 +176,98 @@ test('Given a gallery reward of another household, or an unknown id, when it is 
   assert.equal((await call(await dad(), 'DELETE', '/no-such-reward')).status, 404);
   assert.deepEqual((await gallery(await dad())).rewards, [reward]);
 });
+
+/** Marks a book of Nia's finished now, as logging its last chapter does. */
+const finish = (bookId: string) => db.pool.query('UPDATE book SET finished_at = $1 WHERE id = $2', [new Date().toISOString(), bookId]);
+
+async function pick(cookie: string, id: string) {
+  const response = await call(cookie, 'POST', `/${id}/pick`);
+  assert.equal(response.status, 200);
+  return (await response.json()) as Gallery;
+}
+
+test('Given the gallery, when Nia picks a reward, then it is her goal at 0 of its target; books finished earlier do not count', async () => {
+  const zoo = await add(await dad(), 'Trip to the zoo', 3);
+
+  const picked = await pick(await nia(), zoo.id);
+
+  assert.deepEqual(picked.goal, { rewardId: zoo.id, name: 'Trip to the zoo', target: 3, finished: 0, reached: false, bookId: null });
+  assert.deepEqual((await gallery(await dad())).goal, picked.goal);
+});
+
+test('Given a goal, when Nia finishes books, then each one counts; picking another reward starts again at 0', async () => {
+  const zoo = await add(await dad(), 'Trip to the zoo', 3);
+  const art = await add(await dad(), 'New art set', 2);
+  const cookie = await nia();
+  await pick(cookie, zoo.id);
+
+  await finish('b-bfg');
+  assert.equal((await gallery(cookie)).goal?.finished, 1);
+
+  const switched = await pick(cookie, art.id);
+  assert.deepEqual(switched.goal, { rewardId: art.id, name: 'New art set', target: 2, finished: 0, reached: false, bookId: null });
+  await finish('b-robot');
+  assert.equal((await gallery(cookie)).goal?.finished, 1);
+});
+
+test('Given a goal of 2 books, when Nia finishes 3, then it is reached at 2 of 2 and names the book that reached it', async () => {
+  const art = await add(await dad(), 'New art set', 2);
+  const cookie = await nia();
+  await pick(cookie, art.id);
+
+  await finish('b-bfg');
+  await finish('b-robot');
+  await finish('b-lion');
+
+  const { goal } = await gallery(cookie);
+  assert.deepEqual(goal, { rewardId: art.id, name: 'New art set', target: 2, finished: 2, reached: true, bookId: 'b-robot' });
+});
+
+test('Given a reached goal, when its book is given a reward through the usual flow, then the goal is complete and none is shown', async () => {
+  const kite = await add(await dad(), 'Kite day', 1);
+  await pick(await nia(), kite.id);
+  await finish('b-bfg');
+  const cookie = await dad();
+
+  const given = await fetch(`${url}/api/books/b-bfg/reward`, {
+    method: 'POST',
+    headers: { ...APP, Cookie: cookie, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: 'Kite day' }),
+  });
+
+  assert.equal(given.status, 201);
+  assert.equal((await gallery(cookie)).goal, null);
+});
+
+test('Given a goal, when Dad lowers its target or removes it, then the goal follows at once', async () => {
+  const zoo = await add(await dad(), 'Trip to the zoo', 3);
+  await pick(await nia(), zoo.id);
+  await finish('b-bfg');
+  const cookie = await dad();
+
+  await call(cookie, 'PATCH', `/${zoo.id}`, { name: 'Trip to the zoo', target: 1 });
+  assert.equal((await gallery(cookie)).goal?.reached, true);
+
+  await call(cookie, 'DELETE', `/${zoo.id}`);
+  assert.equal((await gallery(cookie)).goal, null);
+});
+
+test('Given a reward of another household, or an unknown id, when it is picked, then the API answers 404 and no goal changes', async () => {
+  const zoo = await add(await dad(), 'Trip to the zoo', 3);
+
+  assert.equal((await call(await zedsDad(), 'POST', `/${zoo.id}/pick`)).status, 404);
+  assert.equal((await call(await nia(), 'POST', '/no-such-reward/pick')).status, 404);
+  assert.equal((await gallery(await dad())).goal, null);
+});
+
+test('Given a reached goal, when Dad opens Review, then the overview names the goal and its book', async () => {
+  const kite = await add(await dad(), 'Kite day', 1);
+  await pick(await nia(), kite.id);
+  await finish('b-bfg');
+
+  const review = await fetch(`${url}/api/review`, { headers: { Cookie: await dad() } });
+
+  assert.equal(review.status, 200);
+  const { goal } = (await review.json()) as Gallery;
+  assert.deepEqual(goal, { rewardId: kite.id, name: 'Kite day', target: 1, finished: 1, reached: true, bookId: 'b-bfg' });
+});

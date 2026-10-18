@@ -1,5 +1,6 @@
 import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, run, type Db } from './db.ts';
+import { goalOf, type Goal } from './gallery.service.ts';
 import { Problem } from './problem.ts';
 import { streakFor } from './streak.ts';
 
@@ -60,6 +61,8 @@ export interface ReviewOverview {
   today: string;
   queue: QueueItem[];
   finishedUnrewarded: FinishedBook[];
+  /** The reward gallery goal, so the book that reached it can say so. */
+  goal: Goal | null;
   thisWeek: { chapters: number; streak: number };
 }
 
@@ -102,6 +105,7 @@ export async function overview(db: Db, householdId: string, now = new Date()): P
     today: dayOf(now),
     queue: await pendingChapterLogs(db, householdId),
     finishedUnrewarded: finished.map(({ finished_at, ...book }) => ({ ...book, finishedOn: dayOf(new Date(finished_at)) })),
+    goal: await goalOf(db, householdId),
   };
 }
 
