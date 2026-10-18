@@ -96,6 +96,11 @@ export class ShelfApi {
     return this.api.post<{ id: string }>('/books', book);
   }
 
+  /** Uploads a book's cover picture and returns its URL. */
+  addCover(bookId: string, file: File) {
+    return this.api.put<{ coverImage: string }>(`/books/${bookId}/cover`, file);
+  }
+
   async shelf(): Promise<ShelfResponse> {
     try {
       const shelf = await this.api.get<ShelfResponse>('/shelf');

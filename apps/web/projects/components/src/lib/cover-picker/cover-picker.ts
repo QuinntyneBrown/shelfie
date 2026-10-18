@@ -52,7 +52,8 @@ export class CoverPicker {
 
   constructor() {
     afterRenderEffect(() => {
-      if (this.busy() || !this.refocus) return;
+      // Runs again whenever the picture goes or an upload ends.
+      if (this.hasPicture() || this.busy() || !this.refocus) return;
       this.refocus = false;
       this.file().nativeElement.focus();
     });

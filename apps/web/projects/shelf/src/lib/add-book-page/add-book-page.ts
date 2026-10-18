@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   Banner,
@@ -6,6 +6,7 @@ import {
   COVER_COLORS,
   ColorPicker,
   Cover,
+  CoverPicker,
   StickerPicker,
   TextField,
 } from 'components';
@@ -14,7 +15,7 @@ import { ShelfApi } from '../shelf-api';
 
 @Component({
   selector: 'sh-add-book-page',
-  imports: [Banner, Button, ColorPicker, Cover, RouterLink, StickerPicker, TextField],
+  imports: [Banner, Button, ColorPicker, Cover, CoverPicker, RouterLink, StickerPicker, TextField],
   templateUrl: './add-book-page.html',
   styleUrl: './add-book-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,9 @@ export class AddBookPage {
   protected readonly chapters = signal('');
   protected readonly color = signal('sage');
   protected readonly sticker = signal('📚');
+  /** The chosen cover picture, kept here until the book is saved, and its preview URL. */
+  private picture: File | null = null;
+  protected readonly preview = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly failed = signal(false);
   protected readonly titleError = signal<string | null>(null);
@@ -43,6 +47,17 @@ export class AddBookPage {
     const count = chapters >= 1 ? `${chapters} chapter${chapters === 1 ? '' : 's'}` : null;
     return [this.author().trim() || 'Unknown author', count].filter(Boolean).join(' · ');
   });
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.choosePicture(null));
+  }
+
+  protected choosePicture(file: File | null) {
+    const old = this.preview();
+    if (old) URL.revokeObjectURL(old);
+    this.picture = file;
+    this.preview.set(file ? URL.createObjectURL(file) : null);
+  }
 
   protected async submit() {
     if (this.saving()) return;
@@ -61,7 +76,7 @@ export class AddBookPage {
     this.failed.set(false);
     try {
       const title = this.title().trim();
-      await this.api.addBook({
+      const { id } = await this.api.addBook({
         title,
         author: this.author().trim(),
         chapterCount: Number(this.chapters()),
@@ -69,6 +84,15 @@ export class AddBookPage {
         sticker: this.sticker(),
       });
       this.toasts.show({ title: `${title} is on your shelf under Up next.` });
+      if (this.picture) {
+        // The book is saved either way; a picture that does not make it is only an optional decoration.
+        await this.api.addCover(id, this.picture).catch(() =>
+          this.toasts.show({
+            severity: 'warning',
+            title: `${title} is on your shelf, but its picture didn’t upload.`,
+          }),
+        );
+      }
       await this.router.navigateByUrl('/shelf');
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;

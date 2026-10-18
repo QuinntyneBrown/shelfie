@@ -31,11 +31,6 @@ export class ShelfPage {
     return this.group(group).getByRole('article').filter({ hasText: title });
   }
 
-  /** A book card's cover: its sticker on its colour, with its picture over them when it has one. */
-  cover(group: 'On the go' | 'Up next', title: string) {
-    return this.book(group, title).locator('.cover');
-  }
-
   coverPicture(group: 'On the go' | 'Up next', title: string) {
     return this.cover(group, title).locator('img');
   }
