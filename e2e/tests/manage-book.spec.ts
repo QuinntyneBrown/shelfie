@@ -167,6 +167,7 @@ for (const how of ['Keep the book', 'Escape']) {
   test(`Given the Remove dialog, when Dad chooses ${how}, then nothing is deleted and focus returns to Remove book`, async ({ page }) => {
     const manage = await manageLion(page);
     await manage.openRemoveDialog();
+    await expect(manage.keepButton()).toBeFocused();
     if (how === 'Escape') await manage.pressEscape();
     else await manage.keepButton().click();
 
@@ -201,10 +202,13 @@ test('Given a phone screen, when the Remove dialog opens, then it sits on the bo
   await page.setViewportSize({ width: 360, height: 800 });
   const manage = await manageLion(page);
   await manage.openRemoveDialog();
+  await expect(manage.keepButton()).toBeFocused();
   expect(await manage.gapBelowDialog()).toBeLessThan(1);
 
   await manage.pressEscape();
+  await expect(manage.removeDialog()).toBeHidden();
   await page.setViewportSize({ width: 1280, height: 900 });
   await manage.openRemoveDialog();
+  await expect(manage.keepButton()).toBeFocused();
   expect(await manage.gapBelowDialog()).toBeGreaterThan(40);
 });
