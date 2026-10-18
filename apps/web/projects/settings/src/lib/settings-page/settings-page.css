@@ -23,3 +23,6 @@
 .photo-row {
   gap: var(--space-1);
 }
+.rewards__intro {
+  padding: 0 var(--space-4) var(--space-4);
+}

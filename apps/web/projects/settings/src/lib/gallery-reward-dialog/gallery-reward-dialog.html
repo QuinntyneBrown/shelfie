@@ -1,0 +1,57 @@
+<sh-dialog [heading]="heading()" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="gallery-reward-form" class="stack" (submit)="$event.preventDefault(); save()" novalidate>
+    @if (problems().length) {
+      <sh-banner
+        severity="danger"
+        [summary]="true"
+        [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        [title]="(name().trim() || 'The reward') + ' wasn’t saved'"
+        message="Nothing changed."
+      >
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <sh-text-field
+      label="The reward"
+      [help]="readerName() + ' sees this in her reward gallery. Up to 100 characters.'"
+      [maxlength]="100"
+      [autofocus]="true"
+      [error]="nameError()"
+      [(value)]="name"
+    />
+    <sh-text-field
+      class="target"
+      label="Books to finish"
+      type="number"
+      inputmode="numeric"
+      help="A whole number from 1 to 20."
+      [error]="targetError()"
+      [(value)]="target"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="gallery-reward-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      {{ editing() ? 'Save changes' : 'Add reward' }}
+    </button>
+  </div>
+</sh-dialog>

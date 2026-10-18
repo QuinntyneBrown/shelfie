@@ -79,3 +79,10 @@ export async function loggedAtOf(bookId: string, chapter: number): Promise<strin
   const [row] = await rows<{ logged_at: string }>('SELECT logged_at FROM chapter_log WHERE book_id = $1 AND chapter_number = $2', [bookId, chapter]);
   return row?.logged_at;
 }
+
+/** Puts a reward in the seeded household's gallery, as Dad would in Settings, and returns its id. */
+export async function addGalleryReward(name: string, target: number): Promise<string> {
+  const id = `g-${name.toLowerCase().replace(/\W+/g, '-')}`;
+  await db.query("INSERT INTO gallery_reward (id, household_id, name, target, created_at) VALUES ($1, 'h1', $2, $3, $4)", [id, name, target, new Date().toISOString()]);
+  return id;
+}
