@@ -39,8 +39,7 @@ router -> db : DELETE session WHERE id = ? (L2-003)
 db --> router : ok
 router --> client : 204 + cleared shelfie_session cookie\n(Cache-Control: no-store)
 client --> sessionSvc : done
-note right of sessionSvc : The in-memory session is cleared
-even when the call fails
+note right of sessionSvc : The in-memory session is cleared\neven when the call fails
 sessionSvc -> sessionSvc : current = null
 menu -> page : Navigate to /sign-in
 page --> person : Sign-in form (L2-003)

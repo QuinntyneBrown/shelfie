@@ -16,7 +16,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | `hashing.ts`: argon2id `hashSecret` / `verifySecret` | 1 |
 | `errors.ts`: `Problem`, `HttpError`, `problemDetailsHandler` with no stack, SQL or path in the body | 2 |
 | `logger.ts` redaction paths and no-body policy | 1 |
-| `ON DELETE CASCADE` foreign keys in migrations and `PRAGMA foreign_keys = ON`; reverse-proxy TLS configuration | 1 |
+| `ON DELETE CASCADE` foreign keys in `migrations/001-initial.sql`; reverse-proxy TLS configuration | 1 |
 | API tests: headers present, cross-site and header-less requests rejected, 11th sign-in gets 429, invalid body gets `errors[]`, 500 body has no stack, cascade delete removes child rows, session id changes on sign-in | 3 |
 | **Total** | **17** |
 
