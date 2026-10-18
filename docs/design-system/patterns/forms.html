@@ -36,8 +36,8 @@
       <li><a href="../components/text-field.html">Text field</a></li>
       <li><a href="../components/textarea.html">Textarea</a></li>
       <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
       <li><a href="../components/form-layout.html">Form layout</a></li>
-      <li><a href="../components/pin-entry.html">PIN entry</a></li>
       <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
       <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
       <li><a href="../components/top-bar.html">Top bar</a></li>
@@ -53,6 +53,7 @@
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/feed.html">Activity feed</a></li>
       <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/logo-mark.html">Logo mark</a></li>
       <li><a href="../components/badge.html">Badge</a></li>
       <li><a href="../components/chip.html">Chip</a></li>
       <li><a href="../components/streak.html">Streak</a></li>
@@ -64,7 +65,6 @@
       <li><a href="../components/question-answer.html">Question and answer</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
-      <li><a href="../components/profile-tile.html">Profile tile</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -107,7 +107,8 @@
         <li><b>One primary button, last.</b> The way out (ghost "Not yet", "Cancel") sits before it in <a href="../components/form-layout.html"><code>.form-actions</code></a>.</li>
         <li><b>Destructive actions confirm in a dialog</b> that starts on the safe button.</li>
       </ul>
-      <p>Built from <a href="../components/form-field.html">form field</a>, <a href="../components/text-field.html">text field</a>, <a href="../components/textarea.html">textarea</a>, <a href="../components/radio-group.html">radio group</a>, <a href="../components/chip.html">chip</a>, <a href="../components/swatch-picker.html">swatch picker</a>, <a href="../components/sticker-picker.html">sticker picker</a>, <a href="../components/pin-entry.html">PIN entry</a>, <a href="../components/alert.html">alert</a>, <a href="../components/button.html">button</a> and <a href="../components/dialog.html">dialog</a>.</p>
+      <p>Built from <a href="../components/form-field.html">form field</a>, <a href="../components/text-field.html">text field</a>, <a href="../components/textarea.html">textarea</a>, <a href="../components/radio-group.html">radio group</a>, <a href="../components/chip.html">chip</a>, <a href="../components/swatch-picker.html">swatch picker</a>, <a href="../components/sticker-picker.html">sticker picker</a>, <a href="../components/switch.html">switch</a>, <a href="../components/alert.html">alert</a>, <a href="../components/button.html">button</a> and <a href="../components/dialog.html">dialog</a>.</p>
+      <p>A password field has a trailing show/hide button inside its <a href="../components/text-field.html">text field</a> group. A yes/no setting such as "Keep me signed in" is a <a href="../components/switch.html">switch</a>, not a checkbox.</p>
     </section>
 
     <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
@@ -213,7 +214,7 @@
           <tr><td>Submit with problems</td><td>Summary appears and takes focus; each bad field gets <code>aria-invalid</code> and a message; nothing is sent; nothing typed is cleared.</td></tr>
           <tr><td>Editing a flagged field</td><td>It re-checks on every input. When it passes, its message and red border go; the summary loses that line.</td></tr>
           <tr><td>Submit again</td><td>The summary is rebuilt from scratch, or removed if everything passes.</td></tr>
-          <tr><td>The server says no (wrong password, PIN mismatch)</td><td>The message goes on the field that caused it and the summary names it ("Password didn’t match"). The value stays so a typo can be fixed.</td></tr>
+          <tr><td>The server says no (wrong username or password)</td><td>On sign-in the one generic message "Username or password is wrong." goes on the form, never on one field. Elsewhere the message goes on the field that caused it and the summary names it ("Username or password is wrong"). The value stays so a typo can be fixed.</td></tr>
         </tbody>
       </table></div>
 
@@ -299,7 +300,7 @@
 
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Forms are one column at every width. Fields that hold short values (chapters, PIN, name) cap their width so the box matches the answer.</li>
+        <li>Forms are one column at every width. Fields that hold short values (chapters, name) cap their width so the box matches the answer.</li>
         <li>Add a book shows a live cover preview beside the form from 1024px (<code>.span-8</code> form, <code>.span-4</code> aside); below that the preview drops under the form. Use the span classes, not an inline media query (drift D5).</li>
         <li>Review a chapter keeps the feedback form beside the answers from 1024px with <code>.sticky-aside</code>; on phones it follows the answers.</li>
         <li><code>.form-actions</code> wraps; the primary stays last, so on a narrow phone it lands on its own line at the right.</li>
@@ -333,7 +334,7 @@
         <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
       </div>
       <h3>Motion</h3>
-      <p>Border and ring colours change over <code>--duration-fast</code>. A wrong PIN shakes the dots once (120 ms). Both go away under <code>prefers-reduced-motion</code>; the message still appears.</p>
+      <p>Border and ring colours change over <code>--duration-fast</code>. Both go away under <code>prefers-reduced-motion</code>; the message still appears.</p>
       <h3>Touch</h3>
       <p>Fields and buttons are at least 44px tall; chips 36px with 12px between them; colour swatches 44px. The primary submit is large (52px) on Nia's forms.</p>
     </section>
@@ -352,8 +353,8 @@
 
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
-        <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="fm-do-pin">New 4-digit PIN <span class="optional">(optional)</span></label><input class="input" id="fm-do-pin" type="password" inputmode="numeric" value="12" style="max-width: var(--space-24);" aria-invalid="true" aria-describedby="fm-do-pin-error"><div class="field__error" id="fm-do-pin-error">Use exactly 4 digits.</div></div></div><figcaption>Put the message under the field it belongs to and keep what was typed.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="fm-dont-pin">New 4-digit PIN</label><input class="input" id="fm-dont-pin" type="password" inputmode="numeric" value="" style="max-width: var(--space-24);" aria-invalid="true"></div></div><figcaption>Clear the field and show only a red border. Colour alone does not say what is wrong.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="fm-do-name">Name</label><input class="input" id="fm-do-name" type="text"></div><div class="field"><label class="field__label" for="fm-do-user">Username</label><input class="input" id="fm-do-user" type="text" autocapitalize="none" spellcheck="false" aria-describedby="fm-do-user-help"><div class="field__help" id="fm-do-user-help">Letters and numbers, no spaces.</div></div></div></div><figcaption>Keep help text for the fields where a wrong entry is likely: the username rule and the password minimum.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="fm-dont-name">Name</label><input class="input" id="fm-dont-name" type="text" aria-describedby="fm-dont-name-help"><div class="field__help" id="fm-dont-name-help">Your first name is fine.</div></div><div class="field"><label class="field__label" for="fm-dont-mail">E-mail</label><input class="input" id="fm-dont-mail" type="email" aria-describedby="fm-dont-mail-help"><div class="field__help" id="fm-dont-mail-help">We use this to reset your password.</div></div></div></div><figcaption>Help under every field. Sign-up first had it under name, e-mail, username and both passwords, and the real warnings were lost in the noise.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><button class="btn" type="button">Keep the book</button><button class="btn btn--danger" type="button">Remove book and answers</button></div><figcaption>Name both outcomes; start focus on the safe one.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><button class="btn" type="button">Cancel</button><button class="btn btn--danger" type="button">OK</button></div><figcaption>"OK" in a destructive dialog. Dad should not have to re-read the title to know what OK does.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><div class="alert alert--danger form-summary" role="note"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">One more thing</div><ol><li><a href="#fm-q1">Question 1 needs an answer</a></li></ol></div></div></div><figcaption>Use <code>.form-summary</code>; its list indent comes from <code>--space-5</code>.</figcaption></figure>

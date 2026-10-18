@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/mocks/assets/logo.png" alt="Shelfie logo" width="160"></p>
+
 # Shelfie
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
