@@ -87,6 +87,9 @@ END \$\$;
 SQL
 psql -v ON_ERROR_STOP=1 -q "host=$DB_HOST user=shelfie_admin dbname=postgres" \
   -c "ALTER ROLE shelfie_app PASSWORD '$DB_APP_PASSWORD'" -c "GRANT shelfie_app TO shelfie_admin" -c "ALTER DATABASE shelfie OWNER TO shelfie_app"
+# On the flexible server the public schema belongs to azure_pg_admin, not the database owner, so the
+# migrations cannot create tables until shelfie_app owns it.
+psql -v ON_ERROR_STOP=1 -q "host=$DB_HOST user=shelfie_admin dbname=shelfie" -c "ALTER SCHEMA public OWNER TO shelfie_app"
 install -m 0600 -o root -g root /dev/null /etc/shelfie/db-admin
 printf 'DB_HOST=%s\nDB_ADMIN_USER=shelfie_admin\nDB_ADMIN_PASSWORD=%s\nDB_APP_PASSWORD=%s\n' "$DB_HOST" $(printf %q "$DB_ADMIN_PASSWORD") $(printf %q "$DB_APP_PASSWORD") > /etc/shelfie/db-admin
 sed -i '/^DATABASE_URL=/d;/^SHELFIE_DB=/d;/^SHELFIE_BACKUP_DIR=/d' /etc/shelfie/env

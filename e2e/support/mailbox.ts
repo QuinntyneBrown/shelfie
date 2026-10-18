@@ -19,16 +19,21 @@ export function mailFor(address: string): Mail[] {
   return outbox.filter((mail) => mail.to === address);
 }
 
-/** The invite link in the newest mail sent to the address. */
-export function inviteLinkFor(address: string): string {
-  const link = mailFor(address).at(-1)?.text.match(/http:\/\/\S+\/accept-invite\?\S+/);
-  if (!link) throw new Error(`No invite mail arrived for ${address}`);
-  return link[0];
+/** Waits up to 5 s for a mail to the address whose text holds a link matching `pattern`, and returns the newest such link. */
+async function linkFor(address: string, pattern: RegExp, kind: string): Promise<string> {
+  for (const deadline = Date.now() + 5000; Date.now() < deadline; await new Promise((r) => setTimeout(r, 50))) {
+    const link = mailFor(address).at(-1)?.text.match(pattern);
+    if (link) return link[0];
+  }
+  throw new Error(`No ${kind} mail arrived for ${address}`);
 }
 
-/** The reset link in the newest mail sent to the address. */
-export function resetLinkFor(address: string): string {
-  const link = mailFor(address).at(-1)?.text.match(/http:\/\/\S+\/reset-password\?\S+/);
-  if (!link) throw new Error(`No reset mail arrived for ${address}`);
-  return link[0];
+/** The invite link in the newest mail sent to the address, once it has arrived. */
+export function inviteLinkFor(address: string): Promise<string> {
+  return linkFor(address, /http:\/\/\S+\/accept-invite\?\S+/, 'invite');
+}
+
+/** The reset link in the newest mail sent to the address, once it has arrived. */
+export function resetLinkFor(address: string): Promise<string> {
+  return linkFor(address, /http:\/\/\S+\/reset-password\?\S+/, 'reset');
 }
