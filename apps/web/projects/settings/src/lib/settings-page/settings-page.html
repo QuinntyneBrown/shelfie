@@ -172,7 +172,8 @@
               <span class="sticker" aria-hidden="true">🎁</span>
               <div class="list__body">
                 <div class="list__title">
-                  {{ reward.milestone }} days in a row{{ reward.name ? ' · ' + reward.name : '' }}
+                  {{ reward.milestone }} days in a row{{ reward.name ? ' · ' + reward.name : ''
+                  }}{{ reward.amount ? ' · $' + reward.amount : '' }}
                 </div>
                 <div class="list__meta">
                   @if (reward.givenOn) {

@@ -26,6 +26,14 @@ export class StreakRewardDialog {
     return this.dialog().getByRole('textbox', { name: 'The reward' });
   }
 
+  amountField() {
+    return this.dialog().getByRole('spinbutton', { name: 'Amount in dollars (optional)' });
+  }
+
+  async fillAmount(amount: string) {
+    await this.amountField().fill(amount);
+  }
+
   async fill(name: string) {
     await this.nameField().fill(name);
   }

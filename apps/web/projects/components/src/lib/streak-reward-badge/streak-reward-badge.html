@@ -1,0 +1,20 @@
+<svg
+  class="streak-badge"
+  [class.streak-badge--locked]="locked()"
+  viewBox="0 0 124 124"
+  role="img"
+  [attr.aria-label]="label()"
+>
+  <path class="streak-badge__shield" d="M60 6 104 20v36c0 30-19 50-44 60C35 106 16 86 16 56V20Z" />
+  <path class="streak-badge__rim" d="M60 16 94 27v29c0 23-14 39-34 47-20-8-34-24-34-47V27Z" />
+  <text class="streak-badge__days" x="60" [attr.y]="60 + daysSize() / 4" [attr.font-size]="daysSize()">
+    {{ milestone() }}
+  </text>
+  @if (amount()) {
+    <circle class="streak-badge__coin" cx="92" cy="94" r="24" />
+    <text class="streak-badge__amount" x="92" y="100" [attr.font-size]="amountSize()">${{ amount() }}</text>
+  } @else {
+    <circle class="streak-badge__coin streak-badge__coin--gift" cx="92" cy="94" r="24" />
+    <text class="streak-badge__gift" x="92" y="102" font-size="22">🎁</text>
+  }
+</svg>

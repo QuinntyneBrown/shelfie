@@ -10,6 +10,10 @@
 .goal-celebration {
   margin-bottom: var(--space-4);
 }
+.goal-celebration__badge {
+  width: 6rem;
+  margin-inline: auto;
+}
 .goal-celebration__title {
   font: var(--text-h3);
 }

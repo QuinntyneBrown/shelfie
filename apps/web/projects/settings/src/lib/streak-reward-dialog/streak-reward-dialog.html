@@ -21,6 +21,14 @@
       [error]="nameError()"
       [(value)]="name"
     />
+    <sh-text-field
+      label="Amount in dollars (optional)"
+      type="number"
+      inputmode="numeric"
+      help="Leave it empty for a reward that isn’t money."
+      [error]="amountError()"
+      [(value)]="amount"
+    />
   </form>
   <div dialog-actions class="cluster">
     <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>

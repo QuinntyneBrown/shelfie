@@ -1,0 +1,42 @@
+<div
+  class="streak-reward"
+  [class.streak-reward--goal]="progress() !== null && !reached()"
+  [class.streak-reward--ready]="reached()"
+>
+  <div>
+    <div class="streak-reward__title">
+      {{ title() }}
+      @if (progress() !== null) {
+        <span class="badge" [class.badge--success]="reached()" [class.badge--info]="!reached()">{{
+          reached() ? 'Ready!' : 'Your goal'
+        }}</span>
+      }
+    </div>
+    <div class="streak-reward__note">{{ note() }}</div>
+    @if (progress() !== null) {
+      @if (milestone() <= 7) {
+        <div
+          class="day-path"
+          role="progressbar"
+          [attr.aria-valuenow]="progress()"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="milestone()"
+          [attr.aria-label]="label()"
+        >
+          @for (day of days(); track day) {
+            <span
+              class="day-path__day"
+              [class.day-path__day--done]="day <= progress()!"
+              [class.day-path__day--next]="day === progress()! + 1"
+              aria-hidden="true"
+              >{{ day }}</span
+            >
+          }
+        </div>
+      } @else {
+        <sh-progress class="streak-reward__progress" [value]="progress()!" [max]="milestone()" [label]="label()" />
+      }
+    }
+  </div>
+  <sh-streak-reward-badge [milestone]="milestone()" [amount]="amount()" [locked]="progress() === null && !given()" />
+</div>

@@ -10,13 +10,27 @@ import {
   FEEDBACK_STICKERS,
   RewardCard,
   Skeleton,
+  StreakRewardBadge,
+  StreakRewardCard,
 } from 'components';
 import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
 import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
 
 @Component({
   selector: 'sh-shelf-page',
-  imports: [AchievementBadge, Banner, BookCard, Celebration, DatePipe, EmptyState, RewardCard, RouterLink, Skeleton],
+  imports: [
+    AchievementBadge,
+    Banner,
+    BookCard,
+    Celebration,
+    DatePipe,
+    EmptyState,
+    RewardCard,
+    RouterLink,
+    Skeleton,
+    StreakRewardBadge,
+    StreakRewardCard,
+  ],
   templateUrl: './shelf-page.html',
   styleUrl: './shelf-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

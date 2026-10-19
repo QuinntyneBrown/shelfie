@@ -7,7 +7,10 @@ import { requireSession, type RequestSession } from './session.ts';
 import { clearStreakReward, giveStreakReward, MILESTONES, setStreakReward, streakRewardsOf } from './streak-rewards.service.ts';
 import { validationProblem } from './validation.ts';
 
-const streakRewardSchema = z.object({ name: z.string().trim().min(1).max(100) });
+const streakRewardSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  amount: z.number().int().min(1).max(1000).nullable().optional(),
+});
 
 /** The household's streak rewards: both roles read them, only parents change or give them (L2-104). */
 export function streakRewardsRouter(db: Pool) {
@@ -23,7 +26,7 @@ export function streakRewardsRouter(db: Pool) {
     const { householdId } = res.locals['session'] as RequestSession;
     const body = streakRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    await answer(res, async () => res.json(await setStreakReward(db, householdId, milestoneOf(req.params['milestone']), body.data.name)));
+    await answer(res, async () => res.json(await setStreakReward(db, householdId, milestoneOf(req.params['milestone']), body.data.name, body.data.amount ?? null)));
   });
 
   router.delete('/:milestone', requireRole('parent'), async (req, res) => {

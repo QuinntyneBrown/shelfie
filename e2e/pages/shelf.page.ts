@@ -231,6 +231,21 @@ export class ShelfPage {
     return this.streakReward(name).getByRole('progressbar');
   }
 
+  /** A streak reward's shield-and-coin badge, named for screen readers such as "7-day badge, $20". */
+  streakRewardBadge(name: string) {
+    return this.streakReward(name).getByRole('img', { name: /-day badge/ });
+  }
+
+  /** The day the 7-day path marks as the next to read. */
+  streakRewardNextDay(name: string) {
+    return this.streakReward(name).locator('.day-path__day--next');
+  }
+
+  /** The days the 7-day path shows as read. */
+  streakRewardDaysRead(name: string) {
+    return this.streakReward(name).locator('.day-path__day--done');
+  }
+
   streakCelebration() {
     return this.streakRewards().getByRole('heading', { name: /You did it!/ });
   }

@@ -20,6 +20,8 @@ export * from './lib/tab-bar/tab-bar';
 export * from './lib/dialog/dialog';
 export * from './lib/textarea/textarea';
 export * from './lib/streak-badge/streak-badge';
+export * from './lib/streak-reward-badge/streak-reward-badge';
+export * from './lib/streak-reward-card/streak-reward-card';
 export * from './lib/achievement-badge/achievement-badge';
 export * from './lib/celebration/celebration';
 export * from './lib/activity-item/activity-item';

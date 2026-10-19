@@ -1,4 +1,4 @@
-// Traces to: L2-100, L2-101, L2-102, L2-103, L2-104
+// Traces to: L2-100, L2-101, L2-102, L2-103, L2-104, L2-112
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -51,6 +51,7 @@ function call(cookie: string | null, method: string, path: string, body?: unknow
 interface StreakReward {
   milestone: number;
   name: string | null;
+  amount: number | null;
   earnedOn: string | null;
   givenOn: string | null;
 }
@@ -81,7 +82,7 @@ async function setStreak(days: number) {
 }
 
 test('Given no rewards are set, then the three milestones are listed with no name for Dad and for Nia', async () => {
-  const unset = [7, 30, 100].map((milestone) => ({ milestone, name: null, earnedOn: null, givenOn: null }));
+  const unset = [7, 30, 100].map((milestone) => ({ milestone, name: null, amount: null, earnedOn: null, givenOn: null }));
 
   assert.deepEqual(await rewards(await dad()), unset);
   assert.deepEqual(await rewards(await nia()), unset);
@@ -94,7 +95,7 @@ test('Given Dad, when he sets the 7-day reward, then the name is trimmed and sto
   const response = await call(cookie, 'PUT', '/7', { name: '  Ice cream ' });
 
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { milestone: 7, name: 'Ice cream', earnedOn: null, givenOn: null });
+  assert.deepEqual(await response.json(), { milestone: 7, name: 'Ice cream', amount: null, earnedOn: null, givenOn: null });
   assert.equal((await rewards(await nia())).find((r) => r.milestone === 7)!.name, 'Ice cream');
 });
 
@@ -116,6 +117,33 @@ test('Given a name that is empty or over 100 characters, then the API answers 40
   );
 });
 
+test('Given Dad, when he sets a reward with an amount, then it is stored and listed; he can change it or clear it until it is given', async () => {
+  await setStreak(0);
+  const cookie = await dad();
+
+  const response = await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount: 20 });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { milestone: 7, name: 'Pocket money', amount: 20, earnedOn: null, givenOn: null });
+  assert.equal((await rewards(await nia()))[0]!.amount, 20);
+  assert.equal(((await (await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount: 25 })).json()) as StreakReward).amount, 25);
+  assert.equal(((await (await call(cookie, 'PUT', '/7', { name: 'Pocket money' })).json()) as StreakReward).amount, null);
+  assert.equal(((await (await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount: null })).json()) as StreakReward).amount, null);
+});
+
+test('Given an amount that is not a whole number from 1 to 1000, then the API answers 400 and stores nothing', async () => {
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount: 20 });
+
+  for (const amount of [0, 1001, 2.5, -3, '20']) {
+    const response = await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount });
+    assert.equal(response.status, 400, String(amount));
+    assert.equal(((await response.json()) as { type: string }).type, 'validation');
+  }
+  assert.equal((await call(cookie, 'PUT', '/7', { name: 'Pocket money', amount: 1000 })).status, 200);
+  assert.equal((await rewards(cookie))[0]!.amount, 1000);
+});
+
 test('Given Nia, when she tries to set, remove or give a reward, then the API answers 403 and nothing changes', async () => {
   await db.pool.query("INSERT INTO streak_reward (household_id, milestone, name, earned_at) VALUES ($1, 7, 'Ice cream', '2026-10-01T00:00:00.000Z')", [SEED.householdId]);
   const cookie = await nia();
@@ -130,7 +158,7 @@ test('Given Nia, when she tries to set, remove or give a reward, then the API an
     assert.equal(((await response.json()) as { type: string }).type, 'grown-ups-only');
   }
   const [seven] = await rewards(cookie);
-  assert.deepEqual(seven, { milestone: 7, name: 'Ice cream', earnedOn: '2026-10-01', givenOn: null });
+  assert.deepEqual(seven, { milestone: 7, name: 'Ice cream', amount: null, earnedOn: '2026-10-01', givenOn: null });
 });
 
 test('Given no session, when any streak reward route is requested, then the API answers 401', async () => {
@@ -191,7 +219,7 @@ test('Given an earned reward, when Dad gives it, then it is given today; giving 
 
   const given = await call(cookie, 'POST', '/7/give');
   assert.equal(given.status, 200);
-  assert.deepEqual(await given.json(), { milestone: 7, name: 'Ice cream', earnedOn: TODAY(), givenOn: TODAY() });
+  assert.deepEqual(await given.json(), { milestone: 7, name: 'Ice cream', amount: null, earnedOn: TODAY(), givenOn: TODAY() });
 
   for (const [method, path, body] of [
     ['POST', '/7/give', undefined],
@@ -227,7 +255,7 @@ test('Given a streak of 7, then the shelf and Review answer with the rewards, ea
   ] as const) {
     const response = await fetch(`${url}${path}`, { headers: { ...APP, Cookie: cookie } });
     const body = (await response.json()) as { streakRewards: StreakReward[] };
-    assert.deepEqual(body.streakRewards[0], { milestone: 7, name: 'Ice cream', earnedOn: TODAY(), givenOn: null }, path);
+    assert.deepEqual(body.streakRewards[0], { milestone: 7, name: 'Ice cream', amount: null, earnedOn: TODAY(), givenOn: null }, path);
     assert.equal(body.streakRewards.length, 3);
   }
 });
@@ -240,7 +268,7 @@ test('Given two households, then each sees and changes only its own, and one ear
   await call(zed, 'PUT', '/7', { name: 'Kite' });
 
   assert.equal((await rewards(cookie))[0]!.name, 'Ice cream');
-  assert.deepEqual((await rewards(zed))[0], { milestone: 7, name: 'Kite', earnedOn: null, givenOn: null });
+  assert.deepEqual((await rewards(zed))[0], { milestone: 7, name: 'Kite', amount: null, earnedOn: null, givenOn: null });
   assert.equal((await call(zed, 'POST', '/7/give')).status, 400);
   assert.equal((await rewards(cookie))[0]!.givenOn, null);
 });

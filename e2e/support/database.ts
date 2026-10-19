@@ -113,8 +113,8 @@ export async function pickGoal(id: string) {
 }
 
 /** Sets a streak reward for the seeded household, as Dad would in Settings. */
-export async function addStreakReward(milestone: number, name: string) {
-  await db.query("INSERT INTO streak_reward (household_id, milestone, name) VALUES ('h1', $1, $2)", [milestone, name]);
+export async function addStreakReward(milestone: number, name: string, amount: number | null = null) {
+  await db.query("INSERT INTO streak_reward (household_id, milestone, name, amount) VALUES ('h1', $1, $2, $3)", [milestone, name, amount]);
 }
 
 /** Marks a streak reward as already earned and given, as Review's Give it does. */

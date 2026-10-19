@@ -8,6 +8,8 @@ export const MILESTONES = [7, 30, 100];
 export interface StreakReward {
   milestone: number;
   name: string | null;
+  /** Whole dollars, or null for a reward that isn't money (L2-112). */
+  amount: number | null;
   /** The household day the reward was first earned; null until then. */
   earnedOn: string | null;
   givenOn: string | null;
@@ -16,6 +18,7 @@ export interface StreakReward {
 interface Row {
   milestone: number;
   name: string;
+  amount: number | null;
   earned_at: string | null;
   given_at: string | null;
 }
@@ -33,11 +36,11 @@ async function earn(db: Db, householdId: string, now: Date) {
 export async function streakRewardsOf(db: Db, householdId: string, now = new Date()): Promise<StreakReward[]> {
   await earn(db, householdId, now);
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
-  const rows = await all<Row>(db, 'SELECT milestone, name, earned_at, given_at FROM streak_reward WHERE household_id = $1', [householdId]);
+  const rows = await all<Row>(db, 'SELECT milestone, name, amount, earned_at, given_at FROM streak_reward WHERE household_id = $1', [householdId]);
   const dayOf = (iso: string | null) => (iso ? todayIn(time_zone, new Date(iso)) : null);
   return MILESTONES.map((milestone) => {
     const row = rows.find((r) => r.milestone === milestone);
-    return { milestone, name: row?.name ?? null, earnedOn: dayOf(row?.earned_at ?? null), givenOn: dayOf(row?.given_at ?? null) };
+    return { milestone, name: row?.name ?? null, amount: row?.amount ?? null, earnedOn: dayOf(row?.earned_at ?? null), givenOn: dayOf(row?.given_at ?? null) };
   });
 }
 
@@ -45,13 +48,13 @@ async function one(db: Db, householdId: string, milestone: number) {
   return (await streakRewardsOf(db, householdId)).find((r) => r.milestone === milestone)!;
 }
 
-/** Sets or renames the reward; one that has been given cannot change. */
-export async function setStreakReward(db: Db, householdId: string, milestone: number, name: string): Promise<StreakReward> {
+/** Sets or changes the reward's name and amount; one that has been given cannot change. */
+export async function setStreakReward(db: Db, householdId: string, milestone: number, name: string, amount: number | null): Promise<StreakReward> {
   const changed = await run(
     db,
-    `INSERT INTO streak_reward (household_id, milestone, name) VALUES ($1, $2, $3)
-       ON CONFLICT (household_id, milestone) DO UPDATE SET name = EXCLUDED.name WHERE streak_reward.given_at IS NULL`,
-    [householdId, milestone, name],
+    `INSERT INTO streak_reward (household_id, milestone, name, amount) VALUES ($1, $2, $3, $4)
+       ON CONFLICT (household_id, milestone) DO UPDATE SET name = EXCLUDED.name, amount = EXCLUDED.amount WHERE streak_reward.given_at IS NULL`,
+    [householdId, milestone, name, amount],
   );
   if (changed === 0) throw new Problem(409, 'already-given');
   return one(db, householdId, milestone);
@@ -73,7 +76,7 @@ export async function giveStreakReward(db: Db, householdId: string, milestone: n
     [new Date().toISOString(), householdId, milestone],
   );
   if (changed === 0) {
-    const row = await get<Row>(db, 'SELECT milestone, name, earned_at, given_at FROM streak_reward WHERE household_id = $1 AND milestone = $2', [householdId, milestone]);
+    const row = await get<Row>(db, 'SELECT milestone, name, amount, earned_at, given_at FROM streak_reward WHERE household_id = $1 AND milestone = $2', [householdId, milestone]);
     if (!row) throw new Problem(404, 'not-found');
     throw row.given_at ? new Problem(409, 'already-given') : new Problem(400, 'not-earned');
   }
