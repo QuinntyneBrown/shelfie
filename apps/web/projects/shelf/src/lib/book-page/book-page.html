@@ -63,6 +63,9 @@
           </p>
           <a class="btn btn--primary" routerLink="/shelf">Back to my shelf</a>
         }
+        <a class="btn" [attr.href]="'/api/books/' + book.id + '/certificate.pdf'" download>
+          Print my certificate
+        </a>
       </section>
     }
     <ng-template #row let-chapter>

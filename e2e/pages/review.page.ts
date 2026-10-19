@@ -49,6 +49,13 @@ export class ReviewPage {
     return this.rewardCard(title).getByText(/reached her goal/);
   }
 
+  /** Presses Print certificate on a finished book's card and returns the download it starts. */
+  async printCertificate(title: string) {
+    const download = this.page.waitForEvent('download');
+    await this.rewardCard(title).getByRole('link', { name: 'Print certificate' }).click();
+    return download;
+  }
+
   async openGiveReward(title: string) {
     await this.rewardCard(title).getByRole('button', { name: 'Give a reward' }).click();
   }
