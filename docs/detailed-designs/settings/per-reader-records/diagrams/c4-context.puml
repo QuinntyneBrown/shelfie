@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Per-reader records
+Person(reader, "Reader", "A child; sees only her own shelf, streak, badges and trophies")
+Person(parent, "Parent", "Sees every reader of the household and picks one")
+System(shelfie, "Shelfie", "Reading log, questions, review and rewards")
+Rel(reader, shelfie, "Logs chapters, reads her shelf")
+Rel(parent, shelfie, "Reviews, adds books and gives rewards for a chosen reader")
+@enduml

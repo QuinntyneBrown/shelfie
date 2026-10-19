@@ -1,0 +1,33 @@
+@startuml
+title UML sequence behaviour — Start a community, then another household joins
+actor "Dad" as dad
+actor "Zed's dad" as zed
+participant "CommunitiesApi" as client
+participant "communities.router.ts" as router
+participant "communities.service.ts" as service
+database "PostgreSQL" as db
+dad -> client : start("Maple Street Readers", "The Bells")
+client -> router : POST /api/communities
+router -> service : startCommunity(householdId, name, familyName)
+service -> service : newJoinCode()
+service -> db : INSERT community; INSERT community_member
+alt join_code clash
+  db --> service : unique violation
+  service -> service : retry with a new code
+end
+service --> dad : 201 {id, name, joinCode: "KQ7M3HTP", manages: true, families: [The Bells]}
+zed -> client : join("kq7m-3htp", "The Lins")
+client -> router : POST /api/communities/join
+router -> router : joinLimiter (429 after 10 tries)
+router -> service : joinCommunity(householdId, code, familyName)
+service -> service : normaliseCode -> KQ7M3HTP
+service -> db : SELECT community WHERE join_code = $1
+alt no community
+  service --> zed : 404 code-not-found
+else already a member
+  service --> zed : 409 already-member
+else
+  service -> db : INSERT community_member
+  service --> zed : 200 CommunityView (display names and counts only)
+end
+@enduml

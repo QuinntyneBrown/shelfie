@@ -1,0 +1,20 @@
+@startuml
+title UML sequence behaviour — Leave a community
+actor "Parent" as parent
+participant "LeaveCommunityDialog" as dialog
+participant "communities.service.ts" as service
+database "PostgreSQL" as db
+parent -> dialog : Leave community
+dialog -> service : DELETE /api/communities/:id/membership
+service -> db : DELETE community_member WHERE community_id AND household_id
+alt not a member
+  service --> dialog : 404 not-found
+else
+  service -> db : COUNT members left
+  alt none left
+    service -> db : DELETE community (goal cascades)
+  end
+  service --> dialog : 204
+  dialog --> parent : Toast "You left Maple Street Readers"; back to Community
+end
+@enduml

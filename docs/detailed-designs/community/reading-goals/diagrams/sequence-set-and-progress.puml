@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — Set a household reading goal, then Nia sees it
+actor "Dad" as dad
+actor "Nia" as nia
+participant "ReadingGoalDialog" as dialog
+participant "goals.router.ts" as router
+participant "goals.service.ts" as service
+database "PostgreSQL" as db
+dad -> dialog : 10 books by 2026-12-31; Save goal
+dialog -> router : PUT /api/goals/household {target: 10, endsOn}
+router -> service : setHouseholdGoal(householdId, input)
+alt target or date invalid
+  service --> dialog : 400 validation
+  dialog --> dad : "Fix N things"
+else
+  service -> db : UPSERT reading_goal (starts_on = today on first set)
+  service -> db : finishedBetween([household], starts_on, ends_on)
+  service --> dialog : GoalView {finished: 0, state: in-progress}
+  dialog --> dad : Toast "Reading goal saved"
+end
+nia -> router : GET /api/goals
+router -> service : goalsOf(householdId)
+service -> db : household goal, communities with goals, counts
+service --> nia : {household: {4 of 10}, communities: [Maple Street Readers 17 of 40]}
+@enduml

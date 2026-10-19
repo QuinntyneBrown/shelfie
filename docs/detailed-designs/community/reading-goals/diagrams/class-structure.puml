@@ -1,0 +1,38 @@
+@startuml
+title Class structure — Reading goals
+skinparam classAttributeIconSize 0
+class GoalView {
+  target: number
+  startsOn: string
+  endsOn: string
+  finished: number
+  state: 'in-progress'|'reached'|'ended'
+}
+class GoalsResponse {
+  household: GoalView|null
+  communities: CommunityGoal[]
+}
+class CommunityGoal {
+  id: string
+  name: string
+  goal: GoalView
+}
+class "sh-goal-card" as GoalCard <<components>> {
+  title, note, finished, target?, state
+}
+class ShelfPage
+class CommunitiesPage
+class CommunityPage
+class ReadingGoalDialog
+class RemoveReadingGoalDialog
+GoalsResponse *-- GoalView
+GoalsResponse *-- CommunityGoal
+CommunityGoal *-- GoalView
+ShelfPage --> GoalCard
+CommunitiesPage --> GoalCard
+CommunityPage --> GoalCard
+CommunitiesPage --> ReadingGoalDialog
+CommunitiesPage --> RemoveReadingGoalDialog
+CommunityPage --> ReadingGoalDialog
+CommunityPage --> RemoveReadingGoalDialog
+@enduml

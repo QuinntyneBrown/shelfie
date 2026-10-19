@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Reading goals
+Person(parent, "Parent", "Sets the household's goal; the managing household sets a community's")
+Person(reader, "Reader", "Sees progress on her shelf")
+System(shelfie, "Shelfie", "Counts finished books toward each goal")
+Rel(parent, shelfie, "Sets, changes, removes goals")
+Rel(reader, shelfie, "Reads progress")
+@enduml

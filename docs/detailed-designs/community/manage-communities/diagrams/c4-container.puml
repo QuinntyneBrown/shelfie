@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage communities
+Person(parent, "Parent")
+System_Boundary(s, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "community library: CommunitiesPage, CommunityPage, dialogs; sh-join-code")
+  Container(api, "Shelfie API", "Node.js, Express", "communities.router.ts")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "community, community_member, sign_in_attempt")
+}
+Rel(parent, web, "Uses", "HTTPS")
+Rel(web, api, "/api/communities", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml

@@ -20,6 +20,11 @@ The slice runs from an anchor on three existing pages to one new API route and s
 
 No new column, table, Angular route or library component. The anchors rely on the session cookie exactly as the cover `<img>` does.
 
+
+### Per reader
+
+The certificate names the book's reader (`BookResponse.readerName` is now the book's reader, `L2-142`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

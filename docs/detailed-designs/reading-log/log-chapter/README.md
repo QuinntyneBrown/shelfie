@@ -33,6 +33,11 @@ The slice runs from `LogChapterPage` to the `chapter_log` and `answer` tables. T
 
 The `ChapterForm` response is `{ book: { id, title, author, chapterCount, coverColor, sticker }, chapterNumber, questions: [{ position, text, required }] }`. The problem body for a blank first answer is a 400 with `errors[]` naming `answers.0.text`; for a duplicate it is a 409 with `type: "chapter-already-logged"`. Offline queuing of the `POST` is owned by shell/work-offline and is not shown here.
 
+
+### Per reader
+
+A reader can log, undo and open chapters of her own books only; another reader's book answers 404 like another household's (`L2-137`, `L2-140`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

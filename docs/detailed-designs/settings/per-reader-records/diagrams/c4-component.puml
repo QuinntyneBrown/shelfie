@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Per-reader records
+Container(web, "Shelfie web", "Angular")
+Container_Boundary(api, "Shelfie API") {
+  Component(routers, "shelf, books, chapters, review, streak-rewards routers", "Express Router", "Read ?reader= or readerId")
+  Component(readers, "readers.service.ts", "Service", "readerFor, onlyReader, householdReaders, addReader adopts orphan books")
+  Component(services, "shelf, books, chapters, review services", "Service", "Filter on b.reader_id")
+  Component(derived, "streak.ts, badges.ts, streak-rewards.service.ts", "Service", "Per-reader streak, badges, earning")
+  Component(push, "push.service.ts", "Service", "Notifies the book's reader")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book.reader_id, first_reader(), triggers, streak_reward_earned")
+}
+Rel(web, routers, "HTTPS", "JSON")
+Rel(routers, readers, "readerFor(session, requested)")
+Rel(routers, services, "readerId / onlyReader")
+Rel(services, derived, "readerId")
+Rel(routers, push, "after a sticker or reward")
+Rel(services, db, "SQL")
+Rel(derived, db, "SQL")
+@enduml
