@@ -144,7 +144,7 @@ export class AddBookPage {
   }
 
   async submit() {
-    await this.page.getByRole('button', { name: 'Add to my shelf' }).click();
+    await this.page.getByRole('button', { name: /^Add to (my|\w+’s) shelf$/ }).click();
   }
 
   // The title lookup: the Title field is a combobox whose matches drop down under it.
@@ -317,5 +317,18 @@ export class AddBookPage {
   async shortestMatchHeight() {
     const boxes = await this.matches().evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect().height));
     return Math.min(...boxes);
+  }
+
+  /** "Who is reading it?", shown to a parent when the household has two or more readers. */
+  readerPicker() {
+    return this.page.getByRole('group', { name: 'Who is reading it?' });
+  }
+
+  async pickReader(name: string) {
+    await this.readerPicker().getByRole('button', { name, exact: true }).click();
+  }
+
+  submitButton() {
+    return this.page.getByRole('button', { name: /^Add to / });
   }
 }

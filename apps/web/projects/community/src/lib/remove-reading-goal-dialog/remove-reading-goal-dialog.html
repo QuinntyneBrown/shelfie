@@ -1,0 +1,16 @@
+<sh-dialog heading="Remove the reading goal?" [open]="open()" (closed)="busy() || closed.emit()">
+  @if (failed()) {
+    <sh-banner severity="danger" title="The reading goal is still there" message="Shelfie couldn’t reach the server. Try again in a moment." />
+  }
+  <p>
+    Remove {{ communityId() ? 'the community’s' : 'your' }} reading goal of {{ goal()?.target }}
+    {{ goal()?.target === 1 ? 'book' : 'books' }}?
+  </p>
+  <p class="text-muted">The books stay finished; only the target goes. You can set a new one at any time.</p>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" autofocus [disabled]="busy()" (click)="closed.emit()">Keep it</button>
+    <button class="btn btn--danger" type="button" [disabled]="busy()" [attr.aria-busy]="busy() ? true : null" (click)="remove()">
+      Remove goal
+    </button>
+  </div>
+</sh-dialog>

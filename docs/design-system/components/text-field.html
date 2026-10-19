@@ -73,6 +73,9 @@
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
+      <li><a href="../components/goal-card.html">Reading goal card</a></li>
+      <li><a href="../components/join-code.html">Join code</a></li>
+      <li><a href="../components/reader-picker.html">Reader picker</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -234,6 +237,10 @@
       <pre><code>/* Each state only reassigns the two tokens */
 .input:read-only:not(:disabled) { --field-bg: var(--color-bg-surface-sunken); }
 .input[aria-invalid="true"] { --field-border: var(--color-danger-solid); }</code></pre>
+    </section>
+
+    <section class="ds-section" id="date"><h2><a href="#date">Date</a></h2>
+      <p><code>sh-text-field</code> takes <code>type="date"</code> for the browser's own date input, labelled like any field; the reading-goal dialog uses it for "Finish by" (<a href="../../mocks/dialogs/reading-goal/default.html">dialogs/reading-goal</a>). The server checks the range and the field shows its error like any other.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remove a reading goal · community — Shelfie mocks</title>
+<meta name="mock:kind" content="dialog">
+<meta name="mock:screen" content="remove-reading-goal">
+<meta name="mock:state" content="community">
+<meta name="mock:requirements" content="L2-156, L2-159">
+<meta name="description" content="Confirm removing a reading goal (community).">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="has-tabbar" inert aria-hidden="true">
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/review/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" href="../../pages/review/default.html">Review <span class="badge badge--count" aria-label="3 chapters to review">3</span></a>
+    <a class="nav-link" href="../../pages/books/default.html">Books</a>
+    <a class="nav-link" href="../../pages/communities/default.html" aria-current="page">Community</a>
+    <a class="nav-link" href="../../pages/settings/default.html">Settings</a>
+  </nav>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">D</button>
+</header>
+
+<main id="main" class="container">
+<a class="btn btn--ghost btn--sm" href="../../pages/communities/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Community</a>
+<div class="page-header"><div><h1>Maple Street Readers</h1><p class="subtitle">3 families · you set its reading goal</p></div><a class="btn btn--ghost" href="../../dialogs/leave-community/default.html" aria-label="Leave Maple Street Readers"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg>Leave</a></div>
+<section class="card stack" aria-labelledby="code-title"><h2 id="code-title" style="font: var(--text-h4);">Join code</h2><p class="text-muted">Give this code to another parent. They type it in Community → Join with a code.</p><div class="join-code"><span class="join-code__value" aria-label="Join code K Q 7 M 3 H T P">KQ7M-3HTP</span><button class="btn btn--sm" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 9h11v11H9zM5 15H4V4h11v1"/></svg>Copy code</button></div></section>
+<section class="section stack" aria-labelledby="goal-title"><h2 id="goal-title" style="font: var(--text-h3);">Reading goal</h2><article class="goal-card"><span class="goal-card__icon" aria-hidden="true">🤝</span><div class="goal-card__body"><h3 class="goal-card__title">Community reading goal</h3><p class="goal-card__note">40 books by Sun 31 Jan · 3 families</p><div class="progress-row goal-card__progress"><div class="progress" role="progressbar" aria-valuenow="17" aria-valuemin="0" aria-valuemax="40" aria-label="17 of 40 books finished"><div class="progress__bar" style="--value: 42%;"></div></div><span class="progress-row__label">17 of 40</span></div></div><div class="goal-card__actions"><a class="btn btn--sm" href="../../dialogs/reading-goal/community.html" aria-label="Edit the community reading goal"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg>Edit</a><a class="btn btn--sm btn--ghost" href="../../dialogs/remove-reading-goal/community.html" aria-label="Remove the community reading goal"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>Remove</a></div></article></section>
+<section class="section stack" aria-labelledby="members-title"><h2 id="members-title" style="font: var(--text-h3);">Families</h2><ul class="list card card--flush"><li class="list__item"><span class="sticker" aria-hidden="true">🏡</span><div class="list__body"><div class="list__title">The Bells <span class="badge badge--info">You</span></div><div class="list__meta">5 books toward the goal</div></div></li><li class="list__item"><span class="sticker" aria-hidden="true">🏡</span><div class="list__body"><div class="list__title">The Okafors</div><div class="list__meta">7 books toward the goal</div></div></li><li class="list__item"><span class="sticker" aria-hidden="true">🏡</span><div class="list__body"><div class="list__title">The Lins</div><div class="list__meta">5 books toward the goal</div></div></li></ul><p class="text-caption">Families see each other’s name and book count only — never readers, books, answers or rewards.</p></section>
+</main>
+<nav class="tabbar" aria-label="Primary, phone">
+  <a href="../../pages/review/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="3 chapters to review">3</span></a>
+  <a href="../../pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+  <a href="../../pages/communities/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 5a3 3 0 0 1 0 6M18 15c2 .5 3 2.5 3 5"/></svg>Community</a>
+  <a href="../../pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
+</nav>
+</div>
+<div class="backdrop"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" data-dismiss-on-escape>
+  <div class="dialog__panel">
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--danger" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></div>
+      <div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Remove the reading goal?</h2></div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="dialog__body stack">
+<p>Remove the community’s reading goal of 40 books?</p><p class="text-muted">The books stay finished; only the target goes. You can set a new one at any time.</p>
+    </div>
+    <div class="dialog__footer"><button class="btn" type="button" autofocus>Keep it</button><button class="btn btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>Remove goal</button></div>
+  </div>
+</div><nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Remove a reading goal</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="community.html" aria-current="page">community</a></li><li><a href="busy.html">busy</a></li><li><a href="failed.html">failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

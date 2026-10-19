@@ -37,6 +37,11 @@ The feature sits in the `reading-log` subsystem beside track-streak. It adds one
 
 None of its own. The badges travel in the shelf and review responses, so they load, fail and retry with those pages.
 
+
+### Per reader
+
+Badges count one reader's chapter logs and finished books: `badgesFor(db, householdId, readerId)` (`L2-141`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.

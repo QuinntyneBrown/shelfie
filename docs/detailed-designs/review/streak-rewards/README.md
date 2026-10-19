@@ -57,6 +57,11 @@ The feature sits in the `review` subsystem beside reward-gallery, because its en
 | Give before it is earned | 400 `not-earned` | Not offered before it is earned |
 | Network or server failure | status 0 or 5xx | Banner in the dialog (set), danger toast (give); values kept |
 
+
+### Per reader
+
+A streak reward is set once per household but earned and given per reader, in `streak_reward_earned`; Give it on Review gives the picked reader's reward (`L2-143`, ADR-0018). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.

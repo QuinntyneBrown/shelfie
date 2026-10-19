@@ -27,6 +27,11 @@ The slice runs from the Review page to the `chapter_log`, `book` and `reward` ta
 
 `L2-014` lists the queue oldest first, while the mock lists it newest first and gives the newest chapter the primary button; the design follows the mock. Unauthenticated calls receive 401 and reader calls 403 from `requireRole`, which the shell maps to the sign-in and "Grown-ups only" pages (`L2-005`).
 
+
+### Per reader
+
+Review is about one reader: with two or more readers a "Reader" `sh-segmented` (chips "Nia · 2") picks her, and the queue, finished books, This week, badges, streak rewards and activity are hers. The response lists `readers` with their `waiting` counts, which the shell's badge sums. The "first reader by name" lookup is gone (`L2-138`, `L2-142`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

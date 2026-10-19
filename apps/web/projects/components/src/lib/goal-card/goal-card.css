@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.goal-card__actions:empty {
+  display: none;
+}

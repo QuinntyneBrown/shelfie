@@ -24,6 +24,11 @@ The slice is a pure function on the server plus a badge on the client.
 
 No table or column stores the streak, and no endpoint writes it. The streak is a property of the household, not of a book, so the reader's and the parent's values are always the same number. A chapter logged with a past read date (Another day) can lengthen or restart the streak retroactively, which follows from counting `read_on` rather than `logged_at`.
 
+
+### Per reader
+
+The streak counts one reader's chapter logs: `streakFor(db, householdId, readerId, now)` (`L2-141`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

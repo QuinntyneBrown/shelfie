@@ -6,6 +6,7 @@ import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
 import { badgesFor } from './badges.ts';
 import { streakFor, weekFor } from './streak.ts';
+import { householdReaders, type ReaderLabel } from './readers.service.ts';
 
 export const UNDO_SECONDS = 10;
 const UNIQUE_VIOLATION = '23505';
@@ -32,12 +33,13 @@ interface BookRow {
   cover_image: string | null;
 }
 
-async function findBook(db: Db, householdId: string, bookId: string, n: number): Promise<BookRow> {
+/** `onlyReader` limits every lookup here to that reader's books; another reader's reads as absent (ADR-0018). */
+async function findBook(db: Db, householdId: string, bookId: string, n: number, onlyReader: string | null): Promise<BookRow> {
   const book = await get<BookRow>(
     db,
     `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image
-       FROM book b LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE b.id = $1 AND b.household_id = $2`,
-    [bookId, householdId],
+       FROM book b LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE b.id = $1 AND b.household_id = $2 AND ($3::text IS NULL OR b.reader_id = $3)`,
+    [bookId, householdId, onlyReader],
   );
   if (!book || n > book.chapter_count) throw new Problem(404, 'not-found');
   return book;
@@ -56,11 +58,9 @@ const profileName = async (db: Db, householdId: string, role: string) =>
   (await get<{ name: string }>(db, 'SELECT name FROM profile WHERE household_id = $1 AND role = $2 ORDER BY name', [householdId, role]))?.name;
 
 const parentName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'parent'))!;
-// A household need not have a reader yet, so her name falls back to something the page can still say.
-const readerName = async (db: Db, householdId: string) => (await profileName(db, householdId, 'reader')) ?? 'your reader';
 
-export async function getForm(db: Db, householdId: string, bookId: string, n: number) {
-  const book = await findBook(db, householdId, bookId, n);
+export async function getForm(db: Db, householdId: string, bookId: string, n: number, onlyReader: string | null = null) {
+  const book = await findBook(db, householdId, bookId, n, onlyReader);
   await refuseIfLogged(db, bookId, n);
   return {
     book: { id: book.id, title: book.title, author: book.author, chapterCount: book.chapter_count, coverColor: book.cover_color, sticker: book.sticker, coverImage: book.cover_image },
@@ -71,8 +71,8 @@ export async function getForm(db: Db, householdId: string, bookId: string, n: nu
   };
 }
 
-export async function logChapter(pool: Pool, householdId: string, bookId: string, n: number, request: LogRequest) {
-  const book = await findBook(pool, householdId, bookId, n);
+export async function logChapter(pool: Pool, householdId: string, bookId: string, n: number, request: LogRequest, onlyReader: string | null = null) {
+  const book = await findBook(pool, householdId, bookId, n, onlyReader);
   if (request.readOn > (await householdToday(pool, householdId))) throw new Problem(400, 'future-date');
   await refuseIfLogged(pool, bookId, n);
   if (n !== (await loggedCount(pool, bookId)) + 1) throw new Problem(409, 'chapter-out-of-order');
@@ -119,11 +119,11 @@ export async function logChapter(pool: Pool, householdId: string, bookId: string
   };
 }
 
-export async function undoLog(db: Db, householdId: string, chapterLogId: string) {
+export async function undoLog(db: Db, householdId: string, chapterLogId: string, onlyReader: string | null = null) {
   const log = await get<{ id: string; book_id: string; chapter_number: number; undo_until: string }>(
     db,
-    'SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2',
-    [chapterLogId, householdId],
+    'SELECT c.id, c.book_id, c.chapter_number, c.undo_until FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2 AND ($3::text IS NULL OR b.reader_id = $3)',
+    [chapterLogId, householdId, onlyReader],
   );
   if (!log) throw new Problem(404, 'not-found');
   if (log.undo_until < new Date().toISOString()) throw new Problem(409, 'undo-expired');
@@ -141,13 +141,16 @@ export interface ChapterView {
   readOn: string;
   today: string;
   grownUpName: string;
+  /** The book's reader's name, or "your reader" for a book that has none yet. */
   readerName: string;
+  reader: ReaderLabel | null;
+  readerCount: number;
   answers: { position: number; questionText: string; text: string }[];
   review: { sticker: string; note: string | null; reviewedAt: string; feedbackSeenAt: string | null } | null;
   nextChapterLogId: string | null;
 }
 
-export async function getChapter(db: Db, householdId: string, chapterLogId: string): Promise<ChapterView> {
+export async function getChapter(db: Db, householdId: string, chapterLogId: string, onlyReader: string | null = null): Promise<ChapterView> {
   const log = await get<{
     id: string;
     chapter_number: number;
@@ -162,14 +165,18 @@ export async function getChapter(db: Db, householdId: string, chapterLogId: stri
     sticker: string;
     cover_image: string | null;
     chapter_count: number;
+    reader_id: string | null;
   }>(
     db,
     `SELECT c.id, c.chapter_number, c.read_on, c.reviewed_at, c.sticker AS review_sticker, c.note, c.feedback_seen_at, b.id AS book_id, b.title, b.cover_color, b.sticker, b.chapter_count,
-            ${COVER_IMAGE_COLUMN} AS cover_image
-       FROM chapter_log c JOIN book b ON b.id = c.book_id LEFT JOIN book_cover bc ON bc.book_id = b.id WHERE c.id = $1 AND b.household_id = $2`,
-    [chapterLogId, householdId],
+            b.reader_id, ${COVER_IMAGE_COLUMN} AS cover_image
+       FROM chapter_log c JOIN book b ON b.id = c.book_id LEFT JOIN book_cover bc ON bc.book_id = b.id
+      WHERE c.id = $1 AND b.household_id = $2 AND ($3::text IS NULL OR b.reader_id = $3)`,
+    [chapterLogId, householdId, onlyReader],
   );
   if (!log) throw new Problem(404, 'not-found');
+  const readers = await householdReaders(db, householdId);
+  const reader = readers.find((r) => r.id === log.reader_id) ?? null;
   const answers = await all<ChapterView['answers'][number]>(
     db,
     'SELECT position, question_text AS "questionText", text FROM answer WHERE chapter_log_id = $1 ORDER BY position',
@@ -183,7 +190,9 @@ export async function getChapter(db: Db, householdId: string, chapterLogId: stri
     readOn: log.read_on,
     today: await householdToday(db, householdId),
     grownUpName: await parentName(db, householdId),
-    readerName: await readerName(db, householdId),
+    readerName: reader?.name ?? 'your reader',
+    reader,
+    readerCount: readers.length,
     answers,
     review: log.reviewed_at
       ? { sticker: log.review_sticker!, note: log.note, reviewedAt: log.reviewed_at, feedbackSeenAt: log.feedback_seen_at }
@@ -193,8 +202,12 @@ export async function getChapter(db: Db, householdId: string, chapterLogId: stri
 }
 
 /** Notes that the reader has opened her feedback, so the shelf stops announcing it. */
-export async function markFeedbackSeen(db: Db, householdId: string, chapterLogId: string) {
-  const log = await get(db, 'SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2', [chapterLogId, householdId]);
+export async function markFeedbackSeen(db: Db, householdId: string, chapterLogId: string, onlyReader: string | null = null) {
+  const log = await get(
+    db,
+    'SELECT c.id FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1 AND b.household_id = $2 AND ($3::text IS NULL OR b.reader_id = $3)',
+    [chapterLogId, householdId, onlyReader],
+  );
   if (!log) throw new Problem(404, 'not-found');
   await run(db, 'UPDATE chapter_log SET feedback_seen_at = $1 WHERE id = $2 AND reviewed_at IS NOT NULL AND feedback_seen_at IS NULL', [
     new Date().toISOString(),

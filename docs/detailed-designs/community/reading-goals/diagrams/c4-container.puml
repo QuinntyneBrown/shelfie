@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Reading goals
+Person(parent, "Parent")
+Person(reader, "Reader")
+System_Boundary(s, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "ShelfPage Reading goals; community library dialogs; sh-goal-card")
+  Container(api, "Shelfie API", "Node.js, Express", "goals.router.ts, communities.router.ts")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "reading_goal, book.finished_at, household.time_zone")
+}
+Rel(parent, web, "Uses", "HTTPS")
+Rel(reader, web, "Uses", "HTTPS")
+Rel(web, api, "/api/goals, /api/communities/:id/goal", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml

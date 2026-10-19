@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
+  Avatar,
   Banner,
   Button,
   COVER_PICTURE_ERRORS,
@@ -27,6 +28,7 @@ import { SuggestQuestionsDialog } from '../suggest-questions-dialog/suggest-ques
 @Component({
   selector: 'sh-manage-book-page',
   imports: [
+    Avatar,
     Banner,
     Button,
     Cover,

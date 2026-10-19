@@ -26,6 +26,11 @@ The slice runs from the dialog on the Review page to the `reward` table and back
 
 The shelf mock `docs/mocks/notifications/banner/success.html` also shows a success banner "Dad gave you a reward for Matilda: Ice cream Saturday!" with the note; `L2-017` and `L2-018` do not ask for it and the `reward` table has no seen marker, so this design does not add one and the mock's reward banner shall go.
 
+
+### Per reader
+
+The dialog names the reader the Review page is about, who is the finished book's reader; the reward shows on her trophy shelf only (`L2-142`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

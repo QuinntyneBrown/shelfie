@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { getChapter, getForm, logChapter, markFeedbackSeen, undoLog } from './chapters.service.ts';
 import { Problem } from './problem.ts';
+import { onlyReader } from './readers.service.ts';
 import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
@@ -32,19 +33,24 @@ async function replying(res: Response, run: () => Promise<unknown>, status = 200
 export function chapterLogsRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db));
+  const scope = (res: Response) => {
+    const session = res.locals['session'] as RequestSession;
+    return [session.householdId, onlyReader(session)] as const;
+  };
+
   router.get('/:id', async (req, res) => {
-    const householdId = (res.locals['session'] as RequestSession).householdId;
-    await replying(res, () => getChapter(db, householdId, String(req.params['id'])));
+    const [householdId, reader] = scope(res);
+    await replying(res, () => getChapter(db, householdId, String(req.params['id']), reader));
   });
 
   router.post('/:id/seen', async (req, res) => {
-    const householdId = (res.locals['session'] as RequestSession).householdId;
-    await replying(res, () => markFeedbackSeen(db, householdId, String(req.params['id'])));
+    const [householdId, reader] = scope(res);
+    await replying(res, () => markFeedbackSeen(db, householdId, String(req.params['id']), reader));
   });
 
   router.delete('/:id', async (req, res) => {
-    const householdId = (res.locals['session'] as RequestSession).householdId;
-    await replying(res, () => undoLog(db, householdId, String(req.params['id'])));
+    const [householdId, reader] = scope(res);
+    await replying(res, () => undoLog(db, householdId, String(req.params['id']), reader));
   });
   return router;
 }
@@ -54,11 +60,12 @@ export function chaptersRouter(db: Pool, notifier: Notifier) {
   router.use(requireSession(db));
 
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
+  const readerOf = (res: Response) => onlyReader(res.locals['session'] as RequestSession);
 
   router.get('/:id/chapters/:n/form', async (req, res) => {
     const p = params.safeParse(req.params);
     if (!p.success) return res.status(404).json({ type: 'not-found' });
-    await replying(res, () => getForm(db, householdOf(res), p.data.id, p.data.n));
+    await replying(res, () => getForm(db, householdOf(res), p.data.id, p.data.n, readerOf(res)));
   });
 
   router.post('/:id/chapters/:n', async (req, res) => {
@@ -71,7 +78,7 @@ export function chaptersRouter(db: Pool, notifier: Notifier) {
     await replying(
       res,
       async () => {
-        const logged = await logChapter(db, householdOf(res), p.data.id, p.data.n, body.data);
+        const logged = await logChapter(db, householdOf(res), p.data.id, p.data.n, body.data, readerOf(res));
         notifier.chapterLogged(householdOf(res), (res.locals['session'] as RequestSession).name, logged.chapterLogId);
         return logged;
       },

@@ -2,7 +2,7 @@ import { Component, ElementRef, computed, effect, inject, signal, viewChild } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Banner, MenuItem, NavLink, TabBar } from 'components';
-import { ReviewApi } from 'review';
+import { ReviewApi, waitingInHousehold } from 'review';
 import { ProfilePhotoDialog, SendFeedbackDialog } from 'settings';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
@@ -30,6 +30,7 @@ export class App {
             badge: this.queueBadge(),
           },
           { label: 'Books', route: '/books', icon: 'books' },
+          { label: 'Community', route: '/communities', icon: 'community' },
           { label: 'Settings', route: '/settings', icon: 'settings' },
         ]
       : [],
@@ -76,7 +77,7 @@ export class App {
     const reviews = inject(ReviewApi);
     effect(() => {
       if (this.session()?.role !== 'parent') return;
-      reviews.load().then((overview) => this.status.queueCount.set(overview.queue.length));
+      reviews.load().then((overview) => this.status.queueCount.set(waitingInHousehold(overview)));
     });
     // After moving to another page keyboard focus would be lost, so put it on the new page's content.
     // The first navigation is the page load itself, where the skip link must stay the first Tab stop.

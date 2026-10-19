@@ -28,6 +28,11 @@ The slice runs from `AddBookPage` to the `book` table through one write endpoint
 
 On 201 the page navigates to `/book/:id` for the new book and calls `ToastService.success` (shell/notify) with the copy of the "added a book" toast mock ("Because of Winn-Dixie is on your shelf under Up next."). The shelf then lists the book under "Up next" with "Start with Chapter 1" (`L2-009`).
 
+
+### Per reader
+
+A book belongs to one reader. A reader adds to her own shelf; a parent with two or more readers picks one in "Who is reading it?" (`sh-segmented`, remembered by `ReaderChoiceService`) and `POST /api/books` carries `readerId`; with one reader nothing is asked (`L2-139`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.

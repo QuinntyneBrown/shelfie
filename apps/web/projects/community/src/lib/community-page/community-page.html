@@ -1,0 +1,128 @@
+<div class="container stack page">
+  <a class="btn btn--ghost btn--sm back" routerLink="/communities">
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+    Community
+  </a>
+  @switch (state()) {
+    @case ('loading') {
+      <h1 class="visually-hidden">Loading community</h1>
+      <div class="card stack" aria-busy="true" aria-label="Loading the community">
+        <sh-skeleton variant="title" /><sh-skeleton /><sh-skeleton />
+      </div>
+    }
+    @case ('failed') {
+      <h1 class="visually-hidden">Community</h1>
+      <sh-empty-state tone="error" title="This community didn’t load" text="Shelfie couldn’t reach the server. Try again in a moment.">
+        <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+      </sh-empty-state>
+    }
+    @case ('not-found') {
+      <h1 class="visually-hidden">Community</h1>
+      <sh-empty-state
+        title="We can’t find that community"
+        text="Your family isn’t in it, or it no longer exists. To join one, ask its parents for the code."
+      >
+        <a class="btn btn--primary" routerLink="/communities">Back to Community</a>
+      </sh-empty-state>
+    }
+    @case ('loaded') {
+      @let c = community()!;
+      <div class="page-header">
+        <div>
+          <h1>{{ c.name }}</h1>
+          <p class="subtitle">
+            {{ c.families.length }} {{ c.families.length === 1 ? 'family' : 'families' }}{{ c.manages ? ' · you set its reading goal' : '' }}
+          </p>
+        </div>
+        <button class="btn btn--ghost" type="button" [attr.aria-label]="'Leave ' + c.name" (click)="dialog.set('leave')">Leave</button>
+      </div>
+
+      <section class="card stack" aria-labelledby="code-title">
+        <h2 id="code-title" class="card-title">Join code</h2>
+        <p class="text-muted">Give this code to another parent. They type it in Community → Join with a code.</p>
+        <sh-join-code [code]="c.joinCode" />
+      </section>
+
+      <section class="stack" aria-labelledby="goal-title">
+        <h2 id="goal-title" class="section-title">Reading goal</h2>
+        @if (c.goal; as goal) {
+          <sh-goal-card
+            icon="🤝"
+            title="Community reading goal"
+            [note]="goalNote(c, goal)"
+            [finished]="goal.finished"
+            [target]="goal.target"
+            [state]="goal.state"
+          >
+            @if (c.manages) {
+              <button class="btn btn--sm" type="button" aria-label="Edit the community reading goal" (click)="dialog.set('goal')">Edit</button>
+              <button
+                class="btn btn--sm btn--ghost"
+                type="button"
+                aria-label="Remove the community reading goal"
+                (click)="dialog.set('remove-goal')"
+              >
+                Remove
+              </button>
+            }
+          </sh-goal-card>
+        } @else {
+          <sh-goal-card
+            icon="🤝"
+            title="No reading goal yet"
+            [note]="
+              c.manages
+                ? 'Set how many books the families will finish together, and by when.'
+                : 'The family that manages this community sets its reading goal.'
+            "
+          >
+            @if (c.manages) {
+              <button class="btn btn--sm btn--primary" type="button" (click)="dialog.set('goal')">Set a reading goal</button>
+            }
+          </sh-goal-card>
+        }
+      </section>
+
+      <section class="stack" aria-labelledby="families-title">
+        <h2 id="families-title" class="section-title">Families</h2>
+        <ul class="list card card--flush">
+          @for (family of c.families; track $index) {
+            <li class="list__item">
+              <span class="sticker" aria-hidden="true">🏡</span>
+              <div class="list__body">
+                <div class="list__title">
+                  {{ family.name }}
+                  @if (family.you) {
+                    <span class="badge badge--info">You</span>
+                  }
+                </div>
+                <div class="list__meta">{{ countOf(family) }}</div>
+              </div>
+            </li>
+          }
+        </ul>
+        <p class="text-caption">Families see each other’s name and book count only — never readers, books, answers or rewards.</p>
+      </section>
+
+      <sh-reading-goal-dialog
+        [open]="dialog() === 'goal'"
+        [goal]="c.goal"
+        [communityId]="c.id"
+        (saved)="goalSaved()"
+        (closed)="dialog.set(null)"
+      />
+      <sh-remove-reading-goal-dialog
+        [open]="dialog() === 'remove-goal'"
+        [goal]="c.goal"
+        [communityId]="c.id"
+        (removed)="goalRemoved()"
+        (closed)="dialog.set(null)"
+      />
+      <sh-leave-community-dialog
+        [community]="dialog() === 'leave' ? c : null"
+        (left)="left($event)"
+        (closed)="dialog.set(null)"
+      />
+    }
+  }
+</div>

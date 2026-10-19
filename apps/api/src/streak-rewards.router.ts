@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
 import { Problem } from './problem.ts';
+import { readerFor } from './readers.service.ts';
 import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { clearStreakReward, giveStreakReward, MILESTONES, setStreakReward, streakRewardsOf } from './streak-rewards.service.ts';
@@ -13,21 +14,23 @@ const streakRewardSchema = z.object({
   amount: z.number().int().min(1).max(1000).nullable().optional(),
 });
 
-/** The household's streak rewards: both roles read them, only parents change or give them (L2-104). */
+/** The household's streak rewards as one reader stands with them: both roles read them, only parents change or give them (L2-104, L2-143). */
 export function streakRewardsRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
 
-  router.get('/', async (_req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    res.json({ rewards: await streakRewardsOf(db, householdId) });
+  router.get('/', async (req, res) => {
+    const session = res.locals['session'] as RequestSession;
+    await answer(res, async () => res.json({ rewards: await streakRewardsOf(db, session.householdId, await readerFor(db, session, req.query['reader'])) }));
   });
 
   router.put('/:milestone', requireRole('parent'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
     const body = streakRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    await answer(res, async () => res.json(await setStreakReward(db, householdId, milestoneOf(req.params['milestone']), body.data.name, body.data.amount ?? null)));
+    await answer(res, async () =>
+      res.json(await setStreakReward(db, session.householdId, milestoneOf(req.params['milestone']), body.data.name, body.data.amount ?? null, await readerFor(db, session))),
+    );
   });
 
   router.delete('/:milestone', requireRole('parent'), async (req, res) => {
@@ -39,11 +42,13 @@ export function streakRewardsRouter(db: Pool, notifier: Notifier) {
   });
 
   router.post('/:milestone/give', requireRole('parent'), async (req, res) => {
-    const { householdId, name } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
+    const { householdId, name } = session;
     await answer(res, async () => {
       const milestone = milestoneOf(req.params['milestone']);
-      const given = await giveStreakReward(db, householdId, milestone);
-      await notifier.streakReward(householdId, name, milestone);
+      const readerId = await readerFor(db, session, (req.body as { readerId?: unknown } | undefined)?.readerId);
+      const given = await giveStreakReward(db, householdId, milestone, readerId);
+      await notifier.streakReward(householdId, name, milestone, readerId);
       res.json(given);
     });
   });

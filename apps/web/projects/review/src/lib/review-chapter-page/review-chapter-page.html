@@ -51,6 +51,12 @@
             }}
             · {{ chapter.chapterNumber }} of {{ chapter.book.chapterCount }}
           </span>
+          @if (chapter.reader && chapter.readerCount > 1) {
+            <span class="cluster reader-label">
+              <sh-avatar [name]="chapter.reader.name" [color]="chapter.reader.color" [photo]="chapter.reader.photo" size="sm" />
+              <span class="text-muted">{{ chapter.reader.name }}’s chapter</span>
+            </span>
+          }
         </div>
       </div>
 

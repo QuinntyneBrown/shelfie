@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Reading goals
+Container(web, "Shelfie web", "Angular")
+Container_Boundary(api, "Shelfie API") {
+  Component(goalsRouter, "goals.router.ts", "Express Router", "GET for both roles; PUT/DELETE household for parents")
+  Component(commRouter, "communities.router.ts", "Express Router", "PUT/DELETE /:id/goal for the managing household")
+  Component(goals, "goals.service.ts", "Service", "goalSchema, finishedBetween, toView, set and remove")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "reading_goal")
+}
+Rel(web, goalsRouter, "HTTPS", "JSON")
+Rel(web, commRouter, "HTTPS", "JSON")
+Rel(goalsRouter, goals, "Calls")
+Rel(commRouter, goals, "Calls")
+Rel(goals, db, "SQL")
+@enduml

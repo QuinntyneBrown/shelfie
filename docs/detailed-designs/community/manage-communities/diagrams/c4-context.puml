@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Manage communities
+Person(dad, "Parent (the Bells)", "Starts a community and shares its code")
+Person(other, "Parent (another household)", "Joins with the code")
+System(shelfie, "Shelfie", "Shares only family display names and counts")
+Rel(dad, shelfie, "Starts, views, leaves")
+Rel(other, shelfie, "Joins, views, leaves")
+Rel(dad, other, "Gives the join code to", "outside Shelfie")
+@enduml

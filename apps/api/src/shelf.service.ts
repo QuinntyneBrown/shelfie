@@ -64,15 +64,16 @@ interface BookRow {
   reward_given_at: string | null;
 }
 
-export async function getShelf(db: Db, householdId: string): Promise<ShelfResponse> {
+/** One reader's shelf; `readerId` is null only in a household with no reader, whose books have none either (ADR-0018). */
+export async function getShelf(db: Db, householdId: string, readerId: string | null): Promise<ShelfResponse> {
   const rows = await all<BookRow>(
     db,
     `SELECT b.id, b.title, b.author, b.chapter_count, b.cover_color, b.sticker, ${COVER_IMAGE_COLUMN} AS cover_image, b.created_at, b.finished_at,
             COUNT(c.id) AS logged_count, MAX(c.logged_at) AS last_logged_at,
             r.text AS reward_text, r.given_at AS reward_given_at
        FROM book b LEFT JOIN chapter_log c ON c.book_id = b.id LEFT JOIN reward r ON r.book_id = b.id LEFT JOIN book_cover bc ON bc.book_id = b.id
-      WHERE b.household_id = $1 GROUP BY b.id, r.book_id, bc.book_id`,
-    [householdId],
+      WHERE b.household_id = $1 AND b.reader_id IS NOT DISTINCT FROM $2 GROUP BY b.id, r.book_id, bc.book_id`,
+    [householdId, readerId],
   );
 
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
@@ -99,17 +100,17 @@ export async function getShelf(db: Db, householdId: string): Promise<ShelfRespon
     db,
     `SELECT c.id AS "chapterLogId", b.id AS "bookId", b.title AS "bookTitle", c.chapter_number AS "chapterNumber", c.sticker
        FROM chapter_log c JOIN book b ON b.id = c.book_id
-      WHERE b.household_id = $1 AND c.reviewed_at IS NOT NULL AND c.feedback_seen_at IS NULL
+      WHERE b.household_id = $1 AND b.reader_id IS NOT DISTINCT FROM $2 AND c.reviewed_at IS NOT NULL AND c.feedback_seen_at IS NULL
       ORDER BY c.reviewed_at DESC`,
-    [householdId],
+    [householdId, readerId],
   );
 
   return {
     unseenFeedback,
-    streak: await streakFor(db, householdId),
-    week: await weekFor(db, householdId),
-    badges: await badgesFor(db, householdId),
-    streakRewards: await streakRewardsOf(db, householdId),
+    streak: await streakFor(db, householdId, new Date(), readerId),
+    week: await weekFor(db, householdId, new Date(), readerId),
+    badges: await badgesFor(db, householdId, readerId),
+    streakRewards: await streakRewardsOf(db, householdId, readerId),
     grownUpName: grownUp.name,
     reading: rows
       .filter((r) => !r.finished_at && r.logged_count > 0)

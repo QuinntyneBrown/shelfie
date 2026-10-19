@@ -1,0 +1,12 @@
+.page {
+  gap: var(--space-6);
+}
+.back {
+  align-self: flex-start;
+}
+.section-title {
+  font: var(--text-h3);
+}
+.card-title {
+  font: var(--text-h4);
+}

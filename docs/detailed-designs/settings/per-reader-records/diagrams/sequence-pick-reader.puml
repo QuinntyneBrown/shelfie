@@ -1,0 +1,29 @@
+@startuml
+title UML sequence behaviour — A parent picks a reader on Review
+actor "Parent" as parent
+participant "ReviewPage" as page
+participant "ReaderChoiceService" as choice
+participant "review.router.ts" as router
+participant "readers.service.ts" as readers
+participant "review.service.ts" as service
+database "PostgreSQL" as db
+parent -> page : Open Review
+page -> choice : selected()
+page -> router : GET /api/review?reader=<remembered or none>
+router -> readers : readerFor(session, requested)
+alt requested reader not in household
+  readers --> router : Problem 404
+  router --> page : 404
+  page -> choice : choose(null); reload with no reader
+else
+  readers -> db : first_reader(household) when none requested
+  router -> service : overview(householdId, readerId)
+  service -> db : queue, finished, logs WHERE b.reader_id = readerId
+  service --> page : {readerId, readers[{waiting}], ...}
+  page --> parent : picker only when readers.length > 1
+end
+parent -> page : Pick Theo
+page -> choice : choose(theo)
+page -> router : GET /api/review?reader=theo
+router --> page : Theo's overview
+@enduml

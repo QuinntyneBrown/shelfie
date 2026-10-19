@@ -127,8 +127,8 @@ export class ShellPage {
     return this.page.getByRole('navigation', { name: 'Primary, phone' });
   }
 
-  /** A grown-up's link to Review, Books or Settings, in the top bar or the phone's tab bar. */
-  navLink(where: 'top' | 'tab', name: 'Review' | 'Books' | 'Settings') {
+  /** A grown-up's link to Review, Books, Community or Settings, in the top bar or the phone's tab bar. */
+  navLink(where: 'top' | 'tab', name: 'Review' | 'Books' | 'Community' | 'Settings') {
     return (where === 'top' ? this.topNav() : this.tabBar()).getByRole('link', { name });
   }
 

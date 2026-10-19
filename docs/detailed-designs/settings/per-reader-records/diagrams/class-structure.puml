@@ -1,0 +1,42 @@
+@startuml
+title Class structure — Per-reader records
+skinparam classAttributeIconSize 0
+class ReaderChoiceService <<core>> {
+  +selected: Signal<string|null>
+  +choose(id: string)
+}
+class ReviewPage
+class BooksPage
+class AddBookPage
+class "sh-segmented" as Segmented <<components>>
+class ReviewOverview {
+  readerId: string|null
+  readers: ReaderSummary[]
+  readerName: string
+  queue, finishedUnrewarded, badges, streakRewards
+}
+class ReaderSummary {
+  id, name, color, photo
+  waiting: number
+}
+class BookResponse {
+  reader: ReaderLabel|null
+  readerCount: number
+  readerName: string
+}
+class "readers.service.ts" as RS {
+  +readerFor(db, session, requested?): string|null
+  +onlyReader(session): string|null
+  +householdReaders(db, householdId)
+}
+ReviewPage --> ReaderChoiceService
+BooksPage --> ReaderChoiceService
+AddBookPage --> ReaderChoiceService
+ReviewPage --> Segmented
+BooksPage --> Segmented
+AddBookPage --> Segmented
+ReviewPage ..> ReviewOverview
+ReviewOverview *-- ReaderSummary
+RS ..> ReviewOverview : scopes
+RS ..> BookResponse : scopes
+@enduml

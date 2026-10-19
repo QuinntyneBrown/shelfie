@@ -89,6 +89,44 @@
         </div>
       </section>
     }
+    @if (hasReadingGoals()) {
+      @let goals = readingGoals()!;
+      <section class="section" aria-labelledby="reading-goals">
+        <h2 id="reading-goals" class="group-title">Reading goals</h2>
+        @if (goals.household?.state === 'reached') {
+          <sh-celebration variant="book" class="goal-celebration">
+            <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
+            <h3 class="goal-celebration__title">You did it, together! 🎉</h3>
+            <p class="text-muted">Your family finished {{ goals.household!.target }} {{ goals.household!.target === 1 ? 'book' : 'books' }}.</p>
+          </sh-celebration>
+        }
+        <ul class="list goal-list">
+          @if (goals.household; as goal) {
+            <li>
+              <sh-goal-card
+                title="Our reading goal"
+                [note]="goalLine(goal) + ' · every book your family finishes counts'"
+                [finished]="goal.finished"
+                [target]="goal.target"
+                [state]="goal.state"
+              />
+            </li>
+          }
+          @for (community of goals.communities; track community.id) {
+            <li>
+              <sh-goal-card
+                icon="🤝"
+                [title]="community.name"
+                [note]="goalLine(community.goal) + ' · together with other families'"
+                [finished]="community.goal.finished"
+                [target]="community.goal.target"
+                [state]="community.goal.state"
+              />
+            </li>
+          }
+        </ul>
+      </section>
+    }
     @if (data.reading.length) {
       <section class="section" aria-labelledby="on-the-go">
         <h2 id="on-the-go" class="group-title">On the go</h2>

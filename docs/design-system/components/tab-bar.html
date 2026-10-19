@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tab bar — Shelfie design system</title>
-<meta name="description" content="The grown-up's bottom navigation on phones: Review, Books and Settings with a count badge. Hidden from 768px, where the top bar nav takes over.">
+<meta name="description" content="The grown-up's bottom navigation on phones: Review, Books, Community and Settings with a count badge. Hidden from 768px, where the top bar nav takes over.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -73,6 +73,9 @@
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
+      <li><a href="../components/goal-card.html">Reading goal card</a></li>
+      <li><a href="../components/join-code.html">Join code</a></li>
+      <li><a href="../components/reader-picker.html">Reader picker</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -212,7 +215,7 @@
       <p>A native <code>&lt;nav aria-label="Primary, phone"&gt;</code> of links with <code>aria-current="page"</code>. Not the APG Tabs pattern: these change the page, so they are links and use plain Tab navigation. Only one primary nav is ever rendered visible (the other is <code>display: none</code>), so screen readers meet one navigation landmark.</p>
       <h3>Keyboard</h3>
       <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
-        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through Review, Books, Settings. The bar comes last in DOM order, after the page content.</td></tr>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through Review, Books, Community, Settings. The bar comes last in DOM order, after the page content.</td></tr>
         <tr><td><kbd>Enter</kbd></td><td>Follows the link.</td></tr>
       </tbody></table>
       <h3>Focus</h3>
@@ -235,7 +238,7 @@
 
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li>Same three words as the top bar, in the same order: Review, Books, Settings.</li>
+        <li>Same four words as the top bar, in the same order: Review, Books, Community, Settings.</li>
         <li>One word per tab; a label that wraps at 360px is too long.</li>
         <li>The badge shows a number only; its spoken label says what the number counts.</li>
       </ul>

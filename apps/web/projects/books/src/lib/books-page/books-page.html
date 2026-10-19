@@ -4,6 +4,14 @@
     <a class="btn" routerLink="/add-book">Add a book</a>
   </div>
   @if (list(); as list) {
+    @if (readerOptions().length) {
+      <sh-segmented
+        label="Reader"
+        [options]="readerOptions()"
+        [value]="list.readerId ?? ''"
+        (valueChange)="pickReader($event)"
+      />
+    }
     @if (list.books.length === 0) {
       <sh-empty-state
         [title]="list.readerName + '’s shelf is empty'"

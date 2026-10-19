@@ -36,4 +36,17 @@ export class BooksPage {
   getViaApi() {
     return this.page.request.get('/api/books');
   }
+
+  /** The "Reader" picker, shown only when the household has two or more readers. */
+  readerPicker() {
+    return this.page.getByRole('group', { name: 'Reader' });
+  }
+
+  readerChoice(name: string) {
+    return this.readerPicker().getByRole('button', { name: new RegExp(`^${name}\\b`) });
+  }
+
+  async pickReader(name: string) {
+    await this.readerChoice(name).click();
+  }
 }

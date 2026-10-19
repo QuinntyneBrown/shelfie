@@ -1,0 +1,38 @@
+@startuml
+title Class structure — Manage communities
+skinparam classAttributeIconSize 0
+class CommunitiesPage
+class CommunityPage
+class StartCommunityDialog
+class JoinCommunityDialog
+class LeaveCommunityDialog
+class CommunitiesApi {
+  +list(): CommunitySummary[]
+  +get(id): CommunityView
+  +start(name, familyName): CommunityView
+  +join(code, familyName): CommunityView
+  +leave(id)
+}
+class CommunityView {
+  id: string
+  name: string
+  joinCode: string
+  manages: boolean
+  families: Family[]
+  goal: GoalView|null
+}
+class Family {
+  name: string
+  you: boolean
+  finished: number|null
+}
+class "sh-join-code" as JoinCode <<components>>
+CommunitiesPage --> StartCommunityDialog
+CommunitiesPage --> JoinCommunityDialog
+CommunityPage --> LeaveCommunityDialog
+CommunityPage --> JoinCode
+CommunitiesPage --> CommunitiesApi
+CommunityPage --> CommunitiesApi
+CommunitiesApi ..> CommunityView
+CommunityView *-- Family
+@enduml

@@ -9,13 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, Cover, FEEDBACK_STICKERS, StickerPicker, Textarea } from 'components';
+import { Avatar, Banner, Button, Cover, FEEDBACK_STICKERS, StickerPicker, Textarea } from 'components';
 import { ApiError, ShellStatusService } from 'core';
 import { Advice, ChapterLog, FeedbackResult, ReviewApi } from '../review-api';
 
 @Component({
   selector: 'sh-review-chapter-page',
-  imports: [Banner, Button, Cover, DatePipe, RouterLink, StickerPicker, Textarea],
+  imports: [Avatar, Banner, Button, Cover, DatePipe, RouterLink, StickerPicker, Textarea],
   templateUrl: './review-chapter-page.html',
   styleUrl: './review-chapter-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

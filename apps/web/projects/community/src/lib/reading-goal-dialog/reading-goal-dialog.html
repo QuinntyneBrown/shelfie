@@ -1,0 +1,49 @@
+<sh-dialog [heading]="heading()" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="reading-goal-form" class="stack" (submit)="$event.preventDefault(); save()" novalidate>
+    @if (problems().length) {
+      <sh-banner severity="danger" [summary]="true" [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')">
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner severity="danger" title="The reading goal wasn’t saved" message="Shelfie couldn’t reach the server. Try again in a moment.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <p class="text-muted">
+      Count the books {{ communityId() ? 'every family in the community' : 'your readers' }} finish from
+      {{ goal() ? 'the day it was set' : 'today' }} until the end date.
+    </p>
+    <sh-text-field
+      label="How many books?"
+      type="number"
+      inputmode="numeric"
+      [help]="'1 to ' + max().toLocaleString('en') + ' books.'"
+      [autofocus]="true"
+      [error]="targetError()"
+      [(value)]="target"
+    />
+    <sh-text-field label="Finish by" type="date" [error]="endsOnError()" [(value)]="endsOn" />
+    @if (goal()) {
+      <p class="text-caption">Books finished since it was set still count; changing the goal doesn’t restart it.</p>
+    }
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="reading-goal-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      Save goal
+    </button>
+  </div>
+</sh-dialog>

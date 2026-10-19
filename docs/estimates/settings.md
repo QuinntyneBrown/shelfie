@@ -7,3 +7,4 @@
 | invite-parent | 4 days | 100% |
 | manage-readers | 5 days | 100% |
 | upload-profile-photo | 5 days | 100% |
+| per-reader-records | 5 days | 100% |

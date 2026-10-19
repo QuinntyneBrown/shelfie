@@ -48,7 +48,7 @@ const STICKER_LABELS: Record<string, string> = {
  * Tells every device of the household's profiles with `role`, when the household has this choice on. It never throws:
  * a notification is a courtesy, so a failure is logged (without the endpoint) and the caller carries on (L2-125 to L2-128).
  */
-async function notify(db: Db, push: Push | null, log: Log, householdId: string, role: Role, choice: Choice, payload: PushPayload) {
+async function notify(db: Db, push: Push | null, log: Log, householdId: string, role: Role, choice: Choice, payload: PushPayload, onlyProfile: string | null = null) {
   if (!push) return;
   try {
     const household = await get<{ on: boolean }>(db, `SELECT ${COLUMN[choice]} AS "on" FROM household WHERE id = $1`, [householdId]);
@@ -57,8 +57,8 @@ async function notify(db: Db, push: Push | null, log: Log, householdId: string, 
       db,
       `SELECT s.id, s.profile_id AS "profileId", s.endpoint, s.p256dh, s.auth
          FROM push_subscription s JOIN profile p ON p.id = s.profile_id
-        WHERE p.household_id = $1 AND p.role = $2 ORDER BY s.created_at, s.id`,
-      [householdId, role],
+        WHERE p.household_id = $1 AND p.role = $2 AND ($3::text IS NULL OR p.id = $3) ORDER BY s.created_at, s.id`,
+      [householdId, role, onlyProfile],
     );
     for (const target of targets) {
       try {
@@ -78,14 +78,15 @@ export interface Notifier {
   chapterLogged(householdId: string, readerName: string, chapterLogId: string): void;
   feedback(householdId: string, parentName: string, chapterLogId: string, sticker: string): Promise<void>;
   bookReward(householdId: string, parentName: string, bookId: string): Promise<void>;
-  streakReward(householdId: string, parentName: string, milestone: number): Promise<void>;
+  /** Tells the reader who earned it; null tells every reader of the household. */
+  streakReward(householdId: string, parentName: string, milestone: number, readerId: string | null): Promise<void>;
 }
 
 export function createNotifier(db: Db, push: Push | null, log: Log, schedule: Schedule): Notifier {
   const chapterOf = (chapterLogId: string) =>
-    get<{ title: string; chapter: number; reviewed: boolean }>(
+    get<{ title: string; chapter: number; reviewed: boolean; readerId: string | null }>(
       db,
-      `SELECT b.title, c.chapter_number AS chapter, c.reviewed_at IS NOT NULL AS reviewed
+      `SELECT b.title, c.chapter_number AS chapter, c.reviewed_at IS NOT NULL AS reviewed, b.reader_id AS "readerId"
          FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE c.id = $1`,
       [chapterLogId],
     );
@@ -111,25 +112,25 @@ export function createNotifier(db: Db, push: Push | null, log: Log, schedule: Sc
         body: 'Come and see what they said.',
         url: `/chapter-logs/${chapterLogId}`,
         tag: `feedback-${chapterLogId}`,
-      });
+      }, chapter.readerId);
     },
     async bookReward(householdId, parentName, bookId) {
-      const book = await get<{ title: string }>(db, 'SELECT title FROM book WHERE id = $1', [bookId]);
+      const book = await get<{ title: string; readerId: string | null }>(db, 'SELECT title, reader_id AS "readerId" FROM book WHERE id = $1', [bookId]);
       if (!book) return;
       await notify(db, push, log, householdId, 'reader', 'bookReward', {
         title: `🏆 ${parentName} gave you a reward for ${book.title}`,
         body: 'Come and see what it is.',
         url: '/shelf',
         tag: `reward-${bookId}`,
-      });
+      }, book.readerId);
     },
-    async streakReward(householdId, parentName, milestone) {
+    async streakReward(householdId, parentName, milestone, readerId) {
       await notify(db, push, log, householdId, 'reader', 'streakReward', {
         title: `🔥 ${milestone} days in a row! ${parentName} gave you a reward`,
         body: 'Come and see what it is.',
         url: '/shelf',
         tag: `streak-${milestone}`,
-      });
+      }, readerId);
     },
   };
 }

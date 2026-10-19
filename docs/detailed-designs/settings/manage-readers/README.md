@@ -30,6 +30,11 @@ Deleting a reader and changing a reader's username on the sign-in page are not i
 
 - **Profile photo** — `ReaderView` carries `photo: string | null`, and each Readers row draws `sh-avatar` from it. A parent cannot set or remove a reader's photo; when the reader has one, `EditReaderDialog` shows the help "Shows when {name} has no photo." under Colour. See `settings/upload-profile-photo` (`L2-043`).
 
+
+### Per reader
+
+Adding the first reader to a household that had books without a reader gives her those books (ADR-0018). Each reader's records are her own (`settings/per-reader-records`). See `settings/per-reader-records`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

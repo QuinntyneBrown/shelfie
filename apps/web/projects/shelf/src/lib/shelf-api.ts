@@ -42,6 +42,8 @@ export interface BookMatch {
 export const catalogueCoverUrl = (coverId: string) => `/api/books/search/covers/${coverId}`;
 
 export interface NewBook {
+  /** Whose shelf it goes on; a parent names a reader when there is more than one (L2-139). */
+  readerId?: string;
   title: string;
   author: string;
   chapterCount: number;
@@ -131,6 +133,21 @@ export interface WeekDay {
   today: boolean;
 }
 
+/** A reading goal and where it stands (ADR-0021); not the reward gallery's goal. */
+export interface ReadingGoal {
+  target: number;
+  startsOn: string;
+  endsOn: string;
+  finished: number;
+  state: 'in-progress' | 'reached' | 'ended';
+}
+
+/** The household's reading goal and those of its communities, as its readers see them (L2-158, L2-160). */
+export interface ReadingGoals {
+  household: ReadingGoal | null;
+  communities: { id: string; name: string; goal: ReadingGoal }[];
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
@@ -161,6 +178,11 @@ export class ShelfApi {
     }
   }
 
+  /** The household's readers and the one the parent's pages are about; `query` is `?reader=…` or empty. */
+  readers(query = '') {
+    return this.api.get<{ readerId: string | null; readers: { id: string; name: string }[] }>(`/books${query}`);
+  }
+
   addBook(book: NewBook) {
     return this.api.post<{ id: string }>('/books', book);
   }
@@ -189,6 +211,10 @@ export class ShelfApi {
   /** Uploads a book's cover picture and returns its URL. */
   addCover(bookId: string, file: File) {
     return this.api.put<{ coverImage: string }>(`/books/${bookId}/cover`, file);
+  }
+
+  readingGoals() {
+    return this.api.get<ReadingGoals>('/goals');
   }
 
   gallery() {

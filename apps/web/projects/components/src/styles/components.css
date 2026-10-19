@@ -473,6 +473,21 @@ label.bubble__text { cursor: pointer; }
 .trophy__actions { flex: none; margin-left: auto; }
 
 /* ---------- Shelfie: achievement badges --------------------------------------------------- */
+/* A reading goal (L2-154): an icon, what it counts and until when, a progress bar, and the parent's actions. Reached turns it green; ended mutes it. */
+.goal-card { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); }
+.goal-card__icon { flex: none; display: grid; place-items: center; width: var(--control-height-md); height: var(--control-height-md); border-radius: var(--radius-full); background: var(--color-accent-subtle); font-size: var(--font-size-xl); line-height: 1; }
+.goal-card__body { flex: 1 1 12rem; min-width: 0; }
+.goal-card__title { font: var(--text-label); }
+.goal-card__note { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.goal-card__progress { margin-top: var(--space-2); }
+.goal-card__actions { flex: none; margin-left: auto; display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.goal-card--reached { border-color: var(--color-success-border); background: var(--color-success-bg); }
+.goal-card--reached .goal-card__icon { background: var(--color-bg-surface); }
+.goal-card--ended { background: var(--color-bg-surface-sunken); border-style: dashed; }
+.goal-card--ended .goal-card__icon { background: var(--color-bg-subtle); filter: grayscale(1); }
+/* A community join code (L2-147): the eight characters, large and spaced, and a Copy button. */
+.join-code { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.join-code__value { font-family: var(--font-family-mono); font-size: var(--font-size-xl); font-weight: 700; letter-spacing: 0.15em; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-bg-surface-sunken); border: var(--border-width-hairline) dashed var(--color-border-strong); user-select: all; }
 .achievements { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
 .achievement { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); min-width: 0; }
 /* R6: one badge object everywhere: a round illustration in a coloured ring, a green check once earned, a name and an earned-on date. Locked is the same shape greyed out. */

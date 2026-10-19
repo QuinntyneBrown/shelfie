@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
-import { get, run, transaction, type Db } from './db.ts';
+import { all, get, run, transaction, type Db } from './db.ts';
 import { takenFields } from './auth.service.ts';
 import { PHOTO_COLUMN } from './photos.service.ts';
 import { Problem } from './problem.ts';
 import { hashSecret } from './secret.ts';
+import type { RequestSession } from './session.ts';
 import type { ReaderView } from './settings.service.ts';
 
 export interface ReaderInput {
@@ -30,6 +31,8 @@ export async function addReader(db: Pool, householdId: string, input: ReaderInpu
     input.username,
     hashSecret(input.password!),
   ]);
+  // Books stored while the household had no reader become the first reader's (ADR-0018).
+  await run(db, 'UPDATE book SET reader_id = first_reader(household_id) WHERE household_id = $1 AND reader_id IS NULL', [householdId]);
   return readerView(db, id);
 }
 
@@ -47,3 +50,38 @@ export async function updateReader(pool: Pool, householdId: string, id: string, 
   });
   return readerView(pool, id);
 }
+
+/** A reader as parent pages label her: name, avatar colour and photo. */
+export interface ReaderLabel {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+}
+
+/** The household's readers, first reader first (by name, then id), as `first_reader()` orders them. */
+export function householdReaders(db: Db, householdId: string): Promise<ReaderLabel[]> {
+  return all<ReaderLabel>(
+    db,
+    `SELECT p.id, p.name, p.color, ${PHOTO_COLUMN} FROM profile p LEFT JOIN profile_photo pp ON pp.profile_id = p.id
+      WHERE p.household_id = $1 AND p.role = 'reader' ORDER BY p.name, p.id`,
+    [householdId],
+  );
+}
+
+/**
+ * The reader a request is about (ADR-0019): a reader is always herself; a parent gets the reader she asked for, which
+ * must be a reader of her household (404 otherwise), or else the first reader, or null in a household with none.
+ */
+export async function readerFor(db: Db, session: RequestSession, requested?: unknown): Promise<string | null> {
+  if (session.role === 'reader') return session.profileId;
+  if (typeof requested === 'string' && requested !== '') {
+    const reader = await get(db, "SELECT 1 FROM profile WHERE id = $1 AND household_id = $2 AND role = 'reader'", [requested, session.householdId]);
+    if (!reader) throw new Problem(404, 'not-found');
+    return requested;
+  }
+  return (await get<{ id: string | null }>(db, 'SELECT first_reader($1) AS id', [session.householdId]))!.id;
+}
+
+/** Limits book-level reads and writes to a reader's own books; a parent reaches every reader's (ADR-0018). */
+export const onlyReader = (session: RequestSession): string | null => (session.role === 'reader' ? session.profileId : null);

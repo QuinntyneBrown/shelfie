@@ -1,0 +1,100 @@
+<div class="container stack page">
+  <div class="page-header">
+    <div>
+      <h1>Community</h1>
+      <p class="subtitle">Read together, at home and with other families.</p>
+    </div>
+    @if (communities()?.length) {
+      <div class="cluster">
+        <button class="btn" type="button" (click)="dialog.set('join')">Join with a code</button>
+        <button class="btn btn--primary" type="button" (click)="dialog.set('start')">Start a community</button>
+      </div>
+    }
+  </div>
+
+  @if (failed()) {
+    <sh-empty-state
+      tone="error"
+      title="Your communities didn’t load"
+      text="Shelfie couldn’t reach the server. Nothing has changed; try again in a moment."
+    >
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-empty-state>
+  } @else if (communities() === null) {
+    <div class="card stack" aria-busy="true" aria-label="Loading your communities">
+      <sh-skeleton variant="title" /><sh-skeleton /><sh-skeleton />
+    </div>
+  } @else {
+    <section class="stack" aria-labelledby="household-goal">
+      <h2 id="household-goal" class="section-title">Our reading goal</h2>
+      @if (goal(); as goal) {
+        <sh-goal-card
+          title="Our reading goal"
+          [note]="goalLine(goal) + ' · every book your family finishes counts'"
+          [finished]="goal.finished"
+          [target]="goal.target"
+          [state]="goal.state"
+        >
+          <button class="btn btn--sm" type="button" aria-label="Edit our reading goal" (click)="dialog.set('goal')">Edit</button>
+          <button class="btn btn--sm btn--ghost" type="button" aria-label="Remove our reading goal" (click)="dialog.set('remove-goal')">
+            Remove
+          </button>
+        </sh-goal-card>
+      } @else {
+        <sh-goal-card title="No reading goal yet" note="Pick how many books your readers will finish together, and by when.">
+          <button class="btn btn--sm btn--primary" type="button" (click)="dialog.set('goal')">Set a reading goal</button>
+        </sh-goal-card>
+      }
+    </section>
+
+    <section class="stack" aria-labelledby="communities-title">
+      @if (communities()!.length) {
+        <h2 id="communities-title" class="section-title">Your communities</h2>
+        <ul class="list card card--flush">
+          @for (community of communities(); track community.id) {
+            <li class="list__item">
+              <span class="sticker" aria-hidden="true">🤝</span>
+              <div class="list__body">
+                <div class="list__title">{{ community.name }}</div>
+                <div class="list__meta">{{ familiesOf(community) }} · {{ goalSummaryOf(community) }}</div>
+              </div>
+              <a class="btn btn--sm" [routerLink]="['/communities', community.id]" [attr.aria-label]="'Open ' + community.name">Open</a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <h2 id="communities-title" class="visually-hidden">Your communities</h2>
+        <sh-empty-state
+          title="Read together with other families"
+          text="Start a community and share its code, or join one with a code another parent gave you. Other families only ever see your family’s name and how many books you finished."
+        >
+          <button class="btn btn--primary" type="button" (click)="dialog.set('start')">Start a community</button>
+          <button class="btn" type="button" (click)="dialog.set('join')">Join with a code</button>
+        </sh-empty-state>
+      }
+    </section>
+  }
+</div>
+<sh-start-community-dialog
+  [open]="dialog() === 'start'"
+  (started)="opened($event, null)"
+  (closed)="dialog.set(null)"
+/>
+<sh-join-community-dialog
+  [open]="dialog() === 'join'"
+  (joined)="opened($event, 'Joined ' + $event.name)"
+  (opened)="opened($event, null)"
+  (closed)="dialog.set(null)"
+/>
+<sh-reading-goal-dialog
+  [open]="dialog() === 'goal'"
+  [goal]="goal()"
+  (saved)="goalSaved($event)"
+  (closed)="dialog.set(null)"
+/>
+<sh-remove-reading-goal-dialog
+  [open]="dialog() === 'remove-goal'"
+  [goal]="goal()"
+  (removed)="goalRemoved()"
+  (closed)="dialog.set(null)"
+/>

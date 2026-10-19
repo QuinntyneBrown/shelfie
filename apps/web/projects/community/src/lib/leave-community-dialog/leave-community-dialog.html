@@ -1,0 +1,26 @@
+<sh-dialog [heading]="'Leave ' + (community()?.name ?? '') + '?'" [open]="community() !== null" (closed)="busy() || closed.emit()">
+  @if (community(); as community) {
+    @if (failed()) {
+      <sh-banner severity="danger" [title]="'You’re still in ' + community.name" message="Shelfie couldn’t reach the server. Try again in a moment." />
+    }
+    <p>The other families won’t see you any more, and your books stop counting toward its reading goal.</p>
+    <p class="text-muted">
+      You can join again with the code.
+      @if (community.manages && community.families.length > 1) {
+        You manage it, so the family that joined next will set its goal from now on.
+      }
+    </p>
+  }
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" autofocus [disabled]="busy()" (click)="closed.emit()">Stay</button>
+    <button
+      class="btn btn--danger"
+      type="button"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+      (click)="leave()"
+    >
+      Leave community
+    </button>
+  </div>
+</sh-dialog>

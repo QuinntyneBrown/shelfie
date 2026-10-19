@@ -1,0 +1,15 @@
+@startuml
+title UML sequence behaviour — Nia asks for Theo's book
+actor "Nia (reader)" as nia
+participant "books.router.ts" as router
+participant "readers.service.ts" as readers
+participant "books.service.ts" as books
+database "PostgreSQL" as db
+nia -> router : GET /api/books/b-theo
+router -> readers : onlyReader(session) = Nia
+router -> books : getBook(householdId, id, onlyReader = Nia)
+books -> db : SELECT ... WHERE b.id = $1 AND b.household_id = $2\nAND ($3 IS NULL OR b.reader_id = $3)
+db --> books : no row
+books --> router : Problem 404 not-found
+router --> nia : 404 (same as another household's book)
+@enduml

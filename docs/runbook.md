@@ -111,9 +111,10 @@ A household owns everything created for it, and every table cascades from it. On
 set -a; . /etc/shelfie/env; set +a
 psql "$DATABASE_URL" -c "SELECT h.id, p.name, p.email FROM household h JOIN profile p ON p.household_id = h.id WHERE p.email = 'parent@example.com'"
 psql "$DATABASE_URL" -c "DELETE FROM household WHERE id = '<id from above>'"
+psql "$DATABASE_URL" -c "DELETE FROM community c WHERE NOT EXISTS (SELECT 1 FROM community_member m WHERE m.community_id = c.id)"
 ```
 
-The one `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions, rewards, profile photos, book cover pictures, feedback and push subscriptions; other households are untouched. The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
+The first `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions, rewards, streak rewards, profile photos, book cover pictures, feedback, push subscriptions, reading goal and community memberships; other households are untouched. The second removes any community the household was the last member of, with its name, code and reading goal; communities other households are still in stay, and the next household by join time manages them (ADR-0020). The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
 
 ## Changing settings
 

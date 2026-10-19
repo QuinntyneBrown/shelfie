@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage communities
+Container(web, "Shelfie web", "Angular", "CommunitiesApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(authz, "requireSession + requireRole('parent')", "Middleware", "401 / 403 grown-ups-only")
+  Component(limit, "joinLimiter", "Middleware", "10 joins per household in 10 minutes")
+  Component(router, "communities.router.ts", "Express Router", "Validates with zod; maps Problems")
+  Component(service, "communities.service.ts", "Service", "start, join, list, get, leave; codes; membership checks")
+  Component(goals, "goals.service.ts", "Service", "Community goal progress per family")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "community, community_member")
+}
+Rel(web, router, "HTTPS", "JSON")
+Rel(router, authz, "Applies")
+Rel(router, limit, "Applies on POST /join")
+Rel(router, service, "Calls")
+Rel(service, goals, "goal and counts")
+Rel(service, db, "SQL")
+@enduml

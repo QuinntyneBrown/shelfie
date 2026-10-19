@@ -24,10 +24,11 @@ import {
   CoverPicker,
   Dialog,
   EmptyState,
+  Segmented,
   StickerPicker,
   TextField,
 } from 'components';
-import { ApiError, ToastService } from 'core';
+import { ApiError, ReaderChoiceService, SessionService, ToastService } from 'core';
 import { BookMatch, ShelfApi, catalogueCoverUrl } from '../shelf-api';
 
 /** Typing pauses this long before a title is looked up, and needs this many characters first. */
@@ -49,6 +50,7 @@ const SUGGESTED_NOTE =
     Dialog,
     EmptyState,
     RouterLink,
+    Segmented,
     StickerPicker,
     TextField,
   ],
@@ -60,6 +62,18 @@ export class AddBookPage {
   private readonly api = inject(ShelfApi);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
+  private readonly readerChoice = inject(ReaderChoiceService);
+
+  /** For a parent with two or more readers, who the book is for (L2-139); empty otherwise. */
+  protected readonly readers = signal<{ id: string; name: string }[]>([]);
+  protected readonly readerId = signal<string | null>(null);
+  protected readonly readerOptions = computed(() =>
+    this.readers().length > 1 ? this.readers().map((r) => ({ value: r.id, label: r.name })) : [],
+  );
+  protected readonly submitLabel = computed(() => {
+    const reader = this.readerOptions().length ? this.readers().find((r) => r.id === this.readerId()) : null;
+    return reader ? `Add to ${reader.name}’s shelf` : 'Add to my shelf';
+  });
 
   protected readonly colors = COVER_COLORS;
   protected readonly title = signal('');
@@ -109,6 +123,7 @@ export class AddBookPage {
   });
 
   constructor() {
+    if (inject(SessionService).current()?.role === 'parent') this.loadReaders();
     effect(() => {
       const title = this.title();
       untracked(() => this.scheduleLookup(title));
@@ -226,6 +241,26 @@ export class AddBookPage {
     this.preview.set(file ? URL.createObjectURL(file) : null);
   }
 
+  private async loadReaders() {
+    try {
+      const { readers, readerId } = await this.api.readers(this.readerChoice.query()).catch((e) => {
+        // A remembered reader who is no longer in the household: forget her and start on the first reader.
+        if (!(e instanceof ApiError && e.status === 404)) throw e;
+        this.readerChoice.choose(null);
+        return this.api.readers();
+      });
+      this.readers.set(readers);
+      this.readerId.set(readerId);
+    } catch {
+      // Without the list the book goes to the first reader, as in a household with one.
+    }
+  }
+
+  protected pickReader(readerId: string) {
+    this.readerId.set(readerId);
+    this.readerChoice.choose(readerId);
+  }
+
   protected async submit() {
     if (this.saving()) return;
     this.titleError.set(this.title().trim() ? null : 'The book needs a title.');
@@ -244,6 +279,7 @@ export class AddBookPage {
     try {
       const title = this.title().trim();
       const { id } = await this.api.addBook({
+        ...(this.readerOptions().length && this.readerId() ? { readerId: this.readerId()! } : {}),
         title,
         author: this.author().trim(),
         chapterCount: Number(this.chapters()),

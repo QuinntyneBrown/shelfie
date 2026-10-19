@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { Problem } from './problem.ts';
 import { requireRole } from './authz.ts';
+import { readerFor } from './readers.service.ts';
 import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
 import { giveReward } from './rewards.service.ts';
 import { getChapter } from './chapters.service.ts';
@@ -35,9 +36,14 @@ import { requireSession, type RequestSession } from './session.ts';
 export function reviewRouter(db: Pool, assistant: ReviewAssistant, notifier: Notifier) {
   const router = Router();
 
-  router.get('/review', requireSession(db), requireRole('parent'), async (_req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    res.json(await overview(db, householdId));
+  router.get('/review', requireSession(db), requireRole('parent'), async (req, res) => {
+    const session = res.locals['session'] as RequestSession;
+    try {
+      res.json(await overview(db, session.householdId, await readerFor(db, session, req.query['reader'])));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
   router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('parent'), async (req, res) => {

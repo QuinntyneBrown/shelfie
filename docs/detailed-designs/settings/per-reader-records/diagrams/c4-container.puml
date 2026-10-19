@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Per-reader records
+Person(parent, "Parent")
+Person(reader, "Reader")
+System_Boundary(s, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Shelf, Review, Books, Add a book; ReaderChoiceService in localStorage")
+  Container(api, "Shelfie API", "Node.js, Express", "Resolves the reader of every request")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "book.reader_id, streak_reward_earned")
+}
+Rel(parent, web, "Uses", "HTTPS")
+Rel(reader, web, "Uses", "HTTPS")
+Rel(web, api, "GET /api/review?reader=, /api/books?reader=, POST /api/books {readerId}", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml
