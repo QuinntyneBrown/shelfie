@@ -1,4 +1,4 @@
-// Traces to: L2-156, L2-143
+// Traces to: L2-163, L2-150
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from './auth.service.ts';
@@ -21,7 +21,7 @@ test('Given Rosa with a profile, photo, sessions, a reset link and books with pi
     await run(db.pool, "INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES ('t1', $1, '2999-01-01')", [rosa]);
     await run(db.pool, "INSERT INTO catalogue_book (id, profile_id, title, chapter_count, created_at) VALUES ('cb-fox', $1, 'The Lighthouse Fox', 12, '2026-10-19'), ('cb-moon', $1, 'Pip and the Paper Moon', 9, '2026-10-19')", [rosa]);
     await run(db.pool, "INSERT INTO catalogue_cover (book_id, image, etag, updated_at) VALUES ('cb-fox', 'x', 'e1', '2026-10-19')");
-    // Dad added the fox to Nia's shelf: a copy with its own picture (ADR-0022).
+    // Dad added the fox to Nia's shelf: a copy with its own picture (ADR-0023).
     await run(db.pool, "INSERT INTO book (id, household_id, title, author, chapter_count, cover_color, sticker, created_at) VALUES ('b-fox', $1, 'The Lighthouse Fox', 'Rosa Delgado', 12, 'sky', '📚', '2026-10-19')", [SEED.householdId]);
     await run(db.pool, "INSERT INTO book_cover (book_id, image, etag, updated_at) VALUES ('b-fox', 'x', 'e2', '2026-10-19')");
     const owned = async (id: string) =>

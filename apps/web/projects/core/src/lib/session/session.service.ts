@@ -14,7 +14,7 @@ export interface Session {
   photo: string | null;
 }
 
-/** Where a person starts: Review for a parent, the shelf for a reader, My profile for an author or volunteer (ADR-0023). */
+/** Where a person starts: Review for a parent, the shelf for a reader, My profile for an author or volunteer (ADR-0024). */
 export function homeOf(role: Session['role']): string {
   return role === 'parent' ? '/review' : role === 'reader' ? '/shelf' : '/me';
 }

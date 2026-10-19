@@ -1,4 +1,4 @@
-// Traces to: L2-145, L2-052, L2-155
+// Traces to: L2-152, L2-052, L2-162
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Pool } from 'pg';

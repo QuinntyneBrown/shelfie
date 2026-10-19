@@ -20,12 +20,12 @@ Hours for an intermediate Angular/TypeScript and Node.js developer, with the `di
 
 ## Minimal scope
 
-The authors list, the author's page and the prefilled Add a book, without photos, covers or the volunteers view. This satisfies `L2-146` criteria 1 and 3, `L2-147`, `L2-150` without the picture, and `L2-151`. It defers `L2-148` and `L2-149`. Total: 16 hours.
+The authors list, the author's page and the prefilled Add a book, without photos, covers or the volunteers view. This satisfies `L2-153` criteria 1 and 3, `L2-154`, `L2-157` without the picture, and `L2-158`. It defers `L2-155` and `L2-156`. Total: 16 hours.
 
 ## Partial descoping
 
 | Descope | What is lost | Hours saved |
 |---------|--------------|------------:|
-| Drop directory photos and covers | Initials and colour-and-sticker covers only; `L2-149` is not met | 3 |
-| Drop the cover from the prefill | The parent picks or uploads a cover by hand; part of `L2-150` criterion 1 | 1 |
-| Drop the volunteers view and page | Volunteers cannot be found; `L2-148` is not met | 4 |
+| Drop directory photos and covers | Initials and colour-and-sticker covers only; `L2-156` is not met | 3 |
+| Drop the cover from the prefill | The parent picks or uploads a cover by hand; part of `L2-157` criterion 1 | 1 |
+| Drop the volunteers view and page | Volunteers cannot be found; `L2-155` is not met | 4 |

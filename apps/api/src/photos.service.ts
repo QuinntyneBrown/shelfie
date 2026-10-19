@@ -22,7 +22,7 @@ export function photoUrl(profileId: string, etag: string) {
   return `/api/photos/${profileId}?v=${etag}`;
 }
 
-/** The URL a person loads their own photo from: inside the household, or `/api/me/photo` for an author or volunteer (ADR-0018). */
+/** The URL a person loads their own photo from: inside the household, or `/api/me/photo` for an author or volunteer (ADR-0019). */
 export function ownPhotoUrl(role: string, profileId: string, etag: string) {
   return role === 'author' || role === 'volunteer' ? `/api/me/photo?v=${etag}` : photoUrl(profileId, etag);
 }

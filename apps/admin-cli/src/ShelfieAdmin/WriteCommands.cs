@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ShelfieAdmin;
 
-/// <summary>The write commands, added to the users, books, logs and profiles groups (L2-059 to L2-062, L2-145).</summary>
+/// <summary>The write commands, added to the users, books, logs and profiles groups (L2-059 to L2-062, L2-152).</summary>
 public static class WriteCommands
 {
     static readonly Option<bool> DryRun = new("--dry-run") { Description = "Show what would change and change nothing" };
@@ -59,7 +59,7 @@ public static class WriteCommands
                 destructive: true)));
         logs.Subcommands.Add(delete);
 
-        // Neither asks to confirm: each is undone by the other (ADR-0020).
+        // Neither asks to confirm: each is undone by the other (ADR-0021).
         var profileId = new Argument<string>("id") { Description = "Author's or volunteer's profile id" };
         var approve = new Command("approve", "Let parents see this profile in the directory") { profileId, DryRun };
         approve.SetAction((parse, _) => Cli.RunAsync(parse, needsToken: true, session =>

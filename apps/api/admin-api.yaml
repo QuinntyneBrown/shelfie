@@ -81,7 +81,7 @@ paths:
   /profiles:
     get:
       summary: Every author and volunteer with what they wrote and whether parents see it
-      description: Scope read. Waiting profiles first, then by name (ADR-0020).
+      description: Scope read. Waiting profiles first, then by name (ADR-0021).
       responses:
         '200':
           description: Directory profiles
@@ -257,7 +257,7 @@ components:
       required: [id, householdId, role, name, email]
       properties:
         id: { type: string }
-        householdId: { type: [string, 'null'], description: Null for an author or volunteer (ADR-0018) }
+        householdId: { type: [string, 'null'], description: Null for an author or volunteer (ADR-0019) }
         role: { enum: [reader, parent, author, volunteer] }
         name: { type: string }
         email: { type: [string, 'null'] }

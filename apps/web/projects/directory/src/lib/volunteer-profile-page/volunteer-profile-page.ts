@@ -13,7 +13,7 @@ import { Avatar, Banner, ErrorState, Skeleton } from 'components';
 import { ApiError } from 'core';
 import { DirectoryApi, VolunteerView } from '../directory-api';
 
-/** An approved volunteer's profile with the contact line they wrote and the no-vetting notice (L2-148, ADR-0021). */
+/** An approved volunteer's profile with the contact line they wrote and the no-vetting notice (L2-155, ADR-0022). */
 @Component({
   selector: 'sh-volunteer-profile-page',
   imports: [Avatar, Banner, ErrorState, RouterLink, Skeleton],

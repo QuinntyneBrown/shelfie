@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ShelfieAdmin;
 
-/// <summary>users list, books list, logs list, logs show (L2-056 to L2-058), feedback list (L2-118) and profiles list (L2-145).</summary>
+/// <summary>users list, books list, logs list, logs show (L2-056 to L2-058), feedback list (L2-118) and profiles list (L2-152).</summary>
 public static class QueryCommands
 {
     public static Command Users()

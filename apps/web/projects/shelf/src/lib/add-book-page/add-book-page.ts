@@ -62,7 +62,7 @@ export class AddBookPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
 
-  /** A directory catalogue book to fill the form in from (`?catalogueBook=`, ADR-0022). */
+  /** A directory catalogue book to fill the form in from (`?catalogueBook=`, ADR-0023). */
   readonly catalogueBook = input<string>();
   /** The author whose catalogue filled the form in. */
   protected readonly fromCatalogue = signal<string | null>(null);

@@ -23,7 +23,7 @@ const ownCoverUrl = (bookId: string, etag: string) => `/api/catalogue-books/${bo
 const COLUMNS = `b.id, b.title, b.chapter_count AS "chapterCount", b.description,
   CASE WHEN c.etag IS NULL THEN NULL ELSE '/api/catalogue-books/' || b.id || '/cover?v=' || c.etag END AS "coverImage"`;
 
-/** The author's catalogue, oldest first. Every query is scoped to the author, so another author's book reads as absent (L2-153). */
+/** The author's catalogue, oldest first. Every query is scoped to the author, so another author's book reads as absent (L2-160). */
 export function listCatalogue(db: Db, profileId: string) {
   return all<CatalogueBook>(db, `SELECT ${COLUMNS} FROM catalogue_book b LEFT JOIN catalogue_cover c ON c.book_id = b.id WHERE b.profile_id = $1 ORDER BY b.created_at, b.id`, [profileId]);
 }
@@ -47,7 +47,7 @@ export async function addCatalogueBook(db: Db, profileId: string, input: Catalog
   return getOwn(db, profileId, id);
 }
 
-/** Changes the catalogue entry only; books households already added are copies and stay as they are (ADR-0022). */
+/** Changes the catalogue entry only; books households already added are copies and stay as they are (ADR-0023). */
 export async function updateCatalogueBook(db: Db, profileId: string, id: string, input: CatalogueBookInput): Promise<CatalogueBook> {
   const changed = await run(db, 'UPDATE catalogue_book SET title = $1, chapter_count = $2, description = $3 WHERE id = $4 AND profile_id = $5', [
     input.title,

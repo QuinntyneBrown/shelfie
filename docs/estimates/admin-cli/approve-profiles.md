@@ -17,11 +17,11 @@ Hours for an intermediate C#/.NET and Node.js developer, with `run-admin-command
 
 ## Minimal scope
 
-`profiles list` and `profiles approve` without `--dry-run`. This satisfies `L2-145` criteria 1, 2, 4, 6 and 7. It defers hiding and dry run. Total: 7 hours.
+`profiles list` and `profiles approve` without `--dry-run`. This satisfies `L2-152` criteria 1, 2, 4, 6 and 7. It defers hiding and dry run. Total: 7 hours.
 
 ## Partial descoping
 
 | Descope | What is lost | Hours saved |
 |---------|--------------|------------:|
-| Drop `profiles hide` | A listed profile can be removed only by erasure; `L2-145` criterion 3 is not met | 1 |
-| Drop `--dry-run` | No preview; `L2-145` criterion 5 is not met | 1 |
+| Drop `profiles hide` | A listed profile can be removed only by erasure; `L2-152` criterion 3 is not met | 1 |
+| Drop `--dry-run` | No preview; `L2-152` criterion 5 is not met | 1 |

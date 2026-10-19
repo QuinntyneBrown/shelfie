@@ -93,7 +93,7 @@ export async function resetParentPassword(db: Db, id: string, password: string) 
   return { id, name: profile.name, sessionsEnded };
 }
 
-/** Every author and volunteer with what they wrote, for the operator to approve or hide (ADR-0020); waiting ones first. */
+/** Every author and volunteer with what they wrote, for the operator to approve or hide (ADR-0021); waiting ones first. */
 export function listDirectoryProfiles(db: Db) {
   return all(
     db,

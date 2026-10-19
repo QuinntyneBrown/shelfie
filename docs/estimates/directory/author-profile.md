@@ -8,7 +8,7 @@ Hours for an intermediate Angular/TypeScript and Node.js developer, with sign-in
 
 | Work item | Hours |
 |-----------|------:|
-| Migration `011-directory.sql` and seed and erasure changes | 2 |
+| Migration `012-directory.sql` and seed and erasure changes | 2 |
 | `requireDirectorySession`, `requireSession` turning away authors and volunteers, session photo URL and theme | 3 |
 | `POST /api/auth/join`, `join()`, password reset for authors | 2 |
 | `me.router.ts`, `me.service.ts`, `/api/me/photo` | 3 |
@@ -22,12 +22,12 @@ Hours for an intermediate Angular/TypeScript and Node.js developer, with sign-in
 
 ## Minimal scope
 
-Join, My profile without a photo, and a catalogue without cover pictures. This satisfies `L2-137`, `L2-138`, `L2-140` to `L2-143` and `L2-152` to `L2-156`. It defers `L2-139` and `L2-144`. Total: 29 hours.
+Join, My profile without a photo, and a catalogue without cover pictures. This satisfies `L2-144`, `L2-145`, `L2-147` to `L2-150` and `L2-159` to `L2-163`. It defers `L2-146` and `L2-151`. Total: 29 hours.
 
 ## Partial descoping
 
 | Descope | What is lost | Hours saved |
 |---------|--------------|------------:|
-| Drop the author's photo | Profiles show initials only; `L2-139` is not met | 2 |
-| Drop catalogue cover pictures | Catalogue books and the books parents add have colour covers only; `L2-144` is not met | 4 |
-| Drop editing a catalogue book | An author removes and re-adds a book to change it; `L2-143` criterion 1 is not met | 2 |
+| Drop the author's photo | Profiles show initials only; `L2-146` is not met | 2 |
+| Drop catalogue cover pictures | Catalogue books and the books parents add have colour covers only; `L2-151` is not met | 4 |
+| Drop editing a catalogue book | An author removes and re-adds a book to change it; `L2-150` criterion 1 is not met | 2 |

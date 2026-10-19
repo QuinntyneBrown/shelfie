@@ -1,8 +1,8 @@
-# ADR-0019: Paid profiles are deferred
+# ADR-0020: Paid profiles are deferred
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L1-029, L1-030
+- Requirements: L1-030, L1-031
 
 ## Context
 
