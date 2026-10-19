@@ -3,7 +3,7 @@ namespace ShelfieAdmin;
 /// <summary>The Shelfie instance a command talks to.</summary>
 public sealed record Target(string BaseUrl)
 {
-    const string Production = "https://shelfie.kids";
+    const string Production = "https://app.shelfie.kids";
 
     /// <summary>--api-url, else SHELFIE_ADMIN_URL, else production. Plain http is allowed only for this machine (ADR-0005).</summary>
     public static Target Resolve(string? option)
