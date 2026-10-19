@@ -127,7 +127,7 @@ export async function signInWithProvider(pool: Pool, provider: ProviderName, ide
   // The link comes first: it survives an e-mail change at the provider (L2-138).
   const linked = await get<ProfileRow>(
     pool,
-    `SELECT ${PROFILE_COLUMNS.replace(/(\w+)/g, 'p.$1')} FROM profile_provider l JOIN profile p ON p.id = l.profile_id WHERE l.provider = $1 AND l.subject = $2`,
+    `SELECT ${PROFILE_COLUMNS.split(', ').map((column) => `p.${column}`).join(', ')} FROM profile_provider l JOIN profile p ON p.id = l.profile_id WHERE l.provider = $1 AND l.subject = $2`,
     [provider, identity.subject],
   );
   if (linked) return createSession(pool, linked, remember);
