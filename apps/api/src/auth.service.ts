@@ -124,11 +124,26 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
  * a reason for the page the parent started from.
  */
 export async function signInWithProvider(pool: Pool, provider: ProviderName, identity: ProviderIdentity, remember: boolean): Promise<Session> {
+  // The link comes first: it survives an e-mail change at the provider (L2-138).
+  const linked = await get<ProfileRow>(
+    pool,
+    `SELECT ${PROFILE_COLUMNS.replace(/(\w+)/g, 'p.$1')} FROM profile_provider l JOIN profile p ON p.id = l.profile_id WHERE l.provider = $1 AND l.subject = $2`,
+    [provider, identity.subject],
+  );
+  if (linked) return createSession(pool, linked, remember);
+
   if (!identity.email || !identity.verified) throw new Problem(400, 'no-email');
   const email = identity.email.trim().toLowerCase();
   const profile = await get<ProfileRow>(pool, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE email = $1`, [email]);
   if (profile?.role === 'reader') throw new Problem(403, 'reader');
-  if (profile) return createSession(pool, profile, remember);
+  const link = (db: Db, profileId: string) =>
+    run(db, 'INSERT INTO profile_provider (provider, subject, profile_id, linked_at) VALUES ($1, $2, $3, $4)', [provider, identity.subject, profileId, new Date().toISOString()]);
+  if (profile) {
+    return transaction(pool, async (db) => {
+      await link(db, profile.id);
+      return createSession(db, profile, remember);
+    });
+  }
 
   // Nobody has the e-mail: start a household, as sign-up does, with no password and a username the parent never types (L2-139).
   const localPart = identity.email.trim().split('@')[0];
@@ -153,6 +168,7 @@ export async function signInWithProvider(pool: Pool, provider: ProviderName, ide
       parent.username,
       email,
     ]);
+    await link(db, parent.id);
     return createSession(db, parent, remember);
   });
 }

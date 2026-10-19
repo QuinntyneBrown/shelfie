@@ -139,3 +139,22 @@ test('Given Priya’s account came from Google, when she tries her generated use
   await signIn.open();
   await expect(page).toHaveURL(/\/review$/);
 });
+
+test('Given Dad has continued with Google before, when Google now reports a different e-mail for the same account, then he still signs in as Dad', async ({ page }) => {
+  providerAnswers({ subject: 'google-dad', email: DAD.email, name: 'Dad', verified: true });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  await signIn.continueWith('Google');
+  await expect(page).toHaveURL(/\/review$/);
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Dad');
+  await shell.menuItem('Sign out').click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+
+  providerAnswers({ subject: 'google-dad', email: 'dad.new@example.com', name: 'Dad', verified: true });
+  await signIn.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/review$/);
+  await shell.openAccountMenu('Dad');
+  await expect(shell.menu()).toContainText('@dad · parent');
+});

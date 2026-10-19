@@ -176,3 +176,45 @@ test('Given the provider sends no name and a local part that is taken, too short
     await site.close();
   }
 });
+
+test('Given Dad signed in with Google once, when Google later reports another e-mail for the same account, then the link still signs Dad in', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ subject: 'google-dad', email: 'dad@example.com', name: 'Dad', verified: true });
+    const first = await site.roundTrip('google');
+    assert.equal(first.callback.headers.get('location'), '/review');
+    const link = await get<{ profile_id: string }>(db, "SELECT profile_id FROM profile_provider WHERE provider = 'google' AND subject = 'google-dad'");
+    assert.equal(link?.profile_id, 'p-dad', 'the first sign-in by e-mail links the account');
+
+    provider.answer({ subject: 'google-dad', email: 'dad.new@example.com', name: 'Dad', verified: true });
+    const second = await site.roundTrip('google');
+
+    assert.equal(second.callback.headers.get('location'), '/review');
+    const me = await site.get('/api/auth/session', site.cookieValue(second.callback, 'shelfie_session'));
+    assert.equal((await me.json()).username, 'dad');
+    assert.equal(await get(db, "SELECT 1 FROM profile WHERE email = 'dad.new@example.com'"), undefined, 'no second account is created');
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given Dad is linked to Google, when he continues with Facebook with the same verified e-mail, then the same Dad signs in and Facebook is linked too', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ subject: 'google-dad', email: 'dad@example.com', name: 'Dad', verified: true });
+    await site.roundTrip('google');
+    provider.answer({ subject: 'facebook-dad', email: 'dad@example.com', name: 'Dad', verified: true });
+
+    const { callback } = await site.roundTrip('facebook');
+
+    assert.equal(callback.headers.get('location'), '/review');
+    const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
+    assert.equal((await me.json()).username, 'dad');
+    const links = await get<{ n: number }>(db, "SELECT COUNT(*) AS n FROM profile_provider WHERE profile_id = 'p-dad'");
+    assert.equal(links?.n, 2);
+  } finally {
+    await site.close();
+  }
+});
