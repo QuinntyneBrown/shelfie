@@ -6,7 +6,7 @@
 
 ## Context
 
-The CLI runs on the operator's own machine, whose public address changes. Production is one VM behind Caddy, which terminates TLS for `shelfie.kids` and proxies `/api/*` to the API on `127.0.0.1:3000` (docs/runbook.md). The web API's CSRF guard expects the browser-only header `X-Requested-With: Shelfie`.
+The CLI runs on the operator's own machine, whose public address changes. Production is one VM behind Caddy, which terminates TLS for `app.shelfie.kids` (ADR-0014) and proxies `/api/*` to the API on `127.0.0.1:3000` (docs/runbook.md). The web API's CSRF guard expects the browser-only header `X-Requested-With: Shelfie`.
 
 ## Decision
 

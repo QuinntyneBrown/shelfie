@@ -710,6 +710,29 @@
         "persistent"
       ],
       "not_applicable": {}
+    },
+    {
+      "id": "marketing",
+      "kind": "page",
+      "title": "Marketing page",
+      "route": "https://www.shelfie.kids/",
+      "requirements": [
+        "L2-114",
+        "L2-115",
+        "L2-116",
+        "L2-117",
+        "L2-118"
+      ],
+      "states": [
+        "default",
+        "menu-open",
+        "reduced-motion"
+      ],
+      "not_applicable": {
+        "loading": "A static page; nothing is fetched.",
+        "empty": "Fixed copy; there is no collection to be empty.",
+        "error": "A static file served by Caddy; there is no request that can fail on the page."
+      }
     }
   ]
 }

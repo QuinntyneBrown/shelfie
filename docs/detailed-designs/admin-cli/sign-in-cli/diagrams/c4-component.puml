@@ -8,7 +8,7 @@ Container_Boundary(cli, "shelfie-admin") {
   Component(program, "Program", "System.CommandLine RootCommand", "Global ~--api-url and ~--json, ~--help, ~--version")
   Component(auth, "AuthCommands", "login, logout, whoami", "Sign-in commands")
   Component(runner, "Cli", "Static class", "Resolves the target and token, maps failures to messages and exit codes")
-  Component(target, "Target", "Record", "Base URL from ~--api-url, SHELFIE_ADMIN_URL or https://shelfie.kids")
+  Component(target, "Target", "Record", "Base URL from ~--api-url, SHELFIE_ADMIN_URL or https://app.shelfie.kids")
   Component(prompt, "Prompt", "Static class", "Hidden input and confirmation")
   Component(store, "CredentialStore", "Static class", "Save, Load, Delete per OS")
   Component(client, "AdminClient", "HttpClient", "Bearer calls, problem documents to AdminApiException")

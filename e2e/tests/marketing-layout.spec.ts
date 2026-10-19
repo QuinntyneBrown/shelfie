@@ -27,6 +27,7 @@ test.describe('on a phone', () => {
     await expect(marketing.menuButton()).toHaveAttribute('aria-expanded', 'true');
     await expect(marketing.menuButton()).toHaveAccessibleName('Close navigation');
     expect(await marketing.isMenuInert()).toBe(false);
+    expect(await marketing.menuCoverage()).toBeGreaterThan(0.85);
     await expect(marketing.mobileMenuLink('How it works')).toBeVisible();
     await expect(marketing.mobileMenuLink('Open the app')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-in');
 

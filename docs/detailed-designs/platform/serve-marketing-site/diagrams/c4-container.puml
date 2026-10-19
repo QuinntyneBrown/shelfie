@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Serve the marketing site
+
+Person(visitor, "Visitor")
+Person(user, "Parent or reader")
+System_Boundary(vm, "Shelfie VM") {
+  Container(caddy, "Caddy", "Caddy 2, /etc/caddy/Caddyfile", "Three site blocks: www.shelfie.kids, app.shelfie.kids, shelfie.kids")
+  Container(marketing, "Marketing page", "Static HTML, CSS, JS", "/opt/shelfie/current/marketing; strict CSP; no third parties")
+  Container(web, "Shelfie web", "Angular build", "/opt/shelfie/current/web")
+  Container(api, "Shelfie API", "Node.js, Express 5", "127.0.0.1:3000; /api/* and /api/admin/v1/*; APP_URL=https://app.shelfie.kids")
+}
+ContainerDb(db, "Shelfie database", "PostgreSQL 16")
+Rel(visitor, caddy, "GET www.shelfie.kids / shelfie.kids", "HTTPS")
+Rel(user, caddy, "GET app.shelfie.kids", "HTTPS")
+Rel(caddy, marketing, "file_server")
+Rel(caddy, web, "file_server with index.html fallback")
+Rel(caddy, api, "reverse_proxy /api/*", "HTTP")
+Rel(api, db, "Reads and writes", "SQL/TLS")
+Rel(marketing, web, "Links to /sign-up and /sign-in on app.shelfie.kids")
+@enduml

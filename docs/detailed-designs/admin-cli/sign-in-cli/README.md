@@ -2,7 +2,7 @@
 
 ## Overview
 
-Shelfie helps one child read books by logging chapters and answering questions, while a parent reviews the answers and gives rewards. The **operator**, the parent who runs production at `shelfie.kids`, uses the command-line tool `shelfie-admin` to query and correct production data through the admin API (L1-016).
+Shelfie helps one child read books by logging chapters and answering questions, while a parent reviews the answers and gives rewards. The **operator**, the parent who runs production at `app.shelfie.kids`, uses the command-line tool `shelfie-admin` to query and correct production data through the admin API (L1-016).
 
 This feature is the sign-in part of the `admin-cli` subsystem: installing the tool, choosing which Shelfie it talks to, and holding the admin token safely. The commands that use the token are the sibling feature `run-admin-commands`; the server side of the token is `admin-api/authenticate-admin-calls`.
 
@@ -18,7 +18,7 @@ Terms used below:
 The tool is one .NET 10 project, `apps/admin-cli/src/ShelfieAdmin`, packed as a global tool with command name `shelfie-admin` (ADR-0003). Commands are built with System.CommandLine 2.0 (ADR-0004).
 
 - **`Program`** — builds the `RootCommand` with the recursive options `--api-url` and `--json`, adds the `login`, `logout` and `whoami` commands from `AuthCommands` and the groups from `run-admin-commands`, and returns the invocation's exit code. `--help` and `--version` come from System.CommandLine (L2-054).
-- **`Target`** — `Target.Resolve(option)` takes `--api-url`, else the `SHELFIE_ADMIN_URL` variable, else `https://shelfie.kids`. A URL whose scheme is `http` and whose host is not `localhost` or `127.0.0.1` raises a `CliException` saying HTTPS is required, before any request (L2-054, ADR-0005).
+- **`Target`** — `Target.Resolve(option)` takes `--api-url`, else the `SHELFIE_ADMIN_URL` variable, else `https://app.shelfie.kids`. A URL whose scheme is `http` and whose host is not `localhost` or `127.0.0.1` raises a `CliException` saying HTTPS is required, before any request (L2-054, ADR-0005).
 - **`Cli`** — `Cli.RunAsync(parseResult, needsToken, body)` resolves the target, loads the token from `CredentialStore` when `needsToken` is set, builds the `AdminClient` and runs the command body. It turns failures into one line on standard error and an exit code:
   - no stored token: "No admin token for `<url>`. Run `shelfie-admin login`." and exit 2, with no request sent;
   - `AdminApiException` 401 or 403: the reason (`token-expired` names the expiry, `token-revoked` and `token-invalid` say to create a new token and log in, `scope-missing` names the scope) and exit 2;
@@ -45,7 +45,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-054` | `L1-016` | Install the CLI and choose the target. The package shall install with `dotnet tool install --global` as `shelfie-admin`; the target shall default to `https://shelfie.kids`, be overridden by `SHELFIE_ADMIN_URL` and then by `--api-url`; plain `http` shall be refused except for `localhost` and `127.0.0.1`; help shall list every command and option. |
+| `L2-054` | `L1-016` | Install the CLI and choose the target. The package shall install with `dotnet tool install --global` as `shelfie-admin`; the target shall default to `https://app.shelfie.kids`, be overridden by `SHELFIE_ADMIN_URL` and then by `--api-url`; plain `http` shall be refused except for `localhost` and `127.0.0.1`; help shall list every command and option. |
 | `L2-055` | `L1-016` | CLI sign-in with an admin token. `login` shall check the token, store it in the OS credential store under the target and never print it; a refused token shall not be stored; a missing, expired or revoked token shall fail with a message naming the reason and exit code 2; `logout` shall remove the stored token. |
 | `L2-063` | `L1-016` | Output formats and errors. Errors shall be one line on standard error naming the reason and request id; exit codes shall be 0, 1, 2 and 3 as defined; an unreachable API shall be named with exit code 1. |
 

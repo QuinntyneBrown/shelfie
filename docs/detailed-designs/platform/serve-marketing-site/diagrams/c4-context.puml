@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Serve the marketing site
+
+Person(visitor, "Visitor", "A family finding out what Shelfie is")
+Person(user, "Parent or reader", "Signs in and uses the app")
+Person(operator, "Operator", "Runs shelfie-admin; manages DNS at Namecheap")
+System(shelfie, "Shelfie", "Marketing page at www.shelfie.kids; app and API at app.shelfie.kids; bare shelfie.kids redirects")
+System_Ext(dns, "Namecheap DNS", "A @, CNAME www, CNAME app")
+System_Ext(le, "Let's Encrypt", "Certificates for the three hosts")
+System_Ext(github, "GitHub", "Public repository the footer links to; Actions deploys")
+Rel(visitor, shelfie, "Reads www.shelfie.kids, follows Sign up / Sign in", "HTTPS")
+Rel(user, shelfie, "Uses app.shelfie.kids", "HTTPS")
+Rel(operator, shelfie, "Calls /api/admin/v1 on app.shelfie.kids", "HTTPS")
+Rel(operator, dns, "Creates the records")
+Rel(shelfie, le, "Obtains and renews certificates", "ACME")
+Rel(github, shelfie, "Deploys release tarball with web/ and marketing/")
+@enduml

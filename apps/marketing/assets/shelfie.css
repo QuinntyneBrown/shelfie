@@ -178,10 +178,19 @@ em {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  background: color-mix(in srgb, var(--color-bg-canvas) 88%, transparent);
-  backdrop-filter: blur(12px);
   border-bottom: 1px solid transparent;
   transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+/* The blur sits on a layer behind the header: on the header itself it would become the
+   containing block of the fixed mobile menu and shrink it to the header's height. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--color-bg-canvas) 88%, transparent);
+  backdrop-filter: blur(12px);
 }
 
 .site-header.is-scrolled {

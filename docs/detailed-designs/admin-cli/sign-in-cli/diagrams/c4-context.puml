@@ -5,7 +5,7 @@ title System context — Sign in the CLI
 
 Person(op, "Operator", "The parent who runs production")
 Person(family, "Reader and parents", "Use the web app")
-System(shelfie, "Shelfie", "Reading log web app and API at shelfie.kids")
+System(shelfie, "Shelfie", "Reading log web app and API at app.shelfie.kids")
 System_Ext(cli, "shelfie-admin CLI", ".NET global tool on the operator machine")
 System_Ext(store, "OS credential store", "Credential Manager, Keychain or Secret Service")
 Rel(family, shelfie, "Read, log and review using", "HTTPS")

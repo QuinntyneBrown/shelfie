@@ -78,6 +78,12 @@ export class MarketingPage {
     return this.mobileMenu().getByRole('link', { name });
   }
 
+  /** The share of the screen's height the open menu covers, from 0 to 1. */
+  async menuCoverage() {
+    const box = await this.mobileMenu().boundingBox();
+    return (box?.height ?? 0) / this.page.viewportSize()!.height;
+  }
+
   isMenuInert() {
     return this.mobileMenu().evaluate((menu) => (menu as HTMLElement).inert);
   }

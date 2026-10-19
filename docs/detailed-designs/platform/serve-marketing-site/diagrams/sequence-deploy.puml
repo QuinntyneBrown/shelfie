@@ -1,0 +1,16 @@
+@startuml
+title Behaviour — a release carries the marketing page
+participant "deploy.yml" as gh
+participant "Blob Storage\nreleases" as blob
+participant "fetch-release.sh\n+ deploy.sh (VM)" as vm
+participant "Caddy" as caddy
+
+gh -> gh : npm run build; cp web build to release/web;\ncp -r apps/marketing/. release/marketing/
+gh -> blob : upload shelfie-<sha>.tar.gz
+gh -> vm : az vm run-command fetch-release.sh
+vm -> blob : download with managed identity
+vm -> vm : unpack to /opt/shelfie/releases/<sha>;\ncurrent -> <sha> (web/ and marketing/ switch together)
+vm -> caddy : install Caddyfile; reload
+gh -> caddy : curl https://app.shelfie.kids/api/health
+gh -> caddy : curl https://www.shelfie.kids/ (smoke test)
+@enduml
