@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shelfie sticker — gold star reward</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!--
+        Sticker 3 — the "Star" feedback sticker (FEEDBACK_STICKERS in
+        sticker-picker.ts) drawn as a path, bursting out of a round violet
+        badge, with "Chapter done!" from the celebration copy in
+        docs/design-system/foundations/content.html ("Chapter 12 done!").
+        A book in the cover's 2:3 proportion peeks over the bottom-right edge.
+        Star: five points, outer radius 230, inner 115, centred (450, 360),
+        #f7c15c amber-300 edged #b26f00 amber-500. Badge: #7c3aed violet-600
+        edged #5b21b6 violet-800, inner dashed ring #c4b5fd violet-300.
+        Book: #f9d5e0 cover-rose, #fbe7b2 cover-sun band, #1a1e26 edge.
+        "Chapter done!" is white on #7c3aed: 5.7:1, WCAG AA.
+        Drawn 1:1 on the canvas, so --cut-extra keeps its 130px default.
+      -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>A gold star on a violet badge reading Chapter done!</title>
+
+        <!-- Centre the cut on the canvas: drawn as-is, the die cut's margins
+             were L70 R32 T57 B40. A pure translate, so the rim stays 65px. -->
+        <g transform="translate(-19 -8)">
+          <defs>
+            <!-- Arc for the edge URL, round the bottom of the white rim. The
+                 badge's outer edge is r 315 about (450, 480) and the rim runs
+                 to r 380; a baseline at r 358 centres the caps (which point
+                 inward) in it. The star fills the top of the rim, so the URL
+                 runs along the bottom, clear of the peeking book. -->
+            <path id="urlArc" fill="none" d="M 140 659 A 358 358 0 0 0 760 659" />
+          </defs>
+
+          <!-- ── Die-cut silhouette ──────────────────────────────────────────
+               White fill + fat white stroke with paint-order:stroke, so the
+               stroke lies wholly outside each shape. The pieces all overlap,
+               so their union is one continuous cut line. -->
+          <g>
+            <path
+              class="keyline cut-flat"
+              d="M205 195 Q212 228 245 235 Q212 242 205 275 Q198 242 165 235 Q198 228 205 195 Z"
+            />
+            <path
+              class="keyline cut-flat"
+              d="M745 206 Q751 234 779 240 Q751 246 745 274 Q739 246 711 240 Q739 234 745 206 Z"
+            />
+            <circle class="keyline cut-badge" cx="450" cy="480" r="310" />
+            <path class="keyline cut-star" d="M450.0 130.0 L517.6 267.0 L668.7 288.9 L559.4 395.5 L585.2 546.1 L450.0 475.0 L314.8 546.1 L340.6 395.5 L231.3 288.9 L382.4 267.0 Z" />
+            <rect class="keyline cut-book" x="660" y="570" width="120" height="180" rx="12" transform="rotate(16 720 660)" />
+          </g>
+
+          <!-- ── Badge ─────────────────────────────────────────────────────── -->
+          <circle cx="450" cy="480" r="310" fill="#7c3aed" stroke="#5b21b6" stroke-width="10" />
+          <circle
+            cx="450"
+            cy="480"
+            r="280"
+            fill="none"
+            stroke="#c4b5fd"
+            stroke-width="6"
+            stroke-dasharray="2 20"
+            stroke-linecap="round"
+          />
+
+          <!-- ── Sparkles, straddling the badge's keyline ──────────────────── -->
+          <path
+            d="M205 195 Q212 228 245 235 Q212 242 205 275 Q198 242 165 235 Q198 228 205 195 Z"
+            fill="#f7c15c"
+          />
+          <path
+            d="M745 206 Q751 234 779 240 Q751 246 745 274 Q739 246 711 240 Q739 234 745 206 Z"
+            fill="#c4b5fd"
+          />
+
+          <!-- ── The gold star ─────────────────────────────────────────────── -->
+          <path d="M450.0 130.0 L517.6 267.0 L668.7 288.9 L559.4 395.5 L585.2 546.1 L450.0 475.0 L314.8 546.1 L340.6 395.5 L231.3 288.9 L382.4 267.0 Z" fill="#f7c15c" stroke="#b26f00" stroke-width="16" stroke-linejoin="round" />
+          <!-- Shine: a small sparkle on the upper-left arm, in the badge's white -->
+          <path
+            d="M395 300 Q399 318 417 322 Q399 326 395 344 Q391 326 373 322 Q391 318 395 300 Z"
+            fill="#ffffff"
+          />
+
+          <!-- ── Message ───────────────────────────────────────────────────── -->
+          <text
+            text-anchor="middle"
+            font-family="'Nunito'"
+            font-weight="900"
+            font-size="84"
+            letter-spacing="-0.5"
+            fill="#ffffff"
+          >
+            <tspan x="440" y="640">Chapter</tspan>
+            <tspan x="440" y="725">done!</tspan>
+          </text>
+
+          <!-- ── The book peeking over the edge ────────────────────────────── -->
+          <rect x="660" y="570" width="120" height="180" rx="12" fill="#f9d5e0" stroke="#1a1e26" stroke-width="6" transform="rotate(16 720 660)" />
+          <rect x="663" y="600" width="114" height="22" fill="#fbe7b2" transform="rotate(16 720 660)" />
+          <rect x="663" y="573" width="14" height="174" fill="#1a1e26" opacity=".1" transform="rotate(16 720 660)" />
+
+          <!-- ── Edge URL ────────────────────────────────────────────────── -->
+          <text
+            text-anchor="middle"
+            font-family="'Nunito'"
+            font-weight="800"
+            font-size="28"
+            letter-spacing="7"
+            fill="#000000"
+          >
+            <textPath href="#urlArc" startOffset="50%">SHELFIE.KIDS</textPath>
+          </text>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>

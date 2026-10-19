@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shelfie sticker — wordmark book stack</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!--
+        Sticker 2 — the Shelfie wordmark on a leaning stack of the seven cover
+        pastels, with the tagline in an accent chip.
+        Books follow .cover in docs/design-system/assets/components.css: the
+        cover colours from tokens.css (sage #cfe8d5, rose #f9d5e0, sky #cfe6fb,
+        sun #fbe7b2, lilac #e3d9fb, mint #cdf1ec, peach #fddcc8), 12px corners
+        (--radius-md), and darker bands in --color-fg-on-cover #1a1e26 at low
+        opacity, like the cover's inset spine. Edges are #1a1e26 so the pale
+        covers hold their shape against the white rim.
+        Wordmark: Nunito 900 in #7c3aed violet-600 over a #5b21b6 violet-800
+        offset, the chunky edge of Shelfie's buttons; #7c3aed on white is
+        5.7:1. Tagline: white Nunito 800 on #7c3aed, 5.7:1 (WCAG AA).
+        Sparkles #f7c15c amber-300 and #c4b5fd violet-300.
+        Drawn 1:1 on the canvas, so --cut-extra keeps its 130px default.
+      -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>The Shelfie wordmark on a stack of books</title>
+
+        <!-- Centre the cut on the canvas: drawn as-is, the die cut's margins
+             were L43 R11. A pure translate, so the rim stays 65px. -->
+        <g transform="translate(-16 -2)">
+          <defs>
+            <!-- Arc for the edge URL, down the middle of the white rim below the
+                 chip, whose flat bottom edge is y 760. The rim runs to y 825. -->
+            <path id="urlArc" fill="none" d="M 250 802 Q 450 800 650 802" />
+          </defs>
+
+          <!-- ── Die-cut silhouette ──────────────────────────────────────────
+               The wordmark itself carries a keyline, so the cut follows the
+               letters; the books, chip and sparkles all overlap it. -->
+          <g>
+            <path
+              class="keyline cut-flat"
+              d="M790 136 Q796 164 824 170 Q796 176 790 204 Q784 176 756 170 Q784 164 790 136 Z"
+            />
+            <path
+              class="keyline cut-flat"
+              d="M140 440 Q145 465 172 470 Q145 475 140 502 Q135 475 108 470 Q135 465 140 440 Z"
+            />
+            <text class="keyline cut-flat" x="450" y="270" text-anchor="middle" font-family="'Nunito'" font-weight="900" font-size="170" letter-spacing="-2">Shelfie</text>
+            <rect class="keyline cut-book" x="170" y="616" width="560" height="54" rx="12" transform="rotate(0 450 643)" />
+            <rect class="keyline cut-book" x="200" y="562" width="500" height="54" rx="12" transform="rotate(-2 450 589)" />
+            <rect class="keyline cut-book" x="160" y="508" width="520" height="54" rx="12" transform="rotate(1.5 420 535)" />
+            <rect class="keyline cut-book" x="215" y="454" width="480" height="54" rx="12" transform="rotate(-1.5 455 481)" />
+            <rect class="keyline cut-book" x="190" y="400" width="500" height="54" rx="12" transform="rotate(2 440 427)" />
+            <rect class="keyline cut-book" x="235" y="346" width="440" height="54" rx="12" transform="rotate(-2.5 455 373)" />
+            <rect class="keyline cut-book" x="205" y="292" width="470" height="54" rx="12" transform="rotate(3 440 319)" />
+            <rect class="keyline cut-flat" x="160" y="690" width="580" height="70" rx="35" />
+          </g>
+
+          <!-- ── Book stack, bottom to top ─────────────────────────────────── -->
+            <!-- sage #cfe8d5 -->
+            <rect x="170" y="616" width="560" height="54" rx="12" fill="#cfe8d5" stroke="#1a1e26" stroke-width="6" transform="rotate(0 450 643)" />
+            <rect x="204" y="619" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(0 450 643)" />
+            <rect x="684" y="619" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(0 450 643)" />
+            <!-- rose #f9d5e0 -->
+            <rect x="200" y="562" width="500" height="54" rx="12" fill="#f9d5e0" stroke="#1a1e26" stroke-width="6" transform="rotate(-2 450 589)" />
+            <rect x="234" y="565" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-2 450 589)" />
+            <rect x="654" y="565" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-2 450 589)" />
+            <!-- sky #cfe6fb -->
+            <rect x="160" y="508" width="520" height="54" rx="12" fill="#cfe6fb" stroke="#1a1e26" stroke-width="6" transform="rotate(1.5 420 535)" />
+            <rect x="194" y="511" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(1.5 420 535)" />
+            <rect x="634" y="511" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(1.5 420 535)" />
+            <!-- sun #fbe7b2 -->
+            <rect x="215" y="454" width="480" height="54" rx="12" fill="#fbe7b2" stroke="#1a1e26" stroke-width="6" transform="rotate(-1.5 455 481)" />
+            <rect x="249" y="457" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-1.5 455 481)" />
+            <rect x="649" y="457" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-1.5 455 481)" />
+            <!-- lilac #e3d9fb -->
+            <rect x="190" y="400" width="500" height="54" rx="12" fill="#e3d9fb" stroke="#1a1e26" stroke-width="6" transform="rotate(2 440 427)" />
+            <rect x="224" y="403" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(2 440 427)" />
+            <rect x="644" y="403" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(2 440 427)" />
+            <!-- mint #cdf1ec -->
+            <rect x="235" y="346" width="440" height="54" rx="12" fill="#cdf1ec" stroke="#1a1e26" stroke-width="6" transform="rotate(-2.5 455 373)" />
+            <rect x="269" y="349" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-2.5 455 373)" />
+            <rect x="629" y="349" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(-2.5 455 373)" />
+            <!-- peach #fddcc8 -->
+            <rect x="205" y="292" width="470" height="54" rx="12" fill="#fddcc8" stroke="#1a1e26" stroke-width="6" transform="rotate(3 440 319)" />
+            <rect x="239" y="295" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(3 440 319)" />
+            <rect x="629" y="295" width="12" height="48" fill="#1a1e26" opacity=".12" transform="rotate(3 440 319)" />
+
+          <!-- ── Chip ──────────────────────────────────────────────────────── -->
+          <rect x="160" y="690" width="580" height="70" rx="35" fill="#7c3aed" />
+          <text
+            x="450"
+            y="725"
+            text-anchor="middle"
+            dominant-baseline="central"
+            font-family="'Nunito'"
+            font-weight="800"
+            font-size="31"
+            fill="#ffffff"
+          >
+            Read a chapter. Earn a sticker.
+          </text>
+
+          <!-- ── Wordmark ──────────────────────────────────────────────────── -->
+          <text x="450" y="270" text-anchor="middle" font-family="'Nunito'" font-weight="900" font-size="170" letter-spacing="-2" fill="#5b21b6">Shelfie</text>
+          <text x="450" y="262" text-anchor="middle" font-family="'Nunito'" font-weight="900" font-size="170" letter-spacing="-2" fill="#7c3aed">Shelfie</text>
+
+          <!-- ── Sparkles, straddling the wordmark and stack keylines ──────── -->
+          <path
+            d="M790 136 Q796 164 824 170 Q796 176 790 204 Q784 176 756 170 Q784 164 790 136 Z"
+            fill="#f7c15c"
+          />
+          <path
+            d="M140 440 Q145 465 172 470 Q145 475 140 502 Q135 475 108 470 Q135 465 140 440 Z"
+            fill="#c4b5fd"
+          />
+
+          <!-- ── Edge URL ────────────────────────────────────────────────── -->
+          <text
+            text-anchor="middle"
+            font-family="'Nunito'"
+            font-weight="800"
+            font-size="28"
+            letter-spacing="7"
+            fill="#000000"
+          >
+            <textPath href="#urlArc" startOffset="50%">SHELFIE.KIDS</textPath>
+          </text>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>
