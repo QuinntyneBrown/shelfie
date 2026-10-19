@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (32 screens, 200 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (37 screens, 238 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0017). It uses a copy of the design tokens.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
@@ -48,8 +48,10 @@ Which `components` library parts build each page, dialog, notification and shell
 | `sh-sticker` | `Sticker` | yes | review/reward-gallery |
 | `sh-picture-list` | `PictureList` | yes | review/reward-gallery |
 | `sh-switch` | `Switch` | yes | shell/push-notifications |
+| `sh-auth-layout` | `AuthLayout` | yes | sign-in/onboard-household (moved from the `sign-in` library, where sign-in-with-password introduced it) |
+| `sh-step-indicator` | `StepIndicator` | yes | sign-in/onboard-household |
 
-Class names carry no `Component` suffix. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`. `sh-text-field` with `type: 'password'` draws the Show password button and accepts `readonly`; `sh-banner` with `summary` is the focusable "Fix N things" summary. `sh-avatar` draws a person's photo over their initial and colour, and falls back to the initial when there is no photo or it fails to load; every avatar on every screen is an `sh-avatar`. `sh-cover` takes an optional `image`, the book's cover picture, drawn over its colour and sticker; it falls back to them when there is no picture or it fails to load. `sh-book-card` and `sh-reward-card` pass a `coverImage` through to their `sh-cover`, and every `sh-cover` on every screen is given the book's `coverImage`. Given a `target` instead of a book, `sh-reward-card` is a gallery reward (its `unit` is `books`, or `days` for a streak reward, which changes only the progress label) (`.trophy--gallery`): an `sh-sticker` lg in place of the cover showing the reward's `picture` (its featured picture) over a 🎁, which it falls back to when there is no picture or it fails to load; the name, the note, the reward's `description` when it has one, and, with `progress`, the goal border, badge and `sh-progress`; its projected content is the action ("Pick this"). `sh-sticker` draws an emoji sticker, optionally with a picture over it, and every reward picture on every screen is an `sh-sticker`. `sh-picture-list` shows a reward's pictures as thumbnails with the featured mark, Make featured, Remove, Try again, Add a picture and Choose one of ours, which opens Shelfie's own pictures and emits the chosen one as a picked file. `sh-switch` is one on or off choice drawn on a native checkbox; its label is a short statement, with no helper line under it, and it can be `disabled`.
+Class names carry no `Component` suffix. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`. `sh-text-field` with `type: 'password'` draws the Show password button and accepts `readonly`; `sh-banner` with `summary` is the focusable "Fix N things" summary. `sh-avatar` draws a person's photo over their initial and colour, and falls back to the initial when there is no photo or it fails to load; every avatar on every screen is an `sh-avatar`. `sh-cover` takes an optional `image`, the book's cover picture, drawn over its colour and sticker; it falls back to them when there is no picture or it fails to load. `sh-book-card` and `sh-reward-card` pass a `coverImage` through to their `sh-cover`, and every `sh-cover` on every screen is given the book's `coverImage`. Given a `target` instead of a book, `sh-reward-card` is a gallery reward (its `unit` is `books`, or `days` for a streak reward, which changes only the progress label) (`.trophy--gallery`): an `sh-sticker` lg in place of the cover showing the reward's `picture` (its featured picture) over a 🎁, which it falls back to when there is no picture or it fails to load; the name, the note, the reward's `description` when it has one, and, with `progress`, the goal border, badge and `sh-progress`; its projected content is the action ("Pick this"). `sh-sticker` draws an emoji sticker, optionally with a picture over it, and every reward picture on every screen is an `sh-sticker`. `sh-picture-list` shows a reward's pictures as thumbnails with the featured mark, Make featured, Remove, Try again, Add a picture and Choose one of ours, which opens Shelfie's own pictures and emits the chosen one as a picked file. `sh-switch` is one on or off choice drawn on a native checkbox; its label is a short statement, with no helper line under it, and it can be `disabled`. `sh-auth-layout` is the centred card with the logo mark that every page outside the shell sits in. `sh-step-indicator` takes `current` and `total` and draws the dots and "Step N of M".
 
 Composition rules that hold on every screen:
 
@@ -69,7 +71,7 @@ Composition rules that hold on every screen:
 | Tab bar (parent, phones) | `sh-tab-bar` with Review count | — |
 | Banner slot | `sh-banner` per `BannerService.banners()` | — |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
-| Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password) | — | `auth-layout`, `auth-card`, logo and sticker header |
+| Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password, onboarding) | `sh-auth-layout` | — |
 
 ## Shared local components
 
@@ -77,7 +79,6 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 | Item | Used by | Notes |
 |---|---|---|
-| Auth layout | sign-in, sign-up, accept-invite, forgot-password, reset-password | `sh-auth-layout` in the `sign-in` library: centred card and logo mark |
 | Switch | sign-in ("Keep me signed in") | local `switch` today. `sh-switch` is now in the catalogue (shell/push-notifications); sign-in moves to it when that page is next changed |
 | Person list row | settings (Parents, Readers) | `list__item`: `sh-avatar`, name, `@username` or e-mail, optional "Invited" badge, trailing action ("Edit", "Send again") |
 | Book header | book, chapter, log-chapter, review-chapter, manage-book | `book-card` markup in the mocks: `sh-cover` + title + author / "chapter N of M" + optional `sh-progress`. Designs describe it as cover + title + progress, not `sh-book-card` |
@@ -99,7 +100,11 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 #### Create a parent account — `/sign-up` (`pages/sign-up`: default, invalid, taken, submitting, error)
 - **Library:** `sh-text-field` ×5 (your name, e-mail `email`, username with help "3–20 letters, numbers, . or _", `password` with help "At least 8 characters", "Type it again" `password`); `sh-button` primary lg block (`busy` when submitting); `sh-banner` `danger` (invalid and taken: "Fix N things" summary with field errors, "That e-mail already has an account. Sign in?"; error with "Try again").
-- **Local:** auth layout; heading and subtitle; the password pair laid out side by side.
+- **Local:** heading and subtitle; the password pair laid out side by side. Success opens the set-up wizard (`/onboarding`) for the new household; an invited parent (accept-invite) still lands on Review.
+
+#### Set up your family — `/onboarding`, `/onboarding/child`, `/onboarding/sign-in`, `/onboarding/reward`, `/onboarding/done` (`pages/onboarding`: welcome, child-name, child-name-invalid, child-sign-in, child-sign-in-invalid, child-sign-in-taken, child-sign-in-submitting, failed, reward, reward-added, reward-invalid, reward-submitting, done, resumed, error)
+- **Library:** `sh-auth-layout` (no top bar, no shell navigation); `sh-step-indicator` (`current` 1 to 5, `total` 5) above the card on every step; `sh-text-field` (child-name: "Child’s name"; child-sign-in: "Username" with help "3–20 letters, numbers, . or _", prefilled from the name, and `password` "Password" with help "At least 8 characters"; reward: "The reward" and "Books to finish" `number` with help "A whole number from 1 to 20."); `sh-button` primary lg block (Let’s go, Next, Go to my shelf; `busy` when submitting); `sh-banner` `danger` (`summary` "Fix N things" on child-sign-in-invalid, child-sign-in-taken and reward-invalid; failed: "Nia wasn’t added", "Nothing changed. Check your connection." with "Try again"); `sh-sticker` 🎁 on each added reward; `sh-celebration` `book` in place of the card on done and resumed; `sh-error-state` on error ("Shelfie couldn’t pick up where you left off", "Try again").
+- **Local:** the step layout (`card.stack.wizard`: illustration `img.wizard__art` from the library's `onboarding/*.svg` assets, the question as `h1`, one line under it, `.wizard__actions`); "Back" as a link to the previous step (`a.btn.btn--ghost`, disabled while submitting); "Skip for now" caption link under the card (steps 2 to 4; welcome has it too); the example chips (`button.chip` ×3: Trip to the zoo, Movie night, New book, as Give a reward's quick picks); "Add another" (`button.btn.btn--block`); the added-rewards list (`ul.wizard__added`); the sign-in details on All set (`dl.wizard__details`: username, and the password only while it is in memory).
 
 #### Join a household — `/accept-invite` (`pages/accept-invite`: default, invalid, taken, submitting, error)
 - **Library:** `sh-text-field` ×5 (e-mail `readonly`, your name, username, `password`, "Type it again"); `sh-button` primary lg block (`busy` when submitting); `sh-banner` `danger` (invalid and taken: summary with field errors).
@@ -193,7 +198,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 ## Summary of local UI to build
 
 1. Skip link (`shelfie` application shell).
-2. Auth layout — sign-in, sign-up, accept-invite, forgot-password, reset-password.
+2. Auth layout — none left: `sh-auth-layout` moved into the `components` library (sign-in/onboard-household) and the five auth pages and the onboarding steps compose it.
 3. Sign-in "Keep me signed in" switch, and the accept-invite household header and expired-invite message.
 4. Book header — book, chapter, log-chapter, review-chapter, manage-book.
 5. Breadcrumb — six pages.
@@ -225,3 +230,5 @@ These are local UI that more than one screen needs. Build once in the feature li
 - The sign-in switch reads "Keep me signed in" in the mock; L2-003 calls it "Remember me". The mock wording is used.
 - The profile-photo mocks draw the success and failed messages as `alert` blocks inside the dialog; they map to `sh-banner`. `ProfilePhotoDialog` lives in the `settings` library and the shell opens it for the reader.
 - The mocks carry no requirement IDs, so none are listed here; see each feature's detailed design.
+- The onboarding child-name step shows its single field's error without the "Fix N things" summary: with one question, a summary would repeat the error. Steps with two fields keep the summary.
+- Back on a wizard step is a link styled as a ghost button (`a.btn.btn--ghost`), because it goes to the previous step's URL; "Add another" is a plain `.btn`, as `sh-button` has no secondary variant and is always `type="submit"`.

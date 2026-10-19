@@ -40,6 +40,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Tab bar](components/tab-bar.html) | Navigation | grown-up phone nav, with count | default, hover, focus, current | review, books, manage-book, settings |
 | [Breadcrumb](components/breadcrumb.html) | Navigation | two and three levels | link hover, focus, current | add-book, book, chapter, log-chapter |
 | [Skip link](components/skip-link.html) | Navigation | — | hidden, focused | shelf, review, sign-in |
+| [Step indicator](components/step-indicator.html) | Navigation | dots + "Step N of M" | to come, current, done | onboarding |
 | [Layout primitives](components/layout.html) | Containers and overlays | container, stack, cluster, grid, spans, page header, auth layout | — | review, review-chapter, add-book, shelf |
 | [Card](components/card.html) | Containers and overlays | default, flush, cover tint (automatic), success, warning | — | review, review-chapter, manage-book, book |
 | [Hero](components/hero.html) | Containers and overlays | keep reading, washed in its cover colour | — | shelf |
@@ -93,6 +94,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
 | [Marketing page](patterns/marketing-page.html) | Two-tone hero with pastel dots, short titles, tinted step and feature cards, wavy section edges |
+| [Wizard step](patterns/wizard-step.html) | One purpose per step: step indicator, illustration, one question, one or two fields, one action, Back and Skip; the set-up wizard |
 
 ## Tokens
 
@@ -149,6 +151,11 @@ From [the competitive review](../competitive-review/beanstack.md) and the rework
 - **Changed:** [Top bar](components/top-bar.html) is a floating sticky capsule: `top: --space-2`, `--space-2` margin above, width `min(--layout-container-max, 100%)` less the page margins, 90% surface via `color-mix` with a 12px backdrop blur, hairline border all round instead of a bottom border, `--radius-full`, `--shadow-2` (R2). [Button](components/button.html) radius `--radius-md` (12px) → `--radius-full` (pill) (R2). [Book cover](components/cover.html) lg and xl radius `--radius-lg` → `--radius-md` (12px; was 16px). [Hero](components/hero.html) background now reads `--card-bg` (default: the old accent gradient). [Achievement badge](components/achievement-badge.html) icon `--control-height-md` (44px) → `--size-avatar-lg` (56px), emoji `--font-size-xl` → `--font-size-2xl`, a two-ring `box-shadow` (surface gap + `--color-accent`; locked `--color-border-default`), a `--color-success-solid` ✓ disc when earned, the earned note `--color-fg-muted` → `--color-success-fg`, and tiles in `.achievements` became centred columns (R6). [Marketing page](patterns/marketing-page.html): no hero kicker, H1 "Every chapter, rewarded." at `--font-size-5xl`–4.75rem, scattered pastel dots, section titles of four words or fewer with no kickers or sub-paragraphs, "How it works" as three tinted cards with icon tiles (numbers removed, five columns → three), "Inside the app" as four tinted feature cards with cropped screenshots rotated −3° (was a sideways-scrolling carousel), wavy section edges via CSS `mask`, washes via `.tint-bg-*` (R7, R8). Prose updated on [Shape](foundations/shape.html), [Book card](components/book-card.html), [Navigation](patterns/navigation.html), [Question and answer](components/question-answer.html) (links to Chat bubble) and [Accessibility](foundations/accessibility.html) (pair count). Chat bubble added to the nav of every page and to `index.html`.
 - **Removed:** the top bar's bottom border; the marketing page's numbered journey steps (`.step::before` counter), the screenshot carousel (`.screen-showcase`, `.showcase-card`) and its section kickers.
 - **Tokens:** `--radius-lg` 1rem (16px) → 1.5rem (24px); `--radius-xl` 1.5rem (24px) → 2rem (32px). Added primitives `--palette-cover-sage-tint` #e7f4ea, `--palette-cover-sage-deep` #1f2d25, `--palette-cover-rose-tint` #fceaf0, `--palette-cover-rose-deep` #33222b, `--palette-cover-sky-tint` #e7f2fd, `--palette-cover-sky-deep` #1f2a38, `--palette-cover-sun-tint` #fdf3d8, `--palette-cover-sun-deep` #332a17, `--palette-cover-lilac-tint` #f1ecfd, `--palette-cover-lilac-deep` #2a2340, `--palette-cover-mint-tint` #e6f8f6, `--palette-cover-mint-deep` #1c302d, `--palette-cover-peach-tint` #feeee4, `--palette-cover-peach-deep` #352620. Added semantic `--color-tint-{sage,rose,sky,sun,lilac,mint,peach}`: the `-tint` primitive in light, the `-deep` primitive in dark. Contrast pairs 82 → 103: `--color-fg-muted` and `--color-fg-accent` (4.5:1) and `--color-accent` (3:1) on each of the seven tints.
+### 2026-10-19: onboarding wizard
+
+- **Added:** [Step indicator](components/step-indicator.html) (`.steps`, `.steps__dots`, `.steps__dot`, `--done`, `--current`) and the [Wizard step](patterns/wizard-step.html) pattern (`.wizard`, `.wizard__art`, `.wizard__actions`, `.wizard__examples`, `.wizard__added`, `.wizard__details`) for the one-time set-up wizard after sign-up. Five illustrations in `assets/onboarding/` (welcome, child, sign-in, reward, done), pastel fills with a violet outline so they read in both themes.
+- **Changed:** [Layout primitives](components/layout.html) gains nothing; the wizard reuses the auth card as it is.
+- **Tokens:** none added or changed.
 
 ### 2026-10-18: suggested questions
 

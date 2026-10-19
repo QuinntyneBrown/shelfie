@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" role="img" aria-label="A shelf of colourful books with a star above it">
+<path d="M58 62l6 12 13 2-9 9 2 13-12-6-12 6 2-13-9-9 13-2z" fill="#fbe7b2" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+<rect x="76" y="64" width="26" height="78" rx="6" fill="#f9d5e0" stroke="#7c3aed" stroke-width="4"/>
+<rect x="108" y="52" width="26" height="90" rx="6" fill="#cfe6fb" stroke="#7c3aed" stroke-width="4"/>
+<rect x="140" y="70" width="26" height="72" rx="6" fill="#cdf1ec" stroke="#7c3aed" stroke-width="4"/>
+<rect x="166" y="54" width="26" height="92" rx="6" transform="rotate(14 179 100)" fill="#fbe7b2" stroke="#7c3aed" stroke-width="4"/>
+<path d="M84 78h10M116 66h10M148 84h10" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+<rect x="36" y="142" width="168" height="14" rx="7" fill="#cfe8d5" stroke="#7c3aed" stroke-width="4"/>
+</svg>
