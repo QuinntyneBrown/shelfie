@@ -51,6 +51,17 @@ export class ChallengesTab {
     void this.load();
   }
 
+  /** One short line per insight that has something to say (L2-141). */
+  protected insightLines(challenge: Challenge) {
+    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+    const { topReader, climber, streak } = challenge.insights ?? { topReader: null, climber: null, streak: null };
+    return [
+      topReader && `🏅 ${topReader.name} read the most this week: ${plural(topReader.count, 'chapter')}`,
+      climber && `📈 ${climber.name} climbed the most: ${plural(climber.gain, 'more chapter')} than last week`,
+      streak && `🔥 ${streak.name} has the longest streak: ${plural(streak.days, 'day')}`,
+    ].filter((line): line is string => !!line);
+  }
+
   protected measureLabel(challenge: Challenge) {
     return challenge.measure === 'chapters' ? 'Chapters logged' : 'Books finished';
   }

@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { all, get, transaction, type Db } from './db.ts';
 import { PHOTO_COLUMN } from './photos.service.ts';
 import { Problem } from './problem.ts';
-import { todayIn } from './streak.ts';
+import { computeStreak, todayIn } from './streak.ts';
 
 const UNIQUE_VIOLATION = '23505';
 
@@ -31,6 +31,13 @@ export interface Standing {
   leading: boolean;
 }
 
+/** Three short lines for the parent; each is null when it has nothing to say (L2-141). */
+export interface Insights {
+  topReader: { name: string; count: number } | null;
+  climber: { name: string; gain: number } | null;
+  streak: { name: string; days: number } | null;
+}
+
 export interface Challenge {
   id: string;
   name: string;
@@ -41,6 +48,8 @@ export interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: Standing[];
+  /** Only while the challenge runs. */
+  insights: Insights | null;
 }
 
 export interface Reader {
@@ -115,7 +124,40 @@ async function standingsOf(db: Db, householdId: string, timeZone: string, row: C
   });
 }
 
+/**
+ * The week's top reader, the biggest climber since the week before and the longest streak among the readers taking part,
+ * from the days they say they read (as the streak and This week count), not when the log arrived.
+ */
+async function insightsOf(db: Db, householdId: string, today: string, standings: Standing[]): Promise<Insights> {
+  const days = await all<{ reader_id: string; read_on: string }>(
+    db,
+    'SELECT c.reader_id, c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1 AND c.reader_id = ANY($2)',
+    [householdId, standings.map((s) => s.readerId)],
+  );
+  const weekStart = addDays(today, -6);
+  const lastWeekStart = addDays(today, -13);
+  const readers = [...standings]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(({ readerId, name }) => {
+      const mine = days.filter((d) => d.reader_id === readerId).map((d) => d.read_on);
+      const thisWeek = mine.filter((d) => d >= weekStart && d <= today).length;
+      const lastWeek = mine.filter((d) => d >= lastWeekStart && d < weekStart).length;
+      return { name, thisWeek, gain: thisWeek - lastWeek, streak: computeStreak(mine, today) };
+    });
+  type Line = (typeof readers)[number];
+  const most = (key: 'thisWeek' | 'gain' | 'streak') => readers.reduce<Line | null>((best, r) => (r[key] > 0 && (!best || r[key] > best[key]) ? r : best), null);
+  const top = most('thisWeek');
+  const climber = most('gain');
+  const streak = most('streak');
+  return {
+    topReader: top && { name: top.name, count: top.thisWeek },
+    climber: climber && { name: climber.name, gain: climber.gain },
+    streak: streak && { name: streak.name, days: streak.streak },
+  };
+}
+
 async function challengeOf(db: Db, householdId: string, timeZone: string, today: string, row: ChallengeRow): Promise<Challenge> {
+  const standings = await standingsOf(db, householdId, timeZone, row);
   return {
     id: row.id,
     name: row.name,
@@ -125,7 +167,8 @@ async function challengeOf(db: Db, householdId: string, timeZone: string, today:
     endsOn: row.ends_on,
     daysLeft: Math.max(0, daysBetween(today, row.ends_on)),
     ended: row.ended_at !== null,
-    standings: await standingsOf(db, householdId, timeZone, row),
+    standings,
+    insights: row.ended_at === null ? await insightsOf(db, householdId, today, standings) : null,
   };
 }
 

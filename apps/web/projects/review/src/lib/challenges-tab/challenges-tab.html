@@ -20,6 +20,15 @@
         </p>
       </div>
       <sh-leaderboard [rows]="challenge.standings" [goal]="challenge.goal" [unit]="challenge.measure" />
+      @let lines = insightLines(challenge);
+      @if (lines.length) {
+        <h3 id="insights-title" class="insights-title">This week</h3>
+        <ul class="insights" aria-labelledby="insights-title">
+          @for (line of lines; track line) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+      }
     </section>
   }
   <sh-start-challenge-dialog

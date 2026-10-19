@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-146
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-146
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -78,6 +78,11 @@ interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: Standing[];
+  insights: {
+    topReader: { name: string; count: number } | null;
+    climber: { name: string; gain: number } | null;
+    streak: { name: string; days: number } | null;
+  } | null;
 }
 interface View {
   today: string;
@@ -329,4 +334,54 @@ test('Given a name, measure, goal, length or readers the rules refuse, then the 
     assert.ok(problem.errors.some((e) => e.field === field), `${JSON.stringify(change)} names ${field}`);
   }
   assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM challenge'))?.n, 0);
+});
+
+/** Clears Nia's seeded logs and stores chapters read on these days ago, by reader. */
+async function readOn(days: Record<string, number[]>) {
+  await db.pool.query('DELETE FROM chapter_log WHERE book_id IN (SELECT id FROM book WHERE household_id = $1)', [SEED.householdId]);
+  for (const [readerId, ago] of Object.entries(days)) {
+    for (const a of ago) await logged(readerId, `${day(-a)}T12:00:00.000Z`);
+  }
+}
+
+test('Given chapters read this week and last, then the insights name the top reader, the biggest climber and the longest streak', async () => {
+  const cookie = await dad();
+  await start(cookie);
+  await readOn({
+    // Nia: 4 this week (today and the 3 days before), 4 last week; streak 4.
+    'p-nia': [0, 1, 2, 3, 8, 9, 10, 11],
+    // Theo: 3 this week, 0 last week; streak 1.
+    'p-theo': [0, 4, 5],
+  });
+  const { insights } = (await view(cookie)).current!;
+  assert.deepEqual(insights, {
+    topReader: { name: 'Nia', count: 4 },
+    climber: { name: 'Theo', gain: 3 },
+    streak: { name: 'Nia', days: 4 },
+  });
+});
+
+test('Given nobody read more than the week before, then there is no climber; given equal tops, the first by name is named', async () => {
+  const cookie = await dad();
+  await start(cookie);
+  await readOn({ 'p-theo': [0, 8, 9], 'p-nia': [1, 9, 10] });
+  const { insights } = (await view(cookie)).current!;
+  assert.equal(insights?.climber, null);
+  assert.deepEqual(insights?.topReader, { name: 'Nia', count: 1 });
+});
+
+test('Given nobody read in the last 7 days, then there is no top reader and no streak', async () => {
+  const cookie = await dad();
+  await start(cookie);
+  await readOn({ 'p-nia': [9] });
+  assert.deepEqual((await view(cookie)).current!.insights, { topReader: null, climber: null, streak: null });
+});
+
+test('Given only Nia takes part, then Theo’s reading never appears in the insights', async () => {
+  const cookie = await dad();
+  await start(cookie, { ...RACE, readerIds: ['p-nia'] });
+  await readOn({ 'p-nia': [1], 'p-theo': [0, 1, 2] });
+  const { insights } = (await view(cookie)).current!;
+  assert.equal(insights?.topReader?.name, 'Nia');
+  assert.equal(insights?.streak?.name, 'Nia');
 });

@@ -107,6 +107,11 @@ export interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: LeaderboardRow[];
+  insights: {
+    topReader: { name: string; count: number } | null;
+    climber: { name: string; gain: number } | null;
+    streak: { name: string; days: number } | null;
+  } | null;
 }
 
 export interface ChallengeReader {

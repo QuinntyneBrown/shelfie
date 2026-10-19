@@ -201,4 +201,9 @@ export class ReviewPage {
   noChallengeYet() {
     return this.page.getByRole('heading', { name: 'No challenge yet' });
   }
+
+  /** The insight lines under the leaderboard. */
+  insights() {
+    return this.page.getByRole('list', { name: 'This week' }).getByRole('listitem');
+  }
 }

@@ -1,7 +1,7 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141
 import { test, expect } from '../support/test';
 import { signInAsDad } from '../support/signed-in';
-import { addTheo, logChaptersAs, startChallengeInDatabase } from '../support/database';
+import { addTheo, householdDay, logChaptersAs, setReadingDays, startChallengeInDatabase } from '../support/database';
 import { ReviewPage } from '../pages/review.page';
 import { StartChallengeDialog } from '../pages/start-challenge-dialog.page';
 
@@ -112,4 +112,22 @@ test('Given another parent started a challenge meanwhile, when Dad starts his, t
   await expect(dialog.dialog()).toBeHidden();
   await expect(review.toast('A challenge is already running')).toBeVisible();
   await expect(review.challengeCard('Mum’s race')).toBeVisible();
+});
+
+test('Given this week’s reading, when Dad opens the challenge, then three short insights name the top reader, the climber and the longest streak', async ({ page }) => {
+  await setReadingDays([]);
+  await startChallengeInDatabase();
+  await logChaptersAs('p-nia', 1, `${householdDay(-1)}T12:00:00.000Z`);
+  await logChaptersAs('p-nia', 1);
+  await logChaptersAs('p-theo', 3);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+
+  await review.openChallenges();
+
+  await expect(review.insights()).toHaveText([
+    '🏅 Theo read the most this week: 3 chapters',
+    '📈 Theo climbed the most: 3 more chapters than last week',
+    '🔥 Nia has the longest streak: 2 days',
+  ]);
 });
