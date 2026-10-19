@@ -43,14 +43,22 @@ export class ReviewPage {
     return chapters >= LONG_QUEUE ? `${line} · back from a week away?` : line;
   });
 
+  protected readonly failed = signal(false);
+  private readonly status = inject(ShellStatusService);
+
   constructor() {
-    const status = inject(ShellStatusService);
+    this.load();
+  }
+
+  protected load() {
+    this.failed.set(false);
     this.reviewApi
       .load()
       .then((overview) => {
         this.overview.set(overview);
-        status.queueCount.set(overview.queue.length);
-      });
+        this.status.queueCount.set(overview.queue.length);
+      })
+      .catch(() => this.failed.set(true));
   }
 
   /** The goal's name when this finished book is the one that reached the reader's goal. */

@@ -16,4 +16,6 @@ export class AchievementBadge {
   readonly hint = input.required<string>();
   /** The day it was earned (YYYY-MM-DD); null while it is locked. */
   readonly earnedOn = input<string | null>(null);
+  /** Replaces the earned or not-yet line; null leaves the line out. Anything projected goes under it. */
+  readonly note = input<string | null | undefined>(undefined);
 }

@@ -5,7 +5,7 @@ import { MarketingPage } from '../pages/marketing.page';
 test('Given a visitor opens the marketing page, then the hero headline and its calls to action point at the app', async ({ page }) => {
   const marketing = new MarketingPage(page);
   await marketing.open();
-  await expect(marketing.heading()).toHaveText('Every chapter is a step to a reward.');
+  await expect(marketing.heading()).toHaveText('Every chapter, rewarded.');
   await expect(marketing.startReading()).toHaveAttribute('href', 'https://app.shelfie.kids/sign-up');
   await expect(marketing.seeHowItWorks()).toHaveAttribute('href', '#how');
   await expect(marketing.headerOpenTheApp()).toHaveAttribute('href', 'https://app.shelfie.kids/sign-in');
@@ -15,21 +15,15 @@ test('Given the marketing page, then its sections tell the reading loop in order
   const marketing = new MarketingPage(page);
   await marketing.open();
   await expect(marketing.sectionHeadings()).toHaveText([
-    'Reading that feels like a game, not homework.',
-    'Five small steps, one big finish.',
+    'Fun, not homework.',
+    'Three steps, one finish.',
     'Real screens. Real encouragement.',
-    'Made for the whole family.',
-    'Their next chapter starts here.',
+    'For the whole family.',
+    'Start her next chapter.',
   ]);
-  await expect(marketing.journeySteps()).toHaveCount(5);
-  await expect(marketing.journeySteps().getByRole('heading')).toHaveText([
-    'Read a chapter',
-    'Log it',
-    'Answer the questions',
-    'A parent reviews',
-    'A reward for finishing the book',
-  ]);
-  await expect(marketing.familyCards()).toHaveText([/streak/i, /badges/i, /reward gallery/i, /voice/i]);
+  await expect(marketing.journeySteps()).toHaveCount(3);
+  await expect(marketing.journeySteps().getByRole('heading')).toHaveText(['Read and log', 'Answer Olive’s questions', 'Stickers and a reward']);
+  await expect(marketing.familyCards()).toHaveText([/streak/i, /badges/i, /reward gallery/i, /speak/i]);
   await expect(marketing.finalLink('Create a parent account')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-up');
   await expect(marketing.finalLink('Sign in')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-in');
 });

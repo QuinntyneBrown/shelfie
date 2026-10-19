@@ -67,6 +67,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -99,7 +100,7 @@
       <p class="ds-lead">A grid of <a href="cover.html">book covers</a> to choose one from. It sits in a <a href="dialog.html">dialog</a> opened by “More covers” on Add a book, after a catalogue match was picked.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: new</span><span class="ds-pill"><code>&lt;sh-cover-gallery&gt;</code></span></div>
       <ul class="ds-toc">
-        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#code">Code</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
 
@@ -113,6 +114,14 @@
         <li>Tiles: a native radio, visually hidden, labelled “Cover n of total”, plus an <code>sh-cover</code> md showing the picture or its colour-and-sticker placeholder.</li>
         <li>Selected tile: a 2 px primary outline; keyboard focus: the focus ring.</li>
       </ol>
+    </section>
+
+    <section class="ds-section" id="variants" data-na="one variant"><h2><a href="#variants">Variants</a></h2>
+      <p class="ds-na">One variant: a radio grid of medium covers inside the “Pick a cover” dialog. It is not used anywhere else.</p>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="one size"><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: every tile shows a medium <a href="cover.html">cover</a> (<code>--size-cover-md</code>, 80px wide) with <code>--space-2</code> padding, <code>--space-3</code> apart. The column count changes with the width (see Responsive), the tile size does not.</p>
     </section>
 
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
@@ -129,6 +138,10 @@
       <p>2 columns under 40rem, 3 from 40rem, 4 from 64rem. Each tile is at least 44 px wide and tall; nothing scrolls sideways.</p>
     </section>
 
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The gallery adds no colours of its own beyond the selection edge. Covers read the cover palette, which stays the same in both themes; the selected tile's 2px edge reads <code>--color-accent</code> and keyboard focus the shared <code>--color-focus-ring</code>, both of which flip with the theme. The dialog around it supplies the surface.</p>
+    </section>
+
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <ul>
         <li>Native radios: arrow keys move and select, Space or Enter confirms; one tab stop for the group.</li>
@@ -141,6 +154,28 @@
       <p>Dialog title “Pick a cover”. Buttons “Use this cover” and “Cancel”; “Close” and “Try again” in the empty and failed states.</p>
     </section>
 
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><code>&lt;input class="visually-hidden" type="radio" name="cover-choice"&gt;&lt;span class="visually-hidden"&gt;Cover 2 of 6&lt;/span&gt;</code></div><figcaption>Give every tile a real radio with a spoken name, so arrow keys and screen readers work.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;img src="cover-2.jpg" alt="Cover of Because of Winn-Dixie"&gt;</code></div><figcaption>Don't name each picture after the book; six tiles that all say the same title are no help. The picture is decorative.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><code>border-color: var(--color-accent)</code></div><figcaption>Mark the chosen tile with the accent token.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>var(--color-primary, currentColor)</code></div><figcaption>The covers mocks style the tiles in an inline <code>&lt;style&gt;</code> with <code>--color-primary</code>, which is not a token, so the edge silently falls back to the text colour (drift D25).</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Selected edge</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Focus ring</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
+          <tr><td>Cover width</td><td><code>--size-cover-md</code></td><td colspan="2"><span data-token="--size-cover-md"></span></td></tr>
+          <tr><td>Tile radius / edge</td><td><code>--radius-md</code> / <code>--border-width-thick</code></td><td colspan="2"><span data-token="--radius-md"></span> / <span data-token="--border-width-thick"></span></td></tr>
+          <tr><td>Tile padding / gap</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <pre><code>&lt;sh-cover-gallery label="Covers" [options]="coverUrls" [(value)]="chosen" [loading]="loading" /&gt;</code></pre>
       <table class="ds-table"><thead><tr><th scope="col">Input</th><th scope="col">Effect</th></tr></thead><tbody>
@@ -149,6 +184,17 @@
         <tr><td><code>value</code></td><td>The chosen URL (two-way).</td></tr>
         <tr><td><code>loading</code></td><td>Shows the skeleton tiles.</td></tr>
       </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/add-book/covers.html">pages/add-book/covers</a> (the dialog, current picture selected)</li>
+        <li><a href="../../mocks/pages/add-book/covers-loading.html">pages/add-book/covers-loading</a></li>
+        <li><a href="../../mocks/pages/add-book/covers-empty.html">pages/add-book/covers-empty</a></li>
+        <li><a href="../../mocks/pages/add-book/covers-failed.html">pages/add-book/covers-failed</a></li>
+      </ul>
+      <p>Drift found: D25, the tiles are styled by an inline <code>&lt;style&gt;</code> in each covers mock using <code>--color-primary</code> (not a token) and raw <code>44px</code>/<code>2px</code>. The tokens above are the intended values; the gallery is built in the <code>components</code> library as <code>sh-cover-gallery</code>, so <code>components.css</code> carries no <code>.cover-grid</code> class yet.</p>
     </section>
 
     <footer class="ds-footer"><span>Shelfie design system · added with the cover photo picker on 2026-10-18</span><a href="#top">Back to top</a></footer>

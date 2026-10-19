@@ -2,12 +2,17 @@
   <span class="achievement__icon" aria-hidden="true">{{ icon() }}</span>
   <div class="achievement__body">
     <div class="achievement__name">{{ name() }}</div>
-    <div class="achievement__note">
-      @if (earnedOn(); as day) {
-        Earned {{ day | date: 'EEE d MMM' : 'UTC' }}
-      } @else {
-        Not yet · {{ hint() }}
-      }
-    </div>
+    @if (note() === undefined) {
+      <div class="achievement__note">
+        @if (earnedOn(); as day) {
+          Earned {{ day | date: 'EEE d MMM' : 'UTC' }}
+        } @else {
+          Not yet · {{ hint() }}
+        }
+      </div>
+    } @else if (note(); as text) {
+      <div class="achievement__note">{{ text }}</div>
+    }
+    <ng-content />
   </div>
 </div>

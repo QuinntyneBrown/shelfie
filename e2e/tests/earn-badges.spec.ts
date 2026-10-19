@@ -16,6 +16,8 @@ test('Given Nia has finished a book and read several chapters in one day, when s
   await expect(shelf.badge('Double chapter')).toContainText('Earned Sat 10 Oct');
   await expect(shelf.badge('Weekend reader')).toContainText('Not yet · Read on a Saturday and the Sunday after');
   await expect(shelf.badge('Week streak')).toContainText('Not yet · Read 7 days in a row');
+  expect(await shelf.badgeHasCheck('First book')).toBe(true);
+  expect(await shelf.badgeHasCheck('Week streak')).toBe(false);
 });
 
 test('Given Nia read on seven days in a row, when she opens her shelf, then Week streak is earned and the count rises', async ({ page }) => {

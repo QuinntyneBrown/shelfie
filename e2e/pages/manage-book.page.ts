@@ -154,8 +154,13 @@ export class ManageBookPage {
     return this.saves;
   }
 
+  /** The card for a book whose reward has been given. */
+  rewardedCard() {
+    return this.page.getByRole('region', { name: /Reward given/ });
+  }
+
   questions() {
-    return this.page.getByRole('region', { name: /Questions/ }).getByRole('listitem');
+    return this.page.getByRole('region', { name: /chapter questions/ }).getByRole('listitem');
   }
 
   question(text: string) {

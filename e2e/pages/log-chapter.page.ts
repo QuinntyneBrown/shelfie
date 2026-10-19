@@ -4,6 +4,39 @@ import { SAME_SITE } from '../support/same-site';
 export class LogChapterPage {
   constructor(private readonly page: Page) {}
 
+  /** Olive's greeting at the top of the chat. */
+  greeting() {
+    return this.page.locator('.chat p.bubble__text').first();
+  }
+
+  /** The question bubbles shown so far, in order. */
+  questionsShown() {
+    return this.page.locator('label.bubble__text');
+  }
+
+  moreQuestionsHint() {
+    return this.page.getByText(/more questions? after this one/);
+  }
+
+  nextButton(position: number) {
+    return this.page.getByRole('button', { name: `Next question after question ${position}` });
+  }
+
+  async next(position: number) {
+    await this.nextButton(position).click();
+  }
+
+  /** Answers a question and moves on to the next one. */
+  async answerAndNext(position: number, text: string) {
+    await this.answer(position, text);
+    await this.next(position);
+  }
+
+  /** Olive's short replies between questions. */
+  oliveReplies() {
+    return this.page.locator('.chat .bubble--buddy p.bubble__text').filter({ hasNotText: /wants to hear about/ });
+  }
+
   async answer(position: number, text: string) {
     await this.page.getByLabel(new RegExp(`^${position}\\.`)).fill(text);
   }
@@ -100,8 +133,22 @@ export class LogChapterPage {
     await this.page.getByRole('link', { name: 'Add my next book' }).click();
   }
 
-  finishedHeading() {
-    return this.page.getByRole('heading', { name: 'You finished the whole book!' });
+  finishedHeading(title?: string) {
+    return this.page.getByRole('heading', { name: title ? `You finished ${title}!` : /^You finished .+!$/ });
+  }
+
+  /** The rows stacked in the celebration card: badges earned, the streak, and the finished book. */
+  celebrationRows() {
+    return this.page.locator('.celebrate__rows > *');
+  }
+
+  celebrationRow(text: string | RegExp) {
+    return this.celebrationRows().filter({ hasText: text });
+  }
+
+  /** This week's seven days, inside the celebration. */
+  celebrationWeek() {
+    return this.page.locator('.celebrate').getByRole('img', { name: /^This week/ });
   }
 
   async notYet() {
@@ -156,13 +203,18 @@ export class LogChapterPage {
     await this.page.goto(`/books/${bookId}/chapters/${chapter}/log`);
   }
 
-  /** The cover picture on the book's cover; there is none when the book has no picture. */
+  /** The cover picture on the book's main cover (the celebration repeats it in its trophy row); none when the book has no picture. */
   coverPicture() {
-    return this.page.locator('main .cover img');
+    return this.page.locator('main .cover img').first();
   }
 
-  progressSummary() {
-    return this.page.getByText(/That’s \d+ of \d+/);
+  /** The "N of M" beside the celebration's progress bar. */
+  progressLabel() {
+    return this.page.locator('.celebrate .progress-row__label');
+  }
+
+  chaptersToGo() {
+    return this.page.getByText(/chapters? to go/);
   }
 
   progressBar(label: string) {

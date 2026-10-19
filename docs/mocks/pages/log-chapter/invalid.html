@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="log-chapter">
 <meta name="mock:state" content="invalid">
-<meta name="description" content="Question 1 left blank: summary and inline nudge, other answers kept.">
+<meta name="description" content="Question 1 left blank when she tapped Done: summary and inline nudge inside her answer bubble.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
 <link rel="stylesheet" href="../../assets/mock.css">
@@ -36,26 +36,16 @@
       <label class="chip" style="gap: var(--space-2);">Another day <input class="input input--sm" type="date" value="2026-10-17" style="width: auto;" aria-label="Pick the day"></label>
     </div>
   </fieldset>
-  <fieldset class="card stack">
+  <fieldset class="card chat">
     <legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend>
-    <p class="text-muted" style="margin-bottom: var(--space-2);">A sentence or two for each one is perfect. Spelling doesn’t matter.</p>
-    <div class="field">
-  <label class="field__label" for="q1"><span class="qa__num">1.</span> What happened in this chapter?</label>
-  <textarea class="textarea" id="q1" name="q1" rows="3" required aria-invalid="true" aria-describedby="q1-error"></textarea>
-  <div class="field__error" id="q1-error">Write a sentence or two about what happened. There are no wrong answers!</div>
-</div><div class="field">
-  <label class="field__label" for="q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label>
-  <textarea class="textarea" id="q2" name="q2" rows="3" required>I liked Edmund because he said sorry to the little animals.</textarea>
-  
-</div><div class="field">
-  <label class="field__label" for="q3"><span class="qa__num">3.</span> What do you think will happen next?</label>
-  <textarea class="textarea" id="q3" name="q3" rows="3" required>I think Aslan will help Edmund.</textarea>
-  
-</div><div class="field">
-  <label class="field__label" for="q4"><span class="qa__num">4.</span> Where did the children go in this chapter?</label>
-  <textarea class="textarea" id="q4" name="q4" rows="3" required>They went to the Stone Table.</textarea>
-  
-</div>
+    <div class="bubble bubble--buddy"><img class="bubble__face" src="../../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Hi Nia! Dad wants to hear about Chapter 12. A sentence or two is perfect, and spelling doesn’t matter.</p></div>
+    <div class="bubble bubble--buddy"><img class="bubble__face" src="../../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="q1"><span class="qa__num">1.</span> What happened in this chapter?</label></div>
+    <div class="bubble bubble--me field">
+      <textarea class="textarea" id="q1" name="q1" rows="3" required aria-invalid="true" aria-describedby="q1-error" placeholder="Type here, or tap the mic…"></textarea>
+      <div class="field__error" id="q1-error">Write a sentence or two about what happened. There are no wrong answers!</div>
+      <div class="cluster chat__actions"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    </div>
+    <p class="chat__hint">3 more questions after this one.</p>
   </fieldset>
   <div class="form-actions">
     <a class="btn btn--ghost" href="../../pages/book/default.html">Not yet</a>

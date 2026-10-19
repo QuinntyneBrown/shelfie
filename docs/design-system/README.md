@@ -6,12 +6,12 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 
 | Page | Covers |
 |---|---|
-| [Color](foundations/color.html) | Ramps, semantic roles, both themes, every contrast pair with live ratios |
+| [Color](foundations/color.html) | Ramps, semantic roles, cover tints, both themes, every contrast pair with live ratios |
 | [Typography](foundations/typography.html) | Families, scale, weights, line heights, role shorthands, measure |
 | [Spacing](foundations/spacing.html) | 4px scale, inside vs between |
 | [Layout](foundations/layout.html) | Breakpoints, columns, gutters, margins, live grid, page templates |
 | [Elevation](foundations/elevation.html) | Shadows, surfaces, z-order |
-| [Shape](foundations/shape.html) | Radii, border widths, avatar and cover sizes |
+| [Shape](foundations/shape.html) | Radii (24px cards, 32px sheets, pill buttons), border widths, avatar and cover sizes |
 | [Motion](foundations/motion.html) | Durations, easings, replayable demos, reduced motion |
 | [Iconography](foundations/iconography.html) | Icon style, sizes, labelling, the 23 icons in the mocks |
 | [Theming](foundations/theming.html) | data-theme, OS preference, token tiers, adding a theme, tokens.json |
@@ -36,13 +36,13 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Form layout](components/form-layout.html) | Inputs | actions bar, error summary, danger zone | default, submitting, invalid | manage-book, settings, add-book, sign-in |
 | [Swatch picker](components/swatch-picker.html) | Inputs | cover colour, cover sticker | default, hover, focus, checked | add-book, settings |
 | [Sticker picker](components/sticker-picker.html) | Inputs | sticker choice | default, hover, focus, active, pressed, disabled, invalid | review-chapter, give-reward |
-| [Top bar](components/top-bar.html) | Navigation | reader, grown-up | link hover, focus, current | shelf, book, add-book, review |
+| [Top bar](components/top-bar.html) | Navigation | reader, grown-up; floating capsule | link hover, focus, current | shelf, book, add-book, review |
 | [Tab bar](components/tab-bar.html) | Navigation | grown-up phone nav, with count | default, hover, focus, current | review, books, manage-book, settings |
 | [Breadcrumb](components/breadcrumb.html) | Navigation | two and three levels | link hover, focus, current | add-book, book, chapter, log-chapter |
 | [Skip link](components/skip-link.html) | Navigation | — | hidden, focused | shelf, review, sign-in |
 | [Layout primitives](components/layout.html) | Containers and overlays | container, stack, cluster, grid, spans, page header, auth layout | — | review, review-chapter, add-book, shelf |
-| [Card](components/card.html) | Containers and overlays | default, flush, success, warning | — | review, review-chapter, manage-book, book |
-| [Hero](components/hero.html) | Containers and overlays | keep reading | — | shelf |
+| [Card](components/card.html) | Containers and overlays | default, flush, cover tint (automatic), success, warning | — | review, review-chapter, manage-book, book |
+| [Hero](components/hero.html) | Containers and overlays | keep reading, washed in its cover colour | — | shelf |
 | [Accordion](components/accordion.html) | Containers and overlays | bordered, flush | closed, open, hover, focus | book |
 | [Dialog](components/dialog.html) | Containers and overlays | default, destructive, form · sheet under 640px | default, busy, invalid, failed | give-reward, delete-book, edit-question |
 | [List](components/list.html) | Data display | title + meta, with cover/avatar | — | review, books, manage-book |
@@ -53,18 +53,20 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Logo mark](components/logo-mark.html) | Identity | 64px tile | default | sign-in, sign-up, accept-invite, forgot-password, reset-password |
 | [Badge](components/badge.html) | Data display | neutral, info, success, warning, count | — | books, manage-book, review, shelf |
 | [Chip](components/chip.html) | Data display | toggle | default, hover, focus, pressed, disabled | log-chapter, give-reward |
-| [Streak](components/streak.html) | Data display | pill | — | shelf, book, log-chapter, review |
+| [Streak](components/streak.html) | Data display | pill, week strip | — | shelf, book, log-chapter, review |
 | [Stat](components/stat.html) | Data display | label + value | — | review, give-reward |
 | [Book cover](components/cover.html) | Data display | 7 colours · sm/md/lg/xl; picture; skeleton | picture loading, picture failed | shelf, book, books, add-book, manage-book |
 | [Cover picker](components/cover-picker.html) | Input | no picture, with picture | focus, uploading, too large, wrong type | add-book, manage-book |
 | [Cover gallery](components/cover-gallery.html) | Input | radio grid of covers | loading, empty, failed, selected, focus | add-book |
 | [Picture list](components/picture-list.html) | Input | thumbnail grid with a featured mark, per-picture actions and Add a picture | empty, several, uploading, failed, wrong file, too large, full, disabled, focus | edit-gallery-reward |
-| [Book card](components/book-card.html) | Data display | reading, up next, finished | — | shelf, book, log-chapter, give-reward |
+| [Book card](components/book-card.html) | Data display | reading, up next, finished; on a cover-tinted card | — | shelf, book, log-chapter, give-reward |
 | [Chapter row](components/chapter-row.html) | Data display | done, next, future | default, hover, focus | book |
 | [Sticker](components/sticker.html) | Data display | md, lg, xl | — | review, shelf, chapter, book |
 | [Question and answer](components/question-answer.html) | Data display | answered, flagged (Dad only) | — | chapter, review-chapter, manage-book |
+| [Chat bubble](components/chat-bubble.html) | Inputs | Olive speaks, Olive asks (label), reader answers | default, focus, filled, dictating, mic denied, invalid, read-only, loading | log-chapter |
 | [Feedback note](components/feedback-note.html) | Data display | sticker + note | — | chapter, review-chapter |
 | [Trophy](components/trophy.html) | Data display | reward given, waiting, gallery reward | gallery reward: can be picked, her goal, reached | shelf, banner |
+| [Achievement badge](components/achievement-badge.html) | Data display | grid tile (centred column), row (in a celebration) | earned (ring + check), locked | shelf, review, log-chapter success |
 | [Toast](components/toast.html) | Feedback | info, success, warning, danger; with action; stacked | entering, timed, leaving | toast |
 | [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings, review-chapter |
 | [Inline message](components/inline-message.html) | Feedback | field error, saving, saved | — | add-book, log-chapter, sign-in, settings |
@@ -72,7 +74,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Skeleton](components/skeleton.html) | Feedback | text, title, rect, cover | loading | shelf, book, chapter, log-chapter |
 | [Empty state](components/empty-state.html) | Feedback | first-run, error | — | shelf, books, review, book |
 | [Error page](components/error-page.html) | Feedback | 404, 403, 500, offline | — | not-found, forbidden, server-error, offline |
-| [Celebration](components/celebration.html) | Feedback | chapter logged, book finished | playing, reduced motion | log-chapter, review-chapter, book |
+| [Celebration](components/celebration.html) | Feedback | chapter logged (stacked rows), book finished, feedback sent | playing, reduced motion | log-chapter, review-chapter, book |
 
 ### Left out on purpose
 
@@ -90,12 +92,13 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Lists and tables](patterns/lists-and-tables.html) | Chapter lists, book lists, chapters table, long lists |
 | [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
+| [Marketing page](patterns/marketing-page.html) | Two-tone hero with pastel dots, short titles, tinted step and feature cards, wavy section edges |
 
 ## Tokens
 
 - `tokens/tokens.css` — source of truth: primitives, semantic tokens, component sizes; light on `:root` and `[data-theme="light"]`, dark on `[data-theme="dark"]` and under `prefers-color-scheme: dark`; reduced-motion, more-contrast and forced-colours overrides.
 - `tokens/tokens.json` — DTCG export generated from `tokens.css` (dark values under `$extensions`). Regenerate, never hand-edit.
-- `tokens/contrast-pairs.json` — every foreground/background pairing the components rely on: 82 pairs, 158 checks across both themes.
+- `tokens/contrast-pairs.json` — every foreground/background pairing the components rely on: 103 pairs, 200 checks across both themes.
 - `assets/components.css` — the product stylesheet; `assets/ds.css` and `assets/ds.js` — documentation-site chrome only.
 
 ## Drift found in the mocks
@@ -126,6 +129,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | D22 | auth mocks (logo) | The 📖 emoji inside a round sticker sat off-centre: emoji glyph metrics are not symmetric | `.logo-mark` shows the app icon as its own tile, centred by grid (new component page) |
 | D23 | sign-in, sign-up, accept-invite (first draft) | Help text under nearly every field, a two-line switch explanation, multi-sentence alerts | Help only for the username rule and password minimum; one-line switch label; alert = title + one sentence (see Content foundation, "less is more") |
 | D24 | sign-in (first draft) | PIN keypad and profile picker for the reader | Retired with the new accounts model: `.pin-dots`, `.pinpad`, `.profiles`, `.profile-tile` removed, pages `pin-entry` and `profile-tile` deleted |
+| D25 | add-book/covers, covers-loading, covers-empty, covers-failed | The cover tiles are styled by an inline `<style>` that reads `--color-primary` (not a token, so the selected edge falls back to the text colour) and raw `44px`/`2px` | Cover gallery documents `--color-accent`, `--color-focus-ring`, `--radius-md`, `--border-width-thick`; the mock is not rewritten (it is built as `sh-cover-gallery`) |
 
 ### Open issues in the mocks (not fixed by this extraction)
 
@@ -136,6 +140,15 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Changelog
+
+### 2026-10-19: Beanstack review (R1–R8)
+
+From [the competitive review](../competitive-review/beanstack.md) and the reworked mocks (shelf, log-chapter, badges, marketing).
+
+- **Added:** [Chat bubble](components/chat-bubble.html) (`.chat`, `.bubble`, `.bubble--buddy`, `.bubble__face`, `.bubble__text`, `.bubble--me`, `.chat__hint`) with Olive the owl (`assets/olive.svg`, copied from the mocks) (R4). The week strip variant of [Streak](components/streak.html) (`.day-path--week`, `.day-path__day--today`) (R3). The cover-tint variant of [Card](components/card.html) and [Hero](components/hero.html) (`.card:has(> .cover--*)`, `.hero:has(> .cover--*)`) (R1). `.celebrate__rows` and the accent progress label on [Celebration](components/celebration.html) (R5). The missing Variants and Sizes sections on [Achievement badge](components/achievement-badge.html); Variants, Sizes, Theming, Do and don't, Tokens and Sources on [Cover gallery](components/cover-gallery.html); Overview, When, States, Content and Do and don't on [Marketing page](patterns/marketing-page.html). README rows for Chat bubble, Achievement badge and Marketing page.
+- **Changed:** [Top bar](components/top-bar.html) is a floating sticky capsule: `top: --space-2`, `--space-2` margin above, width `min(--layout-container-max, 100%)` less the page margins, 90% surface via `color-mix` with a 12px backdrop blur, hairline border all round instead of a bottom border, `--radius-full`, `--shadow-2` (R2). [Button](components/button.html) radius `--radius-md` (12px) → `--radius-full` (pill) (R2). [Book cover](components/cover.html) lg and xl radius `--radius-lg` → `--radius-md` (12px; was 16px). [Hero](components/hero.html) background now reads `--card-bg` (default: the old accent gradient). [Achievement badge](components/achievement-badge.html) icon `--control-height-md` (44px) → `--size-avatar-lg` (56px), emoji `--font-size-xl` → `--font-size-2xl`, a two-ring `box-shadow` (surface gap + `--color-accent`; locked `--color-border-default`), a `--color-success-solid` ✓ disc when earned, the earned note `--color-fg-muted` → `--color-success-fg`, and tiles in `.achievements` became centred columns (R6). [Marketing page](patterns/marketing-page.html): no hero kicker, H1 "Every chapter, rewarded." at `--font-size-5xl`–4.75rem, scattered pastel dots, section titles of four words or fewer with no kickers or sub-paragraphs, "How it works" as three tinted cards with icon tiles (numbers removed, five columns → three), "Inside the app" as four tinted feature cards with cropped screenshots rotated −3° (was a sideways-scrolling carousel), wavy section edges via CSS `mask`, washes via `.tint-bg-*` (R7, R8). Prose updated on [Shape](foundations/shape.html), [Book card](components/book-card.html), [Navigation](patterns/navigation.html), [Question and answer](components/question-answer.html) (links to Chat bubble) and [Accessibility](foundations/accessibility.html) (pair count). Chat bubble added to the nav of every page and to `index.html`.
+- **Removed:** the top bar's bottom border; the marketing page's numbered journey steps (`.step::before` counter), the screenshot carousel (`.screen-showcase`, `.showcase-card`) and its section kickers.
+- **Tokens:** `--radius-lg` 1rem (16px) → 1.5rem (24px); `--radius-xl` 1.5rem (24px) → 2rem (32px). Added primitives `--palette-cover-sage-tint` #e7f4ea, `--palette-cover-sage-deep` #1f2d25, `--palette-cover-rose-tint` #fceaf0, `--palette-cover-rose-deep` #33222b, `--palette-cover-sky-tint` #e7f2fd, `--palette-cover-sky-deep` #1f2a38, `--palette-cover-sun-tint` #fdf3d8, `--palette-cover-sun-deep` #332a17, `--palette-cover-lilac-tint` #f1ecfd, `--palette-cover-lilac-deep` #2a2340, `--palette-cover-mint-tint` #e6f8f6, `--palette-cover-mint-deep` #1c302d, `--palette-cover-peach-tint` #feeee4, `--palette-cover-peach-deep` #352620. Added semantic `--color-tint-{sage,rose,sky,sun,lilac,mint,peach}`: the `-tint` primitive in light, the `-deep` primitive in dark. Contrast pairs 82 → 103: `--color-fg-muted` and `--color-fg-accent` (4.5:1) and `--color-accent` (3:1) on each of the seven tints.
 
 ### 2026-10-18: suggested questions
 
@@ -167,17 +180,14 @@ The mocks were pointed at this system but their HTML was not rewritten, so the i
 
 ## Verification
 
-Run on 2026-10-18 from the repository root, after the accounts-and-profiles update.
+Run on 2026-10-19 from the repository root, after the Beanstack review update.
 
 | Check | Command | Result |
 |---|---|---|
-| Mocks structure | `python3 .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 27 screens, 119 mocks, 0 errors, 0 warnings |
-| Contrast, both themes | `python3 .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 158 passed, 0 failed, 0 unresolved |
-| Token export | `tokens_to_json.py docs/design-system/tokens/tokens.css` | 302 tokens written to `tokens/tokens.json` |
-| Structure | `python3 .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 65 pages (12 foundations, 44 components, 8 patterns, index), 0 errors, 0 warnings (PIN entry and Profile tile out, Switch and Logo mark in) |
-| Token coverage | script over `tokens.css` | All 245 custom properties appear in a `data-token` cell on exactly one foundation page |
-| Layout and live values | headless Chrome over all 65 pages at 360 px (light, dark) and 1280 px (dark) | No horizontal page scroll, no failing live contrast ratio, no empty token cell, no script error |
-| Screenshots | `screenshot_mocks.py` at 360×800 and 1280×800, both themes | 256 design-system and 404 mock shots captured. Looked at by eye: the colour, button, toast and dialog pages, and three changed mocks (books, review chapter, toast with action). The other pages were covered by the automated layout audit only |
-| Mocks before vs after | pixel diff of the 404 mock shots | 312 differ. Static differences are the token snaps (D4, D13, D20), the toast lift (D16) and the tab-bar state; the rest are animated states captured at different phases |
+| Contrast, both themes | `python3 -I .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 200 passed, 0 failed, 0 unresolved (103 pairs) |
+| Token export | `tokens_to_json.py docs/design-system/tokens/tokens.css` | 330 tokens; regenerated output identical to `tokens/tokens.json` |
+| Structure | `python3 -I .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 74 pages (12 foundations, 52 components, 9 patterns, index), 0 errors, 0 warnings |
+| Token coverage | script over `tokens.css` | All 266 custom properties appear in a `data-token` cell on exactly one foundation page |
+| Screenshots | `screenshot_mocks.py docs/design-system` at 360×800 and 1280×800, both themes | 20 full-page shots of index, chat-bubble, top-bar, achievement-badge and color, read by eye in segments. Fixed: the chat state matrix scrolled sideways at 360px (now a grid of examples); top-bar examples in narrow theme panels overflowed the capsule (examples now `top: 0; width: 100%; margin: 0`); anatomy callouts on achievement badge and chat bubble moved. No page-level horizontal scroll |
 
 Not verified by tooling: a screen-reader pass, 200 % and 400 % zoom, and `forced-colors` rendering. The accessibility foundation page lists them as the manual checks to run when the components exist in Angular.

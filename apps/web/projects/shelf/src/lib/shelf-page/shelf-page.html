@@ -35,6 +35,7 @@
       <h1>Hi {{ session.current()?.name }}</h1>
       @if (shelf(); as loaded) {
         <p class="subtitle">🔥 {{ loaded.streak }}-day streak</p>
+        <sh-week-strip [days]="loaded.week" />
       }
     </div>
     <a class="btn" routerLink="/add-book">Add a book</a>
@@ -68,6 +69,26 @@
     />
   } @else {
     @let data = shelf()!;
+    @if (data.reading[0]; as hero) {
+      <section class="hero keep-reading" aria-labelledby="keep-reading">
+        <sh-cover [color]="hero.coverColor" [sticker]="hero.sticker" [image]="hero.coverImage" size="lg" />
+        <div class="hero__body">
+          <span class="hero__eyebrow" id="keep-reading">Keep reading</span>
+          <h2 class="hero__title">{{ hero.title }}</h2>
+          <sh-progress
+            [value]="hero.loggedCount"
+            [max]="hero.chapterCount"
+            [label]="hero.loggedCount + ' of ' + hero.chapterCount + ' chapters read'"
+          />
+          <div class="cluster">
+            <a class="btn btn--primary btn--lg" [routerLink]="['/books', hero.id, 'chapters', hero.nextChapter, 'log']"
+              >I read Chapter {{ hero.nextChapter }}</a
+            >
+            <a class="btn btn--ghost" [routerLink]="['/book', hero.id]">See all chapters</a>
+          </div>
+        </div>
+      </section>
+    }
     @if (data.reading.length) {
       <section class="section" aria-labelledby="on-the-go">
         <h2 id="on-the-go" class="group-title">On the go</h2>

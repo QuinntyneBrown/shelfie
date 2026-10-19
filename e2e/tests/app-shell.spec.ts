@@ -1,4 +1,4 @@
-// Traces to: L2-025, L2-026, L2-114
+// Traces to: L2-025, L2-026, L2-114, L2-007
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
@@ -14,12 +14,13 @@ test('Given Nia is signed in, when her shelf shows, then the top bar has the bra
   await expect(shell.main()).toHaveCount(1);
 });
 
-test('Given Nia is signed in, when she scrolls down a long page, then the top bar stays at the top of the window', async ({ page }) => {
+test('Given Nia is signed in, when she scrolls down a long page, then the top bar floats as a capsule just below the top of the window', async ({ page }) => {
   await signInAsNia(page);
   const shell = new ShellPage(page);
   await expect(shell.brand()).toBeVisible();
 
-  expect(await shell.topBarOffsetAfterScrolling()).toBe(0);
+  expect(await shell.topBarOffsetAfterScrolling()).toBe(8);
+  expect(await shell.topBarRadius()).toBeGreaterThan(20);
 });
 
 test('Given nobody is signed in, when the sign-in page shows, then there is no top bar', async ({ page }) => {

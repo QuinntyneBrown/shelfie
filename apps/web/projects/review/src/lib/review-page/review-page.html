@@ -7,6 +7,15 @@
       }
     </div>
   </div>
+  @if (failed()) {
+    <sh-empty-state
+      tone="error"
+      title="Review didn’t load"
+      text="Shelfie couldn’t reach the server. Nia’s answers are safe; try again in a moment."
+    >
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-empty-state>
+  }
   @if (overview(); as overview) {
     <section class="card stack" aria-labelledby="this-week">
       <h2 id="this-week" class="section-title">This week</h2>
@@ -115,7 +124,7 @@
           <span class="sticker" aria-hidden="true">🎁</span>
           <div class="book-card__body">
             <h2 [id]="'streak-reward-' + reward.milestone" class="section-title">
-              {{ overview.readerName }} reached a {{ reward.milestone }}-day streak
+              {{ reward.milestone }}-day streak reached!
             </h2>
             <span class="book-card__author">Her reward: {{ reward.name }}</span>
           </div>

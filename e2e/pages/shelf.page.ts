@@ -23,6 +23,29 @@ export class ShelfPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  /** The "Keep reading" hero for the book she logged most recently. */
+  keepReading() {
+    return this.page.getByRole('region', { name: 'Keep reading' });
+  }
+
+  async logFromHero(chapter: number) {
+    await this.keepReading().getByRole('link', { name: `I read Chapter ${chapter}` }).click();
+  }
+
+  /** This week's seven days under the greeting. */
+  weekStrip() {
+    return this.page.getByRole('img', { name: /^This week/ });
+  }
+
+  /** How many of the week's days show as read, and how many cells there are. */
+  async weekStripCounts() {
+    return this.weekStrip().evaluate((strip) => ({
+      days: strip.querySelectorAll('.day-path__day').length,
+      read: strip.querySelectorAll('.day-path__day--done').length,
+      today: strip.querySelectorAll('.day-path__day--today').length,
+    }));
+  }
+
   /** The one-time offer to turn on notifications for this device. */
   pushOffer() {
     return this.page.getByRole('status').filter({ hasText: 'Want a ping when' });
@@ -238,6 +261,27 @@ export class ShelfPage {
 
   badgeNames() {
     return this.badges().locator('.achievement__name');
+  }
+
+  /** Whether an earned badge shows its green check in the corner of its ring. */
+  async badgeHasCheck(name: string) {
+    return this.badge(name)
+      .locator('.achievement__icon')
+      .evaluate((icon) => getComputedStyle(icon, '::after').content.includes('✓'));
+  }
+
+  /** The card's background colour and the cover tint it should take, both as computed colours. */
+  async bookTint(group: 'On the go' | 'Up next', title: string, colour: string) {
+    const background = await this.book(group, title).evaluate((card) => getComputedStyle(card).backgroundColor);
+    const expected = await this.page.evaluate((c) => {
+      const probe = document.createElement('div');
+      probe.style.background = `var(--color-tint-${c})`;
+      document.body.append(probe);
+      const value = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return value;
+    }, colour);
+    return { background, expected };
   }
 
   /** The "Streak rewards" section of the shelf; absent until a parent sets a reward. */

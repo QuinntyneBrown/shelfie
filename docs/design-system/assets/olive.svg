@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Olive the owl">
+  <path d="M14 22 10 8l12 8zM50 22l4-14-12 8z" fill="#2a8f52"/>
+  <ellipse cx="32" cy="38" rx="22" ry="22" fill="#7ed69a" stroke="#2a8f52" stroke-width="2"/>
+  <path d="M18 46c4 6 10 10 14 10s10-4 14-10c-4 2-9 3-14 3s-10-1-14-3z" fill="#cfe8d5"/>
+  <circle cx="23" cy="30" r="9" fill="#fff8e8"/><circle cx="41" cy="30" r="9" fill="#fff8e8"/>
+  <circle cx="24" cy="31" r="3.5" fill="#1a1e26"/><circle cx="40" cy="31" r="3.5" fill="#1a1e26"/>
+  <circle cx="25.3" cy="29.7" r="1" fill="#fff"/><circle cx="41.3" cy="29.7" r="1" fill="#fff"/>
+  <path d="M29 38h6l-3 5z" fill="#f7c15c"/>
+  <circle cx="14" cy="39" r="2.5" fill="#f9d5e0"/><circle cx="50" cy="39" r="2.5" fill="#f9d5e0"/>
+</svg>

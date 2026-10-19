@@ -24,12 +24,20 @@
 
 <main id="main" class="container">
 <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="../../pages/shelf/default.html">My shelf</a></li><li><a href="../../pages/book/finished.html">Matilda</a></li><li aria-current="page">Chapter 21</li></ol></nav>
-<div class="celebrate card" style="background: linear-gradient(160deg, var(--color-warning-bg), var(--color-bg-surface) 60%);">
+<div class="celebrate card card--warning">
   <div class="confetti" aria-hidden="true"><span style="--x: 5%; --d: 0s; --c: var(--color-cover-rose);"></span><span style="--x: 14%; --d: 0.5s; --c: var(--color-cover-sun);"></span><span style="--x: 24%; --d: 1.2s; --c: var(--color-cover-sky);"></span><span style="--x: 35%; --d: 0.3s; --c: var(--color-cover-mint);"></span><span style="--x: 45%; --d: 0.8s; --c: var(--color-cover-lilac);"></span><span style="--x: 55%; --d: 1.5s; --c: var(--color-cover-peach);"></span><span style="--x: 66%; --d: 0.1s; --c: var(--color-cover-sage);"></span><span style="--x: 77%; --d: 1.0s; --c: var(--color-cover-rose);"></span><span style="--x: 88%; --d: 0.7s; --c: var(--color-cover-sun);"></span><span style="--x: 96%; --d: 1.9s; --c: var(--color-cover-sky);"></span><span style="--x: 30%; --d: 2.2s; --c: var(--color-cover-mint);"></span><span style="--x: 60%; --d: 2.4s; --c: var(--color-cover-lilac);"></span><span style="--x: 10%; --d: 2.6s; --c: var(--color-cover-peach);"></span><span style="--x: 80%; --d: 2.8s; --c: var(--color-cover-sage);"></span></div>
   <span class="cover cover--rose cover--xl" aria-hidden="true">📚</span>
   <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
-  <h1>You finished the whole book!</h1>
-  <p class="text-muted">All 21 chapters of Matilda. Dad will pick your reward — watch your shelf.</p>
+  <h1>You finished Matilda!</h1>
+  <div class="progress-row">
+  <div class="progress progress--lg progress--complete" role="progressbar" aria-valuenow="21" aria-valuemin="0" aria-valuemax="21" aria-label="21 of 21 chapters read"><div class="progress__bar" style="--value: 100%;"></div></div>
+  <span class="progress-row__label">21 of 21</span>
+</div>
+  <ul class="celebrate__rows">
+    <li class="trophy"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="trophy__body"><div class="trophy__title truncate">Matilda</div><div class="trophy__reward">All 21 chapters · Dad is picking your reward</div></div><span class="sticker" aria-hidden="true">🏆</span></li>
+    <li class="achievement"><span class="achievement__icon" aria-hidden="true">🔥</span><div class="achievement__body"><div class="achievement__name">5 days in a row</div><div class="day-path day-path--week" role="img" aria-label="This week: read 5 days in a row, Monday to today"><span class="day-path__day day-path__day--done" aria-hidden="true">M</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done" aria-hidden="true">W</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done day-path__day--today" aria-hidden="true">F</span><span class="day-path__day" aria-hidden="true">S</span><span class="day-path__day" aria-hidden="true">S</span></div></div></li>
+  </ul>
+  <p class="text-muted">Watch your shelf for the reward.</p>
   <div class="cluster" style="justify-content: center;">
     <a class="btn btn--primary btn--lg" href="../../pages/shelf/default.html">Back to my shelf</a>
     <a class="btn" href="../../pages/add-book/default.html">Add my next book</a>

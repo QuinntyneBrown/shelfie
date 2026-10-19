@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Card — Shelfie design system</title>
-<meta name="description" content="The surface that groups related content: plain, flush around a list, and tinted for celebrations and rewards. With titles and stats, in both themes.">
+<meta name="description" content="The surface that groups related content: plain, flush around a list, washed in its cover colour, and tinted for celebrations and rewards. With titles and stats, in both themes.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -69,6 +69,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -110,6 +111,7 @@
       <ul>
         <li><b>Card</b> (<code>.card</code>): 24px padding. Forms, answers, settings sections, stats.</li>
         <li><b>Flush</b> (<code>.card--flush</code>): no padding, clips its content. Wraps a <a href="list.html">list</a>, <a href="table.html">table</a> or chapter rows edge to edge.</li>
+        <li><b>Cover tint</b> (automatic): a card whose direct child is a coloured <a href="cover.html">cover</a> takes a wash of that colour (<code>--color-tint-*</code>), so a shelf of book cards reads as a row of books. Nothing to add: <code>.card:has(&gt; .cover--sage)</code> sets <code>--card-bg</code>. Covers nested deeper (in a list row) leave the card white.</li>
         <li><b>Success</b> (<code>.card--success</code>): a green tint fading into the surface. A reward was given.</li>
         <li><b>Warning</b> (<code>.card--warning</code>): a warm tint. A book is finished and waiting for its reward.</li>
         <li><b>Title</b> (<code>.card__title</code>) and <b>stats</b> (<a href="stat.html"><code>.stat</code></a>) go inside.</li>
@@ -131,7 +133,7 @@
           <span class="ds-callout" style="left: 30%; top: 58%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Surface</b><small><code>--color-bg-surface</code>, hairline <code>--color-border-default</code>, <code>--radius-lg</code>, <code>--shadow-1</code>, <code>--space-6</code> padding.</small></div></li>
+          <li><div><b>Surface</b><small><code>--color-bg-surface</code> (or the cover tint), hairline <code>--color-border-default</code>, <code>--radius-lg</code>, <code>--shadow-1</code>, <code>--space-6</code> padding.</small></div></li>
           <li><div><b>Title</b><small><code>.card__title</code> in <code>--text-h4</code> on a real heading (<code>h2</code> or <code>h3</code>).</small></div></li>
           <li><div><b>Content</b><small>Usually a <code>.stack</code>; here two <code>.stat</code>s in a <code>.cluster</code>.</small></div></li>
         </ol>
@@ -152,6 +154,7 @@
               <li class="list__item"><span class="cover cover--sage cover--sm" aria-hidden="true">🦁</span><div class="list__body"><div class="list__title">Chapter 10 · The Lion, the Witch and the Wardrobe</div><div class="list__meta">Nia read it yesterday</div></div><a class="btn btn--sm" href="../../mocks/pages/review-chapter/default.html">Review</a></li>
             </ul>
           </section>
+          <article class="card book-card" aria-labelledby="card-v-tint"><span class="cover cover--mint" aria-hidden="true">🤖</span><div class="book-card__body"><h2 class="book-card__title" id="card-v-tint">The Wild Robot</h2><span class="book-card__author">Peter Brown</span><div class="progress-row"><div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="80" aria-label="3 of 80 chapters read"><div class="progress__bar" style="--value: 4%;"></div></div><span class="progress-row__label">3 of 80</span></div></div></article>
           <section class="card card--warning" aria-labelledby="card-v-warn">
             <div class="cluster cluster--between">
               <div class="book-card"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><h2 class="card__title" id="card-v-warn" style="margin-bottom: 0;">Matilda is finished!</h2><span class="book-card__author">Nia logged the last chapter on Tuesday · 21 chapters in 24 days</span></div></div>
@@ -162,9 +165,10 @@
             <div class="cluster"><span class="sticker sticker--lg" aria-hidden="true">🎬</span><div><h2 class="card__title" id="card-v-success" style="margin-bottom: 0;">Rewarded: Movie night with popcorn</h2><p class="text-muted">Finished Sun 23 Aug · reward given Mon 24 Aug · 22 chapters in 31 days</p></div></div>
           </section>
         </div>
-        <div class="ds-example__caption"><span>Plain (review a chapter), flush (Review queue), warning (Matilda waiting for a reward), success (Charlotte's Web rewarded).</span></div>
+        <div class="ds-example__caption"><span>Plain (review a chapter), flush (Review queue), cover tint (a mint book card on the shelf), warning (Matilda waiting for a reward), success (Charlotte's Web rewarded).</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="card stack" aria-labelledby="answers"&gt;&lt;h2 class="card__title" id="answers"&gt;Nia’s answers&lt;/h2&gt; … &lt;/section&gt;
 &lt;section class="card card--flush" aria-labelledby="waiting"&gt;&lt;h2 class="card__title" id="waiting"&gt;Waiting for you&lt;/h2&gt;&lt;ul class="list"&gt; … &lt;/ul&gt;&lt;/section&gt;
+&lt;article class="card book-card"&gt;&lt;span class="cover cover--mint" aria-hidden="true"&gt;🤖&lt;/span&gt; … &lt;/article&gt;  &lt;!-- mint wash, automatic --&gt;
 &lt;section class="card card--warning" aria-labelledby="reward"&gt; … &lt;/section&gt;
 &lt;section class="card card--success" aria-labelledby="reward-title"&gt; … &lt;/section&gt;</code></pre></details>
       </div>
@@ -260,6 +264,7 @@
         <tbody>
           <tr><td>Surface</td><td><code>--color-bg-surface</code> (via <code>--card-bg</code>)</td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
           <tr><td>Border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Cover tint (mint shown; one per cover colour)</td><td><code>--color-tint-mint</code> (via <code>--card-bg</code>)</td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-tint-mint" data-swatch></i><span data-token="--color-tint-mint"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-tint-mint" data-swatch></i><span data-token="--color-tint-mint"></span></span></td></tr>
           <tr><td>Success tint</td><td><code>--color-success-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span></td></tr>
           <tr><td>Warning tint</td><td><code>--color-warning-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td></tr>
           <tr><td>Stat label</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
@@ -283,6 +288,7 @@
       <table class="ds-table"><thead><tr><th scope="col">Class</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.card</code></td><td>Surface, border, radius, shadow, 24px padding.</td></tr>
         <tr><td><code>.card--flush</code></td><td>No padding; clips content. Pair with <code>.list</code>, <code>.table-wrap--flush</code> or chapter rows.</td></tr>
+        <tr><td><code>.card:has(&gt; .cover--*)</code></td><td>Automatic: sets <code>--card-bg</code> to the matching <code>--color-tint-*</code>. No class to add.</td></tr>
         <tr><td><code>.card--success</code> / <code>.card--warning</code></td><td>Status tint fading into the surface.</td></tr>
         <tr><td><code>.card__title</code></td><td>Card heading; padded inside <code>.card--flush</code>.</td></tr>
         <tr><td><code>.stat</code>, <code>.stat__label</code>, <code>.stat__value</code></td><td>A labelled number (see <a href="stat.html">Stat</a>).</td></tr>

@@ -99,7 +99,7 @@ main:has(.auth-layout) { padding-bottom: 0; }
   display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
   min-height: var(--btn-height); padding: 0 var(--btn-padding);
   font: var(--text-label); font-size: var(--btn-font-size); line-height: 1; white-space: nowrap;
-  color: var(--btn-fg); background: var(--btn-bg); border: var(--border-width-hairline) solid var(--btn-border); border-radius: var(--radius-md);
+  color: var(--btn-fg); background: var(--btn-bg); border: var(--border-width-hairline) solid var(--btn-border); border-radius: var(--radius-full);
   cursor: pointer; text-decoration: none; user-select: none; position: relative;
   transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
@@ -123,6 +123,9 @@ main:has(.auth-layout) { padding-bottom: 0; }
 }
 
 /* ---------- Form field, text field, textarea -------------------------------- */
+/* Dictation: the microphone button under an answer, and its pulsing "listening" dot. */
+.btn .mic-dot { width: 0.6em; height: 0.6em; border-radius: var(--radius-full); background: var(--color-danger-solid); animation: pulse var(--duration-loop) ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .btn .mic-dot { animation: none; } }
 .field { display: flex; flex-direction: column; gap: var(--space-1); }
 .field__label { font: var(--text-label); color: var(--color-fg-default); display: flex; gap: var(--space-1); }
 .field__label .optional { color: var(--color-fg-subtle); font-weight: var(--font-weight-regular); }
@@ -181,10 +184,18 @@ fieldset.card > legend { display: contents; }
 .stat__value { font: var(--text-h2); font-variant-numeric: tabular-nums; }
 
 /* ---------- Hero: the one thing to do next ---------------------------------- */
-.hero { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--color-accent-subtle), var(--color-bg-surface) 70%); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; }
+.hero { --card-bg: linear-gradient(135deg, var(--color-accent-subtle), var(--color-bg-surface) 70%); position: relative; overflow: hidden; background: var(--card-bg); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; }
 .hero__body { flex: 1; min-width: 14rem; display: flex; flex-direction: column; gap: var(--space-3); }
 .hero__eyebrow { font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-accent); }
 .hero__title { font: var(--text-h3); }
+/* R1: a card or hero whose own cover is coloured takes a wash of that colour. The child combinator keeps lists with nested covers white. */
+.card:has(> .cover--sage), .hero:has(> .cover--sage), .card:has(> sh-cover > .cover--sage), .hero:has(> sh-cover > .cover--sage) { --card-bg: var(--color-tint-sage); }
+.card:has(> .cover--rose), .hero:has(> .cover--rose), .card:has(> sh-cover > .cover--rose), .hero:has(> sh-cover > .cover--rose) { --card-bg: var(--color-tint-rose); }
+.card:has(> .cover--sky), .hero:has(> .cover--sky), .card:has(> sh-cover > .cover--sky), .hero:has(> sh-cover > .cover--sky) { --card-bg: var(--color-tint-sky); }
+.card:has(> .cover--sun), .hero:has(> .cover--sun), .card:has(> sh-cover > .cover--sun), .hero:has(> sh-cover > .cover--sun) { --card-bg: var(--color-tint-sun); }
+.card:has(> .cover--lilac), .hero:has(> .cover--lilac), .card:has(> sh-cover > .cover--lilac), .hero:has(> sh-cover > .cover--lilac) { --card-bg: var(--color-tint-lilac); }
+.card:has(> .cover--mint), .hero:has(> .cover--mint), .card:has(> sh-cover > .cover--mint), .hero:has(> sh-cover > .cover--mint) { --card-bg: var(--color-tint-mint); }
+.card:has(> .cover--peach), .hero:has(> .cover--peach), .card:has(> sh-cover > .cover--peach), .hero:has(> sh-cover > .cover--peach) { --card-bg: var(--color-tint-peach); }
 
 /* ---------- Badge, chip, streak, avatar ---------------------------------------- */
 .badge { display: inline-flex; align-items: center; gap: var(--space-1); padding: 0 var(--space-2); min-height: var(--target-min); border-radius: var(--radius-full); font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; background: var(--color-bg-subtle); color: var(--color-fg-muted); white-space: nowrap; }
@@ -208,7 +219,8 @@ button.avatar:hover, button.avatar[data-state="hover"] { box-shadow: 0 0 0 var(-
 .avatar--sky { background: var(--color-cover-sky); color: var(--color-fg-on-cover); }
 
 /* ---------- Top bar, nav link, tab bar, breadcrumb ---------------------------- */
-.topbar { position: sticky; top: 0; z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-4); min-height: var(--layout-topbar-height); padding-inline: var(--layout-margin); background: var(--color-bg-surface); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+/* R2: the top bar is a floating capsule. Sticky keeps it in flow, so nothing is ever hidden under it. */
+.topbar { position: sticky; top: var(--space-2); z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-4); min-height: var(--layout-topbar-height); width: calc(min(var(--layout-container-max), 100%) - 2 * var(--layout-margin)); margin: var(--space-2) auto 0; padding-inline: var(--space-3) var(--space-2); background: color-mix(in srgb, var(--color-bg-surface) 90%, transparent); backdrop-filter: blur(12px); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-full); box-shadow: var(--shadow-2); }
 .topbar__brand { font: var(--text-h4); color: var(--color-fg-default); text-decoration: none; display: inline-flex; align-items: center; gap: var(--space-2); }
 .topbar__nav { display: none; gap: var(--space-1); margin-left: var(--space-4); }
 .topbar__spacer { flex: 1; }
@@ -365,8 +377,8 @@ body:has(.tabbar:not(.tabbar--static)) .toast-region { bottom: calc(var(--layout
 .cover { --cover: var(--color-cover-sage); --cover-size: var(--size-cover-md); display: grid; place-items: center; width: var(--cover-size); aspect-ratio: 2 / 3; flex: none; border-radius: var(--radius-md); background: var(--cover); color: var(--color-fg-on-cover); font-size: calc(var(--cover-size) * 0.4); line-height: 1; box-shadow: var(--shadow-1), inset var(--space-1) 0 0 color-mix(in srgb, var(--color-fg-on-cover) 10%, transparent); }
 .cover.skeleton { background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-subtle-hover) 37%, var(--color-bg-subtle) 63%); background-size: 400% 100%; box-shadow: none; }
 .cover--sm { --cover-size: var(--size-cover-sm); border-radius: var(--radius-sm); }
-.cover--lg { --cover-size: var(--size-cover-lg); border-radius: var(--radius-lg); }
-.cover--xl { --cover-size: var(--size-cover-xl); border-radius: var(--radius-lg); }
+.cover--lg { --cover-size: var(--size-cover-lg); border-radius: var(--radius-md); }
+.cover--xl { --cover-size: var(--size-cover-xl); border-radius: var(--radius-md); }
 .cover--sage { --cover: var(--color-cover-sage); } .cover--rose { --cover: var(--color-cover-rose); } .cover--sky { --cover: var(--color-cover-sky); }
 .cover--sun { --cover: var(--color-cover-sun); } .cover--lilac { --cover: var(--color-cover-lilac); } .cover--mint { --cover: var(--color-cover-mint); } .cover--peach { --cover: var(--color-cover-peach); }
 
@@ -408,6 +420,16 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .qa__q { font: var(--text-label); color: var(--color-fg-muted); display: flex; gap: var(--space-2); }
 .qa__num { color: var(--color-fg-accent); }
 .qa__a { background: var(--color-bg-surface-sunken); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font: var(--text-body); line-height: var(--line-height-relaxed); white-space: pre-wrap; overflow-wrap: anywhere; }
+/* R4: chapter questions as a chat. Olive asks in a bubble; the reader's answer bubble is the textarea itself. */
+.chat { display: flex; flex-direction: column; gap: var(--space-3); }
+.bubble { display: flex; gap: var(--space-3); align-items: flex-end; max-width: 40rem; }
+.bubble__face { flex: none; width: var(--size-avatar-md); height: var(--size-avatar-md); }
+.bubble__text { margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border-end-start-radius: var(--radius-xs); background: var(--color-accent-subtle); color: var(--color-fg-default); font: var(--text-body); }
+label.bubble__text { cursor: pointer; }
+.bubble--me { flex-direction: column; align-items: stretch; margin-inline-start: calc(var(--size-avatar-md) + var(--space-3)); }
+.bubble--me .textarea { border-radius: var(--radius-lg); border-end-end-radius: var(--radius-xs); }
+.chat__hint { font: var(--text-body-sm); color: var(--color-fg-subtle); margin-inline-start: calc(var(--size-avatar-md) + var(--space-3)); }
+.chat__actions { justify-content: flex-end; }
 .feedback { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-accent-subtle); border: var(--border-width-hairline) solid color-mix(in srgb, var(--color-accent) 30%, transparent); }
 .feedback__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .feedback__from { font: var(--text-label); color: var(--color-fg-accent); }
@@ -430,6 +452,11 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 /* ---------- Shelfie: celebration, trophy -------------------------------------------------- */
 .celebrate { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-4); padding: var(--space-12) var(--space-6); }
 .celebrate p { max-width: 36ch; }
+/* R5: the chapter-logged celebration stacks progress, badge and streak on one surface. */
+.celebrate .progress-row { width: 100%; max-width: 28rem; margin-inline: auto; }
+.celebrate .progress-row__label { font: var(--text-h4); color: var(--color-fg-accent); }
+.celebrate__rows { list-style: none; margin: 0; padding: 0; width: 100%; max-width: 28rem; display: flex; flex-direction: column; gap: var(--space-3); text-align: left; }
+.celebrate__rows .achievement, .celebrate__rows .trophy { background: color-mix(in srgb, var(--color-bg-surface) 70%, transparent); }
 .confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .confetti span { position: absolute; top: calc(-1 * var(--space-4)); width: var(--space-2); height: var(--space-3); border-radius: var(--radius-xs); background: var(--c, var(--color-accent)); animation: confetti-fall calc(var(--duration-deliberate) * 5) var(--ease-standard) both; /* one pass (2.5s), then the pieces rest off-screen */ animation-delay: var(--d, 0s); left: var(--x, 50%); opacity: 0.9; }
 .confetti span:nth-child(odd) { border-radius: var(--radius-full); }
@@ -448,12 +475,16 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 /* ---------- Shelfie: achievement badges --------------------------------------------------- */
 .achievements { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
 .achievement { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); min-width: 0; }
-.achievement__icon { flex: none; display: grid; place-items: center; width: var(--control-height-md); height: var(--control-height-md); border-radius: var(--radius-full); background: var(--color-accent-subtle); font-size: var(--font-size-xl); line-height: 1; }
+/* R6: one badge object everywhere: a round illustration in a coloured ring, a green check once earned, a name and an earned-on date. Locked is the same shape greyed out. */
+.achievement__icon { position: relative; flex: none; display: grid; place-items: center; width: var(--size-avatar-lg); height: var(--size-avatar-lg); border-radius: var(--radius-full); background: var(--color-accent-subtle); font-size: var(--font-size-2xl); line-height: 1; box-shadow: 0 0 0 var(--border-width-thick) var(--color-bg-surface), 0 0 0 calc(2 * var(--border-width-thick)) var(--color-accent); }
+.achievement:not(.achievement--locked) .achievement__icon::after { content: "✓"; position: absolute; right: -0.2rem; bottom: -0.2rem; width: 1.25rem; height: 1.25rem; display: grid; place-items: center; border-radius: var(--radius-full); background: var(--color-success-solid); color: var(--color-fg-inverse); font: var(--text-overline); box-shadow: 0 0 0 var(--border-width-thick) var(--color-bg-surface); }
+.achievement:not(.achievement--locked) .achievement__note { color: var(--color-success-fg); }
+.achievements .achievement { flex-direction: column; text-align: center; padding: var(--space-4); }
 .achievement__body { flex: 1; min-width: 0; }
 .achievement__name { font: var(--text-label); }
 .achievement__note { font: var(--text-body-sm); color: var(--color-fg-muted); }
 .achievement--locked { background: var(--color-bg-surface-sunken); border-style: dashed; }
-.achievement--locked .achievement__icon { background: var(--color-bg-subtle); filter: grayscale(1); opacity: 0.6; }
+.achievement--locked .achievement__icon { background: var(--color-bg-subtle); filter: grayscale(1); opacity: 0.6; box-shadow: 0 0 0 var(--border-width-thick) var(--color-bg-surface), 0 0 0 calc(2 * var(--border-width-thick)) var(--color-border-default); }
 
 /* ---------- Animations ------------------------------------------------------------------ */
 @keyframes spin { to { rotate: 360deg; } }
@@ -630,4 +661,12 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .day-path__day { flex: 1 1 0; max-width: 2.25rem; aspect-ratio: 1; display: grid; place-items: center; border-radius: var(--radius-full); background: var(--color-bg-subtle); color: var(--color-fg-muted); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
 .day-path__day--done { background: var(--color-accent); color: var(--palette-white); }
 .day-path__day--next { background: var(--color-bg-surface); color: var(--color-accent); outline: 2px dashed var(--color-accent); outline-offset: -2px; }
+/* R3: this week's reading as a track. Logged days join into one accent band, today carries the flame, a missed day is a visible gap. */
+.day-path--week { gap: 0; margin: var(--space-2) 0 0; width: 18rem; max-width: 100%; }
+.day-path--week .day-path__day { max-width: none; font-size: var(--font-size-xs); border-radius: 0; background: transparent; box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-border-default); }
+.day-path--week .day-path__day--done { background: var(--color-accent); color: var(--color-fg-on-accent); box-shadow: none; }
+.day-path--week .day-path__day:first-child, .day-path--week :not(.day-path__day--done) + .day-path__day--done { border-start-start-radius: var(--radius-full); border-end-start-radius: var(--radius-full); }
+.day-path--week .day-path__day:last-child, .day-path--week .day-path__day--done:not(:has(+ .day-path__day--done)) { border-start-end-radius: var(--radius-full); border-end-end-radius: var(--radius-full); }
+.day-path__day--today { position: relative; }
+.day-path__day--today::after { content: "🔥"; position: absolute; top: -0.55em; right: -0.3em; font-size: var(--font-size-xs); line-height: 1; }
 .streak-reward--ready .day-path__day--done { background: var(--color-success-solid); }

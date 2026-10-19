@@ -1,39 +1,79 @@
-<div class="field">
-  <label class="field__label" [for]="inputId()"
-    ><span class="qa__num">{{ number() }}.</span> {{ label() }}</label
-  >
+@if (layout() === 'chat') {
+  <div class="bubble bubble--buddy">
+    <img class="bubble__face" src="mascot/olive.svg" alt="" width="40" height="40" />
+    <label class="bubble__text" [for]="inputId()"><span class="qa__num">{{ number() }}.</span> {{ label() }}</label>
+  </div>
+  <div class="bubble bubble--me field">
+    <ng-container [ngTemplateOutlet]="box" [ngTemplateOutletContext]="{ placeholder: 'Type here, or tap the mic…' }" />
+    @if (supported || showNext()) {
+      <div class="cluster chat__actions">
+        @if (supported) {
+          <ng-container [ngTemplateOutlet]="mic" [ngTemplateOutletContext]="{ size: 'btn--sm' }" />
+        }
+        @if (showNext()) {
+          <button class="btn btn--sm" type="button" [disabled]="!answered()" [attr.aria-label]="'Next question after question ' + number()" (click)="next.emit()">
+            Next
+            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+        }
+      </div>
+    }
+    <ng-container [ngTemplateOutlet]="messages" />
+  </div>
+} @else {
+  <div class="field">
+    <label class="field__label" [for]="inputId()"
+      ><span class="qa__num">{{ number() }}.</span> {{ label() }}</label
+    >
+    <ng-container [ngTemplateOutlet]="box" [ngTemplateOutletContext]="{ placeholder: null }" />
+    @if (supported) {
+      <div class="cluster">
+        <ng-container [ngTemplateOutlet]="mic" [ngTemplateOutletContext]="{ size: '' }" />
+      </div>
+    }
+    <ng-container [ngTemplateOutlet]="messages" />
+  </div>
+}
+
+<ng-template #box let-placeholder="placeholder">
   <textarea
     class="textarea"
     [id]="inputId()"
     rows="3"
+    [attr.placeholder]="placeholder"
     [attr.maxlength]="maxlength()"
     [value]="value()"
     [attr.aria-invalid]="error() ? true : null"
     [attr.aria-describedby]="describedBy()"
     (input)="edit($event)"
   ></textarea>
+</ng-template>
+
+<ng-template #mic let-size="size">
+  <button
+    class="btn btn--ghost"
+    [class]="size"
+    type="button"
+    [attr.aria-pressed]="listening()"
+    [attr.aria-label]="'Speak your answer to question ' + number()"
+    (click)="toggleDictation()"
+  >
+    @if (listening()) {
+      <span class="mic-dot" aria-hidden="true"></span>
+    } @else {
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3" />
+      </svg>
+    }
+    Speak your answer
+  </button>
+  @if (listening()) {
+    <span class="field__help">Listening… tap to stop</span>
+  }
+</ng-template>
+
+<ng-template #messages>
   @if (supported) {
-    <div class="cluster">
-      <button
-        class="btn btn--ghost"
-        type="button"
-        [attr.aria-pressed]="listening()"
-        [attr.aria-label]="'Speak your answer to question ' + number()"
-        (click)="toggleDictation()"
-      >
-        @if (listening()) {
-          <span class="mic-dot" aria-hidden="true"></span>
-        } @else {
-          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3" />
-          </svg>
-        }
-        Speak your answer
-      </button>
-      @if (listening()) {
-        <span class="field__help">Listening… tap to stop</span>
-      }
-    </div>
     <p class="visually-hidden" role="status">{{ announcement() }}</p>
   }
   @if (error(); as message) {
@@ -47,4 +87,4 @@
       {{ charactersLeft() }} {{ charactersLeft() === 1 ? 'character' : 'characters' }} left
     </div>
   }
-</div>
+</ng-template>

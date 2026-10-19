@@ -46,6 +46,11 @@ export class ShellPage {
     await this.page.route('**/api/photos/**', (route) => route.abort());
   }
 
+  /** The top bar's corner radius in pixels; a floating capsule has fully rounded ends. */
+  async topBarRadius() {
+    return this.page.locator('header.topbar').evaluate((bar) => parseFloat(getComputedStyle(bar).borderTopLeftRadius));
+  }
+
   /** Makes the page taller than the window, scrolls to the bottom, and returns how far the top bar sits from the window's top edge. */
   async topBarOffsetAfterScrolling() {
     return this.page.evaluate(() => {
@@ -53,7 +58,7 @@ export class ShellPage {
       spacer.style.height = '3000px';
       document.querySelector('main')!.append(spacer);
       window.scrollTo(0, document.documentElement.scrollHeight);
-      return document.querySelector('header')!.getBoundingClientRect().top;
+      return document.querySelector('header.topbar')!.getBoundingClientRect().top;
     });
   }
 

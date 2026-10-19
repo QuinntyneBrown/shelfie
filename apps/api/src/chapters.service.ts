@@ -4,6 +4,8 @@ import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
+import { badgesFor } from './badges.ts';
+import { streakFor, weekFor } from './streak.ts';
 
 export const UNDO_SECONDS = 10;
 const UNIQUE_VIOLATION = '23505';
@@ -74,6 +76,7 @@ export async function logChapter(pool: Pool, householdId: string, bookId: string
   if (request.readOn > (await householdToday(pool, householdId))) throw new Problem(400, 'future-date');
   await refuseIfLogged(pool, bookId, n);
   if (n !== (await loggedCount(pool, bookId)) + 1) throw new Problem(409, 'chapter-out-of-order');
+  const badgesBefore = await badgesFor(pool, householdId);
   const id = randomUUID();
   const loggedAt = new Date();
   const undoUntil = new Date(loggedAt.getTime() + UNDO_SECONDS * 1000);
@@ -110,6 +113,9 @@ export async function logChapter(pool: Pool, householdId: string, bookId: string
     chaptersLogged: count,
     chapterCount: book.chapter_count,
     bookFinished: count === book.chapter_count,
+    streak: await streakFor(pool, householdId),
+    week: await weekFor(pool, householdId),
+    badgesEarned: (await badgesFor(pool, householdId)).filter((b) => b.earned && !badgesBefore.find((was) => was.id === b.id)!.earned),
   };
 }
 

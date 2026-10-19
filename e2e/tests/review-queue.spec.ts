@@ -83,3 +83,16 @@ test('Given things happened lately, when Dad opens Review, then Recent activity 
   await expect(review.activity().nth(1)).toContainText('Nia logged Chapter 11 of The Lion, the Witch and the Wardrobe');
   await expect(review.activity()).toHaveCount(20);
 });
+
+test('Given the queue cannot load, when Dad opens Review, then it says Review didn’t load and Try again brings it back', async ({ page }) => {
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.breakLoading();
+  await page.reload();
+
+  await expect(review.loadError()).toBeVisible();
+  await review.repairLoading();
+  await review.tryAgain();
+  await expect(review.loadError()).toHaveCount(0);
+  await expect(review.badges()).toBeVisible();
+});

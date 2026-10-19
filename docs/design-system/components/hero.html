@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hero — Shelfie design system</title>
-<meta name="description" content="The keep-reading panel at the top of Nia's shelf: the book she is on, her progress and one big button for the next chapter.">
+<meta name="description" content="The keep-reading panel at the top of Nia's shelf: the book she is on, her progress and one big button for the next chapter, on a wash of the book's cover colour.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -69,6 +69,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -129,7 +130,7 @@
           <span class="ds-callout" style="left: 34%; top: 72%;" aria-hidden="true">6</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Panel</b><small><code>section.hero</code>: accent tint fading into the surface, hairline border, <code>--radius-lg</code>, <code>--space-6</code> padding.</small></div></li>
+          <li><div><b>Panel</b><small><code>section.hero</code>: a wash of the cover colour (<code>--card-bg</code>; the accent gradient when the cover has no colour), hairline border, <code>--radius-lg</code>, <code>--space-6</code> padding.</small></div></li>
           <li><div><b>Cover</b><small>A large <a href="cover.html">cover</a> (<code>.cover--lg</code>), decorative.</small></div></li>
           <li><div><b>Eyebrow</b><small><code>.hero__eyebrow</code>: "Keep reading" in <code>--text-overline</code>, accent colour.</small></div></li>
           <li><div><b>Title</b><small><code>.hero__title</code> on an <code>h2</code>: the book title in <code>--text-h3</code>.</small></div></li>
@@ -140,7 +141,7 @@
     </section>
 
     <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
-      <p>One variant: keep reading. The full shelf version has a ghost link to the book page next to the main button.</p>
+      <p>One variant: keep reading. The full shelf version has a ghost link to the book page next to the main button. The panel takes a wash of its cover's colour automatically (<code>.hero:has(&gt; .cover--sage)</code> sets <code>--card-bg</code> to <code>--color-tint-sage</code>), so the sage book below sits on sage. A hero whose cover has no colour class, such as the skeleton while loading, falls back to the accent gradient.</p>
       <div class="ds-example">
         <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
           <section class="hero" aria-labelledby="hero-var-title">
@@ -208,7 +209,7 @@
     </section>
 
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>The background is <code>linear-gradient(135deg, --color-accent-subtle, --color-bg-surface 70%)</code>: a hint of accent in the top-left corner, surface everywhere text sits. The eyebrow uses <code>--color-fg-accent</code>. Both are re-defined in the dark theme, so the gradient stays subtle on the dark surface.</p>
+      <p>The background is <code>var(--card-bg)</code>. With a coloured cover that is the matching <code>--color-tint-*</code>: a pale wash in light, a near-black base that keeps the hue in dark. Without one it is the default <code>linear-gradient(135deg, --color-accent-subtle, --color-bg-surface 70%)</code>. The eyebrow uses <code>--color-fg-accent</code>. Every tint and the gradient are re-defined in the dark theme, and the eyebrow, muted label and primary button pass AA on all of them. To re-theme, override <code>--card-bg</code> on the hero.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
@@ -225,12 +226,15 @@
       <p>The eyebrow is visible text, read before the title. The progress bar has <code>aria-label="11 of 17 chapters read"</code>, matching the visible "11 of 17 chapters". The cover is <code>aria-hidden</code> because the title says the same thing.</p>
       <h3>Contrast</h3>
       <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Eyebrow on tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Title on tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Progress label on tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Eyebrow on sage tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-tint-sage" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Progress label on sage tint</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-tint-sage" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Primary button on sage tint</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-tint-sage" data-min="3"></span></div>
+        <div class="ds-pair"><span>Eyebrow on accent gradient (no cover colour)</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on accent gradient</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Progress label on accent gradient</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Progress bar on track</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-subtle-hover" data-min="3"></span></div>
         <div class="ds-pair"><span>Primary button label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Focus ring on tint</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-accent-subtle" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on accent gradient</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-accent-subtle" data-min="3"></span></div>
       </div>
       <h3>Motion</h3>
       <p>The progress bar width eases over <code>--duration-slow</code> when it changes; skeletons shimmer on <code>--duration-loop</code> and stop under reduced motion.</p>
@@ -259,8 +263,9 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Tint (gradient start)</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
-          <tr><td>Surface (gradient end)</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Cover wash (sage shown; one per cover colour)</td><td><code>--color-tint-sage</code> (via <code>--card-bg</code>)</td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-tint-sage" data-swatch></i><span data-token="--color-tint-sage"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-tint-sage" data-swatch></i><span data-token="--color-tint-sage"></span></span></td></tr>
+          <tr><td>Fallback gradient start</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Fallback gradient end</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
           <tr><td>Border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Eyebrow</td><td><code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
           <tr><td>Radius / padding / gap</td><td><code>--radius-lg</code> / <code>--space-6</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--space-6"></span></td></tr>
@@ -281,7 +286,8 @@
   &lt;/div&gt;
 &lt;/section&gt;</code></pre>
       <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.hero</code></td><td>Tinted panel, wrapping flex row.</td></tr>
+        <tr><td><code>.hero</code></td><td>Panel painted with <code>--card-bg</code> (accent gradient by default), wrapping flex row.</td></tr>
+        <tr><td><code>.hero:has(&gt; .cover--*)</code></td><td>Automatic: <code>--card-bg</code> becomes the matching <code>--color-tint-*</code>.</td></tr>
         <tr><td><code>.hero__body</code></td><td>Text column, min 14rem, 12px gaps.</td></tr>
         <tr><td><code>.hero__eyebrow</code></td><td>Overline in the accent colour.</td></tr>
         <tr><td><code>.hero__title</code></td><td>Book title, <code>--text-h3</code>.</td></tr>

@@ -74,4 +74,13 @@ export class BookPage {
   primaryAction(chapter: number) {
     return this.page.getByRole('link', { name: `I read Chapter ${chapter}` });
   }
+
+  /** The finished hero's heading and the line under it that says when. */
+  finishedHeading(title: string) {
+    return this.page.getByRole('heading', { name: `You finished ${title}!` });
+  }
+
+  finishedOn(day: string) {
+    return this.page.getByText(`Finished on ${day}.`);
+  }
 }

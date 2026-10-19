@@ -80,6 +80,23 @@
   --palette-cover-mint: #cdf1ec;
   --palette-cover-peach: #fddcc8;
 
+  /* Tinted surfaces: a card takes a wash of its cover colour. Light is the cover at 50% over white;
+     dark keeps the hue on a near-black base. Both pass fg-muted and fg-accent at 4.5:1. */
+  --palette-cover-sage-tint: #e7f4ea;
+  --palette-cover-sage-deep: #1f2d25;
+  --palette-cover-rose-tint: #fceaf0;
+  --palette-cover-rose-deep: #33222b;
+  --palette-cover-sky-tint: #e7f2fd;
+  --palette-cover-sky-deep: #1f2a38;
+  --palette-cover-sun-tint: #fdf3d8;
+  --palette-cover-sun-deep: #332a17;
+  --palette-cover-lilac-tint: #f1ecfd;
+  --palette-cover-lilac-deep: #2a2340;
+  --palette-cover-mint-tint: #e6f8f6;
+  --palette-cover-mint-deep: #1c302d;
+  --palette-cover-peach-tint: #feeee4;
+  --palette-cover-peach-deep: #352620;
+
   --palette-green-50: #e9f8ee;
   --palette-green-100: #cdf0d9;
   --palette-green-300: #7ed69a;
@@ -205,6 +222,14 @@
   --color-cover-mint: var(--palette-cover-mint);
   --color-cover-peach: var(--palette-cover-peach);
   --color-fg-on-cover: var(--palette-gray-900);
+  /* Surface tints (R1): hero and book cards take a wash of their cover colour. */
+  --color-tint-sage: var(--palette-cover-sage-tint);
+  --color-tint-rose: var(--palette-cover-rose-tint);
+  --color-tint-sky: var(--palette-cover-sky-tint);
+  --color-tint-sun: var(--palette-cover-sun-tint);
+  --color-tint-lilac: var(--palette-cover-lilac-tint);
+  --color-tint-mint: var(--palette-cover-mint-tint);
+  --color-tint-peach: var(--palette-cover-peach-tint);
 
   /* ---------- Semantic: typography roles ------------------------------- */
   --text-display: var(--font-weight-bold) var(--font-size-5xl) / var(--line-height-tight) var(--font-family-display);
@@ -256,8 +281,8 @@
   --radius-xs: 0.125rem;  /* 2px  checkbox */
   --radius-sm: 0.25rem;   /* 4px  badges, inputs (compact) */
   --radius-md: 0.75rem;   /* 12px buttons, inputs, cards */
-  --radius-lg: 1rem;      /* 16px dialogs, large cards, covers */
-  --radius-xl: 1.5rem;    /* 24px sheets */
+  --radius-lg: 1.5rem;    /* 24px dialogs, cards, hero, trophies */
+  --radius-xl: 2rem;      /* 32px sheets, streak rewards, feature cards */
   --radius-full: 9999px;  /* pills, avatars */
 
   --border-width-hairline: 1px;
@@ -396,6 +421,14 @@
   --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.14), 0 2px 6px rgb(var(--shadow-color) / 0.08);
   --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.22), 0 4px 12px rgb(var(--shadow-color) / 0.10);
 
+  --color-tint-sage: var(--palette-cover-sage-tint);
+  --color-tint-rose: var(--palette-cover-rose-tint);
+  --color-tint-sky: var(--palette-cover-sky-tint);
+  --color-tint-sun: var(--palette-cover-sun-tint);
+  --color-tint-lilac: var(--palette-cover-lilac-tint);
+  --color-tint-mint: var(--palette-cover-mint-tint);
+  --color-tint-peach: var(--palette-cover-peach-tint);
+
   color-scheme: light;
 }
 
@@ -468,6 +501,14 @@
   --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.5), 0 2px 6px rgb(var(--shadow-color) / 0.35);
   --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.6), 0 4px 12px rgb(var(--shadow-color) / 0.4);
 
+  --color-tint-sage: var(--palette-cover-sage-deep);
+  --color-tint-rose: var(--palette-cover-rose-deep);
+  --color-tint-sky: var(--palette-cover-sky-deep);
+  --color-tint-sun: var(--palette-cover-sun-deep);
+  --color-tint-lilac: var(--palette-cover-lilac-deep);
+  --color-tint-mint: var(--palette-cover-mint-deep);
+  --color-tint-peach: var(--palette-cover-peach-deep);
+
   color-scheme: dark;
 }
 
@@ -531,6 +572,13 @@
     --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.45), 0 1px 2px rgb(var(--shadow-color) / 0.3);
     --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.5), 0 2px 6px rgb(var(--shadow-color) / 0.35);
     --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.6), 0 4px 12px rgb(var(--shadow-color) / 0.4);
+    --color-tint-sage: var(--palette-cover-sage-deep);
+    --color-tint-rose: var(--palette-cover-rose-deep);
+    --color-tint-sky: var(--palette-cover-sky-deep);
+    --color-tint-sun: var(--palette-cover-sun-deep);
+    --color-tint-lilac: var(--palette-cover-lilac-deep);
+    --color-tint-mint: var(--palette-cover-mint-deep);
+    --color-tint-peach: var(--palette-cover-peach-deep);
     color-scheme: dark;
   }
 }

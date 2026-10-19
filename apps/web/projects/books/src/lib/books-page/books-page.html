@@ -6,7 +6,7 @@
   @if (list(); as list) {
     @if (list.books.length === 0) {
       <sh-empty-state
-        [title]="'No books on ' + list.readerName + '’s shelf'"
+        [title]="list.readerName + '’s shelf is empty'"
         text="Add the book she is reading now and she can log her first chapter today."
       >
         <a class="btn btn--primary" routerLink="/add-book">Add a book</a>

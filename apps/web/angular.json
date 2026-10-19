@@ -52,6 +52,11 @@
                 "glob": "*.svg",
                 "input": "projects/components/src/assets/reward-pictures",
                 "output": "reward-pictures"
+              },
+              {
+                "glob": "*.svg",
+                "input": "projects/components/src/assets/mascot",
+                "output": "mascot"
               }
             ],
             "styles": [
