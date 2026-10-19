@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
 import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
 import { providerAnswers, providerCancels, providerFails } from '../support/provider';
@@ -208,4 +208,47 @@ test('Given Google answers with an error, then the parent is back where she star
   await expect(page).toHaveURL(/\/sign-up\?reason=failed&provider=facebook$/);
   await expect(signUp.providerBanner()).toContainText('Something went wrong. Try again');
   await expect(signUp.providerBanner()).toContainText('Facebook');
+});
+
+const DAY = 24 * 60 * 60;
+const sessionCookie = async (page: import('@playwright/test').Page) => (await page.context().cookies()).find((c) => c.name === 'shelfie_session')!;
+
+test('Given Keep me signed in is on, when Dad continues with Google, then the session cookie outlives the browser by 30 days', async ({ page }) => {
+  providerAnswers({ email: DAD.email, name: 'Dad', verified: true });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Google', { remember: true });
+  await expect(page).toHaveURL(/\/review$/);
+
+  const cookie = await sessionCookie(page);
+  expect(cookie.expires - Date.now() / 1000).toBeGreaterThan(29 * DAY);
+  expect(cookie.expires - Date.now() / 1000).toBeLessThan(31 * DAY);
+});
+
+test('Given Keep me signed in is off, when Dad continues with Google, then the session cookie ends with the browser', async ({ page }) => {
+  providerAnswers({ email: DAD.email, name: 'Dad', verified: true });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Google', { remember: false });
+  await expect(page).toHaveURL(/\/review$/);
+
+  expect((await sessionCookie(page)).expires).toBe(-1);
+});
+
+test('Given more than ten starts and callbacks from one browser in ten minutes, when the parent continues again, then she is back with "Too many tries"', async ({ page }) => {
+  providerCancels();
+  const signIn = new SignInPage(page);
+  await signIn.open();
+  for (let round = 0; round < 5; round++) {
+    await signIn.continueWith('Google');
+    await expect(page).toHaveURL(/reason=cancelled/);
+  }
+
+  await signIn.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=too-many&provider=google$/);
+  await expect(signIn.providerBanner()).toContainText('Too many tries');
+  await expect(signIn.providerBanner()).toContainText('Wait 10 minutes and try again.');
 });

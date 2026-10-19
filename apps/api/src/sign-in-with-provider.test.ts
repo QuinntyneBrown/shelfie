@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-142
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
@@ -241,6 +241,44 @@ test('Given a reader’s e-mail, an unverified e-mail, a missing e-mail, a cance
     assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile'))!.n, profiles);
     assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile_provider'))!.n, 0);
     assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM session'))!.n, 0);
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given remember=0 on the start request, then the session cookie has no Max-Age; given remember=1 or sign-up, then it lasts 30 days', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ email: 'dad@example.com', name: 'Dad', verified: true });
+    const forgotten = await site.roundTrip('google', 'remember=0&from=sign-in');
+    assert.doesNotMatch(site.setCookie(forgotten.callback, 'shelfie_session')!, /Max-Age/);
+    const remembered = await site.roundTrip('google', 'remember=1&from=sign-in');
+    assert.match(site.setCookie(remembered.callback, 'shelfie_session')!, /Max-Age=2592000/);
+    const signedUp = await site.roundTrip('google', 'from=sign-up');
+    assert.match(site.setCookie(signedUp.callback, 'shelfie_session')!, /Max-Age=2592000/);
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given ten start or callback requests from one source in ten minutes, when an eleventh comes, then it is sent back with too-many and no password budget is spent', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.cancel();
+    for (let i = 0; i < 5; i++) {
+      const { callback } = await site.roundTrip('google', 'from=sign-up');
+      assert.equal(callback.headers.get('location'), '/sign-up?reason=cancelled&provider=google');
+    }
+
+    const eleventh = await site.get('/api/auth/google/start?from=sign-up');
+
+    assert.equal(eleventh.status, 302);
+    assert.equal(eleventh.headers.get('location'), '/sign-up?reason=too-many&provider=google');
+    assert.equal(site.setCookie(eleventh, 'shelfie_oauth'), undefined, 'no round trip is started');
+    const password = await fetch(`${site.url}/api/auth/password`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-requested-with': 'Shelfie' }, body: JSON.stringify({ username: 'dad', password: 'sunny-days-42', remember: true }) });
+    assert.equal(password.status, 200, 'the password limiter is separate');
   } finally {
     await site.close();
   }

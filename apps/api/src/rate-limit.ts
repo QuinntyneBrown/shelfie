@@ -4,8 +4,15 @@ import type { RequestSession } from './session.ts';
 
 const WINDOW_MINUTES = 10;
 
-/** At most `limit` requests per key in ten minutes; requests are kept in the sign_in_attempt table. */
-function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response) => string) {
+type Limited = (req: Request, res: Response, retryAfter: number) => void;
+
+const tooManyAttempts: Limited = (_req, res, retryAfter) => {
+  res.set('Retry-After', String(retryAfter));
+  res.status(429).json({ type: 'too-many-attempts' });
+};
+
+/** At most `limit` requests per key in ten minutes; requests are kept in the sign_in_attempt table. `limited` answers a refused request. */
+function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response) => string, limited: Limited = tooManyAttempts) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const source = keyOf(req, res);
     const now = Date.now();
@@ -18,8 +25,7 @@ function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response)
     ))!;
     if (attempts >= limit) {
       const retryAfter = Math.max(1, Math.ceil((Date.parse(oldest!) + WINDOW_MINUTES * 60 * 1000 - now) / 1000));
-      res.set('Retry-After', String(retryAfter));
-      return res.status(429).json({ type: 'too-many-attempts' });
+      return limited(req, res, retryAfter);
     }
     await run(db, 'INSERT INTO sign_in_attempt (source, at) VALUES ($1, $2)', [source, new Date(now).toISOString()]);
     next();
@@ -28,6 +34,9 @@ function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response)
 
 /** At most ten password sign-ins from one source in ten minutes. */
 export const passwordSignInLimiter = (db: Db) => rateLimiter(db, 10, (req) => req.ip ?? 'unknown');
+
+/** At most ten provider sign-in starts and callbacks from one source in ten minutes; a navigating browser is sent back rather than shown JSON (L2-142). */
+export const providerSignInLimiter = (db: Db, limited: Limited) => rateLimiter(db, 10, (req) => `provider:${req.ip ?? 'unknown'}`, limited);
 
 /** At most five review-assistant requests per parent in ten minutes. Use after `requireSession`. */
 export const assistLimiter = (db: Db) =>

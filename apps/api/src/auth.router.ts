@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { run } from './db.ts';
-import { passwordSignInLimiter } from './rate-limit.ts';
+import { passwordSignInLimiter, providerSignInLimiter } from './rate-limit.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
 import { requestPasswordReset, resetPassword, signInWithPassword, signInWithProvider, signUp, type Session } from './auth.service.ts';
 import { Problem } from './problem.ts';
@@ -139,8 +139,14 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
   const providerOf = (name: unknown) => providers.find((provider) => provider.name === name);
   const redirectUri = (provider: OAuthProvider) => `${process.env.APP_URL ?? 'http://localhost:4200'}/api/auth/${provider.name}/callback`;
 
+  // A refused start or callback goes back to the page the parent started from, named by the query or the start cookie.
+  const providerLimiter = providerSignInLimiter(db, (req, res) => {
+    const from = req.query['from'] === 'sign-up' || readOAuthStart(req.headers.cookie)?.from === 'sign-up' ? 'sign-up' : 'sign-in';
+    res.redirect(`/${from}?reason=too-many&provider=${req.params['provider']}`);
+  });
+
   /** Sends the browser to the provider's consent screen, keeping what the callback needs in the start cookie (L2-137, L2-142). */
-  router.get('/:provider/start', (req, res) => {
+  router.get('/:provider/start', providerLimiter, (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });
     const start: OAuthStart = {
@@ -156,7 +162,7 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
   });
 
   /** Back from the provider: checks the state, trades the code for the identity, and signs the parent in or returns them with a reason (L2-138 to L2-142). */
-  router.get('/:provider/callback', async (req, res) => {
+  router.get('/:provider/callback', providerLimiter, async (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });
     const start = readOAuthStart(req.headers.cookie);
