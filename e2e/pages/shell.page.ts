@@ -176,6 +176,13 @@ export class ShellPage {
     await this.menuItem('Send feedback').click();
   }
 
+  /** Signs out from the account menu and waits for the sign-in page. */
+  async signOut(name: string) {
+    await this.openAccountMenu(name);
+    await this.menuItem('Sign out').click();
+    await this.page.waitForURL('**/sign-in');
+  }
+
   /** The account menu's items, in order. */
   menuItemNames() {
     return this.page.getByRole('menuitem').allTextContents().then((names) => names.map((n) => n.trim()));

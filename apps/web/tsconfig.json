@@ -11,6 +11,7 @@
       "settings": ["./projects/settings/src/public-api.ts"],
       "books": ["./projects/books/src/public-api.ts"],
       "shelf": ["./projects/shelf/src/public-api.ts"],
+      "directory": ["./projects/directory/src/public-api.ts"],
       "sign-in": ["./projects/sign-in/src/public-api.ts"]
     },
     "noImplicitOverride": true,

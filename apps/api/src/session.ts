@@ -1,9 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
 import { get, run, type Db } from './db.ts';
-import { PHOTO_COLUMN } from './photos.service.ts';
+import { ownPhotoUrl } from './photos.service.ts';
 
 /** A session lasts this long after its last request. */
 export const SESSION_DAYS = 30;
+
+export type Role = 'reader' | 'parent' | 'author' | 'volunteer';
 
 export interface RequestSession {
   profileId: string;
@@ -18,6 +20,12 @@ export interface RequestSession {
   photo: string | null;
 }
 
+/** A session of any role; an author's or volunteer's has no household (ADR-0018). */
+export interface AnySession extends Omit<RequestSession, 'householdId' | 'role'> {
+  householdId: string | null;
+  role: Role;
+}
+
 export function readCookie(header: string | undefined, name: string): string | null {
   for (const part of (header ?? '').split(';')) {
     const [key, ...rest] = part.trim().split('=');
@@ -26,16 +34,16 @@ export function readCookie(header: string | undefined, name: string): string | n
   return null;
 }
 
-/** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */
-export function requireSession(db: Db) {
+/** Loads the live `shelfie_session` onto `res.locals.session` and passes it to `admit`; answers 401 when there is none or it ran out. */
+function loadSession(db: Db, admit: (session: AnySession, res: Response, next: NextFunction) => unknown) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const id = readCookie(req.headers.cookie, 'shelfie_session');
     const row = id
-      ? await get<RequestSession & { expiresAt: string }>(
+      ? await get<Omit<AnySession, 'photo'> & { expiresAt: string; photoEtag: string | null }>(
           db,
-          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt",
-                  ${PHOTO_COLUMN}
-             FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, COALESCE(h.theme, 'device') AS theme, p.household_id AS "householdId", p.role,
+                  s.expires_at AS "expiresAt", pp.etag AS "photoEtag"
+             FROM session s JOIN profile p ON p.id = s.profile_id LEFT JOIN household h ON h.id = p.household_id
              LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,
           [id],
         )
@@ -48,8 +56,19 @@ export function requireSession(db: Db) {
     }
     const slidTo = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
     await run(db, 'UPDATE session SET expires_at = $1 WHERE id = $2', [slidTo, id]);
-    const { expiresAt, ...session } = row;
-    res.locals['session'] = session;
-    next();
+    const { expiresAt, photoEtag, ...session } = row;
+    const loaded: AnySession = { ...session, photo: photoEtag ? ownPhotoUrl(session.role, session.profileId, photoEtag) : null };
+    res.locals['session'] = loaded;
+    admit(loaded, res, next);
   };
+}
+
+/** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */
+export function requireSession(db: Db) {
+  return loadSession(db, (_session, _res, next) => next());
+}
+
+/** Any signed-in person, of any role; for the routes every account shares, such as reading its own session. */
+export function requireAnySession(db: Db) {
+  return loadSession(db, (_session, _res, next) => next());
 }

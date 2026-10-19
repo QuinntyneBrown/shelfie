@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, grownUpGuard, signedOutGuard } from 'core';
+import { authGuard, directoryAccountGuard, grownUpGuard, signedOutGuard } from 'core';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
@@ -9,6 +9,12 @@ export const routes: Routes = [
     loadComponent: () => import('sign-in').then((m) => m.SignInPage),
   },
   { path: 'sign-up', loadComponent: () => import('sign-in').then((m) => m.SignUpPage) },
+  { path: 'join', loadComponent: () => import('sign-in').then((m) => m.JoinPage) },
+  {
+    path: 'me',
+    canActivate: [directoryAccountGuard],
+    loadComponent: () => import('directory').then((m) => m.MyProfilePage),
+  },
   {
     path: 'accept-invite',
     loadComponent: () => import('sign-in').then((m) => m.AcceptInvitePage),

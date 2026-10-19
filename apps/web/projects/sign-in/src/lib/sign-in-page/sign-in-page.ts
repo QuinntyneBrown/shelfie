@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Banner, Button, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
 import { AuthLayout } from '../auth-layout/auth-layout';
 
@@ -82,6 +82,6 @@ export class SignInPage {
       this.submitting.set(false);
     }
     this.session.current.set(session);
-    await this.router.navigateByUrl(session.role === 'parent' ? '/review' : '/shelf');
+    await this.router.navigateByUrl(homeOf(session.role));
   }
 }

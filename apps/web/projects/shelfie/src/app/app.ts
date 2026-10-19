@@ -6,7 +6,7 @@ import { ReviewApi } from 'review';
 import { ProfilePhotoDialog, SendFeedbackDialog } from 'settings';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
-import { BannerService, SessionService, ShellStatusService, ToastService } from 'core';
+import { BannerService, SessionService, ShellStatusService, ToastService, homeOf } from 'core';
 
 const MAX_VISIBLE_TOASTS = 3;
 
@@ -20,33 +20,45 @@ export class App {
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
-  protected readonly navLinks = computed<NavLink[]>(() =>
-    this.session()?.role === 'parent'
-      ? [
-          {
-            label: 'Review',
-            route: '/review',
-            icon: 'review',
-            badge: this.queueBadge(),
-          },
-          { label: 'Books', route: '/books', icon: 'books' },
-          { label: 'Settings', route: '/settings', icon: 'settings' },
-        ]
-      : [],
-  );
+  protected readonly navLinks = computed<NavLink[]>(() => {
+    const role = this.session()?.role;
+    if (role === 'parent')
+      return [
+        {
+          label: 'Review',
+          route: '/review',
+          icon: 'review',
+          badge: this.queueBadge(),
+        },
+        { label: 'Books', route: '/books', icon: 'books' },
+        { label: 'Settings', route: '/settings', icon: 'settings' },
+      ];
+    // An author's own pages; a volunteer has only My profile, so no tabs (ADR-0023).
+    if (role === 'author')
+      return [
+        { label: 'My profile', route: '/me', icon: 'profile' },
+        { label: 'My catalogue', route: '/catalogue', icon: 'catalogue' },
+      ];
+    return [];
+  });
   private readonly queueBadge = computed(() => {
     const count = this.status.queueCount() ?? 0;
     return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
   });
-  protected readonly menuItems = computed<MenuItem[]>(() => [
-    this.session()?.role === 'parent' ? { id: 'settings', label: 'Settings' } : { id: 'photo', label: 'My photo' },
-    { id: 'feedback', label: 'Send feedback' },
-    { id: 'sign-out', label: 'Sign out' },
-  ]);
+  protected readonly menuItems = computed<MenuItem[]>(() => {
+    const role = this.session()?.role;
+    // Feedback belongs to a household, so an author's or volunteer's menu has only Sign out.
+    if (role === 'author' || role === 'volunteer') return [{ id: 'sign-out', label: 'Sign out' }];
+    return [
+      role === 'parent' ? { id: 'settings', label: 'Settings' } : { id: 'photo', label: 'My photo' },
+      { id: 'feedback', label: 'Send feedback' },
+      { id: 'sign-out', label: 'Sign out' },
+    ];
+  });
   protected readonly menuHeader = computed(() => {
     const s = this.session();
     if (!s) return '';
-    if (s.role === 'parent') return `${s.name} · @${s.username} · parent`;
+    if (s.role !== 'reader') return `${s.name} · @${s.username} · ${s.role}`;
     const streak = this.status.streak();
     return `${s.name} · @${s.username}` + (streak ? ` · 🔥 ${streak}-day streak` : '');
   });
@@ -66,9 +78,7 @@ export class App {
   protected readonly hiddenToasts = computed(
     () => this.toasts.toasts().length - this.visibleToasts().length,
   );
-  protected readonly home = computed(() =>
-    this.session()?.role === 'parent' ? '/review' : '/shelf',
-  );
+  protected readonly home = computed(() => homeOf(this.session()?.role ?? 'reader'));
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
   constructor() {

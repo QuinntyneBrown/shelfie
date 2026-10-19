@@ -100,4 +100,8 @@ export class SignInPage {
   async chooseCreateAccount() {
     await this.page.getByRole('link', { name: 'Create a parent account' }).click();
   }
+
+  async chooseJoin() {
+    await this.page.getByRole('link', { name: 'Join as an author or volunteer' }).click();
+  }
 }

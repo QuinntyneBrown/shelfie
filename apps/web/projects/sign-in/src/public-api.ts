@@ -1,5 +1,6 @@
 export * from './lib/sign-in-page/sign-in-page';
 export * from './lib/sign-up-page/sign-up-page';
+export * from './lib/join-page/join-page';
 export * from './lib/accept-invite-page/accept-invite-page';
 export * from './lib/forbidden-page/forbidden-page';
 export * from './lib/not-found-page/not-found-page';

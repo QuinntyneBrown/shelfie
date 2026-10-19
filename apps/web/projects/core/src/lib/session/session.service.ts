@@ -6,12 +6,17 @@ export interface Session {
   profileId: string;
   name: string;
   username: string;
-  role: 'reader' | 'parent';
+  role: 'reader' | 'parent' | 'author' | 'volunteer';
   color: string;
   email: string | null;
   theme: 'device' | 'light' | 'dark';
   /** The URL of the person's own photo, or null when they have none. */
   photo: string | null;
+}
+
+/** Where a person starts: Review for a parent, the shelf for a reader, My profile for an author or volunteer (ADR-0023). */
+export function homeOf(role: Session['role']): string {
+  return role === 'parent' ? '/review' : role === 'reader' ? '/shelf' : '/me';
 }
 
 @Injectable({ providedIn: 'root' })
