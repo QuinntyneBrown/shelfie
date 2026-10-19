@@ -51,3 +51,15 @@ test('Given the footer, then it links to the app, shows this year and carries no
   await expect(marketing.footerLink('License')).toHaveCount(0);
   await expect(marketing.footerYear()).toHaveText(String(new Date().getFullYear()));
 });
+
+test('Given the how-it-works section, then a narrated video of logging a chapter waits for the visitor to play it', async ({ page }) => {
+  const marketing = new MarketingPage(page);
+  await marketing.open();
+  expect(await marketing.videoReport()).toEqual({
+    name: expect.stringMatching(/log(s|ging)? a chapter/i),
+    posterLoads: true,
+    controls: true,
+    paused: true,
+    seconds: 88,
+  });
+});

@@ -487,6 +487,27 @@ em {
   color: var(--color-fg-muted);
 }
 
+.journey-video {
+  max-width: 60rem;
+  margin: var(--space-12) auto 0;
+}
+
+.journey-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
+}
+
+.journey-video figcaption {
+  margin-top: var(--space-3);
+  color: var(--color-fg-muted);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
 /* --- inside the app ------------------------------------------------------- */
 .screen-showcase {
   display: grid;

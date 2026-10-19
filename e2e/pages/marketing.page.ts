@@ -66,6 +66,23 @@ export class MarketingPage {
     );
   }
 
+  video() {
+    return this.page.locator('#how video');
+  }
+
+  /** Brings the video into view, then reports what a visitor can see and do with it. */
+  async videoReport() {
+    const video = this.video();
+    await video.scrollIntoViewIfNeeded();
+    await video.evaluate((v: HTMLVideoElement) => v.readyState >= 1 || new Promise((resolve) => v.addEventListener('loadedmetadata', resolve, { once: true })));
+    const poster = await this.page.request.get(new URL((await video.getAttribute('poster'))!, this.page.url()).href);
+    return {
+      name: await video.getAttribute('aria-label'),
+      posterLoads: poster.ok() && poster.headers()['content-type']?.startsWith('image/'),
+      ...(await video.evaluate((v: HTMLVideoElement) => ({ controls: v.controls, paused: v.paused, seconds: Math.round(v.duration) }))),
+    };
+  }
+
   menuButton() {
     return this.page.locator('.site-header').getByRole('button', { name: /navigation/ });
   }
