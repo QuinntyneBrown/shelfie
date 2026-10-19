@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Avatar, Banner, Button, Dialog, ErrorState, Skeleton, TextField } from 'components';
@@ -8,6 +9,8 @@ import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
 import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
 import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog';
 import { InvitesApi } from '../invites-api';
+import { StreakRewardDialog } from '../streak-reward-dialog/streak-reward-dialog';
+import { StreakReward, StreakRewardsApi } from '../streak-rewards-api';
 import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
@@ -16,6 +19,7 @@ import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } 
     Avatar,
     Banner,
     Button,
+    DatePipe,
     Dialog,
     EditReaderDialog,
     GalleryRewardDialog,
@@ -23,6 +27,7 @@ import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } 
     InviteParentDialog,
     ProfilePhotoDialog,
     Skeleton,
+    StreakRewardDialog,
     TextField,
   ],
   templateUrl: './settings-page.html',
@@ -36,10 +41,16 @@ export class SettingsPage {
   private readonly toasts = inject(ToastService);
   private readonly invites = inject(InvitesApi);
   private readonly galleryApi = inject(GalleryRewardsApi);
+  private readonly streakApi = inject(StreakRewardsApi);
 
   protected readonly view = signal<SettingsView | null>(null);
   /** The reward gallery, loaded with the settings. */
   protected readonly rewards = signal<GalleryReward[]>([]);
+  /** The streak rewards for 7, 30 and 100 days, loaded with the settings. */
+  protected readonly streakRewards = signal<StreakReward[]>([]);
+  protected readonly streakDialogOpen = signal(false);
+  protected readonly streakMilestone = signal(7);
+  protected readonly editingStreak = signal<StreakReward | null>(null);
   protected readonly rewardDialogOpen = signal(false);
   protected readonly editingReward = signal<GalleryReward | null>(null);
   protected readonly removingReward = signal<GalleryReward | null>(null);
@@ -86,8 +97,13 @@ export class SettingsPage {
     this.loadFailed.set(false);
     this.view.set(null);
     try {
-      const [view, rewards] = await Promise.all([this.api.get(), this.galleryApi.list()]);
+      const [view, rewards, streakRewards] = await Promise.all([
+        this.api.get(),
+        this.galleryApi.list(),
+        this.streakApi.list(),
+      ]);
       this.rewards.set(rewards);
+      this.streakRewards.set(streakRewards);
       this.theme.set(view.theme);
       this.name.set(view.account.name);
       this.email.set(view.account.email);
@@ -143,6 +159,35 @@ export class SettingsPage {
       edited ? rewards.map((r) => (r.id === reward.id ? reward : r)) : [...rewards, reward],
     );
     this.toasts.show({ title: edited ? `${reward.name} saved` : `${reward.name} added` });
+  }
+
+  protected openStreakDialog(reward: StreakReward) {
+    this.streakMilestone.set(reward.milestone);
+    this.editingStreak.set(reward.name ? reward : null);
+    this.streakDialogOpen.set(true);
+  }
+
+  protected streakRewardSaved(reward: StreakReward) {
+    this.streakDialogOpen.set(false);
+    const edited = this.editingStreak();
+    this.streakRewards.update((rewards) => rewards.map((r) => (r.milestone === reward.milestone ? reward : r)));
+    this.toasts.show({
+      title: edited ? `${reward.name} saved` : `${reward.name} set for ${reward.milestone} days`,
+    });
+  }
+
+  protected async removeStreakReward(reward: StreakReward) {
+    try {
+      await this.streakApi.clear(reward.milestone);
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: `${reward.name} wasn’t removed`, severity: 'danger' });
+      return;
+    }
+    this.streakRewards.update((rewards) =>
+      rewards.map((r) => (r.milestone === reward.milestone ? { ...r, name: null } : r)),
+    );
+    this.toasts.show({ title: `${reward.name} removed` });
   }
 
   protected openRemoveReward(reward: GalleryReward) {
