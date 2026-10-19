@@ -31,7 +31,7 @@ else available
   client -> directory : GET /api/directory/books/:id/cover
   directory --> client : image/webp
   page --> parent : Title, author, chapters and picture filled in; all editable (L2-150)
-  parent -> page : Pick colour and sticker; tap Add to Nia’s shelf
+  parent -> page : Pick colour and sticker; tap Add to my shelf
   page -> client : addBook({title, author, chapterCount, coverColor, sticker})
   client -> books : POST /api/books
   books -> db : INSERT book (household_id = session's household; no catalogue id stored)
