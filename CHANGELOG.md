@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Badges on the shelf and Review show as tiles of one height, as in the mocks, instead of a bulleted list.
+
 ### Added
 
 - Streak rewards: in Settings → Streak rewards a parent sets a reward for 7, 30 and 100 days of reading in a row. When the streak reaches a milestone the reward is earned and stays earned even if the streak later breaks; the reader sees her progress to the next one and a celebration on her shelf, and the parent sees a card on Review and gives it with one tap. Each milestone is earned and given once.

@@ -1,3 +1,8 @@
 :host {
   display: block;
+  height: 100%;
+}
+
+.achievement {
+  height: 100%;
 }
