@@ -303,8 +303,8 @@ em {
 .hero {
   padding-block: var(--space-16) var(--space-12);
   background:
-    radial-gradient(circle at 85% 10%, var(--color-accent-subtle), transparent 45%),
-    radial-gradient(circle at 10% 90%, var(--color-cover-sun), transparent 35%);
+    radial-gradient(circle at 85% 10%, var(--color-accent-subtle), transparent 50%),
+    radial-gradient(circle at 5% 95%, var(--color-accent-subtle), transparent 35%);
 }
 
 .hero-grid {

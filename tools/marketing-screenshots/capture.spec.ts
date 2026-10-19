@@ -19,3 +19,9 @@ for (const [screen, file] of shots) {
     await page.screenshot({ path: join(OUT, `${file}.png`), animations: 'disabled' });
   });
 }
+
+test('capture social-card', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 630 });
+  await page.goto(`file://${join(import.meta.dirname, 'social-card.html')}`);
+  await page.screenshot({ path: join(OUT, '../social-card.png'), scale: 'css' });
+});

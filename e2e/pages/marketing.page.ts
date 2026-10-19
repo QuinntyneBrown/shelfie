@@ -93,4 +93,18 @@ export class MarketingPage {
       items.map((item) => getComputedStyle(item).opacity === '1' && getComputedStyle(item).transform === 'none'),
     );
   }
+
+  /** The content of a <meta> tag, found by its name or property. */
+  meta(key: string) {
+    return this.page.locator(`meta[name="${key}"], meta[property="${key}"]`).first().getAttribute('content');
+  }
+
+  canonical() {
+    return this.page.locator('link[rel="canonical"]').getAttribute('href');
+  }
+
+  async file(path: string) {
+    const response = await this.page.request.get(`/marketing/${path}`);
+    return { ok: response.ok(), text: await response.text() };
+  }
 }
