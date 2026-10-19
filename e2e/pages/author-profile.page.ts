@@ -34,7 +34,7 @@ export class AuthorProfilePage {
   }
 
   async addToShelf(title: string) {
-    await this.page.getByRole('link', { name: `Add ${title} to the shelf` }).click();
+    await this.page.getByRole('link', { name: `Add to shelf: ${title}` }).click();
   }
 
   notAvailable() {
