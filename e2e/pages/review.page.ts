@@ -114,12 +114,13 @@ export class ReviewPage {
     return this.badges().getByRole('listitem').filter({ hasText: name });
   }
 
-  /** How the badges are laid out: whether the list shows bullets, and how many tiles share the first row. */
+  /** How the badges are laid out: whether the list shows bullets, how many tiles share the first row, and how many different tile heights there are. */
   async badgeLayout() {
     const items = this.badges().getByRole('listitem');
     const bullets = await items.first().evaluate((li) => getComputedStyle(li).listStyleType !== 'none');
     const tops = await items.evaluateAll((lis) => lis.map((li) => Math.round(li.getBoundingClientRect().top)));
-    return { bullets, perRow: tops.filter((top) => top === tops[0]).length };
+    const heights = await this.badges().locator('.achievement').evaluateAll((tiles) => tiles.map((t) => Math.round(t.getBoundingClientRect().height)));
+    return { bullets, perRow: tops.filter((top) => top === tops[0]).length, heights: [...new Set(heights)].length };
   }
 
   async scrollsSideways() {

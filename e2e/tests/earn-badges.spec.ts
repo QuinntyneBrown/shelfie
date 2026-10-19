@@ -39,7 +39,7 @@ test('Given the same logs, when Dad opens Review, then he sees Nia’s badges, r
   await expect(review.badges().getByRole('link')).toHaveCount(0);
 });
 
-test('Given a desktop, when Dad opens Review, then Nia’s badges are tiles laid side by side with no list bullets', async ({ page }) => {
+test('Given a desktop, when Dad opens Review, then Nia’s badges are tiles of one height laid side by side with no list bullets', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await signInAsDad(page);
   const review = new ReviewPage(page);
@@ -47,6 +47,7 @@ test('Given a desktop, when Dad opens Review, then Nia’s badges are tiles laid
   const layout = await review.badgeLayout();
   expect(layout.bullets).toBe(false);
   expect(layout.perRow).toBeGreaterThan(1);
+  expect(layout.heights).toBe(1);
 });
 
 test('Given a phone, then the shelf’s badges stack without scrolling sideways and an axe scan finds nothing serious', async ({ page }) => {
