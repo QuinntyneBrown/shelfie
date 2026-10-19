@@ -131,6 +131,33 @@ export interface WeekDay {
   today: boolean;
 }
 
+export interface TogetherReader {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+}
+
+/** A reading-together session, told with the helper first: she read to, or helped, the other reader. */
+export interface TogetherSession {
+  id: string;
+  helper: TogetherReader;
+  other: TogetherReader;
+  action: 'read-to' | 'helped';
+  minutes: number;
+  readOn: string;
+  loggedById: string;
+  confirmed: boolean;
+}
+
+export interface TogetherView {
+  today: string;
+  /** The household's other readers; empty in a household with one reader. */
+  partners: TogetherReader[];
+  /** Her newest sessions, newest first. */
+  sessions: TogetherSession[];
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
@@ -198,6 +225,11 @@ export class ShelfApi {
   /** Makes a gallery reward her goal, counting from now, and returns the gallery as it now stands. */
   pickGoal(id: string) {
     return this.api.post<GalleryView>(`/gallery-rewards/${id}/pick`, {});
+  }
+
+  /** Her reading-together sessions and the other readers she can read with. */
+  together() {
+    return this.api.get<TogetherView>('/together');
   }
 
   async shelf(): Promise<ShelfResponse> {

@@ -315,4 +315,26 @@ export class ShelfPage {
   streakCelebration() {
     return this.streakRewards().getByRole('heading', { name: /You did it!/ });
   }
+
+  /** The Read together button beside Add a book; only in a household with another reader. */
+  readTogetherButton() {
+    return this.page.getByRole('link', { name: 'Read together' });
+  }
+
+  async readTogether() {
+    await this.readTogetherButton().click();
+  }
+
+  /** The "Together" section with her reading-together sessions and helper reward. */
+  together() {
+    return this.page.getByRole('region', { name: 'Together', exact: true });
+  }
+
+  togetherSession(text: string) {
+    return this.together().getByRole('listitem').filter({ hasText: text });
+  }
+
+  togetherSessions() {
+    return this.together().getByRole('listitem');
+  }
 }

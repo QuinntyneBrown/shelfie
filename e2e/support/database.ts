@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import { addZoe as addZoeTo } from '../../apps/api/src/seed.ts';
 
 let db: Pool;
 
@@ -139,3 +140,8 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
   return found.map((r) => r.endpoint);
 }
 
+
+/** Adds Nia's sister Zoe as a second reader of the seeded household. */
+export async function addZoe() {
+  await addZoeTo(db);
+}

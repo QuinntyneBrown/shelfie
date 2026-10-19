@@ -70,6 +70,11 @@ export const routes: Routes = [
     loadComponent: () => import('shelf').then((m) => m.ShelfPage),
   },
   {
+    path: 'together/log',
+    canActivate: [authGuard],
+    loadComponent: () => import('log-chapter').then((m) => m.LogTogetherPage),
+  },
+  {
     path: 'books/:id/chapters/:n/log',
     canActivate: [authGuard],
     loadComponent: () => import('log-chapter').then((m) => m.LogChapterPage),

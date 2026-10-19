@@ -49,3 +49,7 @@
 .keep-reading {
   margin-bottom: var(--space-8);
 }
+
+.together__empty {
+  padding: var(--space-4);
+}
