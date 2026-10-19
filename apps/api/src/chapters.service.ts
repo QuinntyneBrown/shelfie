@@ -71,7 +71,8 @@ export async function getForm(db: Db, householdId: string, bookId: string, n: nu
   };
 }
 
-export async function logChapter(pool: Pool, householdId: string, bookId: string, n: number, request: LogRequest) {
+/** Logs chapter `n`; `readerId` is the reader who logged it, or null for a parent (ADR-0018). */
+export async function logChapter(pool: Pool, householdId: string, bookId: string, n: number, request: LogRequest, readerId: string | null = null) {
   const book = await findBook(pool, householdId, bookId, n);
   if (request.readOn > (await householdToday(pool, householdId))) throw new Problem(400, 'future-date');
   await refuseIfLogged(pool, bookId, n);
@@ -84,13 +85,14 @@ export async function logChapter(pool: Pool, householdId: string, bookId: string
   try {
     // The log, its answers and the finished mark commit together, so a 201 means they are all on the server.
     await transaction(pool, async (db) => {
-      await run(db, 'INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ($1, $2, $3, $4, $5, $6)', [
+      await run(db, 'INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until, reader_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
         id,
         bookId,
         n,
         request.readOn,
         loggedAt.toISOString(),
         undoUntil.toISOString(),
+        readerId,
       ]);
       const questions = await questionsForBook(db, bookId);
       for (const [i, question] of questions.entries()) {

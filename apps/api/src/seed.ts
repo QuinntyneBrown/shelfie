@@ -45,6 +45,7 @@ export function seed(pool: Pool, { books = true } = {}) {
     await profile('p-other-dad', 'h2', 'parent', 'Zed’s dad', 'rose', 'zedsdad', 'other@example.com', ZEDS_DAD_PASSWORD);
     await book('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'parent', '2026-10-01T09:00:00.000Z', null);
     await log('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z');
+    await db.query("UPDATE chapter_log SET reader_id = 'p-other-reader' WHERE id = 'b-other-c1'");
 
     // Feedback from each family, which only the operator reads (L2-118).
     const feedback = 'INSERT INTO feedback (id, household_id, profile_id, kind, score, message, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)';
@@ -94,5 +95,7 @@ export function seed(pool: Pool, { books = true } = {}) {
       "UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'star', note = 'Lovely work!', feedback_seen_at = logged_at WHERE id NOT IN ('b-lion-c10', 'b-lion-c11') AND book_id != 'b-other'",
     );
     await db.query('UPDATE chapter_log SET logged_at = $1 WHERE id = $2', [`${day(15)}T17:00:00.000Z`, 'b-lion-c11']);
+    // Nia logged every chapter of her household (ADR-0018).
+    await db.query("UPDATE chapter_log SET reader_id = $1 WHERE book_id IN (SELECT id FROM book WHERE household_id = $2)", [SEED.readerId, SEED.householdId]);
   });
 }

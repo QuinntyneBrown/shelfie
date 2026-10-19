@@ -171,4 +171,22 @@ export class ReviewPage {
   async repairGiving() {
     await this.page.unroute('**/api/streak-rewards/*/give');
   }
+
+  /** Opens Review straight on the Challenges tab. */
+  async openChallenges() {
+    await this.page.goto('/review?tab=challenges');
+  }
+
+  async showTab(name: 'To review' | 'Challenges') {
+    await this.page.getByRole('group', { name: 'Show' }).getByRole('button', { name }).click();
+  }
+
+  challengeCard(name: string) {
+    return this.page.getByRole('region', { name });
+  }
+
+  /** The rows of the leaderboard on the Challenges tab, in the order shown. */
+  leaderboard() {
+    return this.page.getByRole('list', { name: 'Leaderboard' }).first().getByRole('listitem');
+  }
 }

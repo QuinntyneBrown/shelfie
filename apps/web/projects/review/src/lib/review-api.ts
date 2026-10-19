@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
+import type { LeaderboardRow } from 'components';
 
 export interface QueueItem {
   chapterLogId: string;
@@ -96,6 +97,32 @@ export interface ReviewOverview {
   streakRewards: StreakReward[];
 }
 
+export interface Challenge {
+  id: string;
+  name: string;
+  measure: 'chapters' | 'books';
+  goal: number;
+  startsOn: string;
+  endsOn: string;
+  daysLeft: number;
+  ended: boolean;
+  standings: LeaderboardRow[];
+}
+
+export interface ChallengeReader {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+}
+
+export interface Challenges {
+  today: string;
+  readers: ChallengeReader[];
+  current: Challenge | null;
+  past: Challenge[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReviewApi {
   private readonly api = inject(ApiClient);
@@ -122,5 +149,9 @@ export class ReviewApi {
 
   load() {
     return this.api.get<ReviewOverview>('/review');
+  }
+
+  challenges() {
+    return this.api.get<Challenges>('/challenges');
   }
 }

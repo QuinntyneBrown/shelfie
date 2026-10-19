@@ -1,0 +1,25 @@
+<ol class="leaderboard" aria-label="Leaderboard">
+  @for (row of rows(); track row.readerId) {
+    <li
+      class="leaderboard__row"
+      [class.leaderboard__row--leader]="row.leading"
+      [class.leaderboard__row--you]="row.readerId === you()"
+    >
+      <span class="leaderboard__rank" [attr.aria-label]="rankLabel(row)">{{ row.leading ? '👑' : row.rank }}</span>
+      <sh-avatar [name]="row.name" [color]="row.color" [photo]="row.photo" />
+      <div class="leaderboard__body">
+        <div class="leaderboard__name">
+          {{ row.name }}{{ row.readerId === you() ? ' (you)' : '' }}
+          @if (row.leading) {
+            <span class="leaderboard__lead">In the lead</span>
+          }
+        </div>
+        <sh-progress
+          [value]="row.count"
+          [max]="goal()"
+          [label]="row.name + ': ' + row.count + ' of ' + goal() + ' ' + unit()"
+        />
+      </div>
+    </li>
+  }
+</ol>

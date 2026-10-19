@@ -1,4 +1,7 @@
 import type { Pool } from 'pg';
+import { hashSecret } from '../../apps/api/src/secret.ts';
+
+const THEO_PASSWORD = hashSecret('theo-reads-6');
 
 let db: Pool;
 
@@ -139,3 +142,45 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
   return found.map((r) => r.endpoint);
 }
 
+
+/** Gives Nia a brother: Theo, a reader in her household who signs in as `theo`. */
+export async function addTheo() {
+  await db.query(
+    "INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ('p-theo', 'h1', 'reader', 'Theo', 'mint', 'theo', NULL, $1)",
+    [THEO_PASSWORD],
+  );
+}
+
+/** Starts a challenge in the seeded household as Dad would, running from `startsOn` to `endsOn`, and returns its id. */
+export async function startChallengeInDatabase({
+  name = 'Half-term reading race',
+  measure = 'chapters',
+  goal = 15,
+  startsOn = householdDay(0),
+  endsOn = householdDay(13),
+  readerIds = ['p-nia', 'p-theo'],
+  endedAt = null as string | null,
+  createdAt = new Date().toISOString(),
+} = {}) {
+  const id = `c-${name.toLowerCase().replace(/\W+/g, '-')}`;
+  await db.query(
+    "INSERT INTO challenge (id, household_id, name, measure, goal, starts_on, ends_on, created_at, ended_at) VALUES ($1, 'h1', $2, $3, $4, $5, $6, $7, $8)",
+    [id, name, measure, goal, startsOn, endsOn, createdAt, endedAt],
+  );
+  for (const readerId of readerIds) await db.query('INSERT INTO challenge_reader (challenge_id, profile_id) VALUES ($1, $2)', [id, readerId]);
+  return id;
+}
+
+/** Logs `count` more chapters of The Wild Robot as a reader, reaching the server at `at` (now by default). */
+export async function logChaptersAs(readerId: string, count: number, at = new Date().toISOString()) {
+  const [{ latest }] = await rows<{ latest: number }>("SELECT COALESCE(MAX(chapter_number), 0)::int AS latest FROM chapter_log WHERE book_id = 'b-robot'");
+  for (let n = latest + 1; n <= latest + count; n++) {
+    await db.query("INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until, reader_id) VALUES ($1, 'b-robot', $2, $3, $4, $4, $5)", [
+      `b-robot-c${n}`,
+      n,
+      at.slice(0, 10),
+      at,
+      readerId,
+    ]);
+  }
+}

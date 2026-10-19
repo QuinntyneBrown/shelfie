@@ -1,0 +1,29 @@
+@if (view(); as view) {
+  @if (view.current; as challenge) {
+    <section class="card stack" aria-labelledby="challenge-title">
+      <div>
+        <h2 id="challenge-title" class="section-title">{{ challenge.name }}</h2>
+        <p class="text-muted">
+          {{ measureLabel(challenge) }} · goal {{ challenge.goal }} ·
+          {{ challenge.startsOn | date: 'EEE d MMM' : 'UTC' }} to {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }} ·
+          {{ daysLeftLabel(challenge) }}
+        </p>
+      </div>
+      <sh-leaderboard [rows]="challenge.standings" [goal]="challenge.goal" [unit]="challenge.measure" />
+    </section>
+  }
+} @else if (failed()) {
+  <sh-empty-state
+    tone="error"
+    title="The challenges didn’t load"
+    text="Shelfie couldn’t reach the server. Nothing is lost; try again in a moment."
+  >
+    <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+  </sh-empty-state>
+} @else {
+  <div class="card stack" aria-busy="true" aria-label="Loading challenges">
+    <sh-skeleton variant="title" />
+    <sh-skeleton />
+    <sh-skeleton />
+  </div>
+}

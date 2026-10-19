@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
+import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS, Segmented } from 'components';
 import { ApiError, ShellStatusService, ToastService } from 'core';
+import { ChallengesTab } from '../challenges-tab/challenges-tab';
 import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
 import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview, StreakReward } from '../review-api';
 
@@ -17,12 +18,19 @@ const LONG_QUEUE = 10;
 
 @Component({
   selector: 'sh-review-page',
-  imports: [AchievementBadge, ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink],
+  imports: [AchievementBadge, ActivityLine, ChallengesTab, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink, Segmented],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewPage {
+  /** `?tab=challenges` opens the Challenges tab. */
+  readonly tab = input<string | undefined>();
+  protected readonly shown = linkedSignal(() => (this.tab() === 'challenges' ? 'challenges' : 'review'));
+  protected readonly tabs = [
+    { value: 'review', label: 'To review' },
+    { value: 'challenges', label: 'Challenges' },
+  ];
   protected earnedBadges = (overview: ReviewOverview) => overview.badges.filter((badge) => badge.earned).length;
   private readonly toasts = inject(ToastService);
   protected readonly overview = signal<ReviewOverview | null>(null);
