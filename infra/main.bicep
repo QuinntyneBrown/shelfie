@@ -23,8 +23,8 @@ param adminSshPublicKey string
 @description('Public IPv4 address or CIDR allowed to reach SSH (port 22).')
 param adminSourceAddress string
 
-@description('Public hostname Caddy serves; the A record must point at the public IP output.')
-param hostname string = 'shelfie.kids'
+@description('Hostname of the app and its API, used for APP_URL; the domain\'s A record must point at the public IP output and app must be a CNAME to it.')
+param hostname string = 'app.shelfie.kids'
 
 @description('Administrator password of the PostgreSQL server. bootstrap.sh generates it once and keeps it on the VM in /etc/shelfie/db-admin.')
 @secure()

@@ -1,6 +1,9 @@
 # Installed to /etc/caddy/Caddyfile by deploy.sh. Caddy obtains and renews the Let's Encrypt
-# certificate for shelfie.kids once the A record points at the VM.
-shelfie.kids {
+# certificates for app.shelfie.kids, www.shelfie.kids and shelfie.kids once their DNS records
+# (A @, CNAME www, CNAME app) point at the VM. See docs/detailed-designs/platform/serve-marketing-site/.
+
+# The app and its API (including /api/admin/v1) on one origin, so the session cookie stays host-only.
+app.shelfie.kids {
 	encode zstd gzip
 	root * /opt/shelfie/current/web
 
@@ -17,6 +20,25 @@ shelfie.kids {
 	}
 }
 
+# The static marketing page (apps/marketing). No inline code, no third parties (L2-118).
 www.shelfie.kids {
-	redir https://shelfie.kids{uri} permanent
+	encode zstd gzip
+	root * /opt/shelfie/current/marketing
+	header {
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self'"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), geolocation=(), microphone=()"
+		Cache-Control "no-cache"
+	}
+	file_server
+}
+
+# The bare domain: the home page goes to the marketing site, every other path (old bookmarks,
+# reset and invite links already sent) to the same path on the app.
+shelfie.kids {
+	@home path /
+	redir @home https://www.shelfie.kids/ permanent
+	redir https://app.shelfie.kids{uri} permanent
 }

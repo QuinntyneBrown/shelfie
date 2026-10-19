@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://shelfie.kids
+      url: https://app.shelfie.kids
     permissions:
       contents: read
       id-token: write
@@ -39,10 +39,11 @@ jobs:
       - name: Assemble the release tarball
         run: |
           rm -rf release
-          mkdir -p release/apps/api release/web release/host
+          mkdir -p release/apps/api release/web release/marketing release/host
           cp package.json package-lock.json release/
           cp -r apps/api/package.json apps/api/src apps/api/migrations release/apps/api/
           cp -r apps/web/dist/shelfie/browser/. release/web/
+          cp -r apps/marketing/. release/marketing/
           cp -r infra/host/. release/host/
           (cd release && npm ci --omit=dev --workspace apps/api --ignore-scripts)
           tar -czf "$RELEASE" -C release .
@@ -70,4 +71,7 @@ jobs:
           grep -q DEPLOY_OK <<<"$output"
 
       - name: Check production health
-        run: curl -fsS --retry 5 --retry-delay 5 https://shelfie.kids/api/health
+        run: curl -fsS --retry 5 --retry-delay 5 https://app.shelfie.kids/api/health
+
+      - name: Smoke-test the marketing site
+        run: curl -fsS --retry 5 --retry-delay 5 https://www.shelfie.kids/ | grep -q 'Every chapter is a step'

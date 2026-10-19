@@ -46,7 +46,7 @@ runcmd:
   # Node.js 24 (matches .node-version; the release tarball is built for this major version)
   - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
   - apt-get install -y nodejs
-  # Caddy: TLS termination, static files for the Angular build, reverse proxy for /api
+  # Caddy: TLS termination, static files for the Angular build and the marketing site, reverse proxy for /api
   - curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   - curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt -o /etc/apt/sources.list.d/caddy-stable.list
   - apt-get update

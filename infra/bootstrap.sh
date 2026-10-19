@@ -16,7 +16,8 @@ cd "$(dirname "$0")"
 RG=${RG:-shelfie-prod}
 LOCATION=${LOCATION:-canadacentral}
 REPO=${REPO:-QuinntyneBrown/shelfie}
-APP_HOSTNAME=${APP_HOSTNAME:-shelfie.kids}
+APP_HOSTNAME=${APP_HOSTNAME:-app.shelfie.kids}
+DOMAIN=${APP_HOSTNAME#app.}
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/id_ed25519.pub}
 ADMIN_IP=${ADMIN_IP:-$(curl -fsS https://api.ipify.org)}
 IDENTITY=shelfie-github
@@ -115,9 +116,10 @@ gh variable set AZURE_STORAGE_ACCOUNT -R "$REPO" --env production -b "$STORAGE"
 
 cat <<SUMMARY
 
-Done. Create these DNS records for $APP_HOSTNAME:
+Done. Create these DNS records for $DOMAIN:
   A      @     $IP
-  CNAME  www   $APP_HOSTNAME.
+  CNAME  www   $DOMAIN.
+  CNAME  app   $DOMAIN.
 
 VM: $VM   Storage account: $STORAGE   Database: $DB_HOST (private; credentials in /etc/shelfie on the VM)
 SSH: ssh shelfie-admin@$IP (allowed from $ADMIN_IP only)
