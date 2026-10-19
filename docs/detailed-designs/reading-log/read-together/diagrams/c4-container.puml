@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Read together
+
+Person(reader, "Reader", "Logs and confirms sessions")
+Person(grownUp, "Parent", "Uses Settings and Review")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Read together page, Together card on the shelf, Helper reward in Settings, sessions and the reached card on Review")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Logs, lists, confirms and removes sessions; sums helper minutes on read; earns, sets and gives the helper reward; sends pushes")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "reading_session, helper_reward (migration 011)")
+}
+System_Ext(push, "Browser push service", "Delivers notifications to devices")
+Rel(reader, web, "Logs and reads sessions", "HTTPS")
+Rel(grownUp, web, "Sets, removes, gives", "HTTPS")
+Rel(web, api, "/api/together, /api/helper-reward, GET /api/review", "JSON/HTTPS")
+Rel(api, db, "Reads and writes sessions and the reward", "SQL")
+Rel(api, push, "Session logged, helper reward given", "Web Push")
+@enduml

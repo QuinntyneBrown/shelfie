@@ -57,6 +57,11 @@ The feature sits in the `review` subsystem beside reward-gallery, because its en
 | Give before it is earned | 400 `not-earned` | Not offered before it is earned |
 | Network or server failure | status 0 or 5xx | Banner in the dialog (set), danger toast (give); values kept |
 
+
+### Read together
+
+- **The helper reward (reading-log/read-together)** follows this design: earned on read and stored, given with one call, shown as the same card shape on Review. Unlike a streak reward it repeats: giving it clears `earned_at` and starts a new round (ADR-0018).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.

@@ -27,6 +27,11 @@ The slice runs from the Review page to the `chapter_log`, `book` and `reward` ta
 
 `L2-014` lists the queue oldest first, while the mock lists it newest first and gives the newest chapter the primary button; the design follows the mock. Unauthenticated calls receive 401 and reader calls 403 from `requireRole`, which the shell maps to the sign-in and "Grown-ups only" pages (`L2-005`).
 
+
+### Read together
+
+- **Read together (reading-log/read-together).** `overview()` merges reading-together sessions into Recent activity as `read-together` items with a Remove action, and adds `helperReward`, whose earned card counts in the summary's rewards (`L2-142`, `L2-143`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

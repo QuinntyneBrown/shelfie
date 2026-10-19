@@ -85,6 +85,11 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
 | Push service answers 404 or 410 | Subscription deleted | None |
 | Push service fails otherwise | Logged without the endpoint | None |
 
+
+### Read together
+
+- **Read together (reading-log/read-together).** Two more moments reuse the existing choices: a session logged notifies parents under `chapterLogged` (no undo wait), and the helper reward given notifies readers under `streakReward` (`L2-144`). No new switch or column.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines level-1 requirement `L1-027`.

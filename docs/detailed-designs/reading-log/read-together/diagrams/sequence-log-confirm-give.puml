@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Log, confirm, earn and give
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Nia" as nia
+actor "Zoe" as zoe
+actor "Parent" as parent
+box "Frontend — Shelfie web" #E0F2FE
+  participant "LogTogetherPage" as page
+  participant "ShelfPage" as shelf
+  participant "ReviewPage" as review
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "together.router.ts" as together
+  participant "helper-reward.service.ts" as helper
+  participant "push.service.ts" as notifier
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+nia -> page : Zoe, I read to her, 20 minutes, Today, Done!
+page -> together : POST /api/together/sessions
+together -> db : partner is another reader of the household?\nfewer than 10 logged by Nia today? (L2-137)
+together -> db : INSERT reading_session
+together -> notifier : readTogether() — parents, if chapterLogged is on (L2-144)
+together --> page : 201 session
+zoe -> shelf : Open her shelf
+shelf -> together : GET /api/together
+together -> helper : helperRewardOf(householdId)
+helper -> db : SUM(minutes) per helper since given_at;\nset earned_at, earned_by when one reaches the target (L2-138, L2-142)
+together --> shelf : partners, sessions from Zoe's side, helper reward
+zoe -> shelf : That's right
+shelf -> together : POST /api/together/sessions/:id/confirm
+together -> db : UPDATE confirmed_at WHERE partner_id = Zoe (L2-139)
+parent -> review : Open Review
+review -> helper : GET /api/review (helperReward, activity)
+parent -> review : Give it
+review -> helper : POST /api/helper-reward/give
+helper -> db : UPDATE helper_reward SET given_at = now,\nearned_at = NULL, earned_by = NULL
+helper -> notifier : helperReward() — readers, if streakReward is on
+helper --> review : 200, the count starts again
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Read together (Shelfie API)
+
+Container(web, "Shelfie web", "Angular")
+ContainerDb(db, "Shelfie database", "PostgreSQL 16")
+Container_Boundary(api, "Shelfie API") {
+  Component(togetherRouter, "together.router.ts", "Express router", "GET /, POST /sessions, POST /sessions/:id/confirm, DELETE /sessions/:id; session, reader-only logging, parent-only removal")
+  Component(helperRouter, "helper-reward.router.ts", "Express router", "GET /, PUT /, POST /give; parent-only writes")
+  Component(togetherService, "together.service.ts", "Service", "Partners, logging with the limits, sessions from the viewer's side, confirm, remove")
+  Component(helperService, "helper-reward.service.ts", "Service", "Sums helper minutes since given_at, earns, sets and gives the reward")
+  Component(review, "review.service.ts", "Service", "Adds sessions to Recent activity and the helper reward to the overview")
+  Component(notifier, "push.service.ts", "Notifier", "readTogether() under chapterLogged, helperReward() under streakReward")
+}
+Rel(web, togetherRouter, "JSON/HTTPS")
+Rel(web, helperRouter, "JSON/HTTPS")
+Rel(togetherRouter, togetherService, "calls")
+Rel(togetherRouter, notifier, "after a session is logged")
+Rel(helperRouter, helperService, "calls")
+Rel(helperRouter, notifier, "after the reward is given")
+Rel(togetherService, helperService, "helper reward for the card")
+Rel(review, helperService, "helper reward for Review")
+Rel(togetherService, db, "reading_session", "SQL")
+Rel(helperService, db, "helper_reward, reading_session", "SQL")
+@enduml
