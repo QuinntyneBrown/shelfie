@@ -1,4 +1,4 @@
--- A gallery reward's description and pictures (docs/detailed-designs/review/reward-gallery, ADR-0010). An empty
+-- A gallery reward's description and pictures (docs/detailed-designs/review/reward-gallery, ADR-0011). An empty
 -- description means none. Each picture is stored as the API re-encoded it: 480 × 480 WebP without metadata. The partial
 -- unique index lets a reward have at most one featured picture; the service keeps exactly one while it has any.
 -- Pictures cascade from their reward, which cascades from its household.

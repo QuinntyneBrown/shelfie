@@ -1,12 +1,12 @@
-# ADR-0010: Reward pictures upload one at a time, apart from saving the reward, and the featured mark lives on the picture row
+# ADR-0011: Reward pictures upload one at a time, apart from saving the reward, and the featured mark lives on the picture row
 
 - Status: Accepted
 - Date: 2026-10-18
-- Requirements: L2-094, L2-095, L2-097, L2-098
+- Requirements: L2-100, L2-101, L2-100, L2-101
 
 ## Context
 
-A gallery reward gains a description and up to six pictures, one of which is featured (`L1-021`, `L2-093` to `L2-098`). Two questions needed an answer before anything could be built: how pictures travel from the Add / edit a reward dialog to the API, and how the API stores which picture is featured so that a reward can never have two.
+A gallery reward gains a description and up to six pictures, one of which is featured (`L1-021`, `L2-099` to `L2-101`). Two questions needed an answer before anything could be built: how pictures travel from the Add / edit a reward dialog to the API, and how the API stores which picture is featured so that a reward can never have two.
 
 The rest of Shelfie fixes the frame. Profile photos and book covers travel as the raw body of one request each, read by `readImage` (5 MB) and re-encoded by `processImage` (`photos.service.ts`); `POST /api/gallery-rewards` takes JSON through `express.json` with a 16 kB limit. Add a book already sends its picture after the book exists (`docs/detailed-designs/books/upload-book-cover/adr-001-send-the-add-book-picture-after-the-book.md`). The one goal per household is already enforced by a partial unique index (ADR-0009).
 
@@ -23,7 +23,7 @@ For the upload, three ways were considered: one multipart request carrying the r
 
 - One image pipeline: reward pictures get the type-by-content check, the 5 MB and 40 MP limits, WebP re-encoding and metadata stripping of `L2-044`, `L2-045` and `L2-048` with no new code, and the same error copy.
 - No multipart parser and no holding area: nothing to expire and no new dependency. The reward's JSON route keeps its 16 kB limit.
-- Each picture shows its own progress and its own failure with Try again (`L2-098`); a failed picture never loses the name, description or the other pictures.
+- Each picture shows its own progress and its own failure with Try again (`L2-101`); a failed picture never loses the name, description or the other pictures.
 - Picture changes while editing are saved even if the parent then presses Cancel. The dialog tells the Settings page after each change, so the row always shows the stored featured picture.
 - A reward can be added and its pictures fail; the parent sees that at once in the dialog, which has become the edit dialog, and can retry or leave it.
 - The `featured_picture_id` alternative would also allow at most one, but needs a foreign key from `gallery_reward` to `reward_picture` and back, a composite key to keep the picture on its own reward, and care when deleting. The flag and partial index match ADR-0009's goal index and cascade cleanly.

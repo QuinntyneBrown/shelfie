@@ -1,8 +1,6 @@
 # Estimates
 
-- Overall effort: 101 days
-- Complete: 98%
-- Overall effort: 103 days
+- Overall effort: 104 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |

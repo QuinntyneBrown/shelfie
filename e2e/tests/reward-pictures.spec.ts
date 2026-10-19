@@ -1,4 +1,4 @@
-// Traces to: L2-094, L2-095, L2-096
+// Traces to: L2-097, L2-098, L2-099
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { addGalleryReward } from '../support/database';
