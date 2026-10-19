@@ -1,4 +1,4 @@
-// Traces to: L2-138, L2-141, L2-142, L2-146
+// Traces to: L2-138, L2-141, L2-142, L2-143, L2-146
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -183,4 +183,70 @@ test('Given the helper reward, then Read together carries it for the shelf card'
   const view = (await (await call(niaCookie, 'GET', '/together')).json()) as { helperReward: HelperReward | null };
   assert.equal(view.helperReward!.name, 'Cinema trip');
   assert.equal(view.helperReward!.minutes[SEED.readerId], 20);
+});
+
+test('Given no helper reward, or one not yet earned, when Dad gives it, then the API answers 404 or 400 not-earned', async () => {
+  const cookie = await dad();
+  assert.equal((await call(cookie, 'POST', '/helper-reward/give')).status, 404);
+
+  await call(cookie, 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const response = await call(cookie, 'POST', '/helper-reward/give');
+  assert.equal(response.status, 400);
+  assert.equal(((await response.json()) as { type: string }).type, 'not-earned');
+});
+
+test('Given Nia earned the reward, when Dad gives it, then it is given today and every reader’s minutes start again', async () => {
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 30 });
+  await log(await nia(), ZOE.id, 'read-to', 30);
+  await log(await zoe(), SEED.readerId, 'read-to', 10);
+
+  const response = await call(cookie, 'POST', '/helper-reward/give');
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { name: 'Cinema trip', targetMinutes: 30, minutes: {}, earnedBy: null, givenOn: TODAY() });
+  assert.equal((await call(cookie, 'POST', '/helper-reward/give')).status, 400);
+  await log(await nia(), ZOE.id, 'read-to', 15);
+  assert.deepEqual((await reward(cookie))!.minutes, { [SEED.readerId]: 15 });
+});
+
+test('Given a reader, when she gives the reward or removes a session, then the API answers 403', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 30 });
+  const niaCookie = await nia();
+  const id = await log(niaCookie, ZOE.id, 'read-to', 30);
+
+  assert.equal((await call(niaCookie, 'POST', '/helper-reward/give')).status, 403);
+  assert.equal((await call(niaCookie, 'DELETE', `/together/sessions/${id}`)).status, 403);
+});
+
+test('Given Dad removes a session, then it leaves both readers’ lists and the minutes; another household’s parent gets 404', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const niaCookie = await nia();
+  const id = await log(niaCookie, ZOE.id, 'read-to', 30);
+  await log(niaCookie, ZOE.id, 'helped', 10);
+
+  assert.equal((await call(await zedsDad(), 'DELETE', `/together/sessions/${id}`)).status, 404);
+  assert.equal((await call(await dad(), 'DELETE', `/together/sessions/${id}`)).status, 204);
+  assert.equal((await call(await dad(), 'DELETE', '/together/sessions/nothing')).status, 404);
+
+  const view = (await (await call(await zoe(), 'GET', '/together')).json()) as { sessions: { id: string }[] };
+  assert.equal(view.sessions.length, 1);
+  assert.deepEqual((await reward(niaCookie))!.minutes, { [SEED.readerId]: 10 });
+});
+
+test('Given sessions and an earned reward, then Review lists the sessions in Recent activity, helper first, and carries the reward', async () => {
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 30 });
+  await log(await zoe(), SEED.readerId, 'read-to-me', 30);
+
+  const overview = (await (await call(cookie, 'GET', '/review')).json()) as {
+    activity: { kind: string; helperName: string | null; otherName: string | null; action: string | null; minutes: number | null; sessionId: string | null }[];
+    helperReward: HelperReward | null;
+    thisWeek: { chapters: number };
+  };
+  const line = overview.activity.find((a) => a.kind === 'read-together')!;
+  assert.deepEqual([line.helperName, line.otherName, line.action, line.minutes], ['Nia', 'Zoe', 'read-to', 30]);
+  assert.ok(line.sessionId);
+  assert.equal(overview.activity[0]!.kind, 'read-together');
+  assert.equal(overview.helperReward!.earnedBy!.name, 'Nia');
 });

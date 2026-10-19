@@ -46,13 +46,14 @@ interface Row {
   minutes: number;
   read_on: string;
   logged_by: string;
+  logged_at: string;
   confirmed_at: string | null;
   helper: Reader;
   other: Reader;
 }
 
 const SESSION_SELECT = `
-  SELECT s.id, s.kind, s.minutes, s.read_on, s.logged_by, s.confirmed_at,
+  SELECT s.id, s.kind, s.minutes, s.read_on, s.logged_by, s.logged_at, s.confirmed_at,
          (SELECT row_to_json(r) FROM (SELECT ${readerColumns('h')} FROM profile h LEFT JOIN profile_photo hp ON hp.profile_id = h.id WHERE h.id = ${HELPER_COLUMN}) r) AS helper,
          (SELECT row_to_json(r) FROM (SELECT ${readerColumns('o')} FROM profile o LEFT JOIN profile_photo op ON op.profile_id = o.id
             WHERE o.id = CASE WHEN s.kind = 'read-to-me' THEN s.logged_by ELSE s.partner_id END) r) AS other
@@ -138,4 +139,24 @@ export async function confirmSession(db: Db, householdId: string, profileId: str
   ]);
   if (!session) throw new Problem(404, 'not-found');
   await run(db, 'UPDATE reading_session SET confirmed_at = $1 WHERE id = $2 AND confirmed_at IS NULL', [new Date().toISOString(), id]);
+}
+
+/** A parent takes a mistaken session off both shelves and out of the helper minutes; the row stays, marked removed (L2-143). */
+export async function removeSession(db: Db, householdId: string, id: string) {
+  const changed = await run(db, 'UPDATE reading_session SET removed_at = $1 WHERE id = $2 AND household_id = $3 AND removed_at IS NULL', [
+    new Date().toISOString(),
+    id,
+    householdId,
+  ]);
+  if (changed === 0) throw new Problem(404, 'not-found');
+}
+
+/** The household's newest sessions for Review, with when each was logged. */
+export async function recentSessions(db: Db, householdId: string, limit: number): Promise<(Session & { loggedAt: string })[]> {
+  const rows = await all<Row>(
+    db,
+    `${SESSION_SELECT} WHERE s.household_id = $1 AND s.removed_at IS NULL ORDER BY s.logged_at DESC, s.id LIMIT $2`,
+    [householdId, limit],
+  );
+  return rows.map((r) => ({ ...toSession(r), loggedAt: r.logged_at }));
 }

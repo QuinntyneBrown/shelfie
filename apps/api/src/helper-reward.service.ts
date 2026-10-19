@@ -1,4 +1,5 @@
 import { all, get, run, type Db } from './db.ts';
+import { Problem } from './problem.ts';
 import { todayIn } from './streak.ts';
 import { HELPER_COLUMN, readerOf, type Reader } from './together.service.ts';
 
@@ -70,4 +71,18 @@ export async function setHelperReward(db: Db, householdId: string, name: string,
     [householdId, name, targetMinutes],
   );
   return (await helperRewardOf(db, householdId))!;
+}
+
+/** Gives the earned reward and starts the next round: the minutes count again from now (L2-142). Answers who earned it. */
+export async function giveHelperReward(db: Db, householdId: string): Promise<{ reward: HelperReward; earnedBy: Reader }> {
+  const reward = await helperRewardOf(db, householdId);
+  if (!reward) throw new Problem(404, 'not-found');
+  if (!reward.earnedBy) throw new Problem(400, 'not-earned');
+  const changed = await run(
+    db,
+    'UPDATE helper_reward SET given_at = $1, earned_at = NULL, earned_by = NULL WHERE household_id = $2 AND earned_by = $3',
+    [new Date().toISOString(), householdId, reward.earnedBy.id],
+  );
+  if (changed === 0) throw new Problem(400, 'not-earned');
+  return { reward: (await helperRewardOf(db, householdId))!, earnedBy: reward.earnedBy };
 }

@@ -2,7 +2,8 @@ import { Router } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { helperRewardOf, setHelperReward } from './helper-reward.service.ts';
+import { giveHelperReward, helperRewardOf, setHelperReward } from './helper-reward.service.ts';
+import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { validationProblem } from './validation.ts';
 
@@ -26,6 +27,17 @@ export function helperRewardRouter(db: Pool) {
     const body = helperRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     res.json(await setHelperReward(db, householdId, body.data.name, body.data.targetMinutes));
+  });
+
+  router.post('/give', requireRole('parent'), async (_req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    try {
+      const { reward } = await giveHelperReward(db, householdId);
+      res.json(reward);
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
   return router;

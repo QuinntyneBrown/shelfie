@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
 import { ApiError, ShellStatusService, ToastService } from 'core';
 import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
-import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview, StreakReward } from '../review-api';
+import { ActivityItem, FinishedBook, HelperReward, QueueItem, ReviewApi, ReviewOverview, StreakReward } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -38,7 +38,8 @@ export class ReviewPage {
     const overview = this.overview();
     if (!overview) return '';
     const chapters = overview.queue.length;
-    const rewards = overview.finishedUnrewarded.length + this.earnedStreakRewards().length;
+    const rewards =
+      overview.finishedUnrewarded.length + this.earnedStreakRewards().length + (overview.helperReward?.earnedBy ? 1 : 0);
     const line = `${chapters} ${chapters === 1 ? 'chapter' : 'chapters'} to read · ${rewards} ${rewards === 1 ? 'reward' : 'rewards'} to give`;
     return chapters >= LONG_QUEUE ? `${line} · back from a week away?` : line;
   });
@@ -84,6 +85,36 @@ export class ReviewPage {
     }
   }
 
+  protected readonly givingHelper = signal(false);
+
+  /** Gives the helper reward and starts its next round (L2-142). */
+  protected async giveHelperReward(reward: HelperReward) {
+    if (this.givingHelper()) return;
+    this.givingHelper.set(true);
+    try {
+      const given = await this.reviewApi.giveHelperReward();
+      this.overview.update((o) => o && { ...o, helperReward: given });
+      this.toasts.show({ title: `${reward.name} given` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: 'The reward wasn’t given', severity: 'danger' });
+    } finally {
+      this.givingHelper.set(false);
+    }
+  }
+
+  /** Takes a mistaken reading-together session off both shelves (L2-143). */
+  protected async removeSession(sessionId: string) {
+    try {
+      await this.reviewApi.removeSession(sessionId);
+      this.overview.update((o) => o && { ...o, activity: o.activity.filter((item) => item.sessionId !== sessionId) });
+      this.toasts.show({ title: 'Removed' });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: 'That wasn’t removed', severity: 'danger' });
+    }
+  }
+
   protected rewarded(book: FinishedBook) {
     this.rewarding.set(null);
     this.overview.update(
@@ -105,6 +136,7 @@ export class ReviewPage {
       const ofBook = sameBook ? '' : ` of ${item.bookTitle}`;
       const sticker = FEEDBACK_STICKERS.find((s) => s.value === item.sticker);
       const reader = overview.readerName;
+      const together = `${item.helperName} ${item.action === 'helped' ? `helped ${item.otherName} read` : `read to ${item.otherName}`} for ${item.minutes} minutes`;
       const lines: Record<ActivityItem['kind'], { emoji: string; text: string }> = {
         'chapter-logged': {
           emoji: '📖',
@@ -119,11 +151,13 @@ export class ReviewPage {
           text: `You gave Chapter ${item.chapterNumber}${ofBook} a ${sticker?.name ?? 'sticker'}`,
         },
         'book-finished': { emoji: '🏆', text: `${reader} finished ${item.bookTitle}` },
+        'read-together': { emoji: '🤝', text: together },
       };
       return {
         ...lines[item.kind],
         at: item.at,
-        key: `${item.kind}-${item.bookId}-${item.chapterNumber}`,
+        sessionId: item.sessionId,
+        key: `${item.kind}-${item.sessionId ?? item.bookId}-${item.chapterNumber}`,
       };
     });
   });

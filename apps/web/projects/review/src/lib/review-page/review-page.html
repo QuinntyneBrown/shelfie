@@ -143,6 +143,31 @@
       </section>
     }
 
+    @if (overview.helperReward?.earnedBy; as earner) {
+      <section class="card stack reward-card" aria-labelledby="helper-reward">
+        <div class="book-card">
+          <span class="sticker" aria-hidden="true">🤝</span>
+          <div class="book-card__body">
+            <h2 id="helper-reward" class="section-title">
+              {{ earner.name }} reached {{ overview.helperReward!.targetMinutes }} helper minutes
+            </h2>
+            <span class="book-card__author">Her reward: {{ overview.helperReward!.name }}</span>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn--primary"
+            type="button"
+            [disabled]="givingHelper()"
+            [attr.aria-busy]="givingHelper() ? true : null"
+            (click)="giveHelperReward(overview.helperReward!)"
+          >
+            Give it
+          </button>
+        </div>
+      </section>
+    }
+
     <section class="card stack" aria-labelledby="activity-title">
       <h2 id="activity-title" class="section-title">Recent activity</h2>
       <ul class="activity">
@@ -152,7 +177,18 @@
               [emoji]="line.emoji"
               [text]="line.text"
               [when]="(line.at | date: 'EEE d MMM') ?? ''"
-            />
+            >
+              @if (line.sessionId; as sessionId) {
+                <button
+                  class="btn btn--sm btn--ghost"
+                  type="button"
+                  [attr.aria-label]="'Remove: ' + line.text"
+                  (click)="removeSession(sessionId)"
+                >
+                  Remove
+                </button>
+              }
+            </sh-activity-item>
           </li>
         }
       </ul>

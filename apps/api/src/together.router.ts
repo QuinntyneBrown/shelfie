@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { helperRewardOf } from './helper-reward.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
-import { confirmSession, KINDS, logSession, partnersOf, sessionsOf, today } from './together.service.ts';
+import { requireRole } from './authz.ts';
+import { confirmSession, KINDS, logSession, partnersOf, removeSession, sessionsOf, today } from './together.service.ts';
 import { validationProblem } from './validation.ts';
 
 const sessionSchema = z.object({
@@ -41,6 +42,14 @@ export function togetherRouter(db: Pool) {
     const { householdId, profileId } = res.locals['session'] as RequestSession;
     await answer(res, async () => {
       await confirmSession(db, householdId, profileId, String(req.params['id']));
+      res.status(204).end();
+    });
+  });
+
+  router.delete('/sessions/:id', requireRole('parent'), async (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    await answer(res, async () => {
+      await removeSession(db, householdId, String(req.params['id']));
       res.status(204).end();
     });
   });
