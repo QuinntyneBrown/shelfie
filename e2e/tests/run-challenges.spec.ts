@@ -1,4 +1,5 @@
 // Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-143
+import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../support/test';
 import { signInAsDad } from '../support/signed-in';
 import { addTheo, forgetSeededLogs, householdDay, logChaptersAs, startChallengeInDatabase } from '../support/database';
@@ -223,4 +224,19 @@ test('Given the challenges fail to load, then the tab says so and Try again brin
 
   await review.showTab('To review');
   await expect(review.queue()).toHaveCount(2);
+});
+
+test('Given the Challenges tab and the Start a challenge dialog, then neither has a serious accessibility problem', async ({ page }) => {
+  await startChallengeInDatabase({ name: 'October week race', startsOn: householdDay(-7), endsOn: householdDay(-1) });
+  await logChaptersAs('p-nia', 2, `${householdDay(-2)}T12:00:00.000Z`);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+  await expect(review.leaderboard()).toHaveCount(2);
+  const serious = async () => (await new AxeBuilder({ page }).analyze()).violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id);
+  expect(await serious()).toEqual([]);
+
+  await review.startChallenge();
+  await expect(new StartChallengeDialog(page).nameField()).toBeFocused();
+  expect(await serious()).toEqual([]);
 });

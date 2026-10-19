@@ -1,4 +1,5 @@
 // Traces to: L2-140, L2-142, L2-144
+import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { addTheo, forgetSeededLogs, householdDay, logChaptersAs, rewardChallengeInDatabase, startChallengeInDatabase } from '../support/database';
@@ -110,4 +111,17 @@ test('Given the race ended more than 7 days ago, then it has left her shelf', as
 
   await expect(page.getByText('On the go')).toBeVisible();
   await expect(new ShelfPage(page).challengeCard()).toHaveCount(0);
+});
+
+test('Given the Challenge card, then the shelf has no serious accessibility problem in light or dark', async ({ page }) => {
+  await startChallengeInDatabase();
+  await logChaptersAs('p-nia', 3);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+  await expect(shelf.challengeLeaderboard()).toHaveCount(2);
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    const scan = await new AxeBuilder({ page }).analyze();
+    expect(scan.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id), colorScheme).toEqual([]);
+  }
 });
