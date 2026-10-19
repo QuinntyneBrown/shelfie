@@ -181,6 +181,38 @@
         }
       }
     </section>
+    @if (streakCards().length) {
+      <section class="section" aria-labelledby="streak-rewards">
+        <h2 id="streak-rewards" class="group-title">Streak rewards</h2>
+        @if (earnedStreakReward(); as earned) {
+          <sh-celebration variant="book" class="goal-celebration">
+            <span class="sticker sticker--xl" aria-hidden="true">🎁</span>
+            <h3 class="goal-celebration__title">You did it! 🎉</h3>
+            <p class="text-muted">
+              You read {{ earned.milestone }} days in a row. {{ data.grownUpName }} is getting your
+              {{ earned.name }} ready.
+            </p>
+          </sh-celebration>
+        }
+        <ul class="list goal-list">
+          @for (card of streakCards(); track card.reward.milestone) {
+            <li>
+              <sh-reward-card
+                [title]="card.reward.name!"
+                [note]="
+                  card.reward.givenOn
+                    ? 'Given ' + (card.reward.givenOn | date: 'EEE d MMM' : 'UTC')
+                    : 'Read ' + card.reward.milestone + ' days in a row'
+                "
+                [target]="card.reward.milestone"
+                [progress]="card.progress"
+                unit="days"
+              />
+            </li>
+          }
+        </ul>
+      </section>
+    }
     @if (data.finished.length) {
       <section class="section" aria-labelledby="finished">
         <h2 id="finished" class="group-title">

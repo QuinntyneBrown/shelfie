@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Earn and give a streak reward
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+actor "Parent" as parent
+box "Frontend — Shelfie web" #E0F2FE
+  participant "ShelfPage" as shelf
+  participant "ReviewPage" as review
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "shelf.service.ts" as shelfService
+  participant "streak-rewards.router.ts" as router
+  participant "streak-rewards.service.ts" as service
+  participant "streak.ts" as streak
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+reader -> shelf : Open the shelf after logging day 7
+shelf -> shelfService : GET /api/shelf
+shelfService -> service : streakRewardsOf(householdId)
+service -> streak : streakFor(householdId)
+streak --> service : 7
+service -> db : UPDATE streak_reward SET earned_at = now\nWHERE earned_at IS NULL AND milestone <= 7 (L2-101)
+service -> db : SELECT milestone, name, earned_at, given_at
+db --> service : rows
+service --> shelfService : three StreakReward
+shelfService --> shelf : ShelfResponse {..., streakRewards}
+shelf --> reader : Celebration and "Ready!" (L2-102)
+
+parent -> review : Open Review
+review --> parent : Card "Nia reached a 7-day streak" and Give it (L2-103)
+parent -> review : Give it
+review -> router : POST /api/streak-rewards/7/give
+router -> service : giveStreakReward(householdId, 7)
+service -> db : UPDATE streak_reward SET given_at = now\nWHERE milestone = 7 AND earned_at IS NOT NULL AND given_at IS NULL
+alt not earned
+  service --> router : 400 not-earned
+else already given
+  service --> router : 409 already-given
+else given
+  service --> router : StreakReward
+  router --> review : 200
+  review --> parent : "Ice cream given" toast; card leaves Review
+end
+@enduml

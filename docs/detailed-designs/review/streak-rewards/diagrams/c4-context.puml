@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Streak rewards
+
+Person(reader, "Reader", "Reads every day, sees how close the next milestone is, celebrates when she earns one")
+Person(grownUp, "Parent", "Sets a reward for 7, 30 and 100 days and gives it when earned")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Opens her shelf", "HTTPS")
+Rel(grownUp, shelfie, "Sets rewards in Settings, gives them on Review", "HTTPS")
+@enduml

@@ -22,6 +22,26 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShelfPage {
+  /** The streak rewards a parent has set, each with how far along it is (L2-102). */
+  protected readonly streakCards = computed(() => {
+    const data = this.shelf();
+    if (!data) return [];
+    const set = data.streakRewards.filter((r) => r.name);
+    const next = set.find((r) => !r.earnedOn);
+    return set.map((reward) => ({
+      reward,
+      progress: reward.givenOn
+        ? null
+        : reward.earnedOn
+          ? reward.milestone
+          : reward === next
+            ? Math.min(data.streak, reward.milestone)
+            : null,
+    }));
+  });
+  protected readonly earnedStreakReward = computed(() =>
+    this.shelf()?.streakRewards.find((r) => r.name && r.earnedOn && !r.givenOn),
+  );
   protected earnedBadges = (shelf: ShelfResponse) => shelf.badges.filter((badge) => badge.earned).length;
   protected readonly session = inject(SessionService);
   protected readonly shelf = signal<ShelfResponse | null>(null);

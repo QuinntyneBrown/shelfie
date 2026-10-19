@@ -19,7 +19,7 @@
           class="trophy__progress"
           [value]="progress()!"
           [max]="target"
-          [label]="progress() + ' of ' + target + ' books finished'"
+          [label]="progress() + ' of ' + target + (unit() === 'days' ? ' days in a row' : ' books finished')"
         />
       }
     </div>

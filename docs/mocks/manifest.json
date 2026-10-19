@@ -127,6 +127,9 @@
         "default",
         "badges-none",
         "badges-all",
+        "streak-progress",
+        "streak-earned",
+        "streak-given",
         "loading",
         "empty",
         "error",
@@ -146,6 +149,8 @@
         "L2-088",
         "L2-096",
         "L2-097",
+        "L2-101",
+        "L2-102",
         "L2-108"
       ]
     },
@@ -262,13 +267,15 @@
         "empty",
         "error",
         "long",
-        "goal-reached"
+        "goal-reached",
+        "streak-reached"
       ],
       "not_applicable": {},
       "requirements": [
         "L2-017",
         "L2-089",
-        "L2-098"
+        "L2-098",
+        "L2-103"
       ]
     },
     {
@@ -360,7 +367,8 @@
         "submitting",
         "success",
         "photo",
-        "rewards-empty"
+        "rewards-empty",
+        "streak-rewards-given"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -375,6 +383,7 @@
         "L2-081",
         "L2-082",
         "L2-083",
+        "L2-100",
         "L2-108"
       ]
     },
@@ -474,6 +483,23 @@
         "picture-failed",
         "wrong-file",
         "too-many",
+        "invalid",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "edit-streak-reward",
+      "kind": "dialog",
+      "title": "Streak reward",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-100"
+      ],
+      "states": [
+        "default",
+        "edit",
         "invalid",
         "busy",
         "failed"

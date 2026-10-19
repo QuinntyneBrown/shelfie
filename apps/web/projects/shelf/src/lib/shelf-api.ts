@@ -115,10 +115,18 @@ export interface Badge {
   earnedOn: string | null;
 }
 
+export interface StreakReward {
+  milestone: number;
+  name: string | null;
+  earnedOn: string | null;
+  givenOn: string | null;
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
   badges: Badge[];
+  streakRewards: StreakReward[];
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];

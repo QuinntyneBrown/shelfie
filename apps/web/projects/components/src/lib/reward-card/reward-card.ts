@@ -32,6 +32,8 @@ export class RewardCard {
   readonly description = input<string | null>(null);
   /** Books finished toward it, when it is the goal. */
   readonly progress = input<number | null>(null);
+  /** What the target counts: finished books, or days in a row for a streak reward. */
+  readonly unit = input<'books' | 'days'>('books');
   protected readonly reached = computed(
     () => (this.progress() ?? 0) >= (this.target() ?? Infinity),
   );

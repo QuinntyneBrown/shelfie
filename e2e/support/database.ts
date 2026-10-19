@@ -111,3 +111,14 @@ export async function finishBook(bookId: string) {
 export async function pickGoal(id: string) {
   await db.query('UPDATE gallery_reward SET picked_at = $1 WHERE id = $2', [new Date(Date.now() - 60_000).toISOString(), id]);
 }
+
+/** Sets a streak reward for the seeded household, as Dad would in Settings. */
+export async function addStreakReward(milestone: number, name: string) {
+  await db.query("INSERT INTO streak_reward (household_id, milestone, name) VALUES ('h1', $1, $2)", [milestone, name]);
+}
+
+/** Marks a streak reward as already earned and given, as Review's Give it does. */
+export async function giveStreakRewardInDatabase(milestone: number) {
+  const now = new Date().toISOString();
+  await db.query("UPDATE streak_reward SET earned_at = $1, given_at = $1 WHERE household_id = 'h1' AND milestone = $2", [now, milestone]);
+}
