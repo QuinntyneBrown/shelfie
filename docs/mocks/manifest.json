@@ -140,7 +140,11 @@
         "goal-reached",
         "goal-error",
         "push-offer",
-        "push-on"
+        "push-on",
+        "reading-goal-none",
+        "reading-goal-progress",
+        "reading-goal-reached",
+        "reading-goal-ended"
       ],
       "not_applicable": {},
       "requirements": [
@@ -155,7 +159,9 @@
         "L2-102",
         "L2-108",
         "L2-121",
-        "L2-123"
+        "L2-123",
+        "L2-158",
+        "L2-160"
       ]
     },
     {
@@ -219,7 +225,8 @@
         "covers-loading",
         "covers",
         "covers-empty",
-        "covers-failed"
+        "covers-failed",
+        "two-readers"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
@@ -240,7 +247,8 @@
         "L2-080",
         "L2-090",
         "L2-091",
-        "L2-092"
+        "L2-092",
+        "L2-139"
       ]
     },
     {
@@ -290,7 +298,8 @@
         "error",
         "long",
         "goal-reached",
-        "streak-reached"
+        "streak-reached",
+        "two-readers"
       ],
       "not_applicable": {},
       "requirements": [
@@ -298,7 +307,9 @@
         "L2-089",
         "L2-098",
         "L2-103",
-        "L2-118"
+        "L2-118",
+        "L2-138",
+        "L2-142"
       ]
     },
     {
@@ -319,7 +330,8 @@
         "assist-clear",
         "assist-drafted",
         "assist-failed",
-        "assist-unavailable"
+        "assist-unavailable",
+        "two-readers"
       ],
       "not_applicable": {
         "empty": "Only logged chapters appear in the queue, so there are always answers to show."
@@ -330,7 +342,8 @@
         "L2-065",
         "L2-066",
         "L2-067",
-        "L2-068"
+        "L2-068",
+        "L2-142"
       ]
     },
     {
@@ -342,11 +355,13 @@
         "default",
         "loading",
         "empty",
-        "error"
+        "error",
+        "two-readers"
       ],
       "not_applicable": {},
       "requirements": [
-        "L2-047"
+        "L2-047",
+        "L2-138"
       ]
     },
     {
@@ -365,7 +380,8 @@
         "picture",
         "uploading",
         "picture-failed",
-        "wrong-file"
+        "wrong-file",
+        "two-readers"
       ],
       "not_applicable": {
         "empty": "A book always has its three default questions and a chapter count, so the page is never empty."
@@ -375,7 +391,8 @@
         "L2-046",
         "L2-048",
         "L2-069",
-        "L2-118"
+        "L2-118",
+        "L2-142"
       ]
     },
     {
@@ -416,6 +433,59 @@
         "L2-121",
         "L2-122",
         "L2-124"
+      ]
+    },
+    {
+      "id": "communities",
+      "kind": "page",
+      "title": "Community",
+      "route": "/communities",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "forbidden",
+        "goal-reached",
+        "goal-ended"
+      ],
+      "not_applicable": {},
+      "requirements": [
+        "L2-145",
+        "L2-146",
+        "L2-149",
+        "L2-152",
+        "L2-154",
+        "L2-155"
+      ]
+    },
+    {
+      "id": "community",
+      "kind": "page",
+      "title": "A community",
+      "route": "/communities/:id",
+      "states": [
+        "default",
+        "member",
+        "goal-none",
+        "goal-reached",
+        "goal-ended",
+        "copied",
+        "loading",
+        "error",
+        "not-found"
+      ],
+      "not_applicable": {
+        "empty": "A community always has at least the viewing household as a member."
+      },
+      "requirements": [
+        "L2-147",
+        "L2-149",
+        "L2-151",
+        "L2-153",
+        "L2-159",
+        "L2-160",
+        "L2-161"
       ]
     },
     {
@@ -549,6 +619,104 @@
       ],
       "states": [
         "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "The dialog has no inputs; it only confirms."
+      }
+    },
+    {
+      "id": "start-community",
+      "kind": "dialog",
+      "title": "Start a community",
+      "opens_from": "communities",
+      "requirements": [
+        "L2-145",
+        "L2-146"
+      ],
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "join-community",
+      "kind": "dialog",
+      "title": "Join a community",
+      "opens_from": "communities",
+      "requirements": [
+        "L2-148",
+        "L2-149",
+        "L2-150"
+      ],
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "already-member",
+        "too-many",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "leave-community",
+      "kind": "dialog",
+      "title": "Leave a community",
+      "opens_from": "community",
+      "requirements": [
+        "L2-151"
+      ],
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "The dialog has no inputs; it only confirms."
+      }
+    },
+    {
+      "id": "reading-goal",
+      "kind": "dialog",
+      "title": "Reading goal",
+      "opens_from": "communities",
+      "requirements": [
+        "L2-154",
+        "L2-155",
+        "L2-156",
+        "L2-157",
+        "L2-158",
+        "L2-159",
+        "L2-160",
+        "L2-161"
+      ],
+      "states": [
+        "default",
+        "edit",
+        "community",
+        "busy",
+        "invalid",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "remove-reading-goal",
+      "kind": "dialog",
+      "title": "Remove a reading goal",
+      "opens_from": "communities",
+      "requirements": [
+        "L2-156",
+        "L2-159"
+      ],
+      "states": [
+        "default",
+        "community",
         "busy",
         "failed"
       ],
@@ -724,9 +892,16 @@
         "warning",
         "danger",
         "with-action",
-        "stacked"
+        "stacked",
+        "joined",
+        "left",
+        "goal-saved",
+        "goal-reached"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": [
+        "L2-162"
+      ]
     },
     {
       "id": "banner",
