@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Send feedback: readers and parents score Shelfie with five faces, say whether it is about how it feels or an idea, and write a message, from the account menu. The operator lists it with `shelfie-admin feedback list` (L2-114 to L2-119, ADR-0014).
-- A marketing page at `https://www.shelfie.kids` that explains the reading loop, with real screenshots and links to sign up and sign in; it carries no project links (L2-120 to L2-127, ADR-0015).
+- A marketing page at `https://www.shelfie.kids` that explains the reading loop, with real screenshots and links to sign up and sign in; it carries no project links (L2-121 to L2-128, ADR-0016).
 - A streak reward can carry an amount in dollars, and the shelf shows each streak reward as a badge, a shield with its milestone and a coin with its amount, with the 7-day goal as a path of days (L2-112, L2-113).
 
 - Shelfie's own reward pictures: beside "Add a picture" in the Add / edit a reward dialog, "Choose one of ours" offers ten built-in pictures (Gift box, Cash, Gift card, Make-up, Jewellery, Theme park, Shopping, Swimming pool, Park, Party). The chosen one is uploaded as an ordinary reward picture, so the API is unchanged. Requirement L2-111.
