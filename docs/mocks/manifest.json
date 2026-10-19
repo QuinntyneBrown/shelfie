@@ -138,7 +138,9 @@
         "goal-none",
         "goal-progress",
         "goal-reached",
-        "goal-error"
+        "goal-error",
+        "push-offer",
+        "push-on"
       ],
       "not_applicable": {},
       "requirements": [
@@ -151,7 +153,9 @@
         "L2-097",
         "L2-101",
         "L2-102",
-        "L2-108"
+        "L2-108",
+        "L2-120",
+        "L2-122"
       ]
     },
     {
@@ -388,7 +392,11 @@
         "success",
         "photo",
         "rewards-empty",
-        "streak-rewards-given"
+        "streak-rewards-given",
+        "notifications-on",
+        "notifications-events-off",
+        "notifications-blocked",
+        "notifications-unsupported"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -404,7 +412,10 @@
         "L2-082",
         "L2-083",
         "L2-100",
-        "L2-108"
+        "L2-108",
+        "L2-120",
+        "L2-121",
+        "L2-123"
       ]
     },
     {
@@ -730,6 +741,29 @@
         "persistent"
       ],
       "not_applicable": {}
+    },
+    {
+      "id": "push",
+      "kind": "notification",
+      "title": "Push notification",
+      "opens_from": "shelf",
+      "states": [
+        "chapter-logged",
+        "feedback",
+        "book-reward",
+        "streak-reward"
+      ],
+      "not_applicable": {
+        "info": "A push is a single kind of message; its tone is carried by the copy of each event.",
+        "success": "Not a success/failure message.",
+        "warning": "Not a success/failure message.",
+        "danger": "Push never reports an error; failures stay in the app."
+      },
+      "requirements": [
+        "L2-124",
+        "L2-125",
+        "L2-126"
+      ]
     }
   ]
 }

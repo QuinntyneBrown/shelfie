@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="settings">
 <meta name="mock:state" content="invalid">
-<meta name="mock:requirements" content="L2-021 L2-022 L2-034 L2-036 L2-042 L2-043 L2-081 L2-082 L2-083 L2-100 L2-108">
+<meta name="mock:requirements" content="L2-021, L2-022, L2-034, L2-036, L2-042, L2-043, L2-081, L2-082, L2-083, L2-100, L2-108, L2-120, L2-121, L2-123">
 <meta name="description" content="Malformed e-mail and mismatched passwords with a summary.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
@@ -52,6 +52,19 @@
       <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">Sleepover with Ava</div><div class="list__meta">Finish 5 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
     </ul>
   </section>
+  <section class="card stack" aria-labelledby="notifications-title">
+    <h2 id="notifications-title" style="font: var(--text-h4);">Notifications</h2>
+    <label class="switch"><input type="checkbox" name="device" value="1"><span class="switch__text">Notifications on this device<small>Get a ping on this device when something needs you.</small></span></label>
+    <hr class="divider" style="border: 0; border-top: 1px solid var(--color-border-default); margin: var(--space-2) 0;">
+    <p class="field__label" id="events-label">Tell me and Nia when…</p>
+    <div class="stack" style="gap: var(--space-1);" role="group" aria-labelledby="events-label">
+    <label class="switch"><input type="checkbox" name="notify-chapter" value="1" checked><span class="switch__text">Chapter logged<small>Nia logs a chapter and it is waiting for your feedback.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-feedback" value="1" checked><span class="switch__text">Sticker or note<small>Nia hears when you send a sticker or a note.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-book-reward" value="1" checked><span class="switch__text">Book reward<small>Nia hears when you give her a reward for a finished book.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-streak-reward" value="1" checked><span class="switch__text">Streak reward<small>Nia hears when you give her a streak reward.</small></span></label>
+    </div>
+    <p class="text-muted">The device switch is for this browser only. The four choices above are for the whole household.</p>
+  </section>
   <section class="card stack" aria-labelledby="account-title">
     <h2 id="account-title" style="font: var(--text-h4);">Your account</h2>
     <div class="cluster"><span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span><div class="stack" style="gap: var(--space-1);"><span class="field__label">Your photo</span><a class="btn btn--sm" href="../../dialogs/profile-photo/parent.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a photo</a></div></div>
@@ -86,7 +99,7 @@
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Settings</span>
-  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html" aria-current="page">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="photo.html">photo</a></li><li><a href="rewards-empty.html">rewards-empty</a></li><li><a href="streak-rewards-given.html">streak-rewards-given</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html" aria-current="page">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="photo.html">photo</a></li><li><a href="rewards-empty.html">rewards-empty</a></li><li><a href="streak-rewards-given.html">streak-rewards-given</a></li><li><a href="notifications-on.html">notifications-on</a></li><li><a href="notifications-events-off.html">notifications-events-off</a></li><li><a href="notifications-blocked.html">notifications-blocked</a></li><li><a href="notifications-unsupported.html">notifications-unsupported</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>

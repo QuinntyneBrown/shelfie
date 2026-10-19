@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · notifications-blocked — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="settings">
+<meta name="mock:state" content="notifications-blocked">
+<meta name="mock:requirements" content="L2-021, L2-022, L2-034, L2-036, L2-042, L2-043, L2-081, L2-082, L2-083, L2-100, L2-108, L2-120, L2-121, L2-123">
+<meta name="description" content="The browser has blocked notifications; the device switch is disabled and says how to fix it.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="has-tabbar">
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/review/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" href="../../pages/review/default.html">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+    <a class="nav-link" href="../../pages/books/default.html">Books</a>
+    <a class="nav-link" href="../../pages/settings/default.html" aria-current="page">Settings</a>
+  </nav>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">D</button>
+</header>
+
+<main id="main" class="container">
+<div class="page-header"><div><h1>Settings</h1><p class="subtitle">Your house, sign-in and look.</p></div></div><form class="stack" style="gap: var(--space-6);" action="success.html" method="get" novalidate>
+  
+  <section class="card card--flush stack" style="gap: 0;" aria-labelledby="parents-title">
+    <div class="cluster cluster--between" style="padding: var(--space-4) var(--space-4) var(--space-2);"><h2 id="parents-title" style="font: var(--text-h4);">Parents</h2><a class="btn btn--sm" href="../../dialogs/invite-parent/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>Invite a parent</a></div>
+    <ul class="list">
+      <li class="list__item"><span class="avatar avatar--sky" aria-hidden="true">D</span><div class="list__body"><div class="list__title">Dad</div><div class="list__meta">You · @marcus</div></div></li>
+      <li class="list__item"><span class="avatar avatar--lilac" aria-hidden="true">P</span><div class="list__body"><div class="list__title">priya@example.com <span class="badge badge--info">Invited</span></div><div class="list__meta">Invite sent</div></div><button class="btn btn--sm btn--ghost" type="button">Send again</button></li>
+    </ul>
+  </section>
+  <section class="card card--flush stack" style="gap: 0;" aria-labelledby="readers-title">
+    <div class="cluster cluster--between" style="padding: var(--space-4) var(--space-4) var(--space-2);"><h2 id="readers-title" style="font: var(--text-h4);">Readers</h2><a class="btn btn--sm" href="../../dialogs/edit-reader/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a reader</a></div>
+    <ul class="list">
+      <li class="list__item"><span class="avatar avatar--rose" aria-hidden="true">N</span><div class="list__body"><div class="list__title">Nia</div><div class="list__meta">@nia</div></div><a class="btn btn--sm btn--ghost" href="../../dialogs/edit-reader/edit.html" aria-label="Edit Nia"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg>Edit</a></li>
+    </ul>
+  </section>
+  <section class="card card--flush stack" style="gap: 0;" aria-labelledby="rewards-title">
+    <div class="cluster cluster--between" style="padding: var(--space-4) var(--space-4) var(--space-2);"><h2 id="rewards-title" style="font: var(--text-h4);">Rewards</h2><a class="btn btn--sm" href="../../dialogs/edit-gallery-reward/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a reward</a></div>
+    <p class="text-muted" style="padding: 0 var(--space-4) var(--space-2);">Nia picks one to read toward. Finished books count from the day she picks it.</p>
+    <ul class="list">
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁<img class="sticker__img" src="../../assets/rewards/zoo-penguins.jpg" alt=""></span><div class="list__body"><div class="list__title">Trip to the zoo</div><div class="list__meta">Finish 3 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Trip to the zoo"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁<img class="sticker__img" src="../../assets/rewards/art-set.jpg" alt=""></span><div class="list__body"><div class="list__title">New art set</div><div class="list__meta">Finish 2 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove New art set"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">Sleepover with Ava</div><div class="list__meta">Finish 5 books</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-gallery-reward/edit.html" aria-label="Edit Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><a class="btn btn--ghost btn--icon" href="../../dialogs/remove-gallery-reward/default.html" aria-label="Remove Sleepover with Ava"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a></li>
+    </ul>
+  </section>
+  <section class="card card--flush stack" style="gap: 0;" aria-labelledby="streak-rewards-title">
+    <div class="cluster cluster--between" style="padding: var(--space-4) var(--space-4) var(--space-2);"><h2 id="streak-rewards-title" style="font: var(--text-h4);">Streak rewards</h2></div>
+    <p class="text-muted" style="padding: 0 var(--space-4) var(--space-2);">Nia gets one when she reads 7, 30 or 100 days in a row. Each is earned once.</p>
+    <ul class="list">
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">7 days in a row · Pocket money · $20</div><div class="list__meta">Nia gets it when she reaches 7 days</div></div><a class="btn btn--ghost btn--icon" href="../../dialogs/edit-streak-reward/edit.html" aria-label="Edit Pocket money"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a><button class="btn btn--ghost btn--icon" type="button" aria-label="Remove Pocket money"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">30 days in a row</div><div class="list__meta">No reward set</div></div><a class="btn btn--sm" href="../../dialogs/edit-streak-reward/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Set a reward</a></li>
+      <li class="list__item"><span class="sticker" aria-hidden="true">🎁</span><div class="list__body"><div class="list__title">100 days in a row</div><div class="list__meta">No reward set</div></div><a class="btn btn--sm" href="../../dialogs/edit-streak-reward/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Set a reward</a></li>
+    </ul>
+  </section>
+  <section class="card stack" aria-labelledby="notifications-title">
+    <h2 id="notifications-title" style="font: var(--text-h4);">Notifications</h2>
+    <div class="alert alert--warning" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01"/></svg><div class="alert__body"><div class="alert__title">Notifications are blocked in this browser</div><div>Allow them for Shelfie in the site settings next to the address bar, then come back and turn them on.</div></div></div>
+    <label class="switch"><input type="checkbox" name="device" value="1" disabled><span class="switch__text">Notifications on this device<small>Blocked in this browser.</small></span></label>
+    <hr class="divider" style="border: 0; border-top: 1px solid var(--color-border-default); margin: var(--space-2) 0;">
+    <p class="field__label" id="events-label">Tell me and Nia when…</p>
+    <div class="stack" style="gap: var(--space-1);" role="group" aria-labelledby="events-label">
+    <label class="switch"><input type="checkbox" name="notify-chapter" value="1" checked><span class="switch__text">Chapter logged<small>Nia logs a chapter and it is waiting for your feedback.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-feedback" value="1" checked><span class="switch__text">Sticker or note<small>Nia hears when you send a sticker or a note.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-book-reward" value="1" checked><span class="switch__text">Book reward<small>Nia hears when you give her a reward for a finished book.</small></span></label>
+    <label class="switch"><input type="checkbox" name="notify-streak-reward" value="1" checked><span class="switch__text">Streak reward<small>Nia hears when you give her a streak reward.</small></span></label>
+    </div>
+    <p class="text-muted">The device switch is for this browser only. The four choices above are for the whole household.</p>
+  </section>
+  <section class="card stack" aria-labelledby="account-title">
+    <h2 id="account-title" style="font: var(--text-h4);">Your account</h2>
+    <div class="cluster"><span class="avatar avatar--lg avatar--sky" aria-hidden="true">D</span><div class="stack" style="gap: var(--space-1);"><span class="field__label">Your photo</span><a class="btn btn--sm" href="../../dialogs/profile-photo/parent.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a photo</a></div></div>
+    <div class="field"><label class="field__label" for="parent-name">Your name</label><input class="input" id="parent-name" type="text" required value="Dad" style="max-width: 16rem;"></div>
+    <div class="field"><label class="field__label" for="username">Username</label><input class="input" id="username" type="text" value="marcus" readonly style="max-width: 16rem;"></div>
+    <div class="field"><label class="field__label" for="email">E-mail address</label><input class="input" id="email" type="email" autocomplete="email" required value="marcus@example.com" style="max-width: 24rem;"></div>
+    <div class="grid grid--auto" style="gap: var(--space-4);">
+      <div class="field"><label class="field__label" for="new-password">New password <span class="optional">(optional)</span></label><div class="input-group"><input class="input" id="new-password" type="password" autocomplete="new-password" value=""><button class="btn btn--ghost btn--icon input-group__btn" type="button" aria-label="Show new password" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="field"><label class="field__label" for="confirm-password">Type it again</label><input class="input" id="confirm-password" type="password" autocomplete="new-password" value=""></div>
+    </div>
+    <div class="field"><label class="field__label" for="current-password">Current password</label><div class="field__help" id="current-help">Needed to change e-mail or password.</div><input class="input" id="current-password" type="password" autocomplete="current-password" aria-describedby="current-help" style="max-width: 16rem;"></div>
+  </section>
+  <fieldset class="card stack">
+    <legend style="font: var(--text-h4); margin-bottom: var(--space-2);">Appearance</legend>
+    <label class="choice"><input type="radio" name="theme" value="system" checked><span class="choice__text">Match the device</span></label>
+    <label class="choice"><input type="radio" name="theme" value="light"><span class="choice__text">Always light</span></label>
+    <label class="choice"><input type="radio" name="theme" value="dark"><span class="choice__text">Always dark</span></label>
+  </fieldset>
+  <div class="form-actions" style="justify-content: space-between;">
+    <a class="btn btn--ghost" href="../../pages/sign-in/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg>Sign out</a>
+    <button class="btn btn--primary" type="submit">Save settings</button>
+  </div>
+</form>
+</main>
+<nav class="tabbar" aria-label="Primary, phone">
+  <a href="../../pages/review/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+  <a href="../../pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+  <a href="../../pages/settings/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
+</nav>
+</div>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">Chrome remembers a “Block”. Shelfie cannot re-ask, so it points to the site settings instead.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Settings</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="photo.html">photo</a></li><li><a href="rewards-empty.html">rewards-empty</a></li><li><a href="streak-rewards-given.html">streak-rewards-given</a></li><li><a href="notifications-on.html">notifications-on</a></li><li><a href="notifications-events-off.html">notifications-events-off</a></li><li><a href="notifications-blocked.html" aria-current="page">notifications-blocked</a></li><li><a href="notifications-unsupported.html">notifications-unsupported</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>
