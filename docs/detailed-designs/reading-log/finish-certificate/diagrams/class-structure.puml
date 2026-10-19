@@ -1,0 +1,62 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Finish certificate
+
+class BookPage {
+  +book: Signal<BookDetail | null>
+  +certificateUrl(): string
+}
+
+class ReviewPage {
+  +overview: Signal<ReviewOverview | null>
+  +certificateUrl(bookId: string): string
+}
+
+class ManageBookPage {
+  +book: Signal<BookDetail | null>
+  +certificateUrl(): string
+}
+
+class CertificateRouter {
+  +GET /books/:id/certificate.pdf
+  -fileName(reader: string, title: string): string
+}
+
+class CertificateService {
+  +renderCertificate(db, householdId: string, bookId: string): Promise<Buffer>
+  -drawBand(doc, color: CoverColor)
+  -drawSeal(doc)
+  -longDate(finishedAt: string, timeZone: string): string
+}
+
+class BookResponse {
+  +title: string
+  +author: string | null
+  +chapterCount: number
+  +coverColor: string
+  +coverImage: string | null
+  +finishedAt: string | null
+  +readerName: string
+}
+
+class BookCover {
+  +image: Buffer
+  +etag: string
+}
+
+BookPage ..> CertificateRouter : <a download href>
+ReviewPage ..> CertificateRouter : <a download href>
+ManageBookPage ..> CertificateRouter : <a download href>
+CertificateRouter --> CertificateService : renderCertificate
+CertificateService ..> BookResponse : getBook (books.service)
+CertificateService ..> BookCover : readCover (covers.service)
+@enduml
