@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Start a challenge and read the leaderboard
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+actor "Reader" as reader
+box "Frontend — Shelfie web" #E0F2FE
+  participant "ChallengesTab" as tab
+  participant "StartChallengeDialog" as dialog
+  participant "ShelfPage" as shelf
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "challenges.router.ts" as router
+  participant "challenges.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> tab : Challenges tab, Start a challenge
+tab -> dialog : open with the household's readers
+parent -> dialog : name, what counts, goal, length, readers
+dialog -> router : POST /api/challenges (L2-137)
+router -> service : createChallenge(householdId, input)
+service -> db : close expired; INSERT challenge, challenge_reader
+alt a challenge is running
+  db --> service : unique violation on challenge_active
+  service --> router : 409 challenge-running (L2-138)
+else created
+  service --> router : Challenge, every count 0
+  router --> dialog : 201
+  dialog --> tab : started; toast "Challenge started"
+end
+
+reader -> shelf : Open her shelf after logging chapters
+shelf -> router : GET /api/challenges
+router -> service : challengesOf(householdId, now)
+service -> db : UPDATE challenge SET ended_at WHERE ends_on < today (L2-142)
+service -> db : COUNT chapter_log by reader_id\nwhere the logged day (household time zone) is in the window (L2-139)
+service --> router : standings ordered and ranked (L2-140)
+router --> shelf : { today, readers, current, past }
+shelf --> reader : Challenge card, her row tinted (L2-144)
+@enduml

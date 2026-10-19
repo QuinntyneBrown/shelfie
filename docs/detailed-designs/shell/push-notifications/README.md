@@ -85,6 +85,8 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
 | Push service answers 404 or 410 | Subscription deleted | None |
 | Push service fails otherwise | Logged without the endpoint | None |
 
+review/run-challenges adds two parent notifications, a reader taking the lead in a challenge and a challenge ending, behind two more household switches (`notify_challenge_lead`, `notify_challenge_end`, both on at first), through the same `notify` path; the Notifications card then lists six choices.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines level-1 requirement `L1-027`.

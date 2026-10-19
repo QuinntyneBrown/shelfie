@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Run challenges
+
+Person(reader, "Reader", "Logs chapters, sees the leaderboard on her shelf, celebrates when she wins")
+Person(grownUp, "Parent", "Starts, ends and removes a challenge, reads the leaderboard and insights, gives the winner a reward")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+System_Ext(pushService, "Browser push service", "Delivers the lead and end notifications to parent devices")
+
+Rel(reader, shelfie, "Logs chapters, opens her shelf", "HTTPS")
+Rel(grownUp, shelfie, "Uses Review's Challenges tab and Settings", "HTTPS")
+Rel(shelfie, pushService, "Sends notifications", "Web Push")
+@enduml
