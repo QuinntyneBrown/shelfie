@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Send feedback
+
+Container(web, "Shelfie web", "Angular", "SendFeedbackDialog")
+Container(cli, "shelfie-admin", ".NET 10", "QueryCommands.Feedback")
+Container_Boundary(api, "Shelfie API") {
+  Component(csrf, "csrf.ts", "Middleware", "csrfGuard")
+  Component(router, "feedback.router.ts", "Express Router", "POST /; requireSession, feedbackLimiter, feedbackSchema")
+  Component(limit, "rate-limit.ts", "Middleware", "feedbackLimiter: 10 per profile in 10 minutes")
+  Component(admin, "admin.router.ts", "Express Router", "GET /feedback behind guard('read'), audited")
+  Component(service, "feedback.service.ts", "Service", "sendFeedback, listFeedback")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "feedback, profile")
+}
+Rel(web, csrf, "POST /api/feedback", "JSON/HTTPS")
+Rel(csrf, router, "Passes")
+Rel(router, limit, "Uses")
+Rel(router, service, "sendFeedback")
+Rel(cli, admin, "GET /api/admin/v1/feedback", "JSON/HTTPS")
+Rel(admin, service, "listFeedback")
+Rel(service, db, "Reads and writes", "SQL")
+@enduml

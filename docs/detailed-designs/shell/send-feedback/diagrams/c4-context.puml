@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Send feedback
+
+Person(reader, "Reader", "Scores how Shelfie feels and shares ideas")
+Person(grownUp, "Parent", "Scores how Shelfie is to use and shares ideas")
+Person(operator, "Operator", "Reads every household's feedback")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Sends feedback from the account menu", "HTTPS")
+Rel(grownUp, shelfie, "Sends feedback from the account menu", "HTTPS")
+Rel(operator, shelfie, "shelfie-admin feedback list", "HTTPS")
+@enduml
