@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Read together
+
+Person(helper, "Older reader", "Reads to her sister or helps her read, logs it, watches her helper minutes grow")
+Person(partner, "Younger reader", "Logs the same session from her side or says it is right")
+Person(grownUp, "Parent", "Sets the helper reward, sees sessions on Review, gives the reward")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(helper, shelfie, "Logs sessions, reads the Together card", "HTTPS")
+Rel(partner, shelfie, "Logs sessions, confirms them", "HTTPS")
+Rel(grownUp, shelfie, "Sets the reward in Settings, removes sessions and gives the reward on Review", "HTTPS")
+@enduml

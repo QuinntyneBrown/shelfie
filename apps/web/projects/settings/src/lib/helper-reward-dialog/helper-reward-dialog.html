@@ -1,0 +1,43 @@
+<sh-dialog [heading]="heading()" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="helper-reward-form" class="stack" (submit)="$event.preventDefault(); save()" novalidate>
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        [title]="(name().trim() || 'The reward') + ' wasn’t saved'"
+        message="Nothing changed."
+      >
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <sh-text-field
+      label="The reward"
+      help="Earned by reading to a sister or helping her read. Up to 100 characters."
+      [maxlength]="100"
+      [autofocus]="true"
+      [error]="nameError()"
+      [(value)]="name"
+    />
+    <sh-text-field
+      label="Minutes to earn it"
+      type="number"
+      inputmode="numeric"
+      help="A whole number from 30 to 600."
+      [error]="minutesError()"
+      [(value)]="minutes"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="helper-reward-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      {{ editing() ? 'Save changes' : 'Set reward' }}
+    </button>
+  </div>
+</sh-dialog>

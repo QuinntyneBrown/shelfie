@@ -3,6 +3,7 @@ import { UNDO_SECONDS } from './chapters.service.ts';
 import { all, get, run, type Db } from './db.ts';
 import type { Log } from './logging.ts';
 import type { Push, PushPayload, PushTarget, Schedule } from './push.ts';
+import { sessionsById } from './together.service.ts';
 
 export interface Subscription {
   endpoint: string;
@@ -72,13 +73,17 @@ async function notify(db: Db, push: Push | null, log: Log, householdId: string, 
   }
 }
 
-/** The four moments that send a notification, called by the routes after their own work has succeeded. */
+/** The moments that send a notification, called by the routes after their own work has succeeded. */
 export interface Notifier {
   /** A reader logged a chapter: after the undo window, tells the parents if it is still there and not yet reviewed. */
   chapterLogged(householdId: string, readerName: string, chapterLogId: string): void;
   feedback(householdId: string, parentName: string, chapterLogId: string, sticker: string): Promise<void>;
   bookReward(householdId: string, parentName: string, bookId: string): Promise<void>;
   streakReward(householdId: string, parentName: string, milestone: number): Promise<void>;
+  /** A reader logged a reading-together session: tells the parents at once, under the chapter choice (L2-144). */
+  readTogether(householdId: string, sessionId: string): Promise<void>;
+  /** The parent gave the helper reward: tells the readers, under the streak-reward choice (L2-144). */
+  helperReward(householdId: string, parentName: string, helperName: string): Promise<void>;
 }
 
 export function createNotifier(db: Db, push: Push | null, log: Log, schedule: Schedule): Notifier {
@@ -129,6 +134,25 @@ export function createNotifier(db: Db, push: Push | null, log: Log, schedule: Sc
         body: 'Come and see what it is.',
         url: '/shelf',
         tag: `streak-${milestone}`,
+      });
+    },
+    async readTogether(householdId, sessionId) {
+      const [session] = await sessionsById(db, sessionId);
+      if (!session) return;
+      const what = session.action === 'helped' ? `helped ${session.other.name} read` : `read to ${session.other.name}`;
+      await notify(db, push, log, householdId, 'parent', 'chapterLogged', {
+        title: `${session.helper.name} ${what} for ${session.minutes} minutes`,
+        body: 'See it on Review.',
+        url: '/review',
+        tag: `together-${sessionId}`,
+      });
+    },
+    async helperReward(householdId, parentName, helperName) {
+      await notify(db, push, log, householdId, 'reader', 'streakReward', {
+        title: `🤝 ${parentName} gave ${helperName} her helper reward`,
+        body: 'Come and see what it is.',
+        url: '/shelf',
+        tag: 'helper-reward',
       });
     },
   };

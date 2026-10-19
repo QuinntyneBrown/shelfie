@@ -32,6 +32,11 @@ On success the page shows an `sh-banner` (`success`) headed `Saved` and keeps th
 
 - **Profile photo** — every row of the Parents list draws `sh-avatar` from `ParentView.photo`, and Your account starts with a "Your photo" row (`sh-avatar` lg and "Add a photo" / "Change photo") that opens `ProfilePhotoDialog`. The photo is saved by that dialog, not by Save settings. See `settings/upload-profile-photo` (`L2-042`, `L2-043`).
 
+
+### Read together
+
+- **Helper reward (reading-log/read-together).** With two or more readers Settings shows a Helper reward section after Streak rewards and opens `HelperRewardDialog`; it loads `GET /api/helper-reward` with the rest (`L2-141`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

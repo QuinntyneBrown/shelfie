@@ -171,4 +171,29 @@ export class ReviewPage {
   async repairGiving() {
     await this.page.unroute('**/api/streak-rewards/*/give');
   }
+
+  /** The card for a helper reward a reader has reached and Dad has not given yet. */
+  helperRewardCard() {
+    return this.page.getByRole('region', { name: /reached \d+ helper minutes/ });
+  }
+
+  async giveHelperReward() {
+    await this.helperRewardCard().getByRole('button', { name: 'Give it' }).click();
+  }
+
+  activityLine(text: string) {
+    return this.activity().filter({ hasText: text });
+  }
+
+  async removeSession(text: string) {
+    await this.activityLine(text).getByRole('button', { name: `Remove: ${text}` }).click();
+  }
+
+  async breakRemoving() {
+    await this.page.route('**/api/together/sessions/*', (route) => (route.request().method() === 'DELETE' ? route.abort() : route.continue()));
+  }
+
+  async breakGivingHelperReward() {
+    await this.page.route('**/api/helper-reward/give', (route) => route.abort());
+  }
 }

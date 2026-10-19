@@ -1,0 +1,111 @@
+<div class="container">
+  @if (saved(); as minutes) {
+    <sh-celebration>
+      <span class="sticker sticker--xl" aria-hidden="true">🤝</span>
+      <h1>{{ minutes }} minutes together!</h1>
+      <p class="text-muted">It shows on both your shelves.</p>
+      <div class="cluster done-actions">
+        <a class="btn btn--primary btn--lg" routerLink="/shelf">Back to my shelf</a>
+      </div>
+    </sh-celebration>
+  } @else if (form(); as form) {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/shelf">My shelf</a></li>
+        <li aria-current="page">Read together</li>
+      </ol>
+    </nav>
+    <div class="page-header">
+      <div>
+        <h1>Read together</h1>
+        <p class="subtitle">Reading to your sister or helping her read counts too.</p>
+      </div>
+    </div>
+    <form class="stack" (submit)="$event.preventDefault(); submit()" novalidate>
+      @if (problems().length) {
+        <sh-banner
+          severity="danger"
+          [summary]="true"
+          [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+        >
+          <ul class="summary-list">
+            @for (problem of problems(); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </sh-banner>
+      }
+      @if (failed() === 'network') {
+        <sh-banner severity="danger" title="That wasn’t saved" message="Check your connection and try again. Your answers are still here.">
+          <div class="alert__actions">
+            <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
+          </div>
+        </sh-banner>
+      } @else if (failed() === 'limit') {
+        <sh-banner severity="danger" title="That’s 10 for today. Log more tomorrow." />
+      }
+      <fieldset class="card stack">
+        <legend class="legend">Who did you read with?</legend>
+        <sh-reader-picker
+          label="Who you read with"
+          [readers]="form.partners"
+          [error]="partnerError()"
+          [value]="partner()"
+          (valueChange)="pickPartner($event)"
+        />
+      </fieldset>
+      <fieldset class="card stack">
+        <legend class="legend">What did you do?</legend>
+        <sh-segmented label="What you did" [options]="kindOptions" [(value)]="kind" />
+      </fieldset>
+      <fieldset class="card stack">
+        <legend class="legend">How long?</legend>
+        <sh-segmented label="How long" [options]="minuteOptions" [value]="minuteChoice()" (valueChange)="minuteChoice.set($event); minutesError.set(null)" />
+        @if (minuteChoice() === 'other') {
+          <input
+            class="input input--sm minutes-input"
+            type="number"
+            inputmode="numeric"
+            min="5"
+            max="180"
+            aria-label="Minutes"
+            [attr.aria-invalid]="minutesError() ? true : null"
+            [value]="otherMinutes()"
+            (input)="otherMinutes.set($any($event.target).value); minutesError.set(null)"
+          />
+        }
+        @if (minutesError(); as message) {
+          <div class="field__error">{{ message }}</div>
+        }
+      </fieldset>
+      <fieldset class="card stack">
+        <legend class="legend">When?</legend>
+        <sh-segmented label="Day you read together" [options]="dayOptions" [value]="day()" (valueChange)="day.set($event); dayError.set(null)" />
+        @if (day() === 'other') {
+          <input
+            class="input input--sm day-input"
+            type="date"
+            aria-label="Pick the day"
+            [max]="form.today"
+            [value]="otherDay() || form.today"
+            (input)="otherDay.set($any($event.target).value); dayError.set(null)"
+          />
+        }
+        @if (dayError(); as message) {
+          <div class="field__error">{{ message }}</div>
+        }
+      </fieldset>
+      <div class="form-actions">
+        <a class="btn btn--ghost" routerLink="/shelf">Not now</a>
+        <button
+          class="btn btn--primary btn--lg"
+          type="submit"
+          [disabled]="submitting()"
+          [attr.aria-busy]="submitting() ? true : null"
+        >
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6" /></svg>Done!
+        </button>
+      </div>
+    </form>
+  }
+</div>

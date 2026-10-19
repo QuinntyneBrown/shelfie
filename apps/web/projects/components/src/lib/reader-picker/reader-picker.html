@@ -1,0 +1,16 @@
+<div class="cluster" role="group" [attr.aria-label]="label()" [attr.aria-describedby]="error() ? errorId : null">
+  @for (reader of readers(); track reader.id) {
+    <button
+      class="chip chip--reader"
+      type="button"
+      [attr.aria-pressed]="value() === reader.id"
+      (click)="value.set(reader.id)"
+    >
+      <sh-avatar [name]="reader.name" [color]="reader.color" [photo]="reader.photo" size="sm" />
+      {{ reader.name }}
+    </button>
+  }
+</div>
+@if (error(); as message) {
+  <div class="field__error" [id]="errorId">{{ message }}</div>
+}

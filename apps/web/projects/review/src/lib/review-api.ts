@@ -23,13 +23,28 @@ export interface FinishedBook {
 }
 
 export interface ActivityItem {
-  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished';
+  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished' | 'read-together';
   at: string;
-  bookId: string;
-  bookTitle: string;
+  bookId: string | null;
+  bookTitle: string | null;
   chapterNumber: number | null;
   sticker: string | null;
   byRole: 'reader' | 'parent';
+  /** Set on a reading-together session only. */
+  sessionId: string | null;
+  helperName: string | null;
+  otherName: string | null;
+  action: 'read-to' | 'helped' | null;
+  minutes: number | null;
+}
+
+/** The household's helper reward; `earnedBy` is set while a reader has reached it and it is not given. */
+export interface HelperReward {
+  name: string;
+  targetMinutes: number;
+  minutes: Record<string, number>;
+  earnedBy: { id: string; name: string } | null;
+  givenOn: string | null;
 }
 
 export interface ChapterLog {
@@ -94,6 +109,7 @@ export interface ReviewOverview {
   thisWeek: { chapters: number; streak: number };
   badges: Badge[];
   streakRewards: StreakReward[];
+  helperReward: HelperReward | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -114,6 +130,14 @@ export class ReviewApi {
 
   giveStreakReward(milestone: number) {
     return this.api.post<StreakReward>(`/streak-rewards/${milestone}/give`, {});
+  }
+
+  giveHelperReward() {
+    return this.api.post<HelperReward>('/helper-reward/give', {});
+  }
+
+  removeSession(id: string) {
+    return this.api.delete(`/together/sessions/${id}`);
   }
 
   giveReward(bookId: string, body: { text: string; note: string }) {

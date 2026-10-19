@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-/** One line of recent activity: an emoji, what happened, and when. */
+/** One line of recent activity: an emoji, what happened, and when, with an optional action projected after it. */
 @Component({
   selector: 'sh-activity-item',
   templateUrl: './activity-item.html',

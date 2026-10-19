@@ -54,6 +54,8 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Badge](components/badge.html) | Data display | neutral, info, success, warning, count | — | books, manage-book, review, shelf |
 | [Chip](components/chip.html) | Data display | toggle | default, hover, focus, pressed, disabled | log-chapter, give-reward |
 | [Streak](components/streak.html) | Data display | pill, week strip | — | shelf, book, log-chapter, review |
+| [Chip](components/chip.html) | Data display | toggle, reader | default, hover, focus, pressed, disabled | log-chapter, log-together, give-reward |
+| [Streak](components/streak.html) | Data display | pill | — | shelf, book, log-chapter, review |
 | [Stat](components/stat.html) | Data display | label + value | — | review, give-reward |
 | [Book cover](components/cover.html) | Data display | 7 colours · sm/md/lg/xl; picture; skeleton | picture loading, picture failed | shelf, book, books, add-book, manage-book |
 | [Cover picker](components/cover-picker.html) | Input | no picture, with picture | focus, uploading, too large, wrong type | add-book, manage-book |
@@ -89,7 +91,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Empty and error states](patterns/empty-and-error-states.html) | First-run, load failures, error pages; copy formulas |
 | [Navigation and page structure](patterns/navigation.html) | Reader and grown-up shells, page header, breadcrumbs, back |
 | [Dialogs and overlays](patterns/dialogs-and-overlays.html) | Dialog vs menu vs page; bottom sheets |
-| [Lists and tables](patterns/lists-and-tables.html) | Chapter lists, book lists, chapters table, long lists |
+| [Lists and tables](patterns/lists-and-tables.html) | Chapter lists, book lists, chapters table, long lists, the shelf’s Together card |
 | [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
 | [Marketing page](patterns/marketing-page.html) | Two-tone hero with pastel dots, short titles, tinted step and feature cards, wavy section edges |

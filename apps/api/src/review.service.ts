@@ -5,6 +5,8 @@ import { Problem } from './problem.ts';
 import { badgesFor, type Badge } from './badges.ts';
 import { streakFor } from './streak.ts';
 import { streakRewardsOf, type StreakReward } from './streak-rewards.service.ts';
+import { helperRewardOf, type HelperReward } from './helper-reward.service.ts';
+import { recentSessions } from './together.service.ts';
 
 export interface QueueItem {
   chapterLogId: string;
@@ -28,19 +30,46 @@ export interface FinishedBook {
 }
 
 export interface ActivityItem {
-  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished';
+  kind: 'chapter-logged' | 'book-added' | 'sticker-given' | 'book-finished' | 'read-together';
   at: string;
-  bookId: string;
-  bookTitle: string;
+  bookId: string | null;
+  bookTitle: string | null;
   chapterNumber: number | null;
   sticker: string | null;
   byRole: 'reader' | 'parent';
+  /** A reading-together session's own fields; null on every other kind (L2-143). */
+  sessionId: string | null;
+  helperName: string | null;
+  otherName: string | null;
+  action: 'read-to' | 'helped' | null;
+  minutes: number | null;
 }
 
 const ACTIVITY_LIMIT = 20;
 
-function recentActivity(db: Db, householdId: string): Promise<ActivityItem[]> {
-  return all<ActivityItem>(
+/** Book and chapter events and reading-together sessions, newest first. */
+async function recentActivity(db: Db, householdId: string): Promise<ActivityItem[]> {
+  const sessions: ActivityItem[] = (await recentSessions(db, householdId, ACTIVITY_LIMIT)).map((s) => ({
+    kind: 'read-together',
+    at: s.loggedAt,
+    bookId: null,
+    bookTitle: null,
+    chapterNumber: null,
+    sticker: null,
+    byRole: 'reader',
+    sessionId: s.id,
+    helperName: s.helper.name,
+    otherName: s.other.name,
+    action: s.action,
+    minutes: s.minutes,
+  }));
+  const none = { sessionId: null, helperName: null, otherName: null, action: null, minutes: null };
+  const books = (await bookActivity(db, householdId)).map((item) => ({ ...item, ...none }));
+  return [...books, ...sessions].sort((a, b) => b.at.localeCompare(a.at) || a.kind.localeCompare(b.kind)).slice(0, ACTIVITY_LIMIT);
+}
+
+function bookActivity(db: Db, householdId: string) {
+  return all<Omit<ActivityItem, 'sessionId' | 'helperName' | 'otherName' | 'action' | 'minutes'>>(
     db,
     `SELECT * FROM (
        SELECT 'chapter-logged' AS kind, c.logged_at AS "at", b.id AS "bookId", b.title AS "bookTitle", c.chapter_number AS "chapterNumber", NULL::text AS sticker, 'reader' AS "byRole"
@@ -68,6 +97,7 @@ export interface ReviewOverview {
   thisWeek: { chapters: number; streak: number };
   badges: Badge[];
   streakRewards: StreakReward[];
+  helperReward: HelperReward | null;
 }
 
 export function pendingChapterLogs(db: Db, householdId: string): Promise<QueueItem[]> {
@@ -108,6 +138,7 @@ export async function overview(db: Db, householdId: string, now = new Date()): P
     thisWeek: { chapters, streak: await streakFor(db, householdId, now) },
     badges: await badgesFor(db, householdId),
     streakRewards: await streakRewardsOf(db, householdId, now),
+    helperReward: await helperRewardOf(db, householdId),
     today: dayOf(now),
     queue: await pendingChapterLogs(db, householdId),
     finishedUnrewarded: finished.map(({ finished_at, ...book }) => ({ ...book, finishedOn: dayOf(new Date(finished_at)) })),

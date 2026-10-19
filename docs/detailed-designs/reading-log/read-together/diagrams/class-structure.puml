@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Read together
+
+class Session {
+  +id: string
+  +helper: Reader
+  +other: Reader
+  +action: 'read-to'|'helped'
+  +minutes: number
+  +readOn: string
+  +loggedById: string
+  +confirmed: boolean
+}
+class Reader {
+  +id: string
+  +name: string
+  +color: string
+  +photo: string|null
+}
+class HelperReward {
+  +name: string
+  +targetMinutes: number
+  +minutes: Record<profileId, number>
+  +earnedBy: Reader|null
+  +givenOn: string|null
+}
+class TogetherService {
+  +partnersOf(db, householdId, profileId): Reader[]
+  +logSession(db, householdId, profileId, input): Session
+  +sessionsOf(db, householdId, profileId, limit): Session[]
+  +confirmSession(db, householdId, profileId, id): void
+  +removeSession(db, householdId, id): void
+}
+class HelperRewardService {
+  +helperRewardOf(db, householdId): HelperReward|null
+  +setHelperReward(db, householdId, name, targetMinutes): HelperReward
+  +giveHelperReward(db, householdId): Reader
+}
+class LogTogetherPage <<log-chapter>>
+class ShelfPage <<shelf>>
+class HelperRewardDialog <<settings>>
+class ReviewPage <<review>>
+class ReaderPicker <<components: sh-reader-picker>>
+
+Session --> Reader
+HelperReward --> Reader
+TogetherService ..> Session
+HelperRewardService ..> HelperReward
+TogetherService ..> HelperRewardService
+LogTogetherPage ..> ReaderPicker
+LogTogetherPage ..> TogetherService : POST /api/together/sessions
+ShelfPage ..> TogetherService : GET /api/together, confirm
+HelperRewardDialog ..> HelperRewardService : PUT /api/helper-reward
+ReviewPage ..> HelperRewardService : POST /api/helper-reward/give
+ReviewPage ..> TogetherService : DELETE session
+@enduml

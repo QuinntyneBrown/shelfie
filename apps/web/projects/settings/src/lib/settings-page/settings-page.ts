@@ -9,6 +9,8 @@ import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
 import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
 import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog';
 import { InvitesApi } from '../invites-api';
+import { HelperRewardDialog } from '../helper-reward-dialog/helper-reward-dialog';
+import { HelperReward, HelperRewardApi } from '../helper-reward-api';
 import { StreakRewardDialog } from '../streak-reward-dialog/streak-reward-dialog';
 import { StreakReward, StreakRewardsApi } from '../streak-rewards-api';
 import { NotificationsSection } from '../notifications-section/notifications-section';
@@ -25,6 +27,7 @@ import { InviteView, NotificationChoices, ParentView, ReaderView, SettingsApi, S
     EditReaderDialog,
     GalleryRewardDialog,
     ErrorState,
+    HelperRewardDialog,
     InviteParentDialog,
     NotificationsSection,
     ProfilePhotoDialog,
@@ -45,6 +48,7 @@ export class SettingsPage {
   private readonly invites = inject(InvitesApi);
   private readonly galleryApi = inject(GalleryRewardsApi);
   private readonly streakApi = inject(StreakRewardsApi);
+  private readonly helperApi = inject(HelperRewardApi);
 
   protected readonly view = signal<SettingsView | null>(null);
   /** The reward gallery, loaded with the settings. */
@@ -54,6 +58,9 @@ export class SettingsPage {
   protected readonly streakDialogOpen = signal(false);
   protected readonly streakMilestone = signal(7);
   protected readonly editingStreak = signal<StreakReward | null>(null);
+  /** The helper reward, loaded with the settings; only shown with two or more readers (L2-141, L2-145). */
+  protected readonly helperReward = signal<HelperReward | null>(null);
+  protected readonly helperDialogOpen = signal(false);
   protected readonly rewardDialogOpen = signal(false);
   protected readonly editingReward = signal<GalleryReward | null>(null);
   protected readonly removingReward = signal<GalleryReward | null>(null);
@@ -102,11 +109,13 @@ export class SettingsPage {
     this.loadFailed.set(false);
     this.view.set(null);
     try {
-      const [view, rewards, streakRewards] = await Promise.all([
+      const [view, rewards, streakRewards, helperReward] = await Promise.all([
         this.api.get(),
         this.galleryApi.list(),
         this.streakApi.list(),
+        this.helperApi.get(),
       ]);
+      this.helperReward.set(helperReward);
       this.rewards.set(rewards);
       this.streakRewards.set(streakRewards);
       this.theme.set(view.theme);
@@ -186,6 +195,12 @@ export class SettingsPage {
     this.toasts.show({
       title: edited ? `${reward.name} saved` : `${reward.name} set for ${reward.milestone} days`,
     });
+  }
+
+  protected helperRewardSaved(reward: HelperReward) {
+    this.helperDialogOpen.set(false);
+    this.toasts.show({ title: this.helperReward() ? `${reward.name} saved` : `${reward.name} set` });
+    this.helperReward.set(reward);
   }
 
   protected async removeStreakReward(reward: StreakReward) {

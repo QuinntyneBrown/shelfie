@@ -38,7 +38,12 @@
         <sh-week-strip [days]="loaded.week" />
       }
     </div>
-    <a class="btn" routerLink="/add-book">Add a book</a>
+    <div class="cluster">
+      @if (readsTogether()) {
+        <a class="btn" routerLink="/together/log"><span aria-hidden="true">🤝</span>Read together</a>
+      }
+      <a class="btn" routerLink="/add-book">Add a book</a>
+    </div>
   </div>
   @if (failed()) {
     <sh-empty-state
@@ -134,6 +139,58 @@
               >
             </sh-book-card>
           }
+        </div>
+      </section>
+    }
+    @if (readsTogether()) {
+      <section class="section" aria-labelledby="together-title">
+        <h2 id="together-title" class="group-title">Together</h2>
+        <div class="card card--flush together">
+          @if (helper(); as helper) {
+            @if (helper.reached) {
+              <sh-celebration variant="book" class="together__celebration">
+                <span class="sticker sticker--xl" aria-hidden="true">🤝</span>
+                <h3 class="goal-celebration__title">You did it! 🎉</h3>
+                <p class="text-muted">
+                  You helped for {{ helper.minutes }} minutes. {{ data.grownUpName }} is giving your reward:
+                  {{ helper.reward.name }}.
+                </p>
+                <sh-progress [value]="helper.reward.targetMinutes" [max]="helper.reward.targetMinutes" [label]="helper.label" />
+              </sh-celebration>
+            } @else {
+              <div class="stack together__helper">
+                <div class="cluster cluster--between">
+                  <span class="list__title">Helper reward: {{ helper.reward.name }}</span>
+                  <span class="badge badge--info">{{ helper.toGo }} minutes to go</span>
+                </div>
+                <sh-progress [value]="helper.minutes" [max]="helper.reward.targetMinutes" [label]="helper.label" />
+              </div>
+            }
+          }
+          @if (!togetherRows().length) {
+            <p class="text-muted together__empty">Nothing yet. Read with your sister and log it here.</p>
+          }
+          <ul class="list">
+            @for (row of togetherRows(); track row.session.id) {
+              <li class="list__item">
+                <sh-avatar [name]="row.partner.name" [color]="row.partner.color" [photo]="row.partner.photo" size="sm" />
+                <div class="list__body">
+                  <div class="list__title">{{ row.text }}</div>
+                  <div class="list__meta">{{ row.note }}</div>
+                </div>
+                @if (row.confirmable) {
+                  <button
+                    class="btn btn--sm"
+                    type="button"
+                    [attr.aria-label]="'That’s right: ' + row.text"
+                    (click)="confirm(row.session)"
+                  >
+                    That’s right
+                  </button>
+                }
+              </li>
+            }
+          </ul>
         </div>
       </section>
     }

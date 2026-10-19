@@ -140,7 +140,12 @@
         "goal-reached",
         "goal-error",
         "push-offer",
-        "push-on"
+        "push-on",
+        "together-default",
+        "together-progress",
+        "together-reached",
+        "together-confirm",
+        "together-none"
       ],
       "not_applicable": {},
       "requirements": [
@@ -155,7 +160,11 @@
         "L2-102",
         "L2-108",
         "L2-121",
-        "L2-123"
+        "L2-123",
+        "L2-137",
+        "L2-139",
+        "L2-140",
+        "L2-145"
       ]
     },
     {
@@ -264,6 +273,29 @@
       }
     },
     {
+      "id": "log-together",
+      "kind": "page",
+      "title": "Read together",
+      "route": "/together/log",
+      "requirements": [
+        "L2-137",
+        "L2-138",
+        "L2-145"
+      ],
+      "states": [
+        "default",
+        "one-partner",
+        "invalid",
+        "submitting",
+        "success",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The page needs only the other readers, which come with the shelf already open; it renders at once.",
+        "empty": "The page is reached only from the Read together button, which shows only when there is another reader."
+      }
+    },
+    {
       "id": "chapter",
       "kind": "page",
       "title": "Chapter answers",
@@ -290,7 +322,9 @@
         "error",
         "long",
         "goal-reached",
-        "streak-reached"
+        "streak-reached",
+        "together-activity",
+        "helper-reached"
       ],
       "not_applicable": {},
       "requirements": [
@@ -298,7 +332,9 @@
         "L2-089",
         "L2-098",
         "L2-103",
-        "L2-118"
+        "L2-118",
+        "L2-142",
+        "L2-143"
       ]
     },
     {
@@ -396,7 +432,9 @@
         "notifications-on",
         "notifications-events-off",
         "notifications-blocked",
-        "notifications-unsupported"
+        "notifications-unsupported",
+        "helper-reward",
+        "helper-reward-set"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -415,7 +453,9 @@
         "L2-108",
         "L2-121",
         "L2-122",
-        "L2-124"
+        "L2-124",
+        "L2-141",
+        "L2-145"
       ]
     },
     {
@@ -529,6 +569,23 @@
       "opens_from": "settings",
       "requirements": [
         "L2-100"
+      ],
+      "states": [
+        "default",
+        "edit",
+        "invalid",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "helper-reward",
+      "kind": "dialog",
+      "title": "Helper reward",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-141"
       ],
       "states": [
         "default",

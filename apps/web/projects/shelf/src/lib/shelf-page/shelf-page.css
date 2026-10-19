@@ -49,3 +49,14 @@
 .keep-reading {
   margin-bottom: var(--space-8);
 }
+
+.together__empty {
+  padding: var(--space-4);
+}
+.together__helper {
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+.together__celebration sh-progress {
+  align-self: stretch;
+}

@@ -1,0 +1,17 @@
+.legend {
+  font: var(--text-h4);
+  margin-bottom: var(--space-1);
+}
+.done-actions {
+  justify-content: center;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.minutes-input {
+  width: 6rem;
+}
+.day-input {
+  width: auto;
+}

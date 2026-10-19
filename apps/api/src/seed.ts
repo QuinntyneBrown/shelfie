@@ -19,6 +19,19 @@ const DAD_PASSWORD = hashSecret(SEED.parentPassword);
 const ZED_PASSWORD = hashSecret('zed-reads-4');
 const ZEDS_DAD_PASSWORD = hashSecret('another-pass-99');
 
+/** Nia's little sister, for tests of reading together; `addZoe` puts her in the seeded household. */
+export const ZOE = { id: 'p-zoe', username: 'zoe', password: 'zoe-reads-6' };
+const ZOE_PASSWORD = hashSecret(ZOE.password);
+
+export async function addZoe(pool: Pool) {
+  await pool.query("INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, 'reader', 'Zoe', 'sun', $3, NULL, $4)", [
+    ZOE.id,
+    SEED.householdId,
+    ZOE.username,
+    ZOE_PASSWORD,
+  ]);
+}
+
 /** Replaces everything in the database with Nia and Dad's household, their books unless `books` is false, and a second family. */
 export function seed(pool: Pool, { books = true } = {}) {
   return transaction(pool, async (db) => {

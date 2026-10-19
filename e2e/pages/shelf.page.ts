@@ -315,4 +315,47 @@ export class ShelfPage {
   streakCelebration() {
     return this.streakRewards().getByRole('heading', { name: /You did it!/ });
   }
+
+  /** The Read together button beside Add a book; only in a household with another reader. */
+  readTogetherButton() {
+    return this.page.getByRole('link', { name: 'Read together' });
+  }
+
+  async readTogether() {
+    await this.readTogetherButton().click();
+  }
+
+  /** The "Together" section with her reading-together sessions and helper reward. */
+  together() {
+    return this.page.getByRole('region', { name: 'Together', exact: true });
+  }
+
+  togetherSession(text: string) {
+    return this.together().getByRole('listitem').filter({ hasText: text });
+  }
+
+  togetherSessions() {
+    return this.together().getByRole('listitem');
+  }
+
+  /** Says a session the other reader logged is right. */
+  async confirmSession(text: string) {
+    await this.togetherSession(text).getByRole('button', { name: /^That’s right/ }).click();
+  }
+
+  confirmButton(text: string) {
+    return this.togetherSession(text).getByRole('button', { name: /^That’s right/ });
+  }
+
+  async breakConfirming() {
+    await this.page.route('**/api/together/sessions/*/confirm', (route) => route.abort());
+  }
+
+  helperProgress() {
+    return this.together().getByRole('progressbar');
+  }
+
+  helperCelebration() {
+    return this.together().getByRole('heading', { name: /You did it!/ });
+  }
 }

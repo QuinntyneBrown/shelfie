@@ -31,6 +31,11 @@ The slice runs from `ShelfPage` to the `book`, `chapter_log` and `reward` tables
 
 Ordering: reading books by `lastLoggedAt` descending, up-next books by `createdAt` descending, finished books by `finishedAt` descending with no pagination (the mock notes none is needed below 50 books). A book is finished when `book.finished_at` is set; reading-log/log-chapter sets it when the last chapter is logged. The summary line's "reward waiting" count is the number of finished books without a reward. The feedback banner (review/review-chapter) reads `unseenFeedback` from the same response. Caching of the response for offline reading is owned by shell/work-offline.
 
+
+### Read together
+
+- **Read together (reading-log/read-together).** In a household with two or more readers the shelf also loads `GET /api/together` and shows a "Read together" link beside "Add a book" and a Together section; with one reader it renders nothing new (`L2-140`, `L2-145`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.
