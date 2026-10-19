@@ -118,6 +118,8 @@ export interface Badge {
 export interface StreakReward {
   milestone: number;
   name: string | null;
+  /** Whole dollars, or null for a reward that isn't money. */
+  amount: number | null;
   earnedOn: string | null;
   givenOn: string | null;
 }

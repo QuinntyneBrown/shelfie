@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  width: 4.5rem;
+}
+
+svg {
+  width: 100%;
+  height: auto;
+}

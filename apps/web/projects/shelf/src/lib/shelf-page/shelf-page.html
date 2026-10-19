@@ -186,27 +186,31 @@
         <h2 id="streak-rewards" class="group-title">Streak rewards</h2>
         @if (earnedStreakReward(); as earned) {
           <sh-celebration variant="book" class="goal-celebration">
-            <span class="sticker sticker--xl" aria-hidden="true">🎁</span>
+            <sh-streak-reward-badge class="goal-celebration__badge" [milestone]="earned.milestone" [amount]="earned.amount" />
             <h3 class="goal-celebration__title">You did it! 🎉</h3>
             <p class="text-muted">
               You read {{ earned.milestone }} days in a row. {{ data.grownUpName }} is getting your
-              {{ earned.name }} ready.
+              {{ earned.amount ? '$' + earned.amount : earned.name }} ready.
             </p>
           </sh-celebration>
         }
         <ul class="list goal-list">
           @for (card of streakCards(); track card.reward.milestone) {
             <li>
-              <sh-reward-card
+              <sh-streak-reward-card
                 [title]="card.reward.name!"
                 [note]="
                   card.reward.givenOn
                     ? 'Given ' + (card.reward.givenOn | date: 'EEE d MMM' : 'UTC')
-                    : 'Read ' + card.reward.milestone + ' days in a row'
+                    : 'Read ' +
+                      card.reward.milestone +
+                      ' days in a row' +
+                      (card.reward.amount ? ' to earn $' + card.reward.amount : '')
                 "
-                [target]="card.reward.milestone"
+                [milestone]="card.reward.milestone"
+                [amount]="card.reward.amount"
                 [progress]="card.progress"
-                unit="days"
+                [given]="!!card.reward.givenOn"
               />
             </li>
           }

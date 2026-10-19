@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 113 days
-- Complete: 96%
+- Complete: 98%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -9,7 +9,7 @@
 | [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 12 days | 86% |
 | [shell](shell.md) | 5 days | 96% |
-| [review](review.md) | 22 days | 90% |
+| [review](review.md) | 22 days | 99% |
 | [admin-api](admin-api.md) | 6 days | 100% |
 | [admin-cli](admin-cli.md) | 7 days | 100% |
 | [books](books.md) | 21 days | 100% |
@@ -17,7 +17,6 @@
 
 ## Roadmap
 
-1. review: streak reward amounts and badges (L2-112, L2-113)
 1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
 2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
 3. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, notifications, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures

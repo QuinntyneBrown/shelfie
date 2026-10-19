@@ -627,7 +627,7 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .streak-badge__amount { fill: var(--palette-amber-900); font-weight: 900; text-anchor: middle; font-family: var(--font-family-display); }
 .streak-badge__gift { text-anchor: middle; }
 .streak-badge--locked { filter: grayscale(1); opacity: 0.55; }
-.day-path { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; align-items: center; gap: var(--space-1); }
+.day-path { margin: var(--space-3) 0 0; display: flex; align-items: center; gap: var(--space-1); }
 .day-path__day { flex: 1 1 0; max-width: 2.25rem; aspect-ratio: 1; display: grid; place-items: center; border-radius: var(--radius-full); background: var(--color-bg-subtle); color: var(--color-fg-muted); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
 .day-path__day--done { background: var(--color-accent); color: var(--palette-white); }
 .day-path__day--next { background: var(--color-bg-surface); color: var(--color-accent); outline: 2px dashed var(--color-accent); outline-offset: -2px; }
