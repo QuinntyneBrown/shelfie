@@ -3,7 +3,99 @@
   @switch (current()) {
     @case ('child') {
       <div class="card stack wizard">
+        <img class="wizard__art" src="/onboarding/child.svg" alt="" width="240" height="180" />
         <h1>What’s your child’s name?</h1>
+        <p class="text-muted">
+          Shelfie calls her by it on her shelf. Her avatar colour is picked for you; change both any
+          time in Settings.
+        </p>
+        <form class="stack" (submit)="$event.preventDefault(); nextFromName()" novalidate>
+          <sh-text-field
+            #nameField
+            label="Child’s name"
+            autocomplete="off"
+            [maxlength]="40"
+            [autofocus]="true"
+            [error]="nameError()"
+            [(value)]="childName"
+          />
+          <div class="wizard__actions">
+            <sh-button [large]="true" [block]="true">Next</sh-button>
+            <a class="btn btn--ghost" routerLink="/onboarding">Back</a>
+          </div>
+        </form>
+      </div>
+    }
+    @case ('sign-in') {
+      <div class="card stack wizard">
+        <img class="wizard__art" src="/onboarding/sign-in.svg" alt="" width="240" height="180" />
+        <h1>How will {{ readerName() }} sign in?</h1>
+        <p class="text-muted">
+          She types these on the sign-in page. You can change them later in Settings.
+        </p>
+        <form class="stack" (submit)="$event.preventDefault(); addReader()" novalidate>
+          @if (problems().length) {
+            <sh-banner
+              #summary
+              severity="danger"
+              [summary]="true"
+              [title]="
+                'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
+              "
+            >
+              <ul class="summary-list">
+                @for (problem of problems(); track problem) {
+                  <li>{{ problem }}</li>
+                }
+              </ul>
+            </sh-banner>
+          }
+          @if (failed()) {
+            <sh-banner
+              severity="danger"
+              [title]="readerName() + ' wasn’t added'"
+              message="Nothing changed. Check your connection."
+            >
+              <div class="alert__actions">
+                <button class="btn btn--sm" type="button" (click)="addReader()">Try again</button>
+              </div>
+            </sh-banner>
+          }
+          <sh-text-field
+            label="Username"
+            autocomplete="off"
+            help="3–20 letters, numbers, . or _"
+            [maxlength]="20"
+            [autofocus]="true"
+            [readonly]="busy()"
+            [error]="usernameError()"
+            [(value)]="username"
+          />
+          <sh-text-field
+            label="Password"
+            type="password"
+            autocomplete="new-password"
+            help="At least 8 characters"
+            [readonly]="busy()"
+            [error]="passwordError()"
+            [(value)]="password"
+          />
+          <div class="wizard__actions">
+            <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
+            <a
+              class="btn btn--ghost"
+              routerLink="/onboarding/child"
+              [attr.aria-disabled]="busy() || null"
+              >Back</a
+            >
+          </div>
+        </form>
+      </div>
+    }
+    @case ('reward') {
+      <div class="card stack wizard">
+        <img class="wizard__art" src="/onboarding/reward.svg" alt="" width="240" height="180" />
+        <h1>What will {{ readerName() }} read toward?</h1>
       </div>
     }
     @default {

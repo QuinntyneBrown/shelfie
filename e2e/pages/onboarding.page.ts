@@ -2,7 +2,17 @@ import type { Page } from '@playwright/test';
 
 /** The one-time set-up wizard a parent sees after signing up: five full-screen steps under the auth layout. */
 export class OnboardingPage {
-  constructor(private readonly page: Page) {}
+  private readerRequests = 0;
+
+  constructor(private readonly page: Page) {
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/readers') && request.method() === 'POST') this.readerRequests++;
+    });
+  }
+
+  readerRequestCount() {
+    return this.readerRequests;
+  }
 
   async open(step?: 'child' | 'sign-in' | 'reward' | 'done') {
     await this.page.goto(step ? `/onboarding/${step}` : '/onboarding');
@@ -27,6 +37,59 @@ export class OnboardingPage {
 
   skipLink() {
     return this.page.getByRole('link', { name: 'Skip for now' });
+  }
+
+  nameField() {
+    return this.page.getByLabel('Child’s name');
+  }
+
+  usernameField() {
+    return this.page.getByLabel('Username');
+  }
+
+  passwordField() {
+    return this.page.getByRole('textbox', { name: 'Password', exact: true });
+  }
+
+  async next() {
+    await this.page.getByRole('button', { name: 'Next' }).click();
+  }
+
+  /** Presses Next while it is busy, as an impatient second tap would. */
+  async pressNextAgain() {
+    await this.page.getByRole('button', { name: 'Next' }).click({ force: true });
+  }
+
+  async back() {
+    await this.page.getByRole('link', { name: 'Back' }).click();
+  }
+
+  problemSummary() {
+    return this.page.getByRole('alert').filter({ hasText: /Fix \d+ things?/ });
+  }
+
+  failure() {
+    return this.page.getByRole('alert').filter({ hasText: /wasn’t added/ });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  async breakReaders() {
+    await this.page.route('**/api/readers', (route) => route.abort());
+  }
+
+  async repairReaders() {
+    await this.page.unroute('**/api/readers');
+  }
+
+  /** Makes the next reader request take a moment, so a second press can be observed. */
+  async slowReaders(ms: number) {
+    await this.page.route('**/api/readers', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, ms));
+      await route.continue();
+    });
   }
 
   /** The shell's primary navigation, which the wizard never shows. */
