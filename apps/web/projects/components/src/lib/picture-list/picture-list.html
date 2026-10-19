@@ -1,5 +1,7 @@
 <div class="field picture-list" role="group" [attr.aria-labelledby]="labelId">
-  <span class="field__label" [id]="labelId">{{ label() }} <span class="optional">(optional)</span></span>
+  <span class="field__label" [id]="labelId"
+    >{{ label() }} <span class="optional">(optional)</span></span
+  >
   @if (pictures().length) {
     <ul class="picture-list__grid" aria-label="Pictures">
       @for (picture of pictures(); track $index; let i = $index) {
@@ -9,6 +11,16 @@
             @if (picture.featured) {
               <span class="badge badge--success">Featured</span>
             }
+            <button
+              class="btn btn--sm btn--icon picture-list__remove"
+              type="button"
+              [attr.aria-label]="'Remove picture ' + (i + 1)"
+              (click)="remove(i)"
+            >
+              <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+              </svg>
+            </button>
           </div>
           <div class="picture-list__actions">
             @if (picture.featured) {
@@ -20,20 +32,22 @@
     </ul>
   }
   <div class="picture-list__add">
-    <label class="btn btn--sm">
+    <label class="btn btn--sm" [attr.aria-disabled]="full() || null">
       <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
         <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
         <circle cx="12" cy="13" r="3.5" />
       </svg>
       Add a picture
       <input
+        #file
         class="visually-hidden"
         type="file"
         accept="image/jpeg,image/png,image/webp"
         [attr.aria-describedby]="helpId"
+        [disabled]="full()"
         (change)="choose($event)"
       />
     </label>
   </div>
-  <p class="field__help" role="status" [id]="helpId">{{ help() }}</p>
+  <p class="field__help" role="status" [id]="helpId">{{ shownHelp() }}</p>
 </div>

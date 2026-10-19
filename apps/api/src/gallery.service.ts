@@ -135,6 +135,9 @@ export async function pickGoal(pool: Pool, householdId: string, id: string): Pro
   return getGallery(pool, householdId);
 }
 
+/** The most pictures a reward can have (ADR-0010). */
+export const MAX_REWARD_PICTURES = 6;
+
 export interface RewardImage {
   image: Buffer;
   etag: string;
@@ -155,11 +158,12 @@ async function lockReward(db: Db, householdId: string, id: string): Promise<Rewa
   return reward;
 }
 
-/** Adds a picture after the reward's others; the first one is featured. */
+/** Adds a picture after the reward's others; the first one is featured, and a seventh is refused. */
 export async function addRewardPicture(pool: Pool, householdId: string, id: string, image: Buffer): Promise<GalleryReward> {
   return transaction(pool, async (db) => {
     const reward = await lockReward(db, householdId, id);
     const count = (await get<{ n: number }>(db, 'SELECT COUNT(*)::int AS n FROM reward_picture WHERE reward_id = $1', [id]))!.n;
+    if (count >= MAX_REWARD_PICTURES) throw new Problem(409, 'too-many-pictures');
     await run(db, 'INSERT INTO reward_picture (id, reward_id, image, etag, featured, created_at) VALUES ($1, $2, $3, $4, $5, $6)', [
       randomUUID(),
       id,
@@ -168,6 +172,23 @@ export async function addRewardPicture(pool: Pool, householdId: string, id: stri
       count === 0,
       new Date().toISOString(),
     ]);
+    return (await withPictures(db, [reward]))[0]!;
+  });
+}
+
+/** Removes a picture; when it was the featured one, the oldest picture left becomes featured. */
+export async function removeRewardPicture(pool: Pool, householdId: string, id: string, pictureId: string): Promise<GalleryReward> {
+  return transaction(pool, async (db) => {
+    const reward = await lockReward(db, householdId, id);
+    const removed = await get<{ featured: boolean }>(db, 'DELETE FROM reward_picture WHERE id = $1 AND reward_id = $2 RETURNING featured', [pictureId, id]);
+    if (!removed) throw new Problem(404, 'not-found');
+    if (removed.featured) {
+      await run(
+        db,
+        'UPDATE reward_picture SET featured = true WHERE id = (SELECT id FROM reward_picture WHERE reward_id = $1 ORDER BY created_at, id LIMIT 1)',
+        [id],
+      );
+    }
     return (await withPictures(db, [reward]))[0]!;
   });
 }

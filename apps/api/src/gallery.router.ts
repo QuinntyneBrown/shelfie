@@ -10,6 +10,7 @@ import {
   processRewardPicture,
   readRewardPicture,
   removeGalleryReward,
+  removeRewardPicture,
   updateGalleryReward,
 } from './gallery.service.ts';
 import { readImage } from './photos.router.ts';
@@ -69,6 +70,11 @@ export function galleryRouter(db: Pool) {
       const image = await processRewardPicture(req.body);
       res.status(201).json(await addRewardPicture(db, householdId, String(req.params['id']), image));
     });
+  });
+
+  router.delete('/:id/pictures/:pictureId', requireRole('parent'), async (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    await answer(res, async () => res.json(await removeRewardPicture(db, householdId, String(req.params['id']), String(req.params['pictureId']))));
   });
 
   router.get('/:id/pictures/:pictureId', async (req, res) => {

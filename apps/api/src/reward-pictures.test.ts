@@ -215,3 +215,82 @@ test('Given a reward picture is uploaded, then no log line carries the image or 
   assert.ok(text.length < 1000, 'a log line is a summary, not a body');
   assert.ok(!text.includes('Pear') && !text.includes('Secret sleepover') && !text.includes(jpeg.subarray(0, 64).toString('base64')));
 });
+
+test('Given a reward with a picture, when Dad adds more, then they follow it in order and the first stays featured', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  const first = await uploaded(cookie, reward.id, '#8ec9f0');
+
+  await uploaded(cookie, reward.id, '#fbd9a0');
+  const third = await uploaded(cookie, reward.id, '#f7c6d4');
+
+  assert.equal(third.pictures.length, 3);
+  assert.equal(third.pictures[0]!.id, first.pictures[0]!.id);
+  assert.equal(third.featuredPicture, first.featuredPicture);
+});
+
+test('Given a reward with 6 pictures, when a seventh is uploaded, then the API answers 409 and stores nothing', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  for (let i = 0; i < 6; i++) await uploaded(cookie, reward.id);
+
+  assert.deepEqual(await typeOf(await upload(cookie, reward.id, await phonePhoto())), [409, 'too-many-pictures']);
+  assert.equal((await rewardIn(cookie, reward.id))?.pictures.length, 6);
+});
+
+test('Given six uploads at the same time, then the reward holds at most 6 pictures and exactly one is featured', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  await uploaded(cookie, reward.id);
+  const jpeg = await phonePhoto();
+
+  const statuses = (await Promise.all(Array.from({ length: 6 }, () => upload(cookie, reward.id, jpeg)))).map((r) => r.status).sort();
+
+  assert.deepEqual(statuses, [201, 201, 201, 201, 201, 409]);
+  assert.equal((await rewardIn(cookie, reward.id))?.pictures.length, 6);
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM reward_picture WHERE reward_id = $1 AND featured', [reward.id]))!.n, 1);
+});
+
+test('Given a reward with pictures, when Dad removes one that is not featured, then it goes, is no longer served and the featured one stays', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  await uploaded(cookie, reward.id);
+  const both = await uploaded(cookie, reward.id);
+  const second = both.pictures[1]!;
+
+  const response = await change(cookie, 'DELETE', `/${reward.id}/pictures/${second.id}`);
+
+  assert.equal(response.status, 200);
+  const answered = (await response.json()) as Reward;
+  assert.deepEqual(answered.pictures, [both.pictures[0]]);
+  assert.equal(answered.featuredPicture, both.featuredPicture);
+  assert.equal((await fetch(`${url}${second.url}`, { headers: { Cookie: cookie } })).status, 404);
+});
+
+test('Given a reward with three pictures, when Dad removes the featured one, then the oldest one left is featured; removing the last leaves none', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  await uploaded(cookie, reward.id);
+  await uploaded(cookie, reward.id);
+  const { pictures } = await uploaded(cookie, reward.id);
+
+  const afterFirst = (await (await change(cookie, 'DELETE', `/${reward.id}/pictures/${pictures[0]!.id}`)).json()) as Reward;
+  assert.equal(afterFirst.featuredPicture, pictures[1]!.url);
+
+  await change(cookie, 'DELETE', `/${reward.id}/pictures/${pictures[1]!.id}`);
+  const last = (await (await change(cookie, 'DELETE', `/${reward.id}/pictures/${pictures[2]!.id}`)).json()) as Reward;
+  assert.deepEqual([last.pictures, last.featuredPicture], [[], null]);
+  assert.equal((await rewardIn(await nia(), reward.id))?.featuredPicture, null);
+});
+
+test('Given Nia, or another household, or an unknown picture, when a picture is removed, then the API answers 403 or 404 and nothing changes', async () => {
+  const cookie = await dad();
+  const reward = await uploaded(cookie, (await addReward(cookie)).id);
+  const picture = reward.pictures[0]!.id;
+
+  assert.deepEqual(await typeOf(await change(await nia(), 'DELETE', `/${reward.id}/pictures/${picture}`)), [403, 'grown-ups-only']);
+  assert.equal((await change(await zedsDad(), 'DELETE', `/${reward.id}/pictures/${picture}`)).status, 404);
+  assert.equal((await change(cookie, 'DELETE', `/${reward.id}/pictures/no-such-picture`)).status, 404);
+  assert.equal((await change(null, 'DELETE', `/${reward.id}/pictures/${picture}`)).status, 401);
+  assert.deepEqual(await rewardIn(cookie, reward.id), reward);
+});

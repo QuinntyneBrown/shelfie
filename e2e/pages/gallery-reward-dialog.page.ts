@@ -62,6 +62,15 @@ export class GalleryRewardDialog {
     return this.pictures().getByLabel('Add a picture');
   }
 
+  /** Help under the pictures: the rules, the upload in progress or why Add a picture is off. */
+  pictureHelp() {
+    return this.pictures().getByRole('status');
+  }
+
+  async removePicture(n: number) {
+    await this.pictures().getByRole('button', { name: `Remove picture ${n}` }).click();
+  }
+
   async choosePicture(file: string) {
     await this.pictureChooser().setInputFiles(file);
   }

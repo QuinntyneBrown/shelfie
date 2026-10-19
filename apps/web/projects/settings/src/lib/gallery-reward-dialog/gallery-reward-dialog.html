@@ -52,7 +52,12 @@
       [error]="targetError()"
       [(value)]="target"
     />
-    <sh-picture-list [pictures]="pictures()" [help]="pictureHelp()" (picked)="addPicture($event)" />
+    <sh-picture-list
+      [pictures]="pictures()"
+      [help]="pictureHelp()"
+      (picked)="addPicture($event)"
+      (removed)="removePicture($event)"
+    />
   </form>
   <div dialog-actions class="cluster">
     <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
