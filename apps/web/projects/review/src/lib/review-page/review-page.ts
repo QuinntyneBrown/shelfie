@@ -46,7 +46,6 @@ export class ReviewPage {
   protected readonly failed = signal(false);
   private readonly status = inject(ShellStatusService);
 
-  private readonly status = inject(ShellStatusService);
   private readonly readerChoice = inject(ReaderChoiceService);
   /** The picker's chips, one per reader with her waiting chapters; none with a single reader (L2-138). */
   protected readonly readerOptions = computed(() => {
