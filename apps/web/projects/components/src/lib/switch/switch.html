@@ -1,0 +1,4 @@
+<label class="switch">
+  <input #box type="checkbox" [attr.name]="name()" [disabled]="disabled()" (change)="toggle($event)" />
+  <span class="switch__text">{{ label() }}</span>
+</label>

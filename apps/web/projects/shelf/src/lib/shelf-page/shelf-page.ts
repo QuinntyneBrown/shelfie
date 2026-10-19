@@ -14,6 +14,7 @@ import {
   StreakRewardCard,
 } from 'components';
 import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
+import { PushOffer } from '../push-offer/push-offer';
 import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
 
 @Component({
@@ -25,6 +26,7 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
     Celebration,
     DatePipe,
     EmptyState,
+    PushOffer,
     RewardCard,
     RouterLink,
     Skeleton,

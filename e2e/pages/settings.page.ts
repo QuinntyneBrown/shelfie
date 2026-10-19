@@ -226,4 +226,34 @@ export class SettingsPage {
   async removeStreakReward(name: string) {
     await this.streakRewards().getByRole('button', { name: `Remove ${name}` }).click();
   }
+
+  notificationsCard() {
+    return this.page.getByRole('region', { name: 'Notifications' });
+  }
+
+  /** The switch for this browser, which acts at once. */
+  deviceSwitch() {
+    return this.notificationsCard().getByRole('checkbox', { name: 'Notify this device' });
+  }
+
+  /** One of the household's four choices, by its label. */
+  choice(label: string) {
+    return this.notificationsCard().getByRole('checkbox', { name: label });
+  }
+
+  blockedWarning() {
+    return this.notificationsCard().getByRole('status').filter({ hasText: 'Notifications are blocked in this browser' });
+  }
+
+  notSetUp() {
+    return this.notificationsCard().getByRole('status').filter({ hasText: 'Notifications aren’t set up' });
+  }
+
+  async turnOnThisDevice() {
+    await this.deviceSwitch().check();
+  }
+
+  async turnOffThisDevice() {
+    await this.deviceSwitch().uncheck();
+  }
 }

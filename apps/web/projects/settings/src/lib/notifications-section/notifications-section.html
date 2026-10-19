@@ -1,0 +1,50 @@
+<section class="card stack" aria-labelledby="notifications-title">
+  <h2 id="notifications-title" class="section-title">Notifications</h2>
+  @if (push.state() === 'unsupported') {
+    <sh-banner
+      severity="info"
+      title="Notifications aren’t set up"
+      message="This copy of Shelfie can’t send them yet. Everything else works as usual."
+    />
+  } @else if (push.state() !== null) {
+    @if (push.state() === 'blocked') {
+      <sh-banner
+        severity="warning"
+        title="Notifications are blocked in this browser"
+        message="Allow them for Shelfie in the site settings next to the address bar, then come back and turn them on."
+      />
+    }
+    <sh-switch
+      #device
+      label="Notify this device"
+      [checked]="push.state() === 'on'"
+      [disabled]="push.state() === 'blocked' || busy()"
+      (checkedChange)="setDevice($event)"
+    />
+    <hr class="divider" />
+    <p class="field__label" id="events-label">Pings for the whole house</p>
+    <div class="stack choices" role="group" aria-labelledby="events-label">
+      <sh-switch
+        [label]="'Tell me when ' + readerNames() + ' logs a chapter'"
+        [checked]="choices().chapterLogged"
+        (checkedChange)="setChoice('chapterLogged', $event)"
+      />
+      <sh-switch
+        [label]="'Tell ' + readerNames() + ' when I send a sticker or note'"
+        [checked]="choices().feedback"
+        (checkedChange)="setChoice('feedback', $event)"
+      />
+      <sh-switch
+        [label]="'Tell ' + readerNames() + ' when I give a book reward'"
+        [checked]="choices().bookReward"
+        (checkedChange)="setChoice('bookReward', $event)"
+      />
+      <sh-switch
+        [label]="'Tell ' + readerNames() + ' when I give a streak reward'"
+        [checked]="choices().streakReward"
+        (checkedChange)="setChoice('streakReward', $event)"
+      />
+    </div>
+    <p class="text-muted">The device switch is for this browser only. The four choices above are for the whole household.</p>
+  }
+</section>

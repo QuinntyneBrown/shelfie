@@ -216,6 +216,7 @@
           }
         </ul>
       </section>
+      <sh-notifications-section [readerNames]="readerNames()" [(choices)]="notifications" />
       <sh-streak-reward-dialog
         [open]="streakDialogOpen()"
         [milestone]="streakMilestone()"

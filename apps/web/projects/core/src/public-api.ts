@@ -11,3 +11,5 @@ export * from './lib/theme/theme.service';
 export * from './lib/shell/shell-status.service';
 export * from './lib/banner/banner.service';
 export * from './lib/offline/offline-queue.service';
+export * from './lib/push/push-api';
+export * from './lib/push/push.service';

@@ -1,4 +1,7 @@
 <div class="container">
+  @if (shelf(); as loaded) {
+    <sh-push-offer [grownUpName]="loaded.grownUpName" />
+  }
   @for (item of feedback(); track item.chapterLogId) {
     <sh-banner
       severity="info"
