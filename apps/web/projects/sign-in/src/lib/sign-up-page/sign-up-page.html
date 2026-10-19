@@ -1,4 +1,7 @@
 <sh-auth-layout>
+  @if (providerBanner(); as banner) {
+    <sh-banner [severity]="banner.severity" [title]="banner.title" [message]="banner.message" />
+  }
   <div class="card stack">
     <h1 class="centred">Start your shelf</h1>
     <p class="text-muted centred centred-item">Create a parent account.</p>

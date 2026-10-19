@@ -20,6 +20,11 @@ export function householdDay(offset = 0): string {
   return new Date(Date.now() + offset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
+/** Gives Nia an e-mail address, as a parent may when editing a reader. */
+export async function giveNiaAnEmail(email: string) {
+  await db.query("UPDATE profile SET email = $1 WHERE id = 'p-nia'", [email]);
+}
+
 /** Ages every session past its 30-day idle limit, as if nobody had touched the app for a month. */
 export async function expireSessions() {
   await db.query("UPDATE session SET expires_at = '2020-01-01T00:00:00.000Z'");

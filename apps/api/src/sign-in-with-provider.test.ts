@@ -1,11 +1,11 @@
-// Traces to: L2-137, L2-138, L2-139, L2-142
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-142
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
 import { call, seededDb } from './admin-test-api.ts';
 import { createApp } from './app.ts';
 import { readCookie } from './session.ts';
-import { get } from './db.ts';
+import { get, run } from './db.ts';
 import { configuredProviders } from './oauth.ts';
 import { startFakeProvider, type FakeProvider } from './oauth-fake.ts';
 
@@ -214,6 +214,33 @@ test('Given Dad is linked to Google, when he continues with Facebook with the sa
     assert.equal((await me.json()).username, 'dad');
     const links = await get<{ n: number }>(db, "SELECT COUNT(*) AS n FROM profile_provider WHERE profile_id = 'p-dad'");
     assert.equal(links?.n, 2);
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given a reader’s e-mail, an unverified e-mail, a missing e-mail, a cancelled consent or a provider error, then the parent goes back to the page they started from with the reason and no session or new rows', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    await run(db, "UPDATE profile SET email = 'nia@example.com' WHERE id = 'p-nia'");
+    const cases: [() => void, string, string][] = [
+      [() => provider.answer({ email: 'nia@example.com', name: 'Nia', verified: true }), 'sign-in', 'reader'],
+      [() => provider.answer({ email: 'new@example.com', name: 'New', verified: false }), 'sign-up', 'no-email'],
+      [() => provider.answer({ email: null, name: 'New', verified: false }), 'sign-in', 'no-email'],
+      [() => provider.cancel(), 'sign-up', 'cancelled'],
+      [() => provider.fail(), 'sign-in', 'failed'],
+    ];
+    const profiles = (await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile'))!.n;
+    for (const [arrange, from, reason] of cases) {
+      arrange();
+      const { callback } = await site.roundTrip('google', `from=${from}`);
+      assert.equal(callback.headers.get('location'), `/${from}?reason=${reason}&provider=google`, reason);
+      assert.equal(site.setCookie(callback, 'shelfie_session'), undefined, reason);
+    }
+    assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile'))!.n, profiles);
+    assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile_provider'))!.n, 0);
+    assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM session'))!.n, 0);
   } finally {
     await site.close();
   }

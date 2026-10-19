@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   signal,
@@ -11,6 +12,7 @@ import { Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField }
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
 import { AuthLayout } from '../auth-layout/auth-layout';
+import { providerBanner } from '../provider-banner';
 
 @Component({
   selector: 'sh-sign-in-page',
@@ -20,8 +22,10 @@ import { AuthLayout } from '../auth-layout/auth-layout';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
-  /** Query parameter: 'expired' when the session ran out. */
+  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-140). */
   readonly reason = input<string>();
+  /** Query parameter: the provider a sign-in came back from. */
+  readonly provider = input<string>();
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
@@ -41,6 +45,7 @@ export class SignInPage {
   /** The providers a parent can continue with; none until the API has answered, and none when none is configured. */
   protected readonly providers = signal<ProviderName[]>([]);
   protected readonly redirecting = signal<ProviderName | null>(null);
+  protected readonly providerBanner = computed(() => providerBanner(this.reason(), this.provider()));
 
   constructor() {
     this.api.providers().then(({ providers }) => this.providers.set(providers), () => {});

@@ -1,7 +1,8 @@
-// Traces to: L2-137, L2-138, L2-139
+// Traces to: L2-137, L2-138, L2-139, L2-140
 import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
-import { providerAnswers } from '../support/provider';
+import { providerAnswers, providerCancels, providerFails } from '../support/provider';
+import { giveNiaAnEmail } from '../support/database';
 import { SignInPage } from '../pages/sign-in.page';
 import { SignUpPage } from '../pages/sign-up.page';
 import { ReviewPage } from '../pages/review.page';
@@ -157,4 +158,54 @@ test('Given Dad has continued with Google before, when Google now reports a diff
   await expect(page).toHaveURL(/\/review$/);
   await shell.openAccountMenu('Dad');
   await expect(shell.menu()).toContainText('@dad · parent');
+});
+
+test('Given the e-mail Google vouches for belongs to Nia, a reader, when Dad continues with Google, then he is back on sign-in with a banner and nothing is created', async ({ page }) => {
+  await giveNiaAnEmail('nia@example.com');
+  providerAnswers({ email: 'nia@example.com', name: 'Nia', verified: true });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=reader&provider=google$/);
+  await expect(signIn.providerBanner()).toContainText('That e-mail belongs to a reader');
+  await expect(signIn.signInButton()).toBeVisible();
+  await signIn.signInWithPassword(DAD.username, DAD.password);
+  await expect(page).toHaveURL(/\/review$/);
+});
+
+test('Given Google has not verified the e-mail, when a parent continues with Google from sign-up, then she is back on sign-up with a banner saying Google didn’t share an e-mail', async ({ page }) => {
+  providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: false });
+  const signUp = new SignUpPage(page);
+  await signUp.open();
+
+  await signUp.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/sign-up\?reason=no-email&provider=google$/);
+  await expect(signUp.providerBanner()).toContainText('Google didn’t share an e-mail');
+  await expect(signUp.nameField()).toBeVisible();
+});
+
+test('Given the parent cancels on Google’s consent screen, then she is back where she started with a "You cancelled" notice', async ({ page }) => {
+  providerCancels();
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=cancelled&provider=google$/);
+  await expect(signIn.providerBanner()).toContainText('You cancelled');
+});
+
+test('Given Google answers with an error, then the parent is back where she started with "Something went wrong"', async ({ page }) => {
+  providerFails();
+  const signUp = new SignUpPage(page);
+  await signUp.open();
+
+  await signUp.continueWith('Facebook');
+
+  await expect(page).toHaveURL(/\/sign-up\?reason=failed&provider=facebook$/);
+  await expect(signUp.providerBanner()).toContainText('Something went wrong. Try again');
+  await expect(signUp.providerBanner()).toContainText('Facebook');
 });

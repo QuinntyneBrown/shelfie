@@ -2,6 +2,9 @@
   @if (reason() === 'expired') {
     <sh-banner severity="info" title="You were signed out" message="Sign in to carry on." />
   }
+  @if (providerBanner(); as banner) {
+    <sh-banner [severity]="banner.severity" [title]="banner.title" [message]="banner.message" />
+  }
   <div class="card stack">
     <h1 class="centred">Welcome back</h1>
     @if (missing().length) {
