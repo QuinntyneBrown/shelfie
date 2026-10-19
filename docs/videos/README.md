@@ -35,6 +35,8 @@ Also [25-meet-shelfie](25-meet-shelfie/README.md): the one-minute brand video on
 
 Needs Node 24, Chrome (Playwright), `ffmpeg-full` (libass, for captions) and a Python 3.12 venv in `.cache/venv` with `kokoro` and `soundfile` (voice: Kokoro-82M `af_heart` from Hugging Face, run offline).
 
+The brand video (25) is narrated by Azure Speech instead (`--engine azure`, voice `en-US-JennyNeural`, cheerful): the `shelfie-speech` resource in the `shelfie-prod` resource group. Before step 2, `export AZURE_SPEECH_REGION=canadacentral AZURE_SPEECH_KEY=$(az cognitiveservices account keys list -n shelfie-speech -g shelfie-prod --query key1 -o tsv)`.
+
 ```sh
 # 1. Record every clip against the real app (fresh seeded database per clip)
 cd e2e && npx playwright test -c ../tools/video-record/playwright.config.ts && cd ..

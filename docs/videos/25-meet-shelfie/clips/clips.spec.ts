@@ -54,14 +54,14 @@ test('the-shelf', async ({ page }) => {
   await page.goto('/shelf');
   const shelf = new ShelfPage(page);
   await shelf.greeting().waitFor();
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
   await shelf.book('On the go', LION).hover();
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(1500);
   await shelf.book('Up next', 'Because of Winn-Dixie').hover();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1500);
   await shelf.finishedBook('Matilda').scrollIntoViewIfNeeded();
   await shelf.finishedBook('Matilda').hover();
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(2000);
 });
 
 // Paced to "Log a chapter": one tap, Olive's first question, Next, the second, I'm done.
