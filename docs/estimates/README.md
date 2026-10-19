@@ -1,12 +1,12 @@
 # Estimates
 
-- Overall effort: 125 days
-- Complete: 98%
+- Overall effort: 138 days
+- Complete: 89%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [sign-in](sign-in.md) | 14 days | 100% |
-| [settings](settings.md) | 17 days | 100% |
+| [settings](settings.md) | 22 days | 77% |
 | [platform](platform.md) | 15 days | 89% |
 | [shell](shell.md) | 13 days | 98% |
 | [review](review.md) | 22 days | 99% |
@@ -14,12 +14,14 @@
 | [admin-cli](admin-cli.md) | 7 days | 100% |
 | [books](books.md) | 21 days | 100% |
 | [reading-log](reading-log.md) | 10 days | 100% |
+| [community](community.md) | 8 days | 0% |
 
 ## Roadmap
 
-1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
-2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+1. settings, community: per-reader records, then communities, then reading goals (ADR-0018 to ADR-0021)
+2. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
+3. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
+4. Deferred: a reward-gallery goal per reader, books shared between readers, deleting a reader; community chat, feeds, leaderboards, code regeneration, removing or transferring households, deleting a community with members and community notifications; uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
 
 ## Risks and dependencies
 
