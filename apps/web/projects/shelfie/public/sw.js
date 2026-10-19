@@ -1,5 +1,5 @@
 // The push worker: shows a notification when a message arrives and opens the page when it is tapped.
-// It caches nothing and has no offline behaviour (docs/adr/0015-push-with-a-push-only-service-worker.md).
+// It caches nothing and has no offline behaviour (docs/adr/0016-push-with-a-push-only-service-worker.md).
 
 self.addEventListener('push', (event) => {
   let message;

@@ -27,7 +27,7 @@ export interface ReaderView {
   photo: string | null;
 }
 
-/** Which events send a push notification, for the whole household (L2-123). */
+/** Which events send a push notification, for the whole household (L2-124). */
 export interface NotificationChoices {
   chapterLogged: boolean;
   feedback: boolean;

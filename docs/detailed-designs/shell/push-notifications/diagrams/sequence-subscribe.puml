@@ -32,7 +32,7 @@ end box
 person -> ui : Turn on
 ui -> svc : turnOn()
 svc -> router : GET /api/push/key
-router -> service : getKey() — L2-120
+router -> service : getKey() — L2-121
 alt push is off
   service --> router : Problem 404 push-off
   router --> svc : 404 push-off
@@ -40,13 +40,13 @@ alt push is off
 else push is on
   service --> router : public key
   router --> svc : 200 public key
-  svc -> browser : Notification.requestPermission() — L2-121 prompt only after the tap
+  svc -> browser : Notification.requestPermission() — L2-122 prompt only after the tap
   alt permission granted
     browser --> svc : granted
     svc -> browser : register /sw.js, pushManager.subscribe(public key)
     browser --> svc : subscription (endpoint, p256dh, auth)
     svc -> router : POST /api/push/subscriptions
-    router -> router : Authenticate, CSRF, validate body, rate limit — L2-127
+    router -> router : Authenticate, CSRF, validate body, rate limit — L2-128
     router -> service : saveSubscription(profileId, body)
     service -> db : Upsert by endpoint for the session's profile
     db --> service : Stored

@@ -14,7 +14,7 @@ const subscriptionSchema = z.object({
 });
 const endpointSchema = z.object({ endpoint: z.string().max(2048) });
 
-/** The public key and each person's browser subscriptions for push notifications (L2-120, L2-127). */
+/** The public key and each person's browser subscriptions for push notifications (L2-121, L2-128). */
 export function pushRouter(db: Pool, push: Push | null) {
   const router = Router();
   router.use(requireSession(db));

@@ -37,13 +37,13 @@ chapters -> db : Insert chapter_log and answers in one transaction
 db --> chapters : Logged, undoUntil
 chapters --> router : Result
 router --> page : 201 with undoUntil
-router -> router : Schedule notify after the undo window (UNDO_SECONDS) — L2-124
+router -> router : Schedule notify after the undo window (UNDO_SECONDS) — L2-125
 ... undo window passes ...
 router -> push : notifyChapterLogged(logId, readerName)
 push -> db : Chapter log still exists and is not reviewed?
 alt undone or already reviewed
   db --> push : No
-  push --> router : Nothing sent — L2-124 criteria 2 and 3
+  push --> router : Nothing sent — L2-125 criteria 2 and 3
 else waiting
   db --> push : Yes, with book title and chapter number
   push -> db : Household switch chapterLogged and parent subscriptions
@@ -54,10 +54,10 @@ else waiting
       sender -> parentdev : Web Push message
       alt 404 or 410
         sender --> push : gone
-        push -> db : Delete the subscription — L2-127
+        push -> db : Delete the subscription — L2-128
       else other failure
         sender --> push : error
-        push -> push : Log without the endpoint — L2-124 criterion 5
+        push -> push : Log without the endpoint — L2-125 criterion 5
       end
     end
   end

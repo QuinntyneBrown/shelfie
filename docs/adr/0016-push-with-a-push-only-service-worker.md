@@ -1,8 +1,8 @@
-# ADR-0015: Push uses a push-only service worker, `web-push` and in-process sending
+# ADR-0016: Push uses a push-only service worker, `web-push` and in-process sending
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-120, L2-124, L2-127
+- Requirements: L2-121, L2-125, L2-128
 
 ## Context
 

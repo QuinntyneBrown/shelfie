@@ -33,7 +33,7 @@ import type { SuggestQuestions } from './suggestions.ts';
 export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch; workCovers?: WorkCoversProvider; push?: Push | null; schedule?: Schedule } = {}) {
   const app = express();
   const log = options.log ?? stdoutLog;
-  // Push needs VAPID keys; with none set it is off, and tests pass a fake (ADR-0015).
+  // Push needs VAPID keys; with none set it is off, and tests pass a fake (ADR-0016).
   const push = options.push === undefined ? createPush() : options.push;
   const notifier = createNotifier(db, push, log, options.schedule ?? inProcess);
   app.use(requestLogging(log));

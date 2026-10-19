@@ -19,7 +19,7 @@ export interface Push {
   send(target: PushTarget, payload: PushPayload): Promise<'sent' | 'gone'>;
 }
 
-/** Sends through the browser vendors' push services, signed with the VAPID keys; with no keys set, push is off (L2-120). */
+/** Sends through the browser vendors' push services, signed with the VAPID keys; with no keys set, push is off (L2-121). */
 export function createPush(env: NodeJS.ProcessEnv = process.env): Push | null {
   const publicKey = env['VAPID_PUBLIC_KEY'];
   const privateKey = env['VAPID_PRIVATE_KEY'];
@@ -40,7 +40,7 @@ export function createPush(env: NodeJS.ProcessEnv = process.env): Push | null {
   };
 }
 
-/** Runs `work` after `delayMs`. The API keeps no queue: a pending call is lost if the process restarts (ADR-0015). Tests pass their own. */
+/** Runs `work` after `delayMs`. The API keeps no queue: a pending call is lost if the process restarts (ADR-0016). Tests pass their own. */
 export type Schedule = (work: () => Promise<void>, delayMs: number) => void;
 
 export const inProcess: Schedule = (work, delayMs) => {

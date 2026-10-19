@@ -14,7 +14,7 @@ Hours for an intermediate Angular/TypeScript and Node.js developer who has not s
 | `notify()`, the four messages and `STICKER_LABELS` | 4 |
 | Four triggers, including the undo-window timer and the unreviewed check | 4 |
 | `notifications` in `getSettings` and `PATCH /api/settings` | 2 |
-| API tests: `push.test.ts`, `push-notify.test.ts`, settings (L2-120 to L2-127) | 6 |
+| API tests: `push.test.ts`, `push-notify.test.ts`, settings (L2-121 to L2-128) | 6 |
 | `sh-switch` in the `components` library | 3 |
 | `PushService`, `PushApi` and the sign-out `forget()` in `core` | 5 |
 | `sw.js` with the `push` and `notificationclick` handlers | 2 |
@@ -26,14 +26,14 @@ Hours for an intermediate Angular/TypeScript and Node.js developer who has not s
 
 ## Minimal scope
 
-The parent's chapter notification only: the migration without the four columns, `push.ts`, the key and subscribe routes, the chapter trigger, `PushService`, `sw.js` and a Settings card with only the device switch. It satisfies `L2-120`, `L2-121`, `L2-124` and `L2-127`, and defers `L2-122`, `L2-123`, `L2-125` and `L2-126`. It costs 33 hours.
+The parent's chapter notification only: the migration without the four columns, `push.ts`, the key and subscribe routes, the chapter trigger, `PushService`, `sw.js` and a Settings card with only the device switch. It satisfies `L2-121`, `L2-122`, `L2-125` and `L2-128`, and defers `L2-123`, `L2-124`, `L2-126` and `L2-127`. It costs 33 hours.
 
 ## Partial descoping
 
 | Descope | What is lost | Hours saved |
 |---------|--------------|------------:|
-| Drop the four household switches; every event always sends | `L2-123`; no way to silence one event | 6 |
-| Drop the reader's shelf offer; readers turn on from a parent's signed-in device only | `L2-122` | 3 |
-| Drop the streak and book reward notifications | `L2-126` | 3 |
-| Drop the sign-out `forget()`; rely on 404 and 410 pruning | `L2-127` criterion 5; a parent's pings may reach a reader on a shared device | 2 |
+| Drop the four household switches; every event always sends | `L2-124`; no way to silence one event | 6 |
+| Drop the reader's shelf offer; readers turn on from a parent's signed-in device only | `L2-123` | 3 |
+| Drop the streak and book reward notifications | `L2-127` | 3 |
+| Drop the sign-out `forget()`; rely on 404 and 410 pruning | `L2-128` criterion 5; a parent's pings may reach a reader on a shared device | 2 |
 | Drop the end-to-end check of `sw.js`; prove the API side only | No browser-level proof that the notification shows | 3 |

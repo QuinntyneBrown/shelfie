@@ -38,24 +38,24 @@ review -> db : Mark reviewed once
 alt already reviewed
   db --> review : 0 rows
   review --> router : Problem 409 already-reviewed
-  router --> page : 409 — nothing sent, L2-125 criterion 3
+  router --> page : 409 — nothing sent, L2-126 criterion 3
 else saved
   db --> review : Saved
   review --> router : Result
   router --> page : 200
-  router -> push : notify(household, reader, feedback, payload) — L2-125
+  router -> push : notify(household, reader, feedback, payload) — L2-126
   push -> db : Household switch feedback and reader subscriptions
   db --> push : Switch and targets
   opt switch on and at least one target
     loop each reader subscription
       push -> sender : send(target, "Dad read Chapter 9 and gave you a Star", tag feedback-id)
       sender -> readerdev : Web Push message
-      sender --> push : sent, gone or error — L2-127
+      sender --> push : sent, gone or error — L2-128
     end
   end
 end
 note over router, push
-A book reward (L2-126) and a streak reward (L2-126) follow the same
+A book reward (L2-127) and a streak reward (L2-127) follow the same
 path from their routes, with their own switch, title and tag.
 end note
 @enduml

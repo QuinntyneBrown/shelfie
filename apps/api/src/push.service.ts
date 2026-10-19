@@ -9,7 +9,7 @@ export interface Subscription {
   keys: { p256dh: string; auth: string };
 }
 
-/** Stores a browser's subscription against the signed-in profile; the same browser signing in again takes it over (L2-127). */
+/** Stores a browser's subscription against the signed-in profile; the same browser signing in again takes it over (L2-128). */
 export async function saveSubscription(db: Db, profileId: string, { endpoint, keys }: Subscription) {
   await run(
     db,
@@ -19,7 +19,7 @@ export async function saveSubscription(db: Db, profileId: string, { endpoint, ke
   );
 }
 
-/** Removes the profile's own subscription for an endpoint; another profile's, or an unknown one, is left alone (L2-127). */
+/** Removes the profile's own subscription for an endpoint; another profile's, or an unknown one, is left alone (L2-128). */
 export async function removeSubscription(db: Db, profileId: string, endpoint: string) {
   await run(db, 'DELETE FROM push_subscription WHERE endpoint = $1 AND profile_id = $2', [endpoint, profileId]);
 }
@@ -46,7 +46,7 @@ const STICKER_LABELS: Record<string, string> = {
 
 /**
  * Tells every device of the household's profiles with `role`, when the household has this choice on. It never throws:
- * a notification is a courtesy, so a failure is logged (without the endpoint) and the caller carries on (L2-124 to L2-127).
+ * a notification is a courtesy, so a failure is logged (without the endpoint) and the caller carries on (L2-125 to L2-128).
  */
 async function notify(db: Db, push: Push | null, log: Log, householdId: string, role: Role, choice: Choice, payload: PushPayload) {
   if (!push) return;
