@@ -16,3 +16,23 @@ CREATE TABLE directory_profile (
   contact TEXT,
   updated_at TEXT NOT NULL
 );
+
+-- An author's catalogue: books parents can copy onto their household's shelf (ADR-0022). Nothing in a
+-- household points back here, so editing, removing or erasing touches no household.
+CREATE TABLE catalogue_book (
+  id TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profile(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  chapter_count INTEGER NOT NULL CHECK (chapter_count BETWEEN 1 AND 200),
+  description TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL
+);
+CREATE INDEX catalogue_book_profile ON catalogue_book (profile_id);
+
+-- A catalogue book's cover picture, re-encoded as the household covers are (320 × 480 WebP, no metadata).
+CREATE TABLE catalogue_cover (
+  book_id TEXT PRIMARY KEY REFERENCES catalogue_book(id) ON DELETE CASCADE,
+  image BYTEA NOT NULL,
+  etag TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);

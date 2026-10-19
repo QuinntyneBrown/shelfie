@@ -3,7 +3,7 @@ import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
 import { adminAudit } from './admin-audit.ts';
 import { adminGuard, refuse } from './admin-auth.ts';
-import { correctLog, deleteLog, finishBook, getLog, householdOfBook, listBooks, listLogs, listUsers, resetParentPassword } from './admin.service.ts';
+import { correctLog, deleteLog, finishBook, getLog, householdOfBook, listBooks, listDirectoryProfiles, listLogs, listUsers, resetParentPassword, setProfileStatus } from './admin.service.ts';
 import { listFeedback } from './feedback.service.ts';
 import { Problem } from './problem.ts';
 import { giveRewardSchema } from './review.router.ts';
@@ -67,6 +67,7 @@ export function adminRouter(db: Pool) {
   router.get('/users', ...guard('read'), (_req, res) => answer(res, () => listUsers(db)));
   router.get('/books', ...guard('read'), (_req, res) => answer(res, () => listBooks(db)));
   router.get('/feedback', ...guard('read'), (_req, res) => answer(res, () => listFeedback(db)));
+  router.get('/profiles', ...guard('read'), (_req, res) => answer(res, () => listDirectoryProfiles(db)));
 
   router.get('/books/:id/logs', ...guard('read'), async (req, res) => {
     const id = idOf(req, res);
@@ -110,6 +111,16 @@ export function adminRouter(db: Pool) {
     const id = idOf(req, res);
     const body = id && bodyOf(passwordSchema, req, res);
     if (id && body) await write(req, res, (tx) => resetParentPassword(tx, id, body.password));
+  });
+
+  router.post('/profiles/:id/approve', ...guard('write'), async (req, res) => {
+    const id = idOf(req, res);
+    if (id) await write(req, res, (tx) => setProfileStatus(tx, id, 'approved'));
+  });
+
+  router.post('/profiles/:id/hide', ...guard('write'), async (req, res) => {
+    const id = idOf(req, res);
+    if (id) await write(req, res, (tx) => setProfileStatus(tx, id, 'hidden'));
   });
 
   router.use((_req, res) => refuse(res, 404, 'not-found'));

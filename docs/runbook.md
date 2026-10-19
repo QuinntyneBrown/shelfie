@@ -175,7 +175,7 @@ Write commands change production directly. Take a backup first: `sudo -u shelfie
 | Command | Does |
 |---|---|
 | `login`, `logout`, `whoami` | Store, remove or show the token for the target |
-| `users list` | Every parent and reader |
+| `users list` | Every parent, reader, author and volunteer |
 | `users reset-password <parent id>` | New password from hidden prompts; ends the parent's sessions |
 | `books list` | Every book with progress, finished time and reward |
 | `books finish <id>` | Mark a book finished now |
@@ -185,6 +185,9 @@ Write commands change production directly. Take a backup first: `sudo -u shelfie
 | `feedback list` | Every household's feedback, newest first |
 | `logs correct <id> --read-on <yyyy-mm-dd>` | Fix the day a chapter was read |
 | `logs delete <id>` | Delete the newest logged chapter of a book |
+| `profiles list` | Every author and volunteer with what they wrote, waiting ones first |
+| `profiles approve <id>` | List the profile in the parents' directory (ADR-0020) |
+| `profiles hide <id>` | Take the profile out of the directory; its owner can still sign in |
 
 Every command takes `--json` and `--api-url`; writes take `--dry-run`, destructive ones `--yes`. Exit codes: 0 done, 1 refused or failed, 2 token problem, 3 aborted. For development, point it at the local API: `shelfie-admin login --api-url http://localhost:3000` with a token made by `DATABASE_URL=<local database> npm run admin-token -w apps/api -- create --name dev --scopes read,write`.
 
