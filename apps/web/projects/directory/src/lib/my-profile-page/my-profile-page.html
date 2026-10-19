@@ -5,4 +5,103 @@
       <p class="subtitle">How parents see you in Shelfie’s directory.</p>
     </div>
   </div>
+  @if (loadFailed()) {
+    <sh-error-state sticker="🛠️" title="Your profile didn’t load" text="Shelfie couldn’t reach the server. Try again in a moment.">
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-error-state>
+  } @else if (profile(); as profile) {
+    <div class="stack sections">
+      @if (banner(); as banner) {
+        <sh-banner [severity]="banner.severity" [title]="banner.title" [message]="banner.message" />
+      }
+      <section class="card stack" aria-labelledby="photo-title">
+        <h2 id="photo-title" class="section-title">Your photo</h2>
+        @if (photoFailed()) {
+          <sh-banner severity="danger" title="Your photo didn’t change" message="Nothing changed. Check your connection and try again." />
+        }
+        <sh-photo-picker
+          [name]="profile.name"
+          [color]="session.current()?.color ?? 'peach'"
+          [photo]="profile.photo"
+          [busy]="photoBusy()"
+          [error]="photoError()"
+          (picked)="upload($event)"
+          (removed)="removePhoto()"
+        />
+      </section>
+      <form class="card stack" novalidate aria-labelledby="details-title" (submit)="$event.preventDefault(); save()">
+        <h2 id="details-title" class="section-title">About you</h2>
+        @if (problems().length) {
+          <sh-banner
+            #summary
+            severity="danger"
+            [summary]="true"
+            [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+          >
+            <ul class="summary-list">
+              @for (problem of problems(); track problem) {
+                <li>{{ problem }}</li>
+              }
+            </ul>
+          </sh-banner>
+        }
+        @if (saveFailed()) {
+          <sh-banner severity="danger" title="Your changes weren’t saved" message="Shelfie couldn’t reach the server. Your changes are still here.">
+            <div class="alert__actions">
+              <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+            </div>
+          </sh-banner>
+        }
+        <sh-text-field
+          label="Your name"
+          autocomplete="name"
+          [help]="author() ? 'Parents see this on your profile and on your books.' : 'Parents see this on your profile.'"
+          [maxlength]="40"
+          [error]="errors().name ?? null"
+          [(value)]="name"
+        />
+        <sh-textarea
+          label="About you"
+          [help]="author() ? 'What you write and who it’s for. Up to 500 characters.' : 'Who you are and how you help. Up to 500 characters.'"
+          [rows]="4"
+          [maxlength]="500"
+          [error]="errors().bio ?? null"
+          [(value)]="bio"
+        />
+        @if (author()) {
+          <sh-text-field
+            label="Website (optional)"
+            help="Your own site, starting with https://"
+            [maxlength]="200"
+            [error]="errors().website ?? null"
+            [(value)]="website"
+          />
+        } @else {
+          <sh-text-field
+            label="Ages you help with"
+            help="For example “Ages 6 to 10”."
+            [maxlength]="40"
+            [error]="errors().ages ?? null"
+            [(value)]="ages"
+          />
+          <sh-text-field
+            label="How parents can reach you"
+            help="An e-mail address or a website. Parents contact you outside Shelfie; Shelfie sends nothing for you."
+            [maxlength]="120"
+            [error]="errors().contact ?? null"
+            [(value)]="contact"
+          />
+        }
+        <div class="form-actions">
+          <sh-button [busy]="saving()">Save profile</sh-button>
+        </div>
+      </form>
+    </div>
+  } @else {
+    <div class="card stack" aria-busy="true" aria-label="Loading your profile">
+      <sh-skeleton variant="title" />
+      <sh-skeleton />
+      <sh-skeleton />
+    </div>
+  }
 </div>

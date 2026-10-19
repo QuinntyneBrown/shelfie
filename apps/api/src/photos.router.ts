@@ -15,6 +15,15 @@ export function readImage(req: Request, res: Response, next: NextFunction) {
   });
 }
 
+/** Sends a stored picture as an image only: never sniffed, never run as a page, kept out of shared caches; 404 when there is none. */
+export function sendPicture(req: Request, res: Response, picture: { image: Buffer; etag: string } | undefined) {
+  if (!picture) return res.status(404).json({ type: 'not-found' });
+  const etag = `"${picture.etag}"`;
+  res.set({ ETag: etag, 'Cache-Control': 'private, no-cache', 'Content-Security-Policy': "default-src 'none'; sandbox" });
+  if (req.get('if-none-match') === etag) return res.status(304).end();
+  res.type('image/webp').send(picture.image);
+}
+
 export function photosRouter(db: Pool) {
   const router = Router();
 

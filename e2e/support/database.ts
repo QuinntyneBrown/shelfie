@@ -139,3 +139,8 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
   return found.map((r) => r.endpoint);
 }
 
+
+/** Sets an author's or volunteer's listing status, as the operator's `shelfie-admin profiles approve` or `hide` does. */
+export async function setProfileStatus(username: string, status: 'pending' | 'approved' | 'hidden') {
+  await db.query('UPDATE directory_profile SET status = $1 WHERE profile_id = (SELECT id FROM profile WHERE username = $2)', [status, username]);
+}

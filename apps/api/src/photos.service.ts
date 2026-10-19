@@ -65,6 +65,11 @@ export async function removePhoto(db: Db, profileId: string): Promise<void> {
   await run(db, 'DELETE FROM profile_photo WHERE profile_id = $1', [profileId]);
 }
 
+/** A person's own photo, read by its owner. */
+export function readOwnPhoto(db: Db, profileId: string): Promise<ProfilePhoto | undefined> {
+  return get<ProfilePhoto>(db, 'SELECT image, etag FROM profile_photo WHERE profile_id = $1', [profileId]);
+}
+
 /** The photo of a person in the household; another household's photo reads as absent. */
 export function readPhoto(db: Db, householdId: string, profileId: string): Promise<ProfilePhoto | undefined> {
   return get<ProfilePhoto>(

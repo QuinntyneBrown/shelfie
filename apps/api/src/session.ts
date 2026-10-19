@@ -74,6 +74,25 @@ export function requireSession(db: Db) {
   });
 }
 
+/** An author's or volunteer's session (ADR-0018). */
+export interface DirectorySession extends Omit<AnySession, 'householdId' | 'role' | 'theme'> {
+  role: 'author' | 'volunteer';
+}
+
+/**
+ * The guard of an author's or volunteer's own routes: a parent or reader is answered 403 `directory-only`, and a
+ * volunteer on an authors-only route 403 `authors-only`. Puts a `DirectorySession` on `res.locals.session`.
+ */
+export function requireDirectorySession(db: Db, roles: DirectorySession['role'][] = ['author', 'volunteer']) {
+  return loadSession(db, (session, res, next) => {
+    if (session.role !== 'author' && session.role !== 'volunteer') return res.status(403).json({ type: 'directory-only' });
+    if (!roles.includes(session.role)) return res.status(403).json({ type: 'authors-only' });
+    const { householdId, theme, ...own } = session;
+    res.locals['session'] = own;
+    next();
+  });
+}
+
 /** Any signed-in person, of any role; for the routes every account shares, such as reading its own session. */
 export function requireAnySession(db: Db) {
   return loadSession(db, (_session, _res, next) => next());
