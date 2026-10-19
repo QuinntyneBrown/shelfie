@@ -63,9 +63,15 @@ function loadSession(db: Db, admit: (session: AnySession, res: Response, next: N
   };
 }
 
-/** Rejects requests without a live `shelfie_session`; otherwise puts the session on `res.locals.session`. */
+/**
+ * The household guard: rejects requests without a live `shelfie_session`, turns an author or volunteer away with
+ * 403 `household-only` (ADR-0018), and otherwise puts the session on `res.locals.session`.
+ */
 export function requireSession(db: Db) {
-  return loadSession(db, (_session, _res, next) => next());
+  return loadSession(db, (session, res, next) => {
+    if (session.householdId === null) return res.status(403).json({ type: 'household-only' });
+    next();
+  });
 }
 
 /** Any signed-in person, of any role; for the routes every account shares, such as reading its own session. */

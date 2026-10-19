@@ -15,7 +15,7 @@ Shelfie sends nothing between parents and volunteers. Contact happens outside Sh
 - **Shell** — a volunteer has no tabs: the top bar shows the brand (home `/me`) and the avatar, and the account menu holds only Sign out (`L2-141`, ADR-0023).
 - **`MyProfilePage` for a volunteer** — the same page as an author's, with the role taken from `GET /api/me`. The "About you" card holds name (`sh-text-field`, 1–40), About you (`sh-textarea`, 1–500), "Ages you help with" (`sh-text-field`, 1–40, help "For example “Ages 6 to 10”.") and "How parents can reach you" (`sh-text-field`, 1–120, help "An e-mail address or a website. Parents contact you outside Shelfie; Shelfie sends nothing for you."). There is no website field. The status banner and the photo card are as for an author (`L2-139`, `L2-140`). States: `docs/mocks/pages/my-profile/volunteer.html` and the shared ones.
 - **`me.router.ts`** — `PUT /api/me` picks its zod schema from the session's role. The volunteer schema is `{name, bio, ages, contact}`, each trimmed and required; an author's `website` is ignored for a volunteer and `ages` and `contact` are ignored for an author (`L2-138`). `me.service.ts` writes `profile.name` and `directory_profile.bio`, `ages`, `contact` and `updated_at`.
-- **No catalogue** — `/catalogue` is guarded by `authorGuard`, so a volunteer gets the forbidden page; every `/api/catalogue-books` route runs `requireDirectorySession(db, ['author'])` and answers a volunteer 403 `authors-only` (`L2-153`).
+- **No catalogue** — `/catalogue` is guarded by `authorGuard`, so a volunteer who opens it is taken to My profile; every `/api/catalogue-books` route runs `requireDirectorySession(db, ['author'])` and answers a volunteer 403 `authors-only` (`L2-153`).
 - **The contact line** — stored and returned as plain text exactly as written. Parents read it on the volunteer's profile (`L2-148`, `directory/browse-directory`), where it is rendered as text, never as a link Shelfie builds. It is never written to a log (`L2-155`).
 - **Erasure** — as for an author: the runbook statement deletes the `profile` and cascades to `directory_profile`, `profile_photo`, `session` and `password_reset` (`L2-156`).
 
@@ -31,7 +31,7 @@ Messaging, booking, scheduling, background checks and identity verification are 
 | `L2-140` | `L1-029`, `L1-030` | The listing status banner. |
 | `L2-141` | `L1-001` | Shared sign-in and password reset; landing on My profile; no tabs, menu with Sign out only. |
 | `L2-148` | `L1-030` | Parents read the approved volunteer's ages, About you and contact line with the "Shelfie doesn’t vet volunteers" warning. |
-| `L2-153` | `L1-002` | A volunteer gets 403 from every catalogue route and the forbidden page on `/catalogue`. |
+| `L2-153` | `L1-002` | A volunteer gets 403 `authors-only` from every catalogue route, and `/catalogue` takes them to My profile. |
 
 ## Diagrams
 

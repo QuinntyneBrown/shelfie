@@ -4,13 +4,11 @@ import { JoinPage } from '../pages/join.page';
 import { MyProfilePage } from '../pages/my-profile.page';
 import { SignInPage } from '../pages/sign-in.page';
 import { ShellPage } from '../pages/shell.page';
-import { DAD } from '../support/accounts';
+import { DAD, ROSA, SAM } from '../support/accounts';
 import { clearMailbox, resetLinkFor } from '../support/mailbox';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
 
-const ROSA = { name: 'Rosa Delgado', email: 'rosa@example.com', username: 'rosawrites', password: 'lighthouse-fox' };
-const SAM = { name: 'Sam Okafor', email: 'sam@example.com', username: 'samreads', password: 'patient-reader' };
 
 test('Given Rosa, an author, when she joins from Sign in, then she lands on My profile signed in with My profile and My catalogue to go to', async ({ page }) => {
   const signIn = new SignInPage(page);
