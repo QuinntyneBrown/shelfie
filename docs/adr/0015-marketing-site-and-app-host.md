@@ -1,8 +1,8 @@
-# ADR-0014: A static marketing site at www.shelfie.kids, and the app moves to app.shelfie.kids
+# ADR-0015: A static marketing site at www.shelfie.kids, and the app moves to app.shelfie.kids
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-114, L2-118, L2-119, L2-120, L2-121
+- Requirements: L2-120, L2-124, L2-125, L2-126, L2-127
 
 ## Context
 

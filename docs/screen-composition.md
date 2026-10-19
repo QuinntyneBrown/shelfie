@@ -4,7 +4,7 @@ Which `components` library parts build each page, dialog, notification and shell
 
 - **Sources:** `docs/mocks/` (32 screens, 200 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
-- **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0014). It uses a copy of the design tokens.
+- **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0015). It uses a copy of the design tokens.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
 - Layout classes from the design-system stylesheet (`container`, `stack`, `cluster`, `grid`, `span-*`, `page-header`, `card`, `section`, `visually-hidden`, `text-*`, `icon`) are global CSS, not components. They are used freely and not listed below.
 
