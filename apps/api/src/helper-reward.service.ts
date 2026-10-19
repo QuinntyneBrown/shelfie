@@ -17,6 +17,7 @@ export interface HelperReward {
 interface Row {
   name: string;
   target_minutes: number;
+  earned_at: string | null;
   earned_by: string | null;
   given_at: string | null;
 }
@@ -32,15 +33,29 @@ async function minutesOf(db: Db, householdId: string, givenAt: string | null): P
   return Object.fromEntries(rows.map((r) => [r.helper, Number(r.minutes)]));
 }
 
+/** The reward with this round's minutes, earning it first: the helper with the most minutes at or past the target earns it once. */
 export async function helperRewardOf(db: Db, householdId: string): Promise<HelperReward | null> {
-  const row = await get<Row>(db, 'SELECT name, target_minutes, earned_by, given_at FROM helper_reward WHERE household_id = $1', [householdId]);
+  const row = await get<Row>(db, 'SELECT name, target_minutes, earned_at, earned_by, given_at FROM helper_reward WHERE household_id = $1', [householdId]);
   if (!row) return null;
+  const minutes = await minutesOf(db, householdId, row.given_at);
+  if (!row.earned_at) {
+    const [top] = Object.entries(minutes).sort(([, a], [, b]) => b - a);
+    if (top && top[1] >= row.target_minutes) {
+      const changed = await run(db, 'UPDATE helper_reward SET earned_at = $1, earned_by = $2 WHERE household_id = $3 AND earned_at IS NULL', [
+        new Date().toISOString(),
+        top[0],
+        householdId,
+      ]);
+      if (changed) row.earned_by = top[0];
+      else return helperRewardOf(db, householdId);
+    }
+  }
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const earnedBy = row.earned_by ? await readerOf(db, row.earned_by) : null;
   return {
     name: row.name,
     targetMinutes: row.target_minutes,
-    minutes: await minutesOf(db, householdId, row.given_at),
+    minutes,
     earnedBy,
     givenOn: row.given_at ? todayIn(time_zone, new Date(row.given_at)) : null,
   };

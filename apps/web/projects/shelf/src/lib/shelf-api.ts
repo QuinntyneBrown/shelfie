@@ -150,12 +150,23 @@ export interface TogetherSession {
   confirmed: boolean;
 }
 
+export interface HelperReward {
+  name: string;
+  targetMinutes: number;
+  /** This round's helper minutes per reader id. */
+  minutes: Record<string, number>;
+  /** The reader who reached the target this round, until it is given. */
+  earnedBy: TogetherReader | null;
+  givenOn: string | null;
+}
+
 export interface TogetherView {
   today: string;
   /** The household's other readers; empty in a household with one reader. */
   partners: TogetherReader[];
   /** Her newest sessions, newest first. */
   sessions: TogetherSession[];
+  helperReward: HelperReward | null;
 }
 
 export interface ShelfResponse {

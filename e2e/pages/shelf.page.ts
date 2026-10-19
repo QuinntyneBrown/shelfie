@@ -350,4 +350,12 @@ export class ShelfPage {
   async breakConfirming() {
     await this.page.route('**/api/together/sessions/*/confirm', (route) => route.abort());
   }
+
+  helperProgress() {
+    return this.together().getByRole('progressbar');
+  }
+
+  helperCelebration() {
+    return this.together().getByRole('heading', { name: /You did it!/ });
+  }
 }

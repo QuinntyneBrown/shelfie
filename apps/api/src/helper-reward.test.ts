@@ -3,7 +3,7 @@ import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
 import { createApp } from './app.ts';
-import { addZoe, seed, SEED } from './seed.ts';
+import { addZoe, seed, SEED, ZOE } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
 const APP = { 'X-Requested-With': 'Shelfie' };
@@ -38,6 +38,7 @@ async function signIn(username: string, password: string) {
 }
 
 const nia = () => signIn(SEED.readerUsername, SEED.readerPassword);
+const zoe = () => signIn(ZOE.username, ZOE.password);
 const dad = () => signIn(SEED.parentUsername, SEED.parentPassword);
 const zedsDad = () => signIn('zedsdad', 'another-pass-99');
 
@@ -113,4 +114,73 @@ test('Given Dad’s helper reward, then another household never sees it', async 
 
 test('Given no session cookie, then the API answers 401', async () => {
   assert.equal((await fetch(`${url}/api/helper-reward`, { headers: APP })).status, 401);
+});
+
+const TODAY = () => new Date().toISOString().slice(0, 10);
+async function log(cookie: string, partnerId: string, kind: string, minutes: number) {
+  const response = await call(cookie, 'POST', '/together/sessions', { partnerId, kind, minutes, readOn: TODAY() });
+  assert.equal(response.status, 201);
+  return ((await response.json()) as { id: string }).id;
+}
+
+test('Given sessions of each kind, then each reader’s helper minutes are the sessions she read aloud or helped in, once each', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const niaCookie = await nia();
+  const zoeCookie = await zoe();
+  await log(niaCookie, ZOE.id, 'read-to', 20);
+  await log(niaCookie, ZOE.id, 'helped', 25);
+  const zoeLogged = await log(zoeCookie, SEED.readerId, 'read-to-me', 15);
+  await log(zoeCookie, SEED.readerId, 'read-to', 10);
+  await call(zoeCookie, 'POST', `/together/sessions/${zoeLogged}/confirm`);
+  await call(niaCookie, 'POST', `/together/sessions/${zoeLogged}/confirm`);
+
+  const set = (await reward(niaCookie))!;
+  assert.deepEqual(set.minutes, { [SEED.readerId]: 60, [ZOE.id]: 10 });
+  assert.equal(set.earnedBy, null);
+});
+
+test('Given Nia reaches 120 helper minutes, then she earns the reward, and it stays hers when a session is later removed', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const niaCookie = await nia();
+  const first = await log(niaCookie, ZOE.id, 'read-to', 60);
+  await log(niaCookie, ZOE.id, 'read-to', 59);
+  assert.equal((await reward(niaCookie))!.earnedBy, null);
+
+  await log(niaCookie, ZOE.id, 'helped', 5);
+  assert.deepEqual((await reward(niaCookie))!.earnedBy, { id: SEED.readerId, name: 'Nia', color: 'rose', photo: null });
+
+  await db.pool.query('UPDATE reading_session SET removed_at = $1 WHERE id = $2', [new Date().toISOString(), first]);
+  const after = (await reward(niaCookie))!;
+  assert.equal(after.minutes[SEED.readerId], 64);
+  assert.equal(after.earnedBy!.name, 'Nia');
+});
+
+test('Given both sisters are past the target when it is first read, then the one with more minutes earns it', async () => {
+  const niaCookie = await nia();
+  const zoeCookie = await zoe();
+  await log(niaCookie, ZOE.id, 'read-to', 40);
+  await log(zoeCookie, SEED.readerId, 'read-to', 50);
+
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Sweets', targetMinutes: 30 });
+
+  assert.equal((await reward(niaCookie))!.earnedBy!.name, 'Zoe');
+});
+
+test('Given a removed session, then its minutes do not count', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const niaCookie = await nia();
+  const id = await log(niaCookie, ZOE.id, 'read-to', 30);
+  await db.pool.query('UPDATE reading_session SET removed_at = $1 WHERE id = $2', [new Date().toISOString(), id]);
+
+  assert.deepEqual((await reward(niaCookie))!.minutes, {});
+});
+
+test('Given the helper reward, then Read together carries it for the shelf card', async () => {
+  await call(await dad(), 'PUT', '/helper-reward', { name: 'Cinema trip', targetMinutes: 120 });
+  const niaCookie = await nia();
+  await log(niaCookie, ZOE.id, 'read-to', 20);
+
+  const view = (await (await call(niaCookie, 'GET', '/together')).json()) as { helperReward: HelperReward | null };
+  assert.equal(view.helperReward!.name, 'Cinema trip');
+  assert.equal(view.helperReward!.minutes[SEED.readerId], 20);
 });

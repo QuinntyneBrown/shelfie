@@ -1,6 +1,7 @@
 import { Router, type Response } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
+import { helperRewardOf } from './helper-reward.service.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { confirmSession, KINDS, logSession, partnersOf, sessionsOf, today } from './together.service.ts';
@@ -24,6 +25,7 @@ export function togetherRouter(db: Pool) {
       today: await today(db, householdId),
       partners: await partnersOf(db, householdId, profileId),
       sessions: await sessionsOf(db, householdId, profileId),
+      helperReward: await helperRewardOf(db, householdId),
     });
   });
 

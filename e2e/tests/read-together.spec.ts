@@ -1,7 +1,7 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-145
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-142, L2-145
 import { test, expect } from '../support/test';
 import { signInAsNia, signInAsZoe } from '../support/signed-in';
-import { addZoe } from '../support/database';
+import { addHelperReward, addZoe } from '../support/database';
 import { ShelfPage } from '../pages/shelf.page';
 import { LogTogetherPage } from '../pages/log-together.page';
 
@@ -177,4 +177,44 @@ test('Given the connection drops, when Zoe says That’s right, then a toast say
   await expect(zoeShelf.toast('That wasn’t saved')).toBeVisible();
   await expect(zoeShelf.confirmButton('Nia read to you · 20 minutes')).toBeVisible();
   await zoePage.close();
+});
+
+/** Sets the household's helper reward as Dad would in Settings. */
+async function setHelperReward(page: import('@playwright/test').Page, name: string, targetMinutes: number) {
+  await addHelperReward(name, targetMinutes);
+  await page.reload();
+}
+
+test('Given a helper reward of 120 minutes and 60 helper minutes, then Nia’s card shows how far she has come and Zoe’s shows no bar', async ({ page, browser }) => {
+  await addZoe();
+  await signInAsNia(page);
+  await logViaApi(page, 'p-zoe', 'read-to', 30);
+  await logViaApi(page, 'p-zoe', 'helped', 30);
+  await setHelperReward(page, 'Cinema trip', 120);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.together()).toContainText('Helper reward: Cinema trip');
+  await expect(shelf.together()).toContainText('60 minutes to go');
+  await expect(shelf.helperProgress()).toHaveAccessibleName('Nia has helped for 60 of 120 minutes');
+  await expect(shelf.helperCelebration()).toHaveCount(0);
+
+  const zoePage = await browser.newPage();
+  await signInAsZoe(zoePage);
+  const zoeShelf = new ShelfPage(zoePage);
+  await expect(zoeShelf.togetherSessions()).toHaveCount(2);
+  await expect(zoeShelf.helperProgress()).toHaveCount(0);
+  await zoePage.close();
+});
+
+test('Given Nia reaches the helper target, then her card celebrates and says Dad is giving her reward', async ({ page }) => {
+  await addZoe();
+  await signInAsNia(page);
+  await logViaApi(page, 'p-zoe', 'read-to', 60);
+  await logViaApi(page, 'p-zoe', 'read-to', 60);
+  await setHelperReward(page, 'Cinema trip', 120);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.helperCelebration()).toBeVisible();
+  await expect(shelf.together()).toContainText('You helped for 120 minutes. Dad is giving your reward: Cinema trip.');
+  await expect(shelf.helperProgress()).toHaveAccessibleName('Nia has helped for 120 of 120 minutes');
 });

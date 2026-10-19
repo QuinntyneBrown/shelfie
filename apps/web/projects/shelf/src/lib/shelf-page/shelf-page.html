@@ -146,6 +146,27 @@
       <section class="section" aria-labelledby="together-title">
         <h2 id="together-title" class="group-title">Together</h2>
         <div class="card card--flush together">
+          @if (helper(); as helper) {
+            @if (helper.reached) {
+              <sh-celebration variant="book" class="together__celebration">
+                <span class="sticker sticker--xl" aria-hidden="true">🤝</span>
+                <h3 class="goal-celebration__title">You did it! 🎉</h3>
+                <p class="text-muted">
+                  You helped for {{ helper.minutes }} minutes. {{ data.grownUpName }} is giving your reward:
+                  {{ helper.reward.name }}.
+                </p>
+                <sh-progress [value]="helper.reward.targetMinutes" [max]="helper.reward.targetMinutes" [label]="helper.label" />
+              </sh-celebration>
+            } @else {
+              <div class="stack together__helper">
+                <div class="cluster cluster--between">
+                  <span class="list__title">Helper reward: {{ helper.reward.name }}</span>
+                  <span class="badge badge--info">{{ helper.toGo }} minutes to go</span>
+                </div>
+                <sh-progress [value]="helper.minutes" [max]="helper.reward.targetMinutes" [label]="helper.label" />
+              </div>
+            }
+          }
           @if (!togetherRows().length) {
             <p class="text-muted together__empty">Nothing yet. Read with your sister and log it here.</p>
           }

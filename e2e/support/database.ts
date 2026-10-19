@@ -145,3 +145,8 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
 export async function addZoe() {
   await addZoeTo(db);
 }
+
+/** Sets the seeded household's helper reward, as Dad would in Settings. */
+export async function addHelperReward(name: string, targetMinutes: number) {
+  await db.query("INSERT INTO helper_reward (household_id, name, target_minutes) VALUES ('h1', $1, $2)", [name, targetMinutes]);
+}

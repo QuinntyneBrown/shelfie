@@ -46,6 +46,7 @@ const addDays = (isoDay: string, days: number) => {
     Cover,
     DatePipe,
     EmptyState,
+    Progress,
     PushOffer,
     Progress,
     RewardCard,
@@ -124,6 +125,24 @@ export class ShelfPage {
       const confirmable = !s.confirmed && s.loggedById !== me;
       return { session: s, partner, confirmable, text: `${what} · ${s.minutes} minutes`, note: this.sessionNoteOf(s, partner.name, view.today) };
     });
+  });
+
+  /** Her helper reward this round: minutes while she has some, reached once she earned it (L2-140). */
+  protected readonly helper = computed(() => {
+    const reward = this.together()?.helperReward;
+    const me = this.session.current()?.profileId;
+    if (!reward || !me) return null;
+    const minutes = reward.minutes[me] ?? 0;
+    const reached = reward.earnedBy?.id === me;
+    if (!minutes && !reached) return null;
+    const shown = reached ? Math.max(minutes, reward.targetMinutes) : minutes;
+    return {
+      reward,
+      reached,
+      minutes: shown,
+      toGo: Math.max(reward.targetMinutes - minutes, 0),
+      label: `${this.session.current()?.name} has helped for ${Math.min(shown, reward.targetMinutes)} of ${reward.targetMinutes} minutes`,
+    };
   });
 
   constructor() {
