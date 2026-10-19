@@ -4,6 +4,7 @@ import { requireRole } from './authz.ts';
 import { getBook } from './books.service.ts';
 import { certificateFileName, renderCertificate } from './certificate.service.ts';
 import { Problem } from './problem.ts';
+import { onlyReader } from './readers.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 export function certificateRouter(db: Pool) {
@@ -11,11 +12,12 @@ export function certificateRouter(db: Pool) {
 
   // Same access as GET /books/:id: the reader and her parents can all print it (L2-120).
   router.get('/:id/certificate.pdf', requireSession(db), requireRole('reader'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
+    const { householdId } = session;
     const bookId = String(req.params['id']);
     try {
-      const pdf = await renderCertificate(db, householdId, bookId);
-      const { readerName, title } = await getBook(db, householdId, bookId);
+      const pdf = await renderCertificate(db, householdId, bookId, onlyReader(session));
+      const { readerName, title } = await getBook(db, householdId, bookId, onlyReader(session));
       res.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${certificateFileName(readerName, title)}"`,

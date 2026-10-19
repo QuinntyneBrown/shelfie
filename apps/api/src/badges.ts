@@ -48,14 +48,19 @@ export function computeBadges(readOnDays: string[], finishedDays: string[]): Bad
   ];
 }
 
-export async function badgesFor(db: Db, householdId: string): Promise<Badge[]> {
+/** One reader's badges (L2-141), from her own chapter logs and finished books; with no reader named, the first reader's. */
+export async function badgesFor(db: Db, householdId: string, readerId: string | null = null): Promise<Badge[]> {
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const read = await all<{ read_on: string }>(
     db,
-    'SELECT c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1',
-    [householdId],
+    'SELECT c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1 AND b.reader_id IS NOT DISTINCT FROM COALESCE($2, first_reader($1))',
+    [householdId, readerId],
   );
-  const finished = await all<{ finished_at: string }>(db, 'SELECT finished_at FROM book WHERE household_id = $1 AND finished_at IS NOT NULL', [householdId]);
+  const finished = await all<{ finished_at: string }>(
+    db,
+    'SELECT finished_at FROM book WHERE household_id = $1 AND reader_id IS NOT DISTINCT FROM COALESCE($2, first_reader($1)) AND finished_at IS NOT NULL',
+    [householdId, readerId],
+  );
   return computeBadges(
     read.map((r) => r.read_on),
     finished.map((r) => todayIn(time_zone, new Date(r.finished_at))),

@@ -4,6 +4,7 @@ import { requireRole } from './authz.ts';
 import { processCover, readCover, removeCover, saveCover } from './covers.service.ts';
 import { readImage } from './photos.router.ts';
 import { Problem } from './problem.ts';
+import { onlyReader } from './readers.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 export function coversRouter(db: Pool) {
@@ -11,10 +12,10 @@ export function coversRouter(db: Pool) {
 
   // A reader may give a book she adds its picture; changing or removing it is for grown-ups.
   router.put('/:id/cover', requireSession(db), requireRole('reader'), readImage, async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
     try {
       if (!Buffer.isBuffer(req.body) || req.body.length === 0) throw new Problem(400, 'photo-type');
-      res.json({ coverImage: await saveCover(db, householdId, String(req.params['id']), await processCover(req.body)) });
+      res.json({ coverImage: await saveCover(db, session.householdId, String(req.params['id']), await processCover(req.body), onlyReader(session)) });
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });
@@ -33,8 +34,8 @@ export function coversRouter(db: Pool) {
   });
 
   router.get('/:id/cover', requireSession(db), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    const cover = await readCover(db, householdId, String(req.params['id']));
+    const session = res.locals['session'] as RequestSession;
+    const cover = await readCover(db, session.householdId, String(req.params['id']), onlyReader(session));
     if (!cover) return res.status(404).json({ type: 'not-found' });
     const etag = `"${cover.etag}"`;
     // Served as an image only: never sniffed, never run as a page, kept out of shared caches.

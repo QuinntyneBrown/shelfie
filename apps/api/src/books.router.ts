@@ -5,6 +5,7 @@ import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
 import { createBook, deleteBook, getBook, listBooks, updateBook } from './books.service.ts';
 import { Problem } from './problem.ts';
+import { onlyReader, readerFor } from './readers.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 export const COVER_COLORS = ['sage', 'rose', 'sky', 'sun', 'lilac', 'mint', 'peach'] as const;
@@ -21,6 +22,8 @@ const createBookSchema = z.object({
   chapterCount: z.number().int().min(1).max(200),
   coverColor: z.enum(COVER_COLORS),
   sticker: z.enum(STICKERS),
+  // Whose shelf it goes on; a parent may name a reader, a reader always adds to her own (L2-139).
+  readerId: z.string().optional(),
 });
 
 const updateBookSchema = z.object({
@@ -39,21 +42,32 @@ export function booksRouter(db: Pool) {
   const router = Router();
 
   router.post('/', requireSession(db), requireRole('reader'), async (req, res) => {
-    const { householdId, role } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
     const body = createBookSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    res.status(201).json(await createBook(db, householdId, role, body.data));
+    const { readerId, ...book } = body.data;
+    try {
+      res.status(201).json(await createBook(db, session.householdId, session.role, await readerFor(db, session, readerId), book));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
-  router.get('/', requireSession(db), requireRole('parent'), async (_req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    res.json(await listBooks(db, householdId));
+  router.get('/', requireSession(db), requireRole('parent'), async (req, res) => {
+    const session = res.locals['session'] as RequestSession;
+    try {
+      res.json(await listBooks(db, session.householdId, await readerFor(db, session, req.query['reader'])));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type });
+    }
   });
 
   router.get('/:id', requireSession(db), requireRole('reader'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const session = res.locals['session'] as RequestSession;
     try {
-      res.json(await getBook(db, householdId, String(req.params['id'])));
+      res.json(await getBook(db, session.householdId, String(req.params['id']), onlyReader(session)));
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });

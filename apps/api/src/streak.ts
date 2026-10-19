@@ -45,22 +45,23 @@ export function todayIn(timeZone: string, now: Date): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone }).format(now);
 }
 
-async function readingDays(db: Db, householdId: string, now: Date) {
+/** One reader's reading days (L2-141); with no reader named, the household's first reader's (ADR-0018). */
+async function readingDays(db: Db, householdId: string, now: Date, readerId: string | null) {
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const days = await all<{ read_on: string }>(
     db,
-    'SELECT DISTINCT c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1',
-    [householdId],
+    'SELECT DISTINCT c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1 AND b.reader_id IS NOT DISTINCT FROM COALESCE($2, first_reader($1))',
+    [householdId, readerId],
   );
   return { days: days.map((d) => d.read_on), today: todayIn(time_zone, now) };
 }
 
-export async function streakFor(db: Db, householdId: string, now = new Date()): Promise<number> {
-  const { days, today } = await readingDays(db, householdId, now);
+export async function streakFor(db: Db, householdId: string, now = new Date(), readerId: string | null = null): Promise<number> {
+  const { days, today } = await readingDays(db, householdId, now, readerId);
   return computeStreak(days, today);
 }
 
-export async function weekFor(db: Db, householdId: string, now = new Date()): Promise<WeekDay[]> {
-  const { days, today } = await readingDays(db, householdId, now);
+export async function weekFor(db: Db, householdId: string, now = new Date(), readerId: string | null = null): Promise<WeekDay[]> {
+  const { days, today } = await readingDays(db, householdId, now, readerId);
   return computeWeek(days, today);
 }

@@ -23,8 +23,8 @@ const GOLD = '#fbe7b2';
 const A4_LANDSCAPE = { width: 841.89, height: 595.28 };
 
 /** Draws the one-page finish certificate of a finished book, or throws 404 not-found / 409 not-finished (L2-120). */
-export async function renderCertificate(db: Db, householdId: string, bookId: string): Promise<Buffer> {
-  const book = await getBook(db, householdId, bookId);
+export async function renderCertificate(db: Db, householdId: string, bookId: string, onlyReader: string | null = null): Promise<Buffer> {
+  const book = await getBook(db, householdId, bookId, onlyReader);
   if (!book.finishedAt) throw new Problem(409, 'not-finished');
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const finishedOn = new Intl.DateTimeFormat('en-GB', { timeZone: time_zone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(book.finishedAt)).replace(',', '');

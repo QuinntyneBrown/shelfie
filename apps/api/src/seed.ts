@@ -11,6 +11,9 @@ export const SEED = {
   parentUsername: 'dad',
   parentEmail: 'dad@example.com',
   parentPassword: 'sunny-days-42',
+  secondReaderId: 'p-theo',
+  secondReaderUsername: 'theo',
+  secondReaderPassword: 'dino-roar-6',
 };
 
 // Hashed once per process: argon2 is deliberately slow, and the acceptance tests seed before every test.
@@ -18,6 +21,7 @@ const NIA_PASSWORD = hashSecret(SEED.readerPassword);
 const DAD_PASSWORD = hashSecret(SEED.parentPassword);
 const ZED_PASSWORD = hashSecret('zed-reads-4');
 const ZEDS_DAD_PASSWORD = hashSecret('another-pass-99');
+const THEO_PASSWORD = hashSecret(SEED.secondReaderPassword);
 
 /** Replaces everything in the database with Nia and Dad's household, their books unless `books` is false, and a second family. */
 export function seed(pool: Pool, { books = true } = {}) {
@@ -94,5 +98,31 @@ export function seed(pool: Pool, { books = true } = {}) {
       "UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'star', note = 'Lovely work!', feedback_seen_at = logged_at WHERE id NOT IN ('b-lion-c10', 'b-lion-c11') AND book_id != 'b-other'",
     );
     await db.query('UPDATE chapter_log SET logged_at = $1 WHERE id = $2', [`${day(15)}T17:00:00.000Z`, 'b-lion-c11']);
+  });
+}
+
+/**
+ * Adds Theo, a second reader of Nia and Dad's household, with Dinosaurs Before Dark: 10 chapters, 4 logged today,
+ * the first 3 reviewed. Nia's name sorts first, so she stays the household's first reader (ADR-0018).
+ */
+export async function addSecondReader(pool: Pool) {
+  await transaction(pool, async (db) => {
+    await db.query("INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, 'reader', 'Theo', 'mint', $3, NULL, $4)", [
+      SEED.secondReaderId,
+      SEED.householdId,
+      SEED.secondReaderUsername,
+      THEO_PASSWORD,
+    ]);
+    const today = new Date().toISOString().slice(0, 10);
+    await db.query(
+      "INSERT INTO book (id, household_id, reader_id, title, author, chapter_count, cover_color, sticker, added_by_role, created_at) VALUES ('b-dino', $1, $2, 'Dinosaurs Before Dark', 'Mary Pope Osborne', 10, 'peach', '🐉', 'parent', $3)",
+      [SEED.householdId, SEED.secondReaderId, `${today}T08:00:00.000Z`],
+    );
+    for (let n = 1; n <= 4; n++) {
+      const stamp = `${today}T1${n}:00:00.000Z`;
+      await db.query('INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ($1, $2, $3, $4, $5, $5)', [`b-dino-c${n}`, 'b-dino', n, today, stamp]);
+      await db.query("INSERT INTO answer (id, chapter_log_id, position, question_text, text) VALUES ($1, $2, 1, 'What happened in this chapter?', $3)", [`b-dino-c${n}-a1`, `b-dino-c${n}`, `Jack and Annie, part ${n}.`]);
+    }
+    await db.query("UPDATE chapter_log SET reviewed_at = logged_at, sticker = 'rocket', feedback_seen_at = logged_at WHERE id IN ('b-dino-c1', 'b-dino-c2', 'b-dino-c3')");
   });
 }
