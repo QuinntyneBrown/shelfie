@@ -26,8 +26,6 @@ export class HelperRewardDialog {
   readonly open = input(false);
   /** The reward being edited, or null to set one. */
   readonly editing = input<HelperReward | null>(null);
-  /** Who can earn it, for the help text. */
-  readonly readerNames = input.required<string>();
   readonly saved = output<HelperReward>();
   readonly closed = output<void>();
 
