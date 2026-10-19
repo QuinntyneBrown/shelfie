@@ -610,3 +610,24 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .picture-list__choice img { width: 100%; aspect-ratio: 1; border-radius: var(--radius-sm); display: block; }
 .picture-list__add .btn:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
 @media (prefers-reduced-motion: reduce) { .picture-list__thumb img, .sticker__img { animation: none; } }
+/* Streak reward card (L2-113): the reward's text and path of days, with its badge — a shield with the milestone and a coin with the amount — at the end. */
+.streak-reward { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3) var(--space-4); align-items: center; padding: var(--space-4); border-radius: var(--radius-xl); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); }
+.streak-reward--goal { border-color: var(--color-accent); box-shadow: 0 0 0 var(--border-width-hairline) var(--color-accent); }
+.streak-reward--ready { border-color: var(--color-success-border); background: linear-gradient(90deg, var(--color-success-bg), var(--color-bg-surface)); }
+.streak-reward__title { font-weight: var(--font-weight-bold); font-size: var(--font-size-lg); }
+.streak-reward__note { color: var(--color-fg-muted); margin-top: var(--space-1); }
+.streak-reward__progress { margin-top: var(--space-3); }
+.streak-badge { display: block; width: 4.5rem; height: 4.5rem; }
+.streak-badge__shield { fill: var(--palette-violet-600); stroke: var(--palette-violet-800); stroke-width: 4; }
+.streak-badge__rim { fill: none; stroke: var(--palette-violet-300); stroke-width: 2; }
+.streak-badge__days { fill: var(--palette-white); font-weight: 900; text-anchor: middle; font-family: var(--font-family-display); }
+.streak-badge__coin { fill: var(--palette-amber-300); stroke: var(--palette-amber-500); stroke-width: 3; }
+.streak-badge__coin--gift { fill: var(--palette-violet-50); stroke: var(--palette-violet-300); }
+.streak-badge__amount { fill: var(--palette-amber-900); font-weight: 900; text-anchor: middle; font-family: var(--font-family-display); }
+.streak-badge__gift { text-anchor: middle; }
+.streak-badge--locked { filter: grayscale(1); opacity: 0.55; }
+.day-path { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; align-items: center; gap: var(--space-1); }
+.day-path__day { flex: 1 1 0; max-width: 2.25rem; aspect-ratio: 1; display: grid; place-items: center; border-radius: var(--radius-full); background: var(--color-bg-subtle); color: var(--color-fg-muted); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+.day-path__day--done { background: var(--color-accent); color: var(--palette-white); }
+.day-path__day--next { background: var(--color-bg-surface); color: var(--color-accent); outline: 2px dashed var(--color-accent); outline-offset: -2px; }
+.streak-reward--ready .day-path__day--done { background: var(--color-success-solid); }
