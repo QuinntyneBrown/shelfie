@@ -1,4 +1,4 @@
-// Traces to: L2-025, L2-026
+// Traces to: L2-025, L2-026, L2-114
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ShellPage } from '../pages/shell.page';
@@ -70,6 +70,8 @@ test('Given the avatar has keyboard focus, when ArrowDown is pressed, then the m
   await shell.focusAccountMenuButton('Dad');
   await shell.press('ArrowDown');
   await expect(shell.menuItem('Settings')).toBeFocused();
+  await shell.press('ArrowDown');
+  await expect(shell.menuItem('Send feedback')).toBeFocused();
   await shell.press('ArrowDown');
   await expect(shell.menuItem('Sign out')).toBeFocused();
   await shell.press('ArrowDown');

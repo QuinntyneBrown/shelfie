@@ -27,6 +27,7 @@
   <sh-tab-bar [links]="navLinks()" />
 }
 <sh-profile-photo-dialog [open]="photoDialogOpen()" (closed)="photoDialogOpen.set(false)" />
+<sh-send-feedback-dialog [open]="feedbackDialogOpen()" (closed)="feedbackDialogOpen.set(false)" />
 <div class="toast-region" role="status" aria-live="polite">
   @if (hiddenToasts() > 0) {
     <button class="btn btn--sm more-toasts" type="button" (click)="showAllToasts.set(true)">

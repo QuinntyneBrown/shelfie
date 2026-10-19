@@ -1,0 +1,47 @@
+<sh-dialog heading="Send feedback" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="send-feedback-form" class="stack" (submit)="$event.preventDefault(); send()" novalidate>
+    @if (problems()) {
+      <sh-banner
+        severity="danger"
+        [title]="'Fix ' + problems() + (problems() === 1 ? ' thing' : ' things')"
+        [message]="scoreError() ?? messageError()"
+      />
+    }
+    @if (failed()) {
+      <sh-banner severity="danger" title="Your feedback wasn’t sent" message="Nothing was lost. Check your connection and try again.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="send()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <p>
+      @if (reader()) {
+        We read every note. Pick a face, write a message, or both! 💌
+      } @else {
+        Tell us how Shelfie works for your family. Pick a score, write a message, or both.
+      }
+    </p>
+    <fieldset class="stack" [disabled]="busy()">
+      <sh-sticker-picker
+        [label]="reader() ? 'How does Shelfie feel?' : 'How is Shelfie to use?'"
+        [options]="faces"
+        [error]="scoreError()"
+        [(value)]="score"
+      />
+      <sh-segmented label="What is it about?" [options]="kinds" [(value)]="kind" />
+      <sh-textarea [label]="messageLabel()" [help]="messageHelp()" [rows]="4" [error]="messageError()" [(value)]="message" />
+    </fieldset>
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="send-feedback-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      Send
+    </button>
+  </div>
+</sh-dialog>
