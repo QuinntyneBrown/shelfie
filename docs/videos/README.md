@@ -33,15 +33,31 @@ Also [25-meet-shelfie](25-meet-shelfie/README.md): the one-minute brand video on
 
 ## Building
 
-Needs Node 24, Chrome (Playwright), `ffmpeg-full` (libass, for captions) and a Python 3.12 venv in `.cache/venv` with `kokoro` and `soundfile` (voice: Kokoro-82M `af_heart` from Hugging Face, run offline).
-
-The brand video (25) is narrated by Azure Speech instead (`--engine azure`, voice `en-US-JennyNeural`, cheerful): the `shelfie-speech` resource in the `shelfie-prod` resource group. Before step 2, `export AZURE_SPEECH_REGION=canadacentral AZURE_SPEECH_KEY=$(az cognitiveservices account keys list -n shelfie-speech -g shelfie-prod --query key1 -o tsv)`.
+Needs Node 24, Chrome (Playwright), `ffmpeg-full` (libass, for captions) and, for the free voice, a Python 3.12 venv in `.cache/venv` with `kokoro` and `soundfile`.
 
 ```sh
 # 1. Record every clip against the real app (fresh seeded database per clip)
 cd e2e && npx playwright test -c ../tools/video-record/playwright.config.ts && cd ..
-# 2. Narration and timing manifest
+# 2. Narration and timing manifest (--engine kokoro is the default; see Voices)
 node tools/video-audio/generate-audio.mjs docs/videos/NN-name
 # 3. Slides + clips + audio + captions -> NN-name.mp4 (--check, --slides-only)
 node tools/video-build/build-video.mjs docs/videos/NN-name
 ```
+
+## Voices
+
+`generate-audio.mjs` has two engines. Either one produces the same MP3 and timing manifest, so a video can switch voice by re-running steps 2 and 3.
+
+| | Kokoro (free) | Azure Speech (paid) |
+|---|---|---|
+| Used for | Journey videos 01-24 | Brand video 25 (chosen from played samples, 2026-10-19) |
+| Voice | Kokoro-82M `af_heart` (American, female), from Hugging Face [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), Apache-2.0 | `en-US-JennyNeural`, `cheerful` style, rate `-5%` |
+| Runs | Offline on this machine; model weights land in `~/.cache/huggingface` on first use | Microsoft's service; the `shelfie-speech` resource (SpeechServices, S0, canadacentral) in the `shelfie-prod` resource group |
+| Cost | Free | Pay-as-you-go, about $15 per million characters (a script is ~1,000) |
+| Command | `node tools/video-audio/generate-audio.mjs docs/videos/NN-name` (`--engine kokoro` is the default) | `node tools/video-audio/generate-audio.mjs docs/videos/NN-name --engine azure` |
+| Knobs | `KOKORO_VOICE` (default `af_heart`), `KOKORO_SPEED` (default `0.8`; the brand video used `0.9` while it was on Kokoro) | `AZURE_VOICE`, `AZURE_STYLE`, `AZURE_RATE` (defaults above; `AZURE_STYLE=` for no style) |
+| Setup | `python3.12 -m venv .cache/venv && .cache/venv/bin/pip install kokoro soundfile`; `espeak-ng` from Homebrew helps pronunciation | `export AZURE_SPEECH_REGION=canadacentral AZURE_SPEECH_KEY=$(az cognitiveservices account keys list -n shelfie-speech -g shelfie-prod --query key1 -o tsv)` after `az login` |
+
+To move the brand video back to the free voice: `KOKORO_SPEED=0.9 node tools/video-audio/generate-audio.mjs docs/videos/25-meet-shelfie`, then rebuild and re-copy the MP4 as its README says. Kokoro runs about 10% faster than Jenny at these settings, so check `build-video.mjs --check` for clip-speed warnings and loosen or tighten the waits in `clips/clips.spec.ts` to match.
+
+Other voices that were auditioned and not chosen: Azure `en-US-AriaNeural` (cheerful) and `en-US-AvaMultilingualNeural`.

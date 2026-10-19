@@ -5,7 +5,7 @@
 **Video:** [25-meet-shelfie.mp4](25-meet-shelfie.mp4) · [Slides](slides.html) · [Transcript](script.md)
 
 ## Why this video exists
-The brand video on the marketing page (`apps/marketing/index.html`, "Shelfie in one minute"): the whole loop in a minute, the way Beanstack's home-page video tells its story. Slides are the design system (`../assets/brand.css` loads `docs/design-system` tokens and components at 2x); screens are the real app with real covers; the voice is Azure Speech's `en-US-JennyNeural` in its cheerful style (see `../README.md` for the key).
+The brand video on the marketing page (`apps/marketing/index.html`, "Shelfie in one minute"): the whole loop in a minute, the way Beanstack's home-page video tells its story. Slides are the design system (`../assets/brand.css` loads `docs/design-system` tokens and components at 2x); screens are the real app with real covers; the voice is Azure Speech's `en-US-JennyNeural` in its cheerful style. It was first narrated by the free Kokoro-82M `af_heart` voice at speed 0.9; `../README.md` ("Voices") has both engines, the key, and how to switch back.
 
 ## Assets on screen
 | File | What to show |
