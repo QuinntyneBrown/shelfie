@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 /** The one-time set-up wizard a parent sees after signing up: five full-screen steps under the auth layout. */
 export class OnboardingPage {
@@ -35,6 +35,7 @@ export class OnboardingPage {
 
   async letsGo() {
     await this.page.getByRole('link', { name: 'Let’s go' }).click();
+    await expect(this.page).not.toHaveURL(/\/onboarding$/);
   }
 
   async skipForNow() {

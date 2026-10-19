@@ -89,7 +89,7 @@ test('Given a phone, when the list drops down, then it is as wide as the Title, 
   await add.typeTitle('Dragon Rider');
   await expect(add.matches()).toHaveCount(3);
 
-  expect(await add.listAsWideAsTitle()).toBe(true);
+  await expect.poll(() => add.listAsWideAsTitle()).toBe(true);
   expect(await add.shortestMatchHeight()).toBeGreaterThanOrEqual(44);
   expect(await add.scrollsSideways()).toBe(false);
 });
