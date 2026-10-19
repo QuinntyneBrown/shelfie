@@ -65,4 +65,32 @@ export class MarketingPage {
       })),
     );
   }
+
+  menuButton() {
+    return this.page.locator('.site-header').getByRole('button', { name: /navigation/ });
+  }
+
+  mobileMenu() {
+    return this.page.locator('#mobile-menu');
+  }
+
+  mobileMenuLink(name: string) {
+    return this.mobileMenu().getByRole('link', { name });
+  }
+
+  isMenuInert() {
+    return this.mobileMenu().evaluate((menu) => (menu as HTMLElement).inert);
+  }
+
+  /** How far the page scrolls sideways, in pixels. */
+  sidewaysScroll() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  }
+
+  /** The sections that animate in, with whether each is fully shown right now. */
+  revealed() {
+    return this.page.locator('[data-reveal]').evaluateAll((items) =>
+      items.map((item) => getComputedStyle(item).opacity === '1' && getComputedStyle(item).transform === 'none'),
+    );
+  }
 }
