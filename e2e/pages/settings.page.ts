@@ -172,7 +172,7 @@ export class SettingsPage {
   }
 
   rewards() {
-    return this.page.getByRole('region', { name: 'Rewards' });
+    return this.page.getByRole('region', { name: 'Rewards', exact: true });
   }
 
   /** A row of the Rewards list. */
@@ -199,5 +199,26 @@ export class SettingsPage {
   /** True when the page is wider than the window, so it scrolls sideways. */
   scrollsSideways() {
     return this.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  }
+
+  streakRewards() {
+    return this.page.getByRole('region', { name: 'Streak rewards', exact: true });
+  }
+
+  /** The row for the 7, 30 or 100 day milestone. */
+  streakReward(days: number) {
+    return this.streakRewards().getByRole('listitem').filter({ hasText: `${days} days in a row` });
+  }
+
+  async setStreakReward(days: number) {
+    await this.streakReward(days).getByRole('button', { name: 'Set a reward' }).click();
+  }
+
+  async editStreakReward(name: string) {
+    await this.streakRewards().getByRole('button', { name: `Edit ${name}` }).click();
+  }
+
+  async removeStreakReward(name: string) {
+    await this.streakRewards().getByRole('button', { name: `Remove ${name}` }).click();
   }
 }

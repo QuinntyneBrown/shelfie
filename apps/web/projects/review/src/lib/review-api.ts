@@ -76,6 +76,13 @@ export interface Badge {
   earnedOn: string | null;
 }
 
+export interface StreakReward {
+  milestone: number;
+  name: string | null;
+  earnedOn: string | null;
+  givenOn: string | null;
+}
+
 export interface ReviewOverview {
   activity: ActivityItem[];
   readerName: string;
@@ -86,6 +93,7 @@ export interface ReviewOverview {
   goal: { name: string; reached: boolean; bookId: string | null } | null;
   thisWeek: { chapters: number; streak: number };
   badges: Badge[];
+  streakRewards: StreakReward[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -102,6 +110,10 @@ export class ReviewApi {
 
   assist(id: string) {
     return this.api.post<Advice>(`/chapter-logs/${id}/assist`, {});
+  }
+
+  giveStreakReward(milestone: number) {
+    return this.api.post<StreakReward>(`/streak-rewards/${milestone}/give`, {});
   }
 
   giveReward(bookId: string, body: { text: string; note: string }) {

@@ -1,0 +1,63 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Streak rewards
+
+class StreakReward {
+  +milestone: 7|30|100
+  +name: string|null
+  +earnedOn: string|null
+  +givenOn: string|null
+}
+
+class StreakRewardsService {
+  {static} +MILESTONES: number[]
+  +streakRewardsOf(db, householdId, now): StreakReward[]
+  +setStreakReward(db, householdId, milestone, name): StreakReward
+  +clearStreakReward(db, householdId, milestone): void
+  +giveStreakReward(db, householdId, milestone): StreakReward
+}
+
+class StreakService {
+  +streakFor(db, householdId, now): number
+}
+
+class SettingsPage {
+  +streakRewards: Signal<StreakReward[]>
+}
+
+class StreakRewardDialog {
+  +open: boolean
+  +milestone: number
+  +editing: StreakReward|null
+  +saved: output
+}
+
+class "sh-reward-card" as RewardCard {
+  +target: number|null
+  +unit: books|days
+  +progress: number|null
+}
+
+class ShelfPage {
+  +streakRewards: Signal<StreakReward[]>
+}
+
+class ReviewPage {
+  +giveStreakReward(milestone): void
+}
+
+StreakRewardsService --> StreakService : streakFor
+StreakRewardsService ..> StreakReward : returns
+SettingsPage *-- StreakRewardDialog
+ShelfPage *-- RewardCard : one per set reward
+ReviewPage ..> StreakReward : earned, not given
+@enduml
