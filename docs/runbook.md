@@ -41,7 +41,7 @@ Caddy requests a certificate for each of the three hosts as soon as its record r
 
 ### Moving the app to app.shelfie.kids (once)
 
-The release that adds the marketing site moves the app from `shelfie.kids` to `app.shelfie.kids` (`docs/adr/0016-marketing-site-and-app-host.md`). Before merging it:
+The release that adds the marketing site moves the app from `shelfie.kids` to `app.shelfie.kids` (`docs/adr/0017-marketing-site-and-app-host.md`). Before merging it:
 
 1. Add `CNAME app shelfie.kids.` at Namecheap and wait until `dig +short app.shelfie.kids` returns the VM's IP.
 2. On the VM set `APP_URL=https://app.shelfie.kids` in `/etc/shelfie/env` and `sudo systemctl restart shelfie`, so reset and invite links point at the new host. Links already sent to `shelfie.kids` keep working through the redirect.

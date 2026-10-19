@@ -1,4 +1,4 @@
-// Traces to: L2-124, L2-125
+// Traces to: L2-132, L2-133
 import { test, expect } from '../support/test';
 import { MarketingPage } from '../pages/marketing.page';
 

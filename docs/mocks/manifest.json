@@ -737,11 +737,11 @@
       "title": "Marketing page",
       "route": "https://www.shelfie.kids/",
       "requirements": [
-        "L2-121",
-        "L2-122",
-        "L2-123",
-        "L2-124",
-        "L2-125"
+        "L2-129",
+        "L2-130",
+        "L2-131",
+        "L2-132",
+        "L2-133"
       ],
       "states": [
         "default",
