@@ -35,6 +35,8 @@ export class StreakRewardDialog {
 
   protected readonly name = signal('');
   protected readonly nameError = signal<string | null>(null);
+  protected readonly amount = signal('');
+  protected readonly amountError = signal<string | null>(null);
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
   protected readonly heading = computed(() =>
@@ -46,6 +48,8 @@ export class StreakRewardDialog {
       if (!this.open()) return;
       this.name.set(this.editing()?.name ?? '');
       this.nameError.set(null);
+      this.amount.set(String(this.editing()?.amount ?? ''));
+      this.amountError.set(null);
       this.failed.set(false);
     });
   }
@@ -54,12 +58,19 @@ export class StreakRewardDialog {
     if (this.busy()) return;
     this.failed.set(false);
     const name = this.name().trim();
+    const text = String(this.amount()).trim();
+    const amount = text ? Number(text) : null;
     this.nameError.set(name ? null : 'Name the reward.');
-    if (this.nameError()) return;
+    this.amountError.set(
+      amount === null || (Number.isInteger(amount) && amount >= 1 && amount <= 1000)
+        ? null
+        : 'Enter whole dollars from 1 to 1000.',
+    );
+    if (this.nameError() || this.amountError()) return;
 
     this.busy.set(true);
     try {
-      this.saved.emit(await this.api.set(this.milestone(), name));
+      this.saved.emit(await this.api.set(this.milestone(), name, amount));
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
       this.failed.set(true);
