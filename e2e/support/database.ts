@@ -55,6 +55,15 @@ export async function questionsAnswered(bookId: string, chapter: number): Promis
   return answers.map((r) => r.question_text);
 }
 
+/** The answer texts stored with a logged chapter, in question order. */
+export async function answersGiven(bookId: string, chapter: number): Promise<string[]> {
+  const answers = await rows<{ text: string }>(
+    'SELECT a.text FROM answer a JOIN chapter_log c ON c.id = a.chapter_log_id WHERE c.book_id = $1 AND c.chapter_number = $2 ORDER BY a.position',
+    [bookId, chapter],
+  );
+  return answers.map((r) => r.text);
+}
+
 /** Rewrites when Nia's logged chapters were read so that they fall on exactly these days ago. */
 export async function setReadingDays(daysAgo: number[]) {
   await db.query("UPDATE chapter_log SET read_on = '2000-01-01' WHERE book_id IN (SELECT id FROM book WHERE household_id = 'h1')");

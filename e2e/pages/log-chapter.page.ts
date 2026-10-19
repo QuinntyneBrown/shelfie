@@ -172,4 +172,83 @@ export class LogChapterPage {
   async backToShelf() {
     await this.page.getByRole('link', { name: 'Back to my shelf' }).click();
   }
+
+  /** Replaces the browser's speech recognition with one the test drives; call before the page loads. */
+  async useFakeSpeech() {
+    await this.page.addInitScript(() => {
+      class FakeRecognition {
+        lang = '';
+        interimResults = false;
+        continuous = false;
+        onresult: ((event: unknown) => void) | null = null;
+        onerror: ((event: unknown) => void) | null = null;
+        onend: (() => void) | null = null;
+        start() {
+          const w = window as unknown as { __fakeSpeech: FakeRecognition[] };
+          (w.__fakeSpeech ??= []).push(this);
+        }
+        stop() {
+          this.onend?.();
+        }
+      }
+      Object.assign(window, { SpeechRecognition: FakeRecognition, webkitSpeechRecognition: FakeRecognition });
+    });
+  }
+
+  /** Makes the browser report that it cannot recognise speech; call before the page loads. */
+  async useNoSpeech() {
+    await this.page.addInitScript(() => {
+      Object.assign(window, { SpeechRecognition: undefined, webkitSpeechRecognition: undefined });
+    });
+  }
+
+  /** The microphone button under an answer; pressed while it listens. */
+  dictateButton(position: number, state: { pressed?: boolean } = {}) {
+    return this.page.getByRole('button', { name: `Speak your answer to question ${position}`, ...state });
+  }
+
+  async dictate(position: number) {
+    await this.dictateButton(position).click();
+  }
+
+  /** What the speech recogniser has heard so far, as the latest recogniser reports it. */
+  async hear(words: string) {
+    await this.page.evaluate((heard) => {
+      const all = (window as unknown as { __fakeSpeech: { onresult: (e: unknown) => void }[] }).__fakeSpeech;
+      all[all.length - 1].onresult({ resultIndex: 0, results: [[{ transcript: heard }]] });
+    }, words);
+  }
+
+  /** The speech recogniser fails, as it does when the microphone is refused. */
+  async refuseMicrophone() {
+    await this.page.evaluate(() => {
+      const all = (window as unknown as { __fakeSpeech: { onerror: (e: unknown) => void; onend: () => void }[] }).__fakeSpeech;
+      const latest = all[all.length - 1];
+      latest.onerror({ error: 'not-allowed' });
+      latest.onend();
+    });
+  }
+
+  async stopSpeech() {
+    await this.page.evaluate(() => {
+      const all = (window as unknown as { __fakeSpeech: { onend: () => void }[] }).__fakeSpeech;
+      all[all.length - 1].onend();
+    });
+  }
+
+  speechLanguage() {
+    return this.page.evaluate(() => (window as unknown as { __fakeSpeech: { lang: string }[] }).__fakeSpeech.at(-1)?.lang);
+  }
+
+  listeningHint() {
+    return this.page.getByText('Listening… tap to stop');
+  }
+
+  cannotHearYou() {
+    return this.page.getByText('Shelfie can’t hear you. You can type your answer instead.');
+  }
+
+  listeningAnnouncement() {
+    return this.page.getByRole('status').filter({ hasText: /^(Listening|Stopped listening)$/ });
+  }
 }

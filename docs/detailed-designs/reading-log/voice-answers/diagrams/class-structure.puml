@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Voice answers
+
+class "sh-question-field" as QuestionField {
+  +number: number
+  +label: string
+  +error: string|null
+  +maxlength: number
+  +value: model<string>
+  +supported: boolean
+  +listening: Signal<boolean>
+  +micError: Signal<string|null>
+  +toggleDictation(): void
+  -start(): void
+  -stop(): void
+  -onResult(words: string): void
+  -onError(): void
+}
+
+class SpeechRecognition <<browser>> {
+  +lang: string
+  +interimResults: boolean
+  +continuous: boolean
+  +start(): void
+  +stop(): void
+  +onresult
+  +onerror
+  +onend
+}
+
+class LogChapterPage {
+  +answers: Signal<string[]>
+  +setAnswer(i: number, text: string): void
+}
+
+QuestionField ..> SpeechRecognition : creates one per start
+LogChapterPage *-- QuestionField : one per question
+LogChapterPage ..> QuestionField : binds value
+@enduml

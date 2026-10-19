@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — Dictate an answer
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+box "Frontend — Shelfie web" #E0F2FE
+  participant "sh-question-field" as field
+  participant "LogChapterPage" as page
+end box
+box "Browser" #FFF4E5
+  participant "SpeechRecognition" as speech
+end box
+
+reader -> field : Choose "Speak your answer"
+field -> speech : new, lang = document lang, interimResults, continuous
+field -> speech : start()
+field --> reader : "Listening… tap to stop" (L2-093)
+alt microphone allowed
+  reader -> speech : Speaks
+  speech --> field : result event (words so far)
+  field -> field : value = answer at start + space + words, cut to maxlength
+  field -> page : valueChange
+  page -> page : setAnswer, autosave draft (L2-011)
+  reader -> field : Choose the button again
+  field -> speech : stop()
+  speech --> field : end event
+  field --> reader : Idle; words stay (L2-093)
+else refused, none found or error
+  speech --> field : error event, then end
+  field --> reader : "Shelfie can’t hear you. You can type your answer instead." (L2-094)
+end
+@enduml

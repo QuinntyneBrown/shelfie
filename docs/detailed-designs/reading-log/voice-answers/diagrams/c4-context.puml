@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Voice answers
+
+Person(reader, "Reader", "Speaks her answer instead of typing it, then edits and sends it")
+System_Ext(browser, "Chrome speech recognition", "Turns her speech into text; Shelfie never receives the audio")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, browser, "Speaks to", "Microphone")
+Rel(browser, shelfie, "Gives recognised words to the page", "In the browser")
+Rel(reader, shelfie, "Logs the chapter with her answers", "HTTPS")
+@enduml

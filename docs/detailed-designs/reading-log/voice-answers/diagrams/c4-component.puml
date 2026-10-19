@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Voice answers
+
+System_Ext(speech, "Browser speech recognition", "SpeechRecognition")
+Container(api, "Shelfie API", "Express", "POST /api/books/:id/chapters/:n (unchanged)")
+Container_Boundary(web, "Shelfie web") {
+  Component(page, "LogChapterPage", "Angular page (log-chapter)", "Binds each answer's value; drafts and submit unchanged")
+  Component(field, "sh-question-field", "Angular component (components)", "Textarea, counter, error slot; microphone button and dictation state")
+  Component(css, "components.css", "Stylesheet", ".mic-dot pulse")
+}
+Rel(page, field, "[value], (valueChange)")
+Rel(field, speech, "start, stop, result and error events")
+Rel(field, css, "Uses")
+Rel(page, api, "POST the chapter log", "JSON/HTTPS")
+@enduml

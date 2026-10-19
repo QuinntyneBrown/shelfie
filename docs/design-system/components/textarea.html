@@ -98,7 +98,7 @@
       <p class="ds-lead">A multi-line box for words that need room: Nia's answers about a chapter, Dad's note back to her, a question he adds to a book.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;textarea&gt;</code></span></div>
       <ul class="ds-toc">
-        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#dictation">Dictation</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
 
@@ -179,7 +179,25 @@
       <ul>
         <li><b>Read-only</b> is the submitting state: when Nia presses "I’m done!" her answers stay on screen, unchangeable, until the save finishes.</li>
         <li><b>Invalid</b> only ever applies to question 1 on Log a chapter and to a too-short question in Add a question.</li>
+        <li><b>Dictation</b> adds a microphone button under answers; see <a href="#dictation">below</a>.</li>
         <li><b>Disabled</b> is not used by the mocks for textareas; it is shown for completeness of the shared field styles.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="dictation"><h2><a href="#dictation">Dictation (answers only)</a></h2>
+      <p>Under each answer on Log a chapter, a ghost <a href="button.html">button</a> lets Nia speak instead of type (L2-093). The browser turns her voice into text; the words are added to the box and stay editable. The button only exists in browsers that support speech recognition (L2-094).</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div class="field" style="width: 100%;"><label class="field__label" for="ta-dict-idle"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label><textarea class="textarea" id="ta-dict-idle" rows="3"></textarea><div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div></div>
+          <div class="field" style="width: 100%;"><label class="field__label" for="ta-dict-on"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label><textarea class="textarea" id="ta-dict-on" rows="3">Mr Tumnus, because he was kind to Lucy</textarea><div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="true" aria-label="Speak your answer to question 2"><span class="mic-dot" aria-hidden="true"></span>Speak your answer</button><span class="field__help">Listening… tap to stop</span></div></div>
+          <div class="field" style="width: 100%;"><label class="field__label" for="ta-dict-denied"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label><textarea class="textarea" id="ta-dict-denied" rows="3" aria-describedby="ta-dict-denied-error"></textarea><div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div><div class="field__error" id="ta-dict-denied-error">Shelfie can’t hear you. You can type your answer instead.</div></div>
+        </div>
+        <div class="ds-example__caption"><span>Idle, listening and refused.</span></div>
+      </div>
+      <ul>
+        <li><b>Listening</b> is <code>aria-pressed="true"</code> with a pulsing <code>.mic-dot</code> in <code>--color-danger-solid</code> in place of the microphone icon, and the help text "Listening… tap to stop" beside the button. The button keeps its name, so a screen reader hears one button whose state changes. The pulse stops under reduced motion.</li>
+        <li>The button is the normal 44px height. A polite live region announces "Listening" and "Stopped listening".</li>
+        <li>Refusal reuses <code>.field__error</code>; what she typed stays.</li>
       </ul>
     </section>
 

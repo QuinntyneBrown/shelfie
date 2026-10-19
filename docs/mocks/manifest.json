@@ -218,6 +218,8 @@
       "route": "/books/:id/chapters/:n/log",
       "states": [
         "default",
+        "dictating",
+        "dictation-denied",
         "loading",
         "error",
         "invalid",

@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="log-chapter">
 <meta name="mock:state" content="default">
-<meta name="description" content="Chapter 12 of The Lion, the Witch and the Wardrobe: pick the day, answer four questions, one big Done button.">
+<meta name="description" content="Chapter 12 of The Lion, the Witch and the Wardrobe: pick the day, answer four questions by typing or by speaking, one big Done button.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
 <link rel="stylesheet" href="../../assets/mock.css">
@@ -42,18 +42,22 @@
     <div class="field">
   <label class="field__label" for="q1"><span class="qa__num">1.</span> What happened in this chapter?</label>
   <textarea class="textarea" id="q1" name="q1" rows="3" required></textarea>
+  <div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div>
   
 </div><div class="field">
   <label class="field__label" for="q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label>
   <textarea class="textarea" id="q2" name="q2" rows="3" required></textarea>
+  <div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div>
   
 </div><div class="field">
   <label class="field__label" for="q3"><span class="qa__num">3.</span> What do you think will happen next?</label>
   <textarea class="textarea" id="q3" name="q3" rows="3" required></textarea>
+  <div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 3"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div>
   
 </div><div class="field">
   <label class="field__label" for="q4"><span class="qa__num">4.</span> Where did the children go in this chapter?</label>
   <textarea class="textarea" id="q4" name="q4" rows="3" required></textarea>
+  <div class="cluster"><button class="btn btn--ghost" type="button" aria-pressed="false" aria-label="Speak your answer to question 4"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button></div>
   
 </div>
   </fieldset>
@@ -68,7 +72,7 @@
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Log a chapter</span>
-  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="finished.html">finished</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="dictating.html">dictating</a></li><li><a href="dictation-denied.html">dictation-denied</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="finished.html">finished</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>
