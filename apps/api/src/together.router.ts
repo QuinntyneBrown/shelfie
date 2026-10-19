@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { helperRewardOf } from './helper-reward.service.ts';
 import { Problem } from './problem.ts';
+import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { requireRole } from './authz.ts';
 import { confirmSession, KINDS, logSession, partnersOf, removeSession, sessionsOf, today } from './together.service.ts';
@@ -16,7 +17,7 @@ const sessionSchema = z.object({
 });
 
 /** Reading together: readers log sessions with each other; everyone reads their own (L2-137 to L2-146). */
-export function togetherRouter(db: Pool) {
+export function togetherRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
 
@@ -35,7 +36,11 @@ export function togetherRouter(db: Pool) {
     if (role !== 'reader') return res.status(403).json({ type: 'readers-only' });
     const body = sessionSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    await answer(res, async () => res.status(201).json(await logSession(db, householdId, profileId, body.data)));
+    await answer(res, async () => {
+      const session = await logSession(db, householdId, profileId, body.data);
+      await notifier.readTogether(householdId, session.id);
+      res.status(201).json(session);
+    });
   });
 
   router.post('/sessions/:id/confirm', async (req, res) => {

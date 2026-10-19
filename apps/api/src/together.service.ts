@@ -104,8 +104,9 @@ export async function sessionsOf(db: Db, householdId: string, profileId: string,
   return rows.map(toSession);
 }
 
-async function sessionById(db: Db, id: string): Promise<Session> {
-  return toSession((await get<Row>(db, `${SESSION_SELECT} WHERE s.id = $1`, [id]))!);
+/** The session with this id, as a list of none or one. */
+export async function sessionsById(db: Db, id: string): Promise<Session[]> {
+  return (await all<Row>(db, `${SESSION_SELECT} WHERE s.id = $1`, [id])).map(toSession);
 }
 
 /** Logs a session for a reader with another reader of her household, within the day's limit (L2-137). */
@@ -127,7 +128,7 @@ export async function logSession(db: Db, householdId: string, profileId: string,
     'INSERT INTO reading_session (id, household_id, logged_by, partner_id, kind, minutes, read_on, logged_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [id, householdId, profileId, input.partnerId, input.kind, input.minutes, input.readOn, new Date().toISOString()],
   );
-  return sessionById(db, id);
+  return (await sessionsById(db, id))[0]!;
 }
 
 /** The other reader says a session is right; it never adds a session or minutes (L2-139). */

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireRole } from './authz.ts';
 import { giveHelperReward, helperRewardOf, setHelperReward } from './helper-reward.service.ts';
 import { Problem } from './problem.ts';
+import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { validationProblem } from './validation.ts';
 
@@ -13,7 +14,7 @@ const helperRewardSchema = z.object({
 });
 
 /** The household's helper reward: both roles read it, only parents set it (L2-141, L2-146). */
-export function helperRewardRouter(db: Pool) {
+export function helperRewardRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
 
@@ -30,9 +31,10 @@ export function helperRewardRouter(db: Pool) {
   });
 
   router.post('/give', requireRole('parent'), async (_req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const { householdId, name } = res.locals['session'] as RequestSession;
     try {
-      const { reward } = await giveHelperReward(db, householdId);
+      const { reward, earnedBy } = await giveHelperReward(db, householdId);
+      await notifier.helperReward(householdId, name, earnedBy.name);
       res.json(reward);
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
