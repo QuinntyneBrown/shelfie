@@ -42,8 +42,14 @@ class OAuthProvider {
   +clientSecret: string
   +authorizeUrl: string
   +tokenUrl: string
+  +userInfoUrl: string | undefined
   +scope: string
-  +identity(tokens): Promise<ProviderIdentity>
+}
+class OAuthModule <<oauth.ts>> {
+  +configuredProviders(env, endpoints): OAuthProvider[]
+  +pkce(): {verifier, challenge}
+  +authorizeUrl(provider, redirectUri, state, challenge): string
+  +exchangeCode(provider, code, verifier, redirectUri): Promise<ProviderIdentity>
 }
 class ProviderIdentity {
   +subject: string
@@ -60,7 +66,7 @@ class OAuthCookie <<shelfie_oauth>> {
 }
 class AuthService {
   +signInWithProvider(provider, identity, remember): Promise<Session>
-  +freeUsername(db, email): Promise<string>
+  +freeUsername(db, localPart): Promise<string>
 }
 class ProfileProvider {
   +provider: ProviderName
@@ -94,7 +100,8 @@ SignInPage ..> ProviderIcon : composes
 SignUpPage ..> Button : composes
 SignUpPage ..> ProviderIcon : composes
 SignInPage ..> OAuthCookie : start sets
-OAuthProvider --> ProviderIdentity : exchangeCode yields
+OAuthModule ..> OAuthProvider : reads
+OAuthModule --> ProviderIdentity : exchangeCode yields
 AuthService ..> ProviderIdentity : resolves
 AuthService --> ProfileProvider : finds or creates
 AuthService --> Household : creates
