@@ -1,0 +1,104 @@
+/* Shelfie die-cut stickers — shared stage + brand tokens.
+   Colours are the real hex values of docs/design-system/tokens/tokens.css
+   (and docs/mocks/assets/logo.svg). The typeface is Nunito, the first web
+   font in --font-family-display, bundled here so rendering never touches the
+   network. */
+
+@font-face {
+  font-family: "Nunito";
+  src: url("fonts/Nunito-Variable.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-display: block;
+}
+
+:root {
+  --violet-50: #f5f3ff;   /* --palette-violet-50   */
+  --violet-300: #c4b5fd;  /* --palette-violet-300  */
+  --violet-600: #7c3aed;  /* --palette-violet-600, the logo tile, --color-accent */
+  --violet-800: #5b21b6;  /* --palette-violet-800, the logo's shelf shadow */
+  --cover-sage: #cfe8d5;
+  --cover-rose: #f9d5e0;
+  --cover-sky: #cfe6fb;
+  --cover-sun: #fbe7b2;
+  --cover-lilac: #e3d9fb;
+  --cover-mint: #cdf1ec;
+  --cover-peach: #fddcc8;
+  --amber-300: #f7c15c;   /* --palette-amber-300   */
+  --amber-500: #b26f00;   /* --palette-amber-500   */
+  --ink: #1a1e26;         /* --palette-gray-900 = --color-fg-on-cover */
+  --paper: #f6f7f9;       /* --palette-gray-50 = --color-bg-canvas */
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* The stage is exactly the artwork bounding box. The render script
+   screenshots this element, so its size is the exported pixel size. */
+.stage {
+  width: 900px;
+  height: 900px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.sticker {
+  display: block;
+  width: 900px;
+  height: 900px;
+}
+
+/* Preview mode — only ever used for the -preview.png files. Never applied
+   to the print export: the drop shadow would bake grey pixels into the
+   transparent edge. */
+body.preview {
+  background:
+    linear-gradient(rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+    var(--paper);
+  background-size: 80px 80px;
+}
+
+body.preview .stage {
+  width: 1020px;
+  height: 1020px;
+}
+
+body.preview .sticker {
+  filter: drop-shadow(0 14px 22px rgba(26, 30, 38, 0.22));
+}
+
+/* --- Shared artwork idioms -------------------------------------------- */
+
+/* Every silhouette piece is painted white with a fat round-joined stroke
+   and paint-order:stroke, so the stroke sits entirely outside the shape.
+   Overlapping white pieces union into one continuous die-cut outline. */
+.keyline {
+  fill: #ffffff;
+  stroke: #ffffff;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke;
+}
+
+/* Width = the shape's own art stroke + --cut-extra, half of which shows as
+   white beyond the artwork edge: 65 canvas px (0.217in at 300 DPI).
+
+   --cut-extra is in ART-SPACE units. All three Shelfie stickers are drawn
+   1:1 on the 900px canvas, so the shared 130px is right for each; a sticker
+   that ever scales its art must override it with 130px / its own scale. */
+:root { --cut-extra: 130px; }
+.cut-flat { stroke-width: var(--cut-extra); }                /* no art stroke */
+.cut-band { stroke-width: calc(8px + var(--cut-extra)); }    /* banner, chip  */
+.cut-book { stroke-width: calc(6px + var(--cut-extra)); }    /* book covers   */
+.cut-star { stroke-width: calc(16px + var(--cut-extra)); }   /* the gold star */
+.cut-badge { stroke-width: calc(10px + var(--cut-extra)); }  /* round badge   */
+
+text {
+  paint-order: stroke;
+  stroke-linejoin: round;
+}

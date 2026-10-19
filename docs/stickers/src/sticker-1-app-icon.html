@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shelfie sticker — app icon</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!--
+        Sticker 1 — the Shelfie app icon at badge scale on a rose ribbon.
+        The tile and books are docs/mocks/assets/logo.svg verbatim, in a nested
+        <svg> that maps its 64-unit viewBox onto this canvas with
+        x' = 8.5x + 178, y' = 8.5y + 130 (544px square, rx 15 -> 127.5px).
+        Colours (tokens.css): tile #7c3aed violet-600, shelf shadow #5b21b6
+        violet-800, books #cfe8d5 sage / #fbe7b2 sun / #f9d5e0 rose with the
+        logo's #78d596 and #f7bf57 bands, banner #f9d5e0 cover-rose edged
+        #c4b5fd violet-300, sparkles #f7c15c amber-300 and #c4b5fd.
+        "Shelfie" is #5b21b6 on #f9d5e0: 6.7:1, WCAG AA.
+        Drawn 1:1 on the canvas, so --cut-extra keeps its 130px default.
+      -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>The Shelfie app icon on a ribbon reading Shelfie</title>
+
+        <!-- Centre the cut on the canvas: drawn as-is, the die cut's margins
+             were T35 B93. A pure translate, so the rim stays 65px. -->
+        <g transform="translate(0 29)">
+          <defs>
+            <!-- Arc for the edge URL, down the middle of the white rim below the
+                 ribbon. The ribbon's underlay bottom edge runs (110,738) ->
+                 control (450,713) -> (790,738), plus a 4px half-stroke; this arc
+                 parallels it so the caps sit centred in the 65px rim. -->
+            <path id="urlArc" fill="none" d="M 230 783 Q 450 759 670 783" />
+          </defs>
+
+          <!-- ── Die-cut silhouette ──────────────────────────────────────────
+               White fill + fat white stroke with paint-order:stroke, so the
+               stroke lies wholly outside each shape. The pieces all overlap,
+               so their union is one continuous cut line. -->
+          <g>
+            <path
+              class="keyline cut-flat"
+              d="M735 100 Q742 133 775 140 Q742 147 735 180 Q728 147 695 140 Q728 133 735 100 Z"
+            />
+            <path
+              class="keyline cut-flat"
+              d="M150 294 Q156 324 186 330 Q156 336 150 366 Q144 336 114 330 Q144 324 150 294 Z"
+            />
+            <rect class="keyline cut-flat" x="178" y="130" width="544" height="544" rx="127.5" />
+            <path
+              class="keyline cut-band"
+              d="M110 638 Q450 613 790 638 L745 688 L790 738 Q450 713 110 738 L155 688 Z"
+            />
+          </g>
+
+          <!-- ── The app icon, logo.svg verbatim ────────────────────────────── -->
+          <svg x="178" y="130" width="544" height="544" viewBox="0 0 64 64">
+            <rect width="64" height="64" rx="15" fill="#7c3aed" />
+            <rect x="10" y="51.5" width="45" height="3" rx="1.5" fill="#5b21b6" opacity=".55" />
+            <rect x="12" y="21" width="11" height="28" rx="1.6" fill="#cfe8d5" />
+            <rect x="12" y="27" width="11" height="2.2" fill="#78d596" />
+            <rect x="27" y="14" width="11" height="35" rx="1.6" fill="#fbe7b2" />
+            <rect x="27" y="21" width="11" height="3" fill="#f7bf57" />
+            <rect x="41" y="23" width="11" height="26" rx="1.6" fill="#f9d5e0" transform="rotate(11 41 49)" />
+            <rect x="9" y="49.5" width="46" height="3.4" rx="1.7" fill="#fefdfe" />
+          </svg>
+
+          <!-- ── Sparkles, straddling the tile's edge so they stay attached ── -->
+          <path
+            d="M735 100 Q742 133 775 140 Q742 147 735 180 Q728 147 695 140 Q728 133 735 100 Z"
+            fill="#f7c15c"
+          />
+          <path
+            d="M150 294 Q156 324 186 330 Q156 336 150 366 Q144 336 114 330 Q144 324 150 294 Z"
+            fill="#c4b5fd"
+          />
+
+          <!-- ── Ribbon ────────────────────────────────────────────────────── -->
+          <!-- A violet-300 underlay 8px below the face, the chunky edge of
+               Shelfie's buttons. -->
+          <path
+            d="M110 638 Q450 613 790 638 L745 688 L790 738 Q450 713 110 738 L155 688 Z"
+            fill="#c4b5fd"
+            stroke="#c4b5fd"
+            stroke-width="8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M110 630 Q450 605 790 630 L745 680 L790 730 Q450 705 110 730 L155 680 Z"
+            fill="#f9d5e0"
+            stroke="#c4b5fd"
+            stroke-width="8"
+            stroke-linejoin="round"
+          />
+          <text
+            x="450"
+            y="668"
+            text-anchor="middle"
+            dominant-baseline="central"
+            font-family="'Nunito'"
+            font-weight="900"
+            font-size="78"
+            letter-spacing="-0.5"
+            fill="#5b21b6"
+          >
+            Shelfie
+          </text>
+
+          <!-- ── Edge URL ────────────────────────────────────────────────── -->
+          <text
+            text-anchor="middle"
+            font-family="'Nunito'"
+            font-weight="800"
+            font-size="28"
+            letter-spacing="7"
+            fill="#000000"
+          >
+            <textPath href="#urlArc" startOffset="50%">SHELFIE.KIDS</textPath>
+          </text>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>
