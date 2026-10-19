@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-146
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-146
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -78,6 +78,8 @@ interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: Standing[];
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
   insights: {
     topReader: { name: string; count: number } | null;
     climber: { name: string; gain: number } | null;
@@ -384,4 +386,106 @@ test('Given only Nia takes part, then Theo’s reading never appears in the insi
   const { insights } = (await view(cookie)).current!;
   assert.equal(insights?.topReader?.name, 'Nia');
   assert.equal(insights?.streak?.name, 'Nia');
+});
+
+test('Given a challenge whose last day has passed, when it is read, then it has ended, counts nothing more, and a new one can start', async () => {
+  const cookie = await dad();
+  const created = await start(cookie, { ...RACE, length: 'week' });
+  await db.pool.query('UPDATE challenge SET starts_on = $1, ends_on = $2 WHERE id = $3', [day(-7), day(-1), created.id]);
+  await readOn({});
+  await logged('p-nia', `${day(-2)}T12:00:00.000Z`);
+  await logged('p-theo', now());
+
+  const { current } = await view(cookie);
+  assert.equal(current?.ended, true);
+  assert.equal(current?.insights, null);
+  assert.deepEqual(counts(current!), [
+    ['Nia', 1, 1, true],
+    ['Theo', 0, 2, false],
+  ]);
+  assert.deepEqual(current?.winners, ['p-nia']);
+  assert.ok((await get<{ ended_at: string | null }>(db.pool, 'SELECT ended_at FROM challenge WHERE id = $1', [created.id]))?.ended_at);
+  await start(cookie, { ...RACE, name: 'Next' });
+});
+
+test('Given a running challenge, when Dad ends it now, then today is its last day, later chapters count for no one, and it cannot end twice', async () => {
+  const cookie = await dad();
+  const created = await start(cookie);
+  await logged('p-theo', now());
+  const response = await call(cookie, 'POST', `/challenges/${created.id}/end`);
+  assert.equal(response.status, 200);
+  const ended = (await response.json()) as Challenge;
+  assert.equal(ended.ended, true);
+  assert.equal(ended.endsOn, TODAY());
+  assert.deepEqual(ended.winners, ['p-theo']);
+
+  await logged('p-nia', new Date(Date.now() + 1000).toISOString());
+  await logged('p-nia', new Date(Date.now() + 2000).toISOString());
+  assert.deepEqual(counts((await view(cookie)).current!), [
+    ['Theo', 1, 1, true],
+    ['Nia', 0, 2, false],
+  ]);
+
+  const again = await call(cookie, 'POST', `/challenges/${created.id}/end`);
+  assert.equal(again.status, 409);
+  assert.equal(((await again.json()) as { type: string }).type, 'challenge-ended');
+});
+
+test('Given an ended challenge, then the winners are every leader, none when nothing counted, and a lone reader only at the goal', async () => {
+  const cookie = await dad();
+  const empty = await start(cookie, { ...RACE, name: 'Empty' });
+  assert.deepEqual(((await (await call(cookie, 'POST', `/challenges/${empty.id}/end`)).json()) as Challenge).winners, []);
+
+  const tie = await start(cookie);
+  await logged('p-nia', now());
+  await logged('p-theo', now());
+  assert.deepEqual(((await (await call(cookie, 'POST', `/challenges/${tie.id}/end`)).json()) as Challenge).winners, ['p-nia', 'p-theo']);
+
+  // The window is days, so Nia's chapter from earlier today counts in the next challenges too.
+  const short = await start(cookie, { ...RACE, name: 'Short', goal: 2, readerIds: ['p-nia'] });
+  assert.deepEqual(((await (await call(cookie, 'POST', `/challenges/${short.id}/end`)).json()) as Challenge).winners, []);
+
+  const reached = await start(cookie, { ...RACE, name: 'Reached', goal: 1, readerIds: ['p-nia'] });
+  assert.deepEqual(((await (await call(cookie, 'POST', `/challenges/${reached.id}/end`)).json()) as Challenge).winners, ['p-nia']);
+});
+
+test('Given an ended challenge with a winner, when Dad gives a reward, then it is stored once and shows on the challenge', async () => {
+  const cookie = await dad();
+  const created = await start(cookie);
+  const early = await call(cookie, 'POST', `/challenges/${created.id}/reward`, { text: 'Ice cream Saturday' });
+  assert.equal(early.status, 409);
+  assert.equal(((await early.json()) as { type: string }).type, 'challenge-running');
+
+  await logged('p-nia', now());
+  await call(cookie, 'POST', `/challenges/${created.id}/end`);
+  assert.equal((await call(cookie, 'POST', `/challenges/${created.id}/reward`, { text: '  ' })).status, 400);
+  const given = await call(cookie, 'POST', `/challenges/${created.id}/reward`, { text: 'Ice cream Saturday', note: 'Well read!' });
+  assert.equal(given.status, 201);
+  assert.deepEqual(((await given.json()) as Challenge).reward, { text: 'Ice cream Saturday', note: 'Well read!' });
+  assert.deepEqual((await view(await nia())).current?.reward, { text: 'Ice cream Saturday', note: 'Well read!' });
+
+  const twice = await call(cookie, 'POST', `/challenges/${created.id}/reward`, { text: 'Movie night' });
+  assert.equal(twice.status, 409);
+  assert.equal(((await twice.json()) as { type: string }).type, 'reward-exists');
+});
+
+test('Given an ended challenge nobody won, then no reward can be given', async () => {
+  const cookie = await dad();
+  const created = await start(cookie);
+  await call(cookie, 'POST', `/challenges/${created.id}/end`);
+  const response = await call(cookie, 'POST', `/challenges/${created.id}/reward`, { text: 'Ice cream Saturday' });
+  assert.equal(response.status, 409);
+  assert.equal(((await response.json()) as { type: string }).type, 'no-winner');
+});
+
+test('Given a reader or another household, then ending and rewarding are refused and nothing changes', async () => {
+  const cookie = await dad();
+  const created = await start(cookie);
+  for (const path of [`/challenges/${created.id}/end`, `/challenges/${created.id}/reward`]) {
+    const reader = await call(await nia(), 'POST', path, { text: 'Sweets' });
+    assert.equal(reader.status, 403, path);
+    const other = await call(await zedsDad(), 'POST', path, { text: 'Sweets' });
+    assert.equal(other.status, 404, path);
+  }
+  assert.equal((await view(cookie)).current?.ended, false);
 });

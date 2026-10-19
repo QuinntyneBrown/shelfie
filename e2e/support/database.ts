@@ -184,3 +184,15 @@ export async function logChaptersAs(readerId: string, count: number, at = new Da
     ]);
   }
 }
+
+/** Gives a challenge's winners a reward, as Dad's Give a reward does. */
+export async function rewardChallengeInDatabase(id: string, text: string) {
+  await db.query('UPDATE challenge SET reward_text = $1, rewarded_at = $2 WHERE id = $3', [text, new Date().toISOString(), id]);
+}
+
+/** Moves every chapter Nia's household has logged to long ago, so only the chapters a test logs fall inside a challenge. */
+export async function forgetSeededLogs() {
+  await db.query(
+    "UPDATE chapter_log SET read_on = '2000-01-01', logged_at = '2000-01-01T12:00:00.000Z' WHERE book_id IN (SELECT id FROM book WHERE household_id = 'h1')",
+  );
+}

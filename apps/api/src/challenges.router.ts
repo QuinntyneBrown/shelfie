@@ -2,7 +2,8 @@ import { Router, type Response } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { challengesOf, createChallenge } from './challenges.service.ts';
+import { challengesOf, closeExpired, createChallenge, endChallenge, rewardChallenge } from './challenges.service.ts';
+import { giveRewardSchema } from './review.router.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { validationProblem } from './validation.ts';
@@ -35,13 +36,25 @@ export function challengesRouter(db: Pool) {
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
 
   router.get('/', async (_req, res) => {
+    await closeExpired(db, householdOf(res));
     await replying(res, () => challengesOf(db, householdOf(res)));
   });
 
   router.post('/', requireRole('parent'), async (req, res) => {
     const body = challengeSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
+    await closeExpired(db, householdOf(res));
     await replying(res, () => createChallenge(db, householdOf(res), body.data), 201);
+  });
+
+  router.post('/:id/end', requireRole('parent'), async (req, res) => {
+    await replying(res, () => endChallenge(db, householdOf(res), String(req.params['id'])));
+  });
+
+  router.post('/:id/reward', requireRole('parent'), async (req, res) => {
+    const body = giveRewardSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    await replying(res, () => rewardChallenge(db, householdOf(res), String(req.params['id']), body.data.text, body.data.note), 201);
   });
 
   return router;

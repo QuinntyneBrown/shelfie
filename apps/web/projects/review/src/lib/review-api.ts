@@ -107,6 +107,9 @@ export interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: LeaderboardRow[];
+  /** The readers who won, once it has ended. */
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
   insights: {
     topReader: { name: string; count: number } | null;
     climber: { name: string; gain: number } | null;
@@ -158,6 +161,14 @@ export class ReviewApi {
 
   challenges() {
     return this.api.get<Challenges>('/challenges');
+  }
+
+  endChallenge(id: string) {
+    return this.api.post<Challenge>(`/challenges/${id}/end`, {});
+  }
+
+  rewardChallenge(id: string, body: { text: string; note: string }) {
+    return this.api.post<Challenge>(`/challenges/${id}/reward`, body);
   }
 
   startChallenge(body: { name: string; measure: string; goal: number; length: string; readerIds: string[] }) {

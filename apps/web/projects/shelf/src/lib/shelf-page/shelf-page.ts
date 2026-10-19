@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -33,6 +33,7 @@ import { Challenges, GalleryReward, GalleryView, ShelfApi, ShelfResponse, Unseen
     DatePipe,
     EmptyState,
     Leaderboard,
+    NgTemplateOutlet,
     Progress,
     PushOffer,
     Progress,
@@ -97,18 +98,30 @@ export class ShelfPage {
 
   /** The household's challenges, loaded beside the shelf; a failure only hides the card. */
   private readonly challenges = signal<Challenges | null>(null);
-  /** The challenge she takes part in, while it runs (L2-144). */
+  /** The challenge she takes part in, while it runs and for 7 days after it ends (L2-144). */
   protected readonly challenge = computed(() => {
-    const challenge = this.challenges()?.current;
+    const challenges = this.challenges();
+    const challenge = challenges?.current;
     const me = this.session.current()?.profileId;
-    if (!challenge || challenge.ended || !challenge.standings.some((s) => s.readerId === me)) return null;
-    return challenge;
+    if (!challenge || !challenge.standings.some((s) => s.readerId === me)) return null;
+    const endedDaysAgo = (Date.parse(challenges!.today) - Date.parse(challenge.endsOn)) / 86_400_000;
+    return challenge.ended && endedDaysAgo > 7 ? null : challenge;
   });
-  /** One encouraging line for her place on the board. */
+  protected readonly won = computed(() => {
+    const challenge = this.challenge();
+    return !!challenge?.ended && challenge.winners.includes(this.session.current()?.profileId ?? '');
+  });
+  /** One encouraging line for her place on the board, or the result once it has ended. */
   protected readonly challengeLine = computed(() => {
     const challenge = this.challenge();
     const me = challenge?.standings.find((s) => s.readerId === this.session.current()?.profileId);
     if (!challenge || !me) return '';
+    const unit = (n: number) => `${n} ${challenge.measure === 'chapters' ? 'chapter' : 'book'}${n === 1 ? '' : 's'}`;
+    if (challenge.ended) {
+      if (this.won()) return challenge.reward ? `Your reward: ${challenge.reward.text}` : 'Your reward is on its way.';
+      const winners = challenge.standings.filter((s) => challenge.winners.includes(s.readerId)).map((s) => s.name);
+      return `${winners.length ? `${winners.join(' and ')} won this one.` : 'No winner this time.'} You read ${unit(me.count)}, well done!`;
+    }
     if (challenge.standings.length === 1) {
       const left = challenge.goal - me.count;
       return left > 0 ? `${left} more to reach the goal.` : 'You reached the goal!';

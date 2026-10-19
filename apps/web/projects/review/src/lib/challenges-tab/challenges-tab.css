@@ -17,3 +17,9 @@
   font: var(--text-body-sm);
   color: var(--color-fg-muted);
 }
+.ended {
+  background: linear-gradient(135deg, var(--color-warning-bg), var(--color-bg-surface) 70%);
+}
+.result {
+  font: var(--text-h3);
+}

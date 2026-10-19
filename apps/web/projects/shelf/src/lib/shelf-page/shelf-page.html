@@ -90,29 +90,54 @@
       </section>
     }
     @if (challenge(); as challenge) {
-      <section class="section card stack" aria-label="Challenge">
-        <div>
-          <h2 class="challenge-title">🏁 {{ challenge.name }}</h2>
-          <p class="text-muted">
-            {{ measureLabel(challenge.measure) }} · goal {{ challenge.goal }} · {{ daysLeftLabel(challenge.daysLeft) }}
-          </p>
-        </div>
-        @if (challenge.standings.length === 1) {
-          <sh-progress
-            [large]="true"
-            [value]="challenge.standings[0].count"
-            [max]="challenge.goal"
-            [label]="challenge.standings[0].count + ' of ' + challenge.goal + ' ' + challenge.measure"
-          />
+      <section class="section" aria-label="Challenge">
+        <ng-template #challengeBody>
+          <div>
+            <h2 class="challenge-title">
+              @if (won()) {
+                🏆 You won!
+              } @else if (challenge.ended) {
+                🏁 {{ challenge.name }} is over
+              } @else {
+                🏁 {{ challenge.name }}
+              }
+            </h2>
+            <p class="text-muted">
+              @if (won()) {
+                {{ challenge.name }} ·
+              }
+              {{ measureLabel(challenge.measure) }} · goal {{ challenge.goal }} ·
+              @if (challenge.ended) {
+                ended {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }}
+              } @else {
+                {{ daysLeftLabel(challenge.daysLeft) }}
+              }
+            </p>
+          </div>
+          @if (challenge.standings.length === 1) {
+            <sh-progress
+              [large]="true"
+              [value]="challenge.standings[0].count"
+              [max]="challenge.goal"
+              [label]="challenge.standings[0].count + ' of ' + challenge.goal + ' ' + challenge.measure"
+            />
+          } @else {
+            <sh-leaderboard
+              [rows]="challenge.standings"
+              [goal]="challenge.goal"
+              [unit]="challenge.measure"
+              [you]="session.current()?.profileId ?? null"
+            />
+          }
+          <p>{{ challengeLine() }}</p>
+        </ng-template>
+        @if (won()) {
+          <sh-celebration variant="book">
+            <div class="stack"><ng-container [ngTemplateOutlet]="challengeBody" /></div>
+          </sh-celebration>
         } @else {
-          <sh-leaderboard
-            [rows]="challenge.standings"
-            [goal]="challenge.goal"
-            [unit]="challenge.measure"
-            [you]="session.current()?.profileId ?? null"
-          />
+          <div class="card stack"><ng-container [ngTemplateOutlet]="challengeBody" /></div>
         }
-        <p>{{ challengeLine() }}</p>
       </section>
     }
     @if (data.reading.length) {

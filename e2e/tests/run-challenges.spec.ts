@@ -1,12 +1,13 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
 import { test, expect } from '../support/test';
 import { signInAsDad } from '../support/signed-in';
-import { addTheo, householdDay, logChaptersAs, setReadingDays, startChallengeInDatabase } from '../support/database';
+import { addTheo, forgetSeededLogs, householdDay, logChaptersAs, startChallengeInDatabase } from '../support/database';
 import { ReviewPage } from '../pages/review.page';
 import { StartChallengeDialog } from '../pages/start-challenge-dialog.page';
 
 test.beforeEach(async () => {
   await addTheo();
+  await forgetSeededLogs();
 });
 
 test('Given Nia and Theo in a running race, when Dad opens the Challenges tab, then the leaderboard ranks them with Nia in the lead', async ({ page }) => {
@@ -115,7 +116,6 @@ test('Given another parent started a challenge meanwhile, when Dad starts his, t
 });
 
 test('Given this week’s reading, when Dad opens the challenge, then three short insights name the top reader, the climber and the longest streak', async ({ page }) => {
-  await setReadingDays([]);
   await startChallengeInDatabase();
   await logChaptersAs('p-nia', 1, `${householdDay(-1)}T12:00:00.000Z`);
   await logChaptersAs('p-nia', 1);
@@ -130,4 +130,50 @@ test('Given this week’s reading, when Dad opens the challenge, then three shor
     '📈 Theo climbed the most: 3 more chapters than last week',
     '🔥 Nia has the longest streak: 2 days',
   ]);
+});
+
+test('Given a race Nia won that ended yesterday, when Dad gives the reward, then the card says so and a new challenge can start', async ({ page }) => {
+  await startChallengeInDatabase({ name: 'October week race', goal: 10, startsOn: householdDay(-7), endsOn: householdDay(-1) });
+  await logChaptersAs('p-nia', 2, `${householdDay(-2)}T12:00:00.000Z`);
+  await logChaptersAs('p-theo', 1, `${householdDay(-2)}T13:00:00.000Z`);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+
+  const card = review.challengeCard('October week race is over');
+  await expect(card).toContainText('🏆 Nia won with 2 chapters!');
+  await expect(review.startChallengeButton()).toBeVisible();
+
+  await review.giveChallengeReward();
+  await expect(review.challengeRewardDialog()).toContainText('October week race');
+  await review.quickPickIn(review.challengeRewardDialog(), 'Ice cream Saturday');
+  await review.giveRewardIn(review.challengeRewardDialog());
+
+  await expect(review.challengeRewardDialog()).toBeHidden();
+  await expect(review.toast('Reward given!')).toBeVisible();
+  await expect(card).toContainText('Reward given: Ice cream Saturday');
+  await expect(card.getByRole('button', { name: 'Give a reward' })).toHaveCount(0);
+});
+
+test('Given a running race, when Dad presses End now, then it ends at once and shows the result', async ({ page }) => {
+  await startChallengeInDatabase();
+  await logChaptersAs('p-theo', 1);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+
+  await review.endNow();
+
+  await expect(review.toast('Challenge ended')).toBeVisible();
+  await expect(review.challengeCard('Half-term reading race is over')).toContainText('🏆 Theo won with 1 chapter!');
+});
+
+test('Given an ended race where nobody logged anything, then there is no winner and no reward to give', async ({ page }) => {
+  await startChallengeInDatabase({ startsOn: householdDay(-7), endsOn: householdDay(-1) });
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+
+  await expect(review.challengeCard('Half-term reading race is over')).toContainText('No winner this time.');
+  await expect(page.getByRole('button', { name: 'Give a reward' })).toHaveCount(0);
 });

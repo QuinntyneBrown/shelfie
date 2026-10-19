@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Banner, Cover, Dialog, TextField, Textarea } from 'components';
 import { ApiError } from 'core';
-import { FinishedBook, ReviewApi } from '../review-api';
+import { Challenge, FinishedBook, ReviewApi } from '../review-api';
 
 const QUICK_PICKS = [
   'Ice cream Saturday',
@@ -19,7 +19,7 @@ const QUICK_PICKS = [
   'Trip to the bookshop',
 ];
 
-/** Gives a finished book its reward. */
+/** Gives a finished book its reward, or the winners of an ended challenge theirs (review/run-challenges). */
 @Component({
   selector: 'sh-give-reward-dialog',
   imports: [Banner, Cover, DatePipe, Dialog, TextField, Textarea],
@@ -32,10 +32,13 @@ export class GiveRewardDialog {
 
   /** The book to reward, or null when the dialog is closed. */
   readonly book = input<FinishedBook | null>(null);
+  /** The ended challenge to reward instead of a book, or null. */
+  readonly challenge = input<Challenge | null>(null);
   readonly readerName = input.required<string>();
   /** Text the reward field starts with, e.g. the name of the goal this book reached. */
   readonly suggested = input('');
   readonly given = output<FinishedBook>();
+  readonly challengeRewarded = output<Challenge>();
   readonly closed = output<void>();
 
   protected readonly quickPicks = QUICK_PICKS;
@@ -47,7 +50,7 @@ export class GiveRewardDialog {
 
   constructor() {
     effect(() => {
-      if (!this.book()) return;
+      if (!this.book() && !this.challenge()) return;
       this.text.set(this.suggested());
       this.note.set('');
       this.error.set(null);
@@ -57,7 +60,8 @@ export class GiveRewardDialog {
 
   protected async give() {
     const book = this.book();
-    if (!book || this.busy()) return;
+    const challenge = this.challenge();
+    if ((!book && !challenge) || this.busy()) return;
     const text = this.text().trim();
     this.error.set(
       !text
@@ -70,8 +74,12 @@ export class GiveRewardDialog {
     this.busy.set(true);
     this.failed.set(false);
     try {
-      await this.api.giveReward(book.bookId, { text, note: this.note().trim() });
-      this.given.emit(book);
+      if (book) {
+        await this.api.giveReward(book.bookId, { text, note: this.note().trim() });
+        this.given.emit(book);
+      } else {
+        this.challengeRewarded.emit(await this.api.rewardChallenge(challenge!.id, { text, note: this.note().trim() }));
+      }
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
       this.failed.set(true);

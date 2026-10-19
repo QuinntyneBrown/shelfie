@@ -328,4 +328,8 @@ export class ShelfPage {
   challengeProgress() {
     return this.challengeCard().getByRole('progressbar');
   }
+
+  challengeCelebration() {
+    return this.challengeCard().locator('.celebrate');
+  }
 }

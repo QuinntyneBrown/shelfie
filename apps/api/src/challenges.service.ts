@@ -48,6 +48,9 @@ export interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: Standing[];
+  /** The readers who won, once it has ended. */
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
   /** Only while the challenge runs. */
   insights: Insights | null;
 }
@@ -74,9 +77,11 @@ interface ChallengeRow {
   starts_on: string;
   ends_on: string;
   ended_at: string | null;
+  reward_text: string | null;
+  reward_note: string | null;
 }
 
-const CHALLENGE_COLUMNS = 'id, name, measure, goal, starts_on, ends_on, ended_at';
+const CHALLENGE_COLUMNS = 'id, name, measure, goal, starts_on, ends_on, ended_at, reward_text, reward_note';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -156,6 +161,13 @@ async function insightsOf(db: Db, householdId: string, today: string, standings:
   };
 }
 
+/** The leaders of an ended challenge; a reader alone wins only by reaching the goal (L2-142). */
+function winnersOf(row: ChallengeRow, standings: Standing[]) {
+  if (row.ended_at === null) return [];
+  if (standings.length === 1) return standings[0]!.count >= row.goal ? [standings[0]!.readerId] : [];
+  return standings.filter((s) => s.leading).map((s) => s.readerId);
+}
+
 async function challengeOf(db: Db, householdId: string, timeZone: string, today: string, row: ChallengeRow): Promise<Challenge> {
   const standings = await standingsOf(db, householdId, timeZone, row);
   return {
@@ -168,6 +180,8 @@ async function challengeOf(db: Db, householdId: string, timeZone: string, today:
     daysLeft: Math.max(0, daysBetween(today, row.ends_on)),
     ended: row.ended_at !== null,
     standings,
+    winners: winnersOf(row, standings),
+    reward: row.reward_text === null ? null : { text: row.reward_text, note: row.reward_note },
     insights: row.ended_at === null ? await insightsOf(db, householdId, today, standings) : null,
   };
 }
@@ -203,6 +217,8 @@ export async function createChallenge(pool: Pool, householdId: string, input: Ch
     starts_on: today,
     ends_on: addDays(today, LENGTH_DAYS[input.length]),
     ended_at: null,
+    reward_text: null,
+    reward_note: null,
   };
   try {
     await transaction(pool, async (db) => {
@@ -225,4 +241,49 @@ export async function createChallenge(pool: Pool, householdId: string, input: Ch
     throw e;
   }
   return challengeOf(pool, householdId, timeZone, today, row);
+}
+
+/** Ends every open challenge whose last day has passed, once, and returns their ids (ADR-0018). */
+export async function closeExpired(db: Db, householdId: string, now = new Date()): Promise<string[]> {
+  const today = todayIn(await timeZoneOf(db, householdId), now);
+  const closed = await all<{ id: string }>(
+    db,
+    'UPDATE challenge SET ended_at = $1 WHERE household_id = $2 AND ended_at IS NULL AND ends_on < $3 RETURNING id',
+    [now.toISOString(), householdId, today],
+  );
+  return closed.map((c) => c.id);
+}
+
+async function rowOf(db: Db, householdId: string, id: string): Promise<ChallengeRow> {
+  const row = await get<ChallengeRow>(db, `SELECT ${CHALLENGE_COLUMNS} FROM challenge WHERE id = $1 AND household_id = $2`, [id, householdId]);
+  if (!row) throw new Problem(404, 'not-found');
+  return row;
+}
+
+async function viewOf(db: Db, householdId: string, id: string, now: Date) {
+  const timeZone = await timeZoneOf(db, householdId);
+  return challengeOf(db, householdId, timeZone, todayIn(timeZone, now), await rowOf(db, householdId, id));
+}
+
+/** Ends a running challenge now: today becomes its last day and nothing logged after this moment counts (L2-142). */
+export async function endChallenge(db: Db, householdId: string, id: string, now = new Date()): Promise<Challenge> {
+  await rowOf(db, householdId, id);
+  const today = todayIn(await timeZoneOf(db, householdId), now);
+  const changed = await all(db, 'UPDATE challenge SET ended_at = $1, ends_on = $2 WHERE id = $3 AND ended_at IS NULL RETURNING id', [now.toISOString(), today, id]);
+  if (!changed.length) throw new Problem(409, 'challenge-ended');
+  return viewOf(db, householdId, id, now);
+}
+
+/** Gives the winners of an ended challenge their reward, once (L2-142). */
+export async function rewardChallenge(db: Db, householdId: string, id: string, text: string, note: string | null, now = new Date()): Promise<Challenge> {
+  const challenge = await viewOf(db, householdId, id, now);
+  if (!challenge.ended) throw new Problem(409, 'challenge-running');
+  if (!challenge.winners.length) throw new Problem(409, 'no-winner');
+  const changed = await all(
+    db,
+    'UPDATE challenge SET reward_text = $1, reward_note = $2, rewarded_at = $3 WHERE id = $4 AND rewarded_at IS NULL RETURNING id',
+    [text, note, now.toISOString(), id],
+  );
+  if (!changed.length) throw new Problem(409, 'reward-exists');
+  return { ...challenge, reward: { text, note } };
 }

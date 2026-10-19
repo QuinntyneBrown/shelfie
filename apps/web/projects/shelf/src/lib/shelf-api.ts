@@ -113,6 +113,8 @@ export interface Challenge {
   daysLeft: number;
   ended: boolean;
   standings: LeaderboardRow[];
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
 }
 
 export interface Challenges {

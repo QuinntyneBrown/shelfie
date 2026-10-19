@@ -10,15 +10,35 @@
     <div><button class="btn btn--primary" type="button" (click)="starting.set(true)">Start a challenge</button></div>
   }
   @if (view.current; as challenge) {
-    <section class="card stack" aria-labelledby="challenge-title">
-      <div>
-        <h2 id="challenge-title" class="section-title">{{ challenge.name }}</h2>
-        <p class="text-muted">
-          {{ measureLabel(challenge) }} · goal {{ challenge.goal }} ·
-          {{ challenge.startsOn | date: 'EEE d MMM' : 'UTC' }} to {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }} ·
-          {{ daysLeftLabel(challenge) }}
-        </p>
+    <section class="card stack" [class.ended]="challenge.ended" aria-labelledby="challenge-title">
+      <div class="cluster cluster--between">
+        <div>
+          <h2 id="challenge-title" class="section-title">
+            {{ challenge.name }}{{ challenge.ended ? ' is over' : '' }}
+          </h2>
+          <p class="text-muted">
+            {{ measureLabel(challenge) }} · goal {{ challenge.goal }} ·
+            {{ challenge.startsOn | date: 'EEE d MMM' : 'UTC' }} to {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }}
+            @if (!challenge.ended) {
+              · {{ daysLeftLabel(challenge) }}
+            }
+          </p>
+        </div>
+        @if (!challenge.ended) {
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            [disabled]="ending()"
+            [attr.aria-busy]="ending() ? true : null"
+            (click)="endNow(challenge)"
+          >
+            End now
+          </button>
+        }
       </div>
+      @if (challenge.ended) {
+        <p class="result">{{ resultLine(challenge) }}</p>
+      }
       <sh-leaderboard [rows]="challenge.standings" [goal]="challenge.goal" [unit]="challenge.measure" />
       @let lines = insightLines(challenge);
       @if (lines.length) {
@@ -29,8 +49,23 @@
           }
         </ul>
       }
+      @if (challenge.ended) {
+        <div class="cluster">
+          @if (challenge.reward; as reward) {
+            <p>Reward given: <strong>{{ reward.text }}</strong></p>
+          } @else if (challenge.winners.length) {
+            <button class="btn btn--primary" type="button" (click)="rewarding.set(challenge)">Give a reward</button>
+          }
+        </div>
+      }
     </section>
   }
+  <sh-give-reward-dialog
+    [challenge]="rewarding()"
+    [readerName]="rewarding() ? winnerNames(rewarding()!) : ''"
+    (challengeRewarded)="rewarded($event)"
+    (closed)="rewarding.set(null)"
+  />
   <sh-start-challenge-dialog
     [open]="starting()"
     [readers]="view.readers"

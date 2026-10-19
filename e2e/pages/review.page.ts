@@ -206,4 +206,24 @@ export class ReviewPage {
   insights() {
     return this.page.getByRole('list', { name: 'This week' }).getByRole('listitem');
   }
+
+  async endNow() {
+    await this.page.getByRole('button', { name: 'End now' }).click();
+  }
+
+  async giveChallengeReward() {
+    await this.page.getByRole('button', { name: 'Give a reward' }).click();
+  }
+
+  challengeRewardDialog() {
+    return this.page.getByRole('dialog', { name: /won! 🏆/ });
+  }
+
+  async quickPickIn(dialog: ReturnType<ReviewPage['rewardDialog']>, text: string) {
+    await dialog.getByRole('group', { name: 'Quick picks' }).getByRole('button', { name: text }).click();
+  }
+
+  async giveRewardIn(dialog: ReturnType<ReviewPage['rewardDialog']>) {
+    await dialog.getByRole('button', { name: 'Give the reward' }).click();
+  }
 }
