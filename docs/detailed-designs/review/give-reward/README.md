@@ -26,6 +26,8 @@ The slice runs from the dialog on the Review page to the `reward` table and back
 
 The shelf mock `docs/mocks/notifications/banner/success.html` also shows a success banner "Dad gave you a reward for Matilda: Ice cream Saturday!" with the note; `L2-017` and `L2-018` do not ask for it and the `reward` table has no seen marker, so this design does not add one and the mock's reward banner shall go.
 
+Since review/run-challenges the dialog also takes an optional `challenge` instead of a `book`: it is then titled "Nia won! 🏆", shows a 🏁 line with the challenge's name and end day instead of the book line, says "Nia sees this on the challenge card." and posts to `POST /api/challenges/:id/reward`. With a book it is unchanged.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

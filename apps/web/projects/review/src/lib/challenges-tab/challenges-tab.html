@@ -1,0 +1,112 @@
+@if (view(); as view) {
+  @if (!view.current) {
+    <sh-empty-state
+      title="No challenge yet"
+      text="Set a goal for a week, two weeks or a month and your readers can race to it on their shelves."
+    >
+      <button class="btn btn--primary" type="button" (click)="starting.set(true)">Start a challenge</button>
+    </sh-empty-state>
+  } @else if (canStart(view)) {
+    <div><button class="btn btn--primary" type="button" (click)="starting.set(true)">Start a challenge</button></div>
+  }
+  @if (view.current; as challenge) {
+    <section class="card stack" [class.ended]="challenge.ended" aria-labelledby="challenge-title">
+      <div class="cluster cluster--between">
+        <div>
+          <h2 id="challenge-title" class="section-title">
+            {{ challenge.name }}{{ challenge.ended ? ' is over' : '' }}
+          </h2>
+          <p class="text-muted">
+            {{ measureLabel(challenge) }} · goal {{ challenge.goal }} ·
+            {{ challenge.startsOn | date: 'EEE d MMM' : 'UTC' }} to {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }}
+            @if (!challenge.ended) {
+              · {{ daysLeftLabel(challenge) }}
+            }
+          </p>
+        </div>
+        @if (!challenge.ended) {
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            [disabled]="ending()"
+            [attr.aria-busy]="ending() ? true : null"
+            (click)="endNow(challenge)"
+          >
+            End now
+          </button>
+        }
+      </div>
+      @if (challenge.ended) {
+        <p class="result">{{ resultLine(challenge) }}</p>
+      }
+      <sh-leaderboard [rows]="challenge.standings" [goal]="challenge.goal" [unit]="challenge.measure" />
+      @let lines = insightLines(challenge);
+      @if (lines.length) {
+        <h3 id="insights-title" class="insights-title">This week</h3>
+        <ul class="insights" aria-labelledby="insights-title">
+          @for (line of lines; track line) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+      }
+      @if (challenge.ended) {
+        <div class="cluster">
+          @if (challenge.reward; as reward) {
+            <p>Reward given: <strong>{{ reward.text }}</strong></p>
+          } @else if (challenge.winners.length) {
+            <button class="btn btn--primary" type="button" (click)="rewarding.set(challenge)">Give a reward</button>
+          }
+          <button class="btn btn--ghost" type="button" (click)="remove(challenge)">Remove</button>
+        </div>
+      }
+    </section>
+  }
+  @if (view.past.length) {
+    <section class="card card--flush" aria-labelledby="past-title">
+      <h2 id="past-title" class="section-title past-title">Past challenges</h2>
+      <ul class="list">
+        @for (past of view.past; track past.id) {
+          <li class="list__item">
+            <span class="sticker" aria-hidden="true">🏆</span>
+            <div class="list__body">
+              <div class="list__title">{{ past.name }}</div>
+              <div class="list__meta">
+                {{ measureLabel(past) }} · {{ past.startsOn | date: 'EEE d MMM' : 'UTC' }} to
+                {{ past.endsOn | date: 'EEE d MMM' : 'UTC' }} · {{ pastResult(past) }}
+              </div>
+            </div>
+            <button class="btn btn--sm btn--ghost" type="button" (click)="remove(past)">Remove</button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+  <sh-give-reward-dialog
+    [challenge]="rewarding()"
+    [readerName]="rewarding() ? winnerNames(rewarding()!) : ''"
+    (challengeRewarded)="rewarded($event)"
+    (closed)="rewarding.set(null)"
+  />
+  <sh-start-challenge-dialog
+    [open]="starting()"
+    [readers]="view.readers"
+    [today]="view.today"
+    (started)="started()"
+    (alreadyRunning)="alreadyRunning()"
+    (closed)="starting.set(false)"
+  />
+} @else if (failed()) {
+  <sh-empty-state
+    tone="error"
+    title="The challenges didn’t load"
+    text="Shelfie couldn’t reach the server. Nothing is lost; try again in a moment."
+  >
+    <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+  </sh-empty-state>
+} @else {
+  <div class="card stack" aria-busy="true" aria-label="Loading challenges">
+    <sh-skeleton variant="title" />
+    <sh-skeleton />
+    <sh-skeleton />
+  </div>
+}

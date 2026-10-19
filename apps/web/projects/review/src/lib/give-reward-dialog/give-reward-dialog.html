@@ -1,11 +1,13 @@
 <sh-dialog
-  [heading]="(book()?.title ?? '') + ' is finished! 🏆'"
-  [open]="book() !== null"
+  [heading]="challenge() ? readerName() + ' won! 🏆' : (book()?.title ?? '') + ' is finished! 🏆'"
+  [open]="book() !== null || challenge() !== null"
   (closed)="closed.emit()"
 >
-  @if (book(); as book) {
+  @if (book() || challenge()) {
     <form id="reward-form" class="stack" (submit)="$event.preventDefault(); give()" novalidate>
-      <p class="text-muted">Pick a reward and {{ readerName() }} will see it on her shelf.</p>
+      <p class="text-muted">
+        Pick a reward and {{ readerName() }} will see it on {{ challenge() ? 'the challenge card' : 'her shelf' }}.
+      </p>
       @if (failed()) {
         <sh-banner
           severity="danger"
@@ -13,6 +15,15 @@
           message="Shelfie couldn’t reach the server. What you typed is still here."
         />
       }
+      @if (challenge(); as challenge) {
+        <div class="book-card">
+          <span class="sticker" aria-hidden="true">🏁</span>
+          <div class="book-card__body">
+            <strong>{{ challenge.name }}</strong>
+            <span class="book-card__author">Ended {{ challenge.endsOn | date: 'EEE d MMM' : 'UTC' }}</span>
+          </div>
+        </div>
+      } @else if (book(); as book) {
       <div class="book-card">
         <sh-cover
           [color]="book.coverColor"
@@ -27,9 +38,10 @@
           >
         </div>
       </div>
+      }
       <sh-text-field
         label="The reward"
-        [help]="readerName() + ' sees this on her shelf next to the book.'"
+        [help]="readerName() + (challenge() ? ' sees this on the challenge card.' : ' sees this on her shelf next to the book.')"
         [error]="error()"
         [autofocus]="true"
         [(value)]="text"

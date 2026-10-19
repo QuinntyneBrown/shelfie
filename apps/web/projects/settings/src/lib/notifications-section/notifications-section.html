@@ -44,7 +44,17 @@
         [checked]="choices().streakReward"
         (checkedChange)="setChoice('streakReward', $event)"
       />
+      <sh-switch
+        label="Tell me when a reader takes the lead in a challenge"
+        [checked]="choices().challengeLead"
+        (checkedChange)="setChoice('challengeLead', $event)"
+      />
+      <sh-switch
+        label="Tell me when a challenge ends"
+        [checked]="choices().challengeEnd"
+        (checkedChange)="setChoice('challengeEnd', $event)"
+      />
     </div>
-    <p class="text-muted">The device switch is for this browser only. The four choices above are for the whole household.</p>
+    <p class="text-muted">The device switch is for this browser only. The six choices above are for the whole household.</p>
   }
 </section>

@@ -13,6 +13,7 @@ import { configuredAi } from './ai.ts';
 import { openLibrary, openLibraryWorkCovers } from './catalogue.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { certificateRouter } from './certificate.router.ts';
+import { challengesRouter } from './challenges.router.ts';
 import { coversRouter } from './covers.router.ts';
 import { galleryRouter } from './gallery.router.ts';
 import { streakRewardsRouter } from './streak-rewards.router.ts';
@@ -73,6 +74,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/readers', readersRouter(db));
   app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/streak-rewards', streakRewardsRouter(db, notifier));
+  app.use('/api/challenges', challengesRouter(db, notifier));
   app.use('/api/feedback', feedbackRouter(db));
   app.use('/api/push', pushRouter(db, push));
   app.use('/api/invites', invitesRouter(db, options.mail));

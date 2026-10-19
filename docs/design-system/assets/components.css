@@ -668,3 +668,14 @@ label.bubble__text { cursor: pointer; }
 .day-path__day--today { position: relative; }
 .day-path__day--today::after { content: "🔥"; position: absolute; top: -0.55em; right: -0.3em; font-size: var(--font-size-xs); line-height: 1; }
 .streak-reward--ready .day-path__day--done { background: var(--color-success-solid); }
+
+/* Leaderboard: a household challenge's ranked readers, each with avatar, name, count and progress to the goal (L2-140). */
+.leaderboard { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.leaderboard__row { display: grid; grid-template-columns: var(--space-6) auto minmax(0, 1fr); align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); }
+.leaderboard__row--you { background: var(--color-accent-subtle); }
+.leaderboard__rank { font: var(--text-label); color: var(--color-fg-muted); text-align: center; font-variant-numeric: tabular-nums; }
+.leaderboard__row--leader .leaderboard__rank { font-size: 1.25rem; }
+.leaderboard__body { display: grid; gap: var(--space-1); min-width: 0; }
+.leaderboard__name { font: var(--text-label); display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.leaderboard__lead { font: var(--text-caption); color: var(--color-warning-fg); background: var(--color-warning-bg); border-radius: var(--radius-full); padding: 0 var(--space-2); white-space: nowrap; }
+.insights { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); font: var(--text-body-sm); color: var(--color-fg-muted); }

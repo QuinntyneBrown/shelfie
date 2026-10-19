@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Run challenges
+
+Person(reader, "Reader", "Opens her shelf")
+Person(grownUp, "Parent", "Uses Review and Settings")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Challenges tab and Start a challenge dialog on Review, Challenge card on the shelf, two switches in Settings")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Stores challenges; counts, ranks and ends them on read; sends the two notifications")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "challenge, challenge_reader; chapter_log.reader_id; book.finished_at")
+}
+System_Ext(pushService, "Browser push service", "Web Push")
+Rel(reader, web, "Reads the Challenge card", "HTTPS")
+Rel(grownUp, web, "Starts, ends, rewards, removes", "HTTPS")
+Rel(web, api, "/api/challenges, /api/settings", "JSON/HTTPS")
+Rel(api, db, "Counts chapter logs and finished books in the window", "SQL")
+Rel(api, pushService, "Lead and end notifications", "Web Push")
+@enduml

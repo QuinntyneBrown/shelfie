@@ -236,7 +236,7 @@ export class SettingsPage {
     return this.notificationsCard().getByRole('checkbox', { name: 'Notify this device' });
   }
 
-  /** One of the household's four choices, by its label. */
+  /** One of the household's six choices, by its label. */
   choice(label: string) {
     return this.notificationsCard().getByRole('checkbox', { name: label });
   }

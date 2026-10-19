@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from 'core';
+import type { LeaderboardRow } from 'components';
 
 export interface QueueItem {
   chapterLogId: string;
@@ -96,6 +97,40 @@ export interface ReviewOverview {
   streakRewards: StreakReward[];
 }
 
+export interface Challenge {
+  id: string;
+  name: string;
+  measure: 'chapters' | 'books';
+  goal: number;
+  startsOn: string;
+  endsOn: string;
+  daysLeft: number;
+  ended: boolean;
+  standings: LeaderboardRow[];
+  /** The readers who won, once it has ended. */
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
+  insights: {
+    topReader: { name: string; count: number } | null;
+    climber: { name: string; gain: number } | null;
+    streak: { name: string; days: number } | null;
+  } | null;
+}
+
+export interface ChallengeReader {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+}
+
+export interface Challenges {
+  today: string;
+  readers: ChallengeReader[];
+  current: Challenge | null;
+  past: Challenge[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReviewApi {
   private readonly api = inject(ApiClient);
@@ -122,5 +157,25 @@ export class ReviewApi {
 
   load() {
     return this.api.get<ReviewOverview>('/review');
+  }
+
+  challenges() {
+    return this.api.get<Challenges>('/challenges');
+  }
+
+  endChallenge(id: string) {
+    return this.api.post<Challenge>(`/challenges/${id}/end`, {});
+  }
+
+  rewardChallenge(id: string, body: { text: string; note: string }) {
+    return this.api.post<Challenge>(`/challenges/${id}/reward`, body);
+  }
+
+  removeChallenge(id: string) {
+    return this.api.delete<void>(`/challenges/${id}`);
+  }
+
+  startChallenge(body: { name: string; measure: string; goal: number; length: string; readerIds: string[] }) {
+    return this.api.post<Challenge>('/challenges', body);
   }
 }

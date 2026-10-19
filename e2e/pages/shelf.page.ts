@@ -315,4 +315,21 @@ export class ShelfPage {
   streakCelebration() {
     return this.streakRewards().getByRole('heading', { name: /You did it!/ });
   }
+
+  /** The Challenge card. */
+  challengeCard() {
+    return this.page.getByRole('region', { name: 'Challenge' });
+  }
+
+  challengeLeaderboard() {
+    return this.challengeCard().getByRole('list', { name: 'Leaderboard' }).getByRole('listitem');
+  }
+
+  challengeProgress() {
+    return this.challengeCard().getByRole('progressbar');
+  }
+
+  challengeCelebration() {
+    return this.challengeCard().locator('.celebrate');
+  }
 }

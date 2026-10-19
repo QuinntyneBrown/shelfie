@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run challenges
+
+Container(web, "Shelfie web", "Angular", "ReviewPage, ChallengesTab, StartChallengeDialog, ShelfPage, NotificationsSection")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "challenges.router.ts", "Express Router", "GET /, POST /, POST /:id/end, POST /:id/reward, DELETE /:id; requireSession, requireRole('parent') on writes")
+  Component(service, "challenges.service.ts", "Service", "createChallenge, challengesOf, endChallenge, rewardChallenge, removeChallenge, closeExpired, takeLead")
+  Component(chapters, "chapters.router.ts / .service.ts", "Express Router, Service", "Stores reader_id on each log; asks the notifier to check the lead")
+  Component(notifier, "push.service.ts", "Notifier", "chapterLogged (checks the lead), challengeEnded; notify_challenge_lead / notify_challenge_end")
+  Component(streak, "streak.ts", "Service", "computeStreak, todayIn")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "challenge, challenge_reader, chapter_log, book, household, profile")
+}
+Rel(web, router, "/api/challenges", "JSON/HTTPS")
+Rel(router, service, "Calls")
+Rel(router, notifier, "challengeEnded for each challenge closed")
+Rel(chapters, notifier, "chapterLogged; the lead is checked after the undo window")
+Rel(notifier, service, "takeLead, closeExpired")
+Rel(service, streak, "computeStreak per reader")
+Rel(service, db, "Reads and writes", "SQL")
+@enduml

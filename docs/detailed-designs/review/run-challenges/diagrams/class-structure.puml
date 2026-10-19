@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run challenges
+
+class Challenge {
+  +id: string
+  +name: string
+  +measure: chapters|books
+  +goal: number
+  +startsOn: string
+  +endsOn: string
+  +ended: boolean
+  +daysLeft: number
+  +standings: Standing[]
+  +winners: string[]
+  +reward: {text, note}|null
+  +insights: Insights|null
+}
+
+class Standing {
+  +readerId: string
+  +name: string
+  +color: string
+  +photo: string|null
+  +count: number
+  +rank: number
+  +leading: boolean
+}
+
+class Insights {
+  +topReader: {name, count}|null
+  +climber: {name, gain}|null
+  +streak: {name, days}|null
+}
+
+class ChallengesService {
+  +challengesOf(db, householdId, now): ChallengesView
+  +createChallenge(db, householdId, input, now): Challenge
+  +endChallenge(db, householdId, id, now): Challenge
+  +rewardChallenge(db, householdId, id, text, note): Challenge
+  +removeChallenge(db, householdId, id): void
+  +closeExpired(db, householdId, now): string[]
+  +takeLead(db, householdId, now): LeadChange|null
+}
+
+class ChallengesTab {
+  +view: Signal<ChallengesView|null>
+  +starting: Signal<boolean>
+  +rewarding: Signal<Challenge|null>
+}
+
+class StartChallengeDialog {
+  +open: boolean
+  +readers: Reader[]
+  +started: output<Challenge>
+}
+
+class "sh-leaderboard" as Leaderboard {
+  +rows: Standing[]
+  +goal: number
+  +unit: string
+  +you: string|null
+}
+
+class GiveRewardDialog {
+  +book: FinishedBook|null
+  +challenge: Challenge|null
+}
+
+class ShelfPage {
+  +challenge: Signal<Challenge|null>
+}
+
+Challenge *-- Standing
+Challenge *-- Insights
+ChallengesService ..> Challenge : returns
+ChallengesTab *-- StartChallengeDialog
+ChallengesTab *-- GiveRewardDialog
+ChallengesTab *-- Leaderboard
+ShelfPage *-- Leaderboard
+@enduml

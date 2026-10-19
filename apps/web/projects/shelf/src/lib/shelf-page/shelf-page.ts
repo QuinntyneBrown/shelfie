@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -10,6 +10,7 @@ import {
   EmptyState,
   FEEDBACK_STICKERS,
   Progress,
+  Leaderboard,
   RewardCard,
   Skeleton,
   StreakRewardBadge,
@@ -18,7 +19,7 @@ import {
 } from 'components';
 import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
 import { PushOffer } from '../push-offer/push-offer';
-import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
+import { Challenges, GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
 
 @Component({
   selector: 'sh-shelf-page',
@@ -30,8 +31,10 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
     Cover,
     DatePipe,
     EmptyState,
-    PushOffer,
+    Leaderboard,
+    NgTemplateOutlet,
     Progress,
+    PushOffer,
     RewardCard,
     RouterLink,
     Skeleton,
@@ -91,9 +94,60 @@ export class ShelfPage {
     );
   });
 
+  /** The household's challenges, loaded beside the shelf; a failure only hides the card. */
+  private readonly challenges = signal<Challenges | null>(null);
+  /** The challenge she takes part in, while it runs and for 7 days after it ends (L2-144). */
+  protected readonly challenge = computed(() => {
+    const challenges = this.challenges();
+    const challenge = challenges?.current;
+    const me = this.session.current()?.profileId;
+    if (!challenge || !challenge.standings.some((s) => s.readerId === me)) return null;
+    const endedDaysAgo = (Date.parse(challenges!.today) - Date.parse(challenge.endsOn)) / 86_400_000;
+    return challenge.ended && endedDaysAgo > 7 ? null : challenge;
+  });
+  protected readonly won = computed(() => {
+    const challenge = this.challenge();
+    return !!challenge?.ended && challenge.winners.includes(this.session.current()?.profileId ?? '');
+  });
+  /** One encouraging line for her place on the board, or the result once it has ended. */
+  protected readonly challengeLine = computed(() => {
+    const challenge = this.challenge();
+    const me = challenge?.standings.find((s) => s.readerId === this.session.current()?.profileId);
+    if (!challenge || !me) return '';
+    const unit = (n: number) => `${n} ${challenge.measure === 'chapters' ? 'chapter' : 'book'}${n === 1 ? '' : 's'}`;
+    if (challenge.ended) {
+      if (this.won()) return challenge.reward ? `Your reward: ${challenge.reward.text}` : 'Your reward is on its way.';
+      const winners = challenge.standings.filter((s) => challenge.winners.includes(s.readerId)).map((s) => s.name);
+      return `${winners.length ? `${winners.join(' and ')} won this one.` : 'No winner this time.'} You read ${unit(me.count)}, well done!`;
+    }
+    if (challenge.standings.length === 1) {
+      const left = challenge.goal - me.count;
+      return left > 0 ? `${left} more to reach the goal.` : 'You reached the goal!';
+    }
+    const others = challenge.standings.filter((s) => s !== me);
+    if (me.leading) {
+      const level = others.filter((s) => s.leading).map((s) => s.name);
+      return level.length ? `You’re level with ${level.join(' and ')}. One more puts you ahead!` : 'You’re in the lead. Keep going!';
+    }
+    const above = others.filter((s) => s.count > me.count).at(-1);
+    return above ? `${above.count - me.count} to catch ${above.name}. You can do it!` : 'Be the first to score!';
+  });
+
   constructor() {
     this.load();
     this.loadGallery();
+    this.api.challenges().then(
+      (challenges) => this.challenges.set(challenges),
+      () => this.challenges.set(null),
+    );
+  }
+
+  protected measureLabel(measure: string) {
+    return measure === 'chapters' ? 'Chapters logged' : 'Books finished';
+  }
+
+  protected daysLeftLabel(daysLeft: number) {
+    return daysLeft === 0 ? 'last day' : `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
   }
 
   protected async loadGallery() {

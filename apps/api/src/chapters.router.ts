@@ -71,8 +71,9 @@ export function chaptersRouter(db: Pool, notifier: Notifier) {
     await replying(
       res,
       async () => {
-        const logged = await logChapter(db, householdOf(res), p.data.id, p.data.n, body.data);
-        notifier.chapterLogged(householdOf(res), (res.locals['session'] as RequestSession).name, logged.chapterLogId);
+        const session = res.locals['session'] as RequestSession;
+        const logged = await logChapter(db, householdOf(res), p.data.id, p.data.n, body.data, session.role === 'reader' ? session.profileId : null);
+        notifier.chapterLogged(householdOf(res), session.name, logged.chapterLogId);
         return logged;
       },
       201,

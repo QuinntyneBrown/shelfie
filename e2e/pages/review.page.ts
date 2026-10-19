@@ -171,4 +171,87 @@ export class ReviewPage {
   async repairGiving() {
     await this.page.unroute('**/api/streak-rewards/*/give');
   }
+
+  /** Opens Review straight on the Challenges tab. */
+  async openChallenges() {
+    await this.page.goto('/review?tab=challenges');
+  }
+
+  async showTab(name: 'To review' | 'Challenges') {
+    await this.page.getByRole('group', { name: 'Show' }).getByRole('button', { name }).click();
+  }
+
+  challengeCard(name: string) {
+    return this.page.getByRole('region', { name });
+  }
+
+  /** The rows of the leaderboard on the Challenges tab, in the order shown. */
+  leaderboard() {
+    return this.page.getByRole('list', { name: 'Leaderboard' }).first().getByRole('listitem');
+  }
+
+  async startChallenge() {
+    await this.page.getByRole('button', { name: 'Start a challenge' }).click();
+  }
+
+  startChallengeButton() {
+    return this.page.getByRole('button', { name: 'Start a challenge' });
+  }
+
+  noChallengeYet() {
+    return this.page.getByRole('heading', { name: 'No challenge yet' });
+  }
+
+  /** The insight lines under the leaderboard. */
+  insights() {
+    return this.page.getByRole('list', { name: 'This week' }).getByRole('listitem');
+  }
+
+  async endNow() {
+    await this.page.getByRole('button', { name: 'End now' }).click();
+  }
+
+  async giveChallengeReward() {
+    await this.page.getByRole('button', { name: 'Give a reward' }).click();
+  }
+
+  challengeRewardDialog() {
+    return this.page.getByRole('dialog', { name: /won! 🏆/ });
+  }
+
+  async quickPickIn(dialog: ReturnType<ReviewPage['rewardDialog']>, text: string) {
+    await dialog.getByRole('group', { name: 'Quick picks' }).getByRole('button', { name: text }).click();
+  }
+
+  async giveRewardIn(dialog: ReturnType<ReviewPage['rewardDialog']>) {
+    await dialog.getByRole('button', { name: 'Give the reward' }).click();
+  }
+
+  pastChallenges() {
+    return this.page.getByRole('region', { name: 'Past challenges' }).getByRole('listitem');
+  }
+
+  async removePastChallenge(name: string) {
+    await this.pastChallenges().filter({ hasText: name }).getByRole('button', { name: 'Remove' }).click();
+  }
+
+  async removeChallenge(name: string) {
+    await this.challengeCard(name).getByRole('button', { name: 'Remove' }).click();
+  }
+
+  challengesFailed() {
+    return this.page.getByRole('heading', { name: 'The challenges didn’t load' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  async breakChallenges() {
+    await this.page.route('**/api/challenges', (route) => route.abort());
+  }
+
+  async repairChallenges() {
+    await this.page.unroute('**/api/challenges');
+  }
 }

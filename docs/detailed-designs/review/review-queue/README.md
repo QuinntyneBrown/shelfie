@@ -27,6 +27,8 @@ The slice runs from the Review page to the `chapter_log`, `book` and `reward` ta
 
 `L2-014` lists the queue oldest first, while the mock lists it newest first and gives the newest chapter the primary button; the design follows the mock. Unauthenticated calls receive 401 and reader calls 403 from `requireRole`, which the shell maps to the sign-in and "Grown-ups only" pages (`L2-005`).
 
+Review has two tabs since review/run-challenges: an `sh-segmented` "Show" under the header switches between **To review**, which is everything this design describes, and **Challenges**, designed there. `/review?tab=challenges` opens the second. Nothing in this slice changes.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

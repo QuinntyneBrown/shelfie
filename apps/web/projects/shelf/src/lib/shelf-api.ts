@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import type { LeaderboardRow } from 'components';
 import { ApiClient, ApiError } from 'core';
 
 /** The last shelf seen on this device, shown when there is no connection. */
@@ -101,6 +102,26 @@ export interface Goal {
   bookId: string | null;
 }
 
+/** A household challenge as the API reports it (review/run-challenges). */
+export interface Challenge {
+  id: string;
+  name: string;
+  measure: 'chapters' | 'books';
+  goal: number;
+  startsOn: string;
+  endsOn: string;
+  daysLeft: number;
+  ended: boolean;
+  standings: LeaderboardRow[];
+  winners: string[];
+  reward: { text: string; note: string | null } | null;
+}
+
+export interface Challenges {
+  today: string;
+  current: Challenge | null;
+}
+
 export interface GalleryView {
   rewards: GalleryReward[];
   goal: Goal | null;
@@ -193,6 +214,10 @@ export class ShelfApi {
 
   gallery() {
     return this.api.get<GalleryView>('/gallery-rewards');
+  }
+
+  challenges() {
+    return this.api.get<Challenges>('/challenges');
   }
 
   /** Makes a gallery reward her goal, counting from now, and returns the gallery as it now stands. */

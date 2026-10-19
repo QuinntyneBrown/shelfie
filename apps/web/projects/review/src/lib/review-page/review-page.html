@@ -7,7 +7,8 @@
       }
     </div>
   </div>
-  @if (failed()) {
+  <sh-segmented label="Show" [options]="tabs" [(value)]="shown" />
+  @if (shown() !== 'challenges' && failed()) {
     <sh-empty-state
       tone="error"
       title="Review didn’t load"
@@ -16,7 +17,9 @@
       <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
     </sh-empty-state>
   }
-  @if (overview(); as overview) {
+  @if (shown() === 'challenges') {
+    <sh-challenges-tab />
+  } @else if (overview(); as overview) {
     <section class="card stack" aria-labelledby="this-week">
       <h2 id="this-week" class="section-title">This week</h2>
       <div class="cluster stats">

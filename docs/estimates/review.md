@@ -8,3 +8,4 @@
 | review-queue | 2 days | 90% |
 | reward-gallery | 7 days | 100% |
 | streak-rewards | 7 days | 100% |
+| run-challenges | 10 days | 100% |

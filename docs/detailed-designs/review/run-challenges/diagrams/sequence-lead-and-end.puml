@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Take the lead, end and reward
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+actor "Parent" as parent
+box "Frontend — Shelfie web" #E0F2FE
+  participant "LogChapterPage" as log
+  participant "ChallengesTab" as tab
+  participant "GiveRewardDialog" as dialog
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "chapters.router.ts" as chapters
+  participant "challenges.router.ts" as router
+  participant "push.service.ts" as notifier
+  participant "challenges.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+  participant "Browser push service" as push
+end box
+
+reader -> log : I'm done!
+log -> chapters : POST /api/books/:id/chapters/:n
+chapters -> db : INSERT chapter_log (reader_id = session profile)
+chapters --> log : 201
+chapters -> notifier : chapterLogged(...); after the undo window
+notifier -> service : takeLead(householdId)
+service -> db : standings; UPDATE challenge SET leader_id\nWHERE the sole leader changed
+alt a new sole leader
+  service --> notifier : LeadChange
+  notifier -> push : "👑 Theo took the lead in …" if notify_challenge_lead (L2-145)
+end
+
+parent -> tab : End now
+tab -> router : POST /api/challenges/:id/end
+router -> service : endChallenge
+service -> db : UPDATE challenge SET ended_at = now, ends_on = today\nWHERE ended_at IS NULL
+router -> notifier : challengeEnded(id)
+notifier -> push : "🏁 … is over: Nia won!" if notify_challenge_end (L2-145)
+router --> tab : 200 Challenge with winners (L2-142)
+parent -> tab : Give a reward
+tab -> dialog : open for the challenge
+dialog -> router : POST /api/challenges/:id/reward
+router -> service : rewardChallenge
+service -> db : UPDATE challenge SET reward_text, rewarded_at\nWHERE rewarded_at IS NULL
+router --> dialog : 201
+dialog --> tab : "Reward given: Ice cream Saturday"
+@enduml

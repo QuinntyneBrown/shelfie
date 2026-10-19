@@ -1,0 +1,65 @@
+<sh-dialog heading="Start a challenge" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="challenge-form" class="stack" (submit)="$event.preventDefault(); start()" novalidate>
+    @if (problems().length) {
+      <sh-banner
+        severity="danger"
+        [summary]="true"
+        [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        title="The challenge wasn’t started"
+        message="Shelfie couldn’t reach the server. What you chose is still here."
+      />
+    }
+    <sh-text-field label="Name" [maxlength]="60" [autofocus]="true" [error]="nameError()" [(value)]="name" />
+    <div class="field">
+      <span class="field__label">What counts</span>
+      <sh-segmented label="What counts" [options]="measures" [(value)]="measure" />
+    </div>
+    <sh-text-field
+      label="Goal"
+      type="number"
+      inputmode="numeric"
+      [help]="'How many ' + (measure() === 'chapters' ? 'chapters' : 'books') + ' each reader aims for.'"
+      [error]="goalError()"
+      [(value)]="goal"
+    />
+    <div class="field">
+      <span class="field__label">How long</span>
+      <div class="field__help">Starts today, {{ today() | date: 'EEE d MMM' : 'UTC' }}.</div>
+      <sh-segmented label="How long" [options]="lengths" [(value)]="length" />
+    </div>
+    <div class="field">
+      <span class="field__label" id="readers-label">Who takes part</span>
+      <div class="stack readers" role="group" aria-labelledby="readers-label">
+        @for (reader of readers(); track reader.id) {
+          <sh-switch [label]="reader.name" [checked]="!!taking()[reader.id]" (checkedChange)="take(reader.id, $event)" />
+        }
+      </div>
+      @if (readersError(); as error) {
+        <div class="field__error">{{ error }}</div>
+      }
+    </div>
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Not now</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="challenge-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      Start the challenge
+    </button>
+  </div>
+</sh-dialog>

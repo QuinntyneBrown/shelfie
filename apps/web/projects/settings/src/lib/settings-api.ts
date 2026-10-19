@@ -32,6 +32,8 @@ export interface NotificationChoices {
   feedback: boolean;
   bookReward: boolean;
   streakReward: boolean;
+  challengeLead: boolean;
+  challengeEnd: boolean;
 }
 
 export interface SettingsPatch {

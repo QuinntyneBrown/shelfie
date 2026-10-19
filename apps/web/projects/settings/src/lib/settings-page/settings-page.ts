@@ -87,7 +87,14 @@ export class SettingsPage {
   protected readonly editingReader = signal<ReaderView | null>(null);
   protected readonly theme = signal<Theme>('device');
   /** The household's four notification choices; they save with the form. */
-  protected readonly notifications = signal<NotificationChoices>({ chapterLogged: true, feedback: true, bookReward: true, streakReward: true });
+  protected readonly notifications = signal<NotificationChoices>({
+    chapterLogged: true,
+    feedback: true,
+    bookReward: true,
+    streakReward: true,
+    challengeLead: true,
+    challengeEnd: true,
+  });
   protected readonly name = signal('');
   protected readonly email = signal('');
   protected readonly newPassword = signal('');

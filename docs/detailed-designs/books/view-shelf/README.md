@@ -31,6 +31,8 @@ The slice runs from `ShelfPage` to the `book`, `chapter_log` and `reward` tables
 
 Ordering: reading books by `lastLoggedAt` descending, up-next books by `createdAt` descending, finished books by `finishedAt` descending with no pagination (the mock notes none is needed below 50 books). A book is finished when `book.finished_at` is set; reading-log/log-chapter sets it when the last chapter is logged. The summary line's "reward waiting" count is the number of finished books without a reward. The feedback banner (review/review-chapter) reads `unseenFeedback` from the same response. Caching of the response for offline reading is owned by shell/work-offline.
 
+After the hero, the shelf shows a Challenge card when the household runs a challenge she takes part in, or one that ended in the last 7 days; it is loaded on its own from `GET /api/challenges` and designed in review/run-challenges.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.

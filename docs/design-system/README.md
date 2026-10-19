@@ -71,6 +71,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Alert and banner](components/alert.html) | Feedback | info, success, warning, danger; banner; dismissible | — | banner, sign-in, add-book, settings, review-chapter |
 | [Inline message](components/inline-message.html) | Feedback | field error, saving, saved | — | add-book, log-chapter, sign-in, settings |
 | [Progress](components/progress.html) | Feedback | default, large, complete; with label | — | shelf, book, log-chapter, manage-book |
+| [Leaderboard](components/leaderboard.html) | Data display | parent view, reader view (her row tinted) | one leader, tied at the top, nothing logged | review, shelf |
 | [Skeleton](components/skeleton.html) | Feedback | text, title, rect, cover | loading | shelf, book, chapter, log-chapter |
 | [Empty state](components/empty-state.html) | Feedback | first-run, error | — | shelf, books, review, book |
 | [Error page](components/error-page.html) | Feedback | 404, 403, 500, offline | — | not-found, forbidden, server-error, offline |
@@ -93,6 +94,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
 | [Marketing page](patterns/marketing-page.html) | Two-tone hero with pastel dots, short titles, tinted step and feature cards, wavy section edges |
+| [Leaderboard](patterns/leaderboard.html) | A household challenge: ranked readers, ties, insights, single reader, ending and winning |
 
 ## Tokens
 
