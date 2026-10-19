@@ -28,7 +28,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 
 The API with the gallery, the pick and the derived goal; the Settings card and dialog without the remove confirmation (remove at once); the shelf section without the celebration (the goal card's "Ready!" badge alone); no Review goal line or prefill, so the parent types the reward as before. It satisfies `L2-081`, `L2-082`, `L2-084` to `L2-087` and criterion 3 of `L2-089`, and defers `L2-083` criterion 1, `L2-088` and `L2-089` criteria 1 and 2. Total: 18 hours.
 
-Descriptions and pictures (`L2-096` to `L2-101`) can be dropped as a whole, saving 22 hours.
+Descriptions and pictures (`L2-100` to `L2-105`) can be dropped as a whole, saving 22 hours.
 
 ## Partial descoping
 
