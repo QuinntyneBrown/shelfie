@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A streak reward can carry an amount in dollars, and the shelf shows each streak reward as a badge, a shield with its milestone and a coin with its amount, with the 7-day goal as a path of days (L2-112, L2-113).
+
 - Shelfie's own reward pictures: beside "Add a picture" in the Add / edit a reward dialog, "Choose one of ours" offers ten built-in pictures (Gift box, Cash, Gift card, Make-up, Jewellery, Theme park, Shopping, Swimming pool, Park, Party). The chosen one is uploaded as an ordinary reward picture, so the API is unchanged. Requirement L2-111.
 - Streak rewards: in Settings → Streak rewards a parent sets a reward for 7, 30 and 100 days of reading in a row. When the streak reaches a milestone the reward is earned and stays earned even if the streak later breaks; the reader sees her progress to the next one and a celebration on her shelf, and the parent sees a card on Review and gives it with one tap. Each milestone is earned and given once.
 - Achievement badges: the reader's shelf has a Badges section and Review a "Nia’s badges" card with four badges: First book, Double chapter (two chapters in one day), Weekend reader (a Saturday and the Sunday after) and Week streak (seven days in a row). Each shows the day it was earned, or what to do to earn it. They are worked out from the chapter logs on every read, so nothing is stored and no one can edit them.
