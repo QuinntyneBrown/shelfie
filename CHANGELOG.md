@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The app and its API move to `https://app.shelfie.kids`; `shelfie.kids` redirects its home page to www and every other path to the app. Everyone signs in once more. `shelfie-admin` defaults to `https://app.shelfie.kids`.
+
 ### Fixed
 
 - Badges on the shelf and Review show as tiles of one height, as in the mocks, instead of a bulleted list.
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Feedback notifications: a parent hears on their device when a chapter is waiting for feedback, and a reader hears when a sticker, a book reward or a streak reward arrives. In Settings a parent turns notifications on for this device and chooses, for the household, which of the four events send one (all start on); a reader is offered them once on her shelf. A message is one short line that opens the page it is about and never carries answers, notes or reward text. It is sent through the browser's push service with VAPID keys, is off when `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are unset, and uses a small push-only service worker. Requirements L1-027 and L2-121 to L2-128, design `shell/push-notifications`, ADR-0016, migration `010-push.sql`, component `sh-switch`.
 - Send feedback: readers and parents score Shelfie with five faces, say whether it is about how it feels or an idea, and write a message, from the account menu. The operator lists it with `shelfie-admin feedback list` (L2-114 to L2-119, ADR-0014).
+- A marketing page at `https://www.shelfie.kids` that explains the reading loop, with real screenshots and links to sign up and sign in; it carries no project links (L2-129 to L2-136, ADR-0017).
 - A streak reward can carry an amount in dollars, and the shelf shows each streak reward as a badge, a shield with its milestone and a coin with its amount, with the 7-day goal as a path of days (L2-112, L2-113).
 
 - Shelfie's own reward pictures: beside "Add a picture" in the Add / edit a reward dialog, "Choose one of ours" offers ten built-in pictures (Gift box, Cash, Gift card, Make-up, Jewellery, Theme park, Shopping, Swimming pool, Park, Party). The chosen one is uploaded as an ordinary reward picture, so the API is unchanged. Requirement L2-111.

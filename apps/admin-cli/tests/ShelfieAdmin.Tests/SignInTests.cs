@@ -114,7 +114,7 @@ public class SignInTests
         var run = await AdminCli.RunAsync(["whoami"]);
 
         Assert.Equal(2, run.ExitCode);
-        Assert.StartsWith("No admin token for https://shelfie.kids.", run.Stderr.Trim());
+        Assert.StartsWith("No admin token for https://app.shelfie.kids.", run.Stderr.Trim());
     }
 
     [Fact]
@@ -136,10 +136,10 @@ public class SignInTests
     [Fact]
     public async Task Given_an_http_URL_that_is_not_local_then_the_command_fails_before_any_request()
     {
-        var run = await AdminCli.RunAsync(["login", "--api-url", "http://shelfie.kids"], stdin: "anything\n");
+        var run = await AdminCli.RunAsync(["login", "--api-url", "http://app.shelfie.kids"], stdin: "anything\n");
 
         Assert.Equal(1, run.ExitCode);
-        Assert.Contains("HTTPS is required for http://shelfie.kids", run.Stderr);
+        Assert.Contains("HTTPS is required for http://app.shelfie.kids", run.Stderr);
     }
 
     [Fact]

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Shelfie is a web application that helps one child read books: she logs each chapter and answers short questions, and a parent in her household reviews the answers and gives rewards. One of the parents also runs the production service on a single Azure VM at `shelfie.kids`; that person is the **operator**. The operator queries and corrects production data with a command-line tool, `shelfie-admin`, which reaches production only through a dedicated HTTP API (L1-016).
+Shelfie is a web application that helps one child read books: she logs each chapter and answers short questions, and a parent in her household reviews the answers and gives rewards. One of the parents also runs the production service on a single Azure VM at `app.shelfie.kids`; that person is the **operator**. The operator queries and corrects production data with a command-line tool, `shelfie-admin`, which reaches production only through a dedicated HTTP API (L1-016).
 
 This feature is the security boundary of that API, in the `admin-api` subsystem. It decides who may call the admin API, how often, and with what power, and it records every call. The admin endpoints themselves are the sibling feature `serve-admin-data`; the CLI side of sign-in is `admin-cli/sign-in-cli`.
 

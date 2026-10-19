@@ -6,7 +6,7 @@ public static class Program
 {
     public static readonly Option<string?> ApiUrl = new("--api-url")
     {
-        Description = "Base URL of the Shelfie API (default: SHELFIE_ADMIN_URL, else https://shelfie.kids)",
+        Description = "Base URL of the Shelfie API (default: SHELFIE_ADMIN_URL, else https://app.shelfie.kids)",
         Recursive = true,
     };
 

@@ -8,7 +8,7 @@ info:
     Write endpoints accept ?dryRun=true, which validates and applies the change in a transaction that
     is rolled back, and answer with what would have changed.
 servers:
-  - url: https://shelfie.kids/api/admin/v1
+  - url: https://app.shelfie.kids/api/admin/v1
   - url: http://localhost:3000/api/admin/v1
 security:
   - adminToken: []

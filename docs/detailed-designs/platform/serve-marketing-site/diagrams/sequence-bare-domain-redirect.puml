@@ -1,0 +1,22 @@
+@startuml
+title Behaviour — a request to the bare domain
+actor Browser
+participant "Caddy\nshelfie.kids" as bare
+participant "Caddy\nwww.shelfie.kids" as www
+participant "Caddy\napp.shelfie.kids" as app
+participant "Shelfie API" as api
+
+Browser -> bare : GET https://shelfie.kids/
+bare --> Browser : 301 Location: https://www.shelfie.kids/
+Browser -> www : GET /
+www --> Browser : 200 index.html + CSP and security headers
+
+== an old reset link ==
+Browser -> bare : GET https://shelfie.kids/reset-password?token=abc
+bare --> Browser : 301 Location: https://app.shelfie.kids/reset-password?token=abc
+Browser -> app : GET /reset-password?token=abc
+app --> Browser : 200 Angular index.html
+Browser -> app : POST /api/auth/reset (same origin, SameSite=Strict cookie)
+app -> api : reverse_proxy
+api --> Browser : 200
+@enduml

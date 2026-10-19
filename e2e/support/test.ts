@@ -13,6 +13,10 @@ import { clearPushed, fakePush } from './push';
 import { suggest, suggestIdeas } from './suggestions';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
+const MARKETING = join(import.meta.dirname, '../../apps/marketing');
+// The policy Caddy sends for www.shelfie.kids (infra/host/Caddyfile), so tests see what production blocks.
+const MARKETING_CSP =
+  "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self'";
 
 interface Stack {
   db: Awaited<ReturnType<typeof createTestDatabase>>;
@@ -20,13 +24,15 @@ interface Stack {
 }
 
 // Each worker runs its own copy of the API over a database of its own on the PostgreSQL server at
-// DATABASE_URL and serves the built web app from the same port, so tests never share state.
+// DATABASE_URL and serves the built web app from the same port, so tests never share state. The static
+// marketing site is served under /marketing/.
 export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 'on' | 'off'; pushSwitch: void }, { stack: Stack }>({
   stack: [
     async ({}, use) => {
       const db = await createTestDatabase();
       const app = express();
       app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work() }));
+      app.use('/marketing', (_req, res, next) => (res.set('Content-Security-Policy', MARKETING_CSP), next()), express.static(MARKETING));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
       const server = app.listen(0);

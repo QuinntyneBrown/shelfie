@@ -86,7 +86,7 @@ npm test
 
 ### Deployment
 
-Every merge to `main` deploys to `https://shelfie.kids` through GitHub Actions. The production shape, first-time set-up, rollback and restore steps are in [docs/runbook.md](docs/runbook.md).
+Every merge to `main` deploys the app to `https://app.shelfie.kids` and the marketing page to `https://www.shelfie.kids` through GitHub Actions; `shelfie.kids` redirects. The production shape, first-time set-up, rollback and restore steps are in [docs/runbook.md](docs/runbook.md).
 
 ## Project structure
 

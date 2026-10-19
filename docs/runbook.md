@@ -7,7 +7,7 @@ How Shelfie runs in production and what to do when something needs a hand. A par
 | Part | Where |
 |---|---|
 | Host | One Ubuntu 24.04 VM (`Standard_B2ats_v2`) in Canada Central, resource group `shelfie-prod` |
-| TLS and static files | Caddy, `/etc/caddy/Caddyfile`, serves `https://shelfie.kids`, redirects `www`, proxies `/api/*` to the API |
+| TLS and static files | Caddy, `/etc/caddy/Caddyfile`, serves the app at `https://app.shelfie.kids` and proxies its `/api/*` to the API, serves the marketing page (`/opt/shelfie/current/marketing`) at `https://www.shelfie.kids`, and redirects bare `shelfie.kids`: `/` to www, every other path to app |
 | API | systemd unit `shelfie`, runs `node apps/api/src/main.ts` from `/opt/shelfie/current` as user `shelfie` |
 | Database | Azure Database for PostgreSQL Flexible Server 16 (`Standard_B1ms`, 32 GiB, encrypted, TLS only), in the `database` subnet with no public endpoint; database `shelfie` owned by role `shelfie_app` |
 | Backups | 7 days of automated backups with point-in-time restore on the server; a nightly `pg_dump` in the `backups` blob container as `shelfie-YYYY-MM-DD.dump`, deleted after 30 days by a lifecycle rule |
@@ -35,14 +35,24 @@ Then at Namecheap (Advanced DNS for `shelfie.kids`):
 |---|---|---|
 | A | `@` | the public IP printed by bootstrap |
 | CNAME | `www` | `shelfie.kids.` |
+| CNAME | `app` | `shelfie.kids.` |
 
-Caddy requests the certificate as soon as the A record resolves; nothing to do on the VM.
+Caddy requests a certificate for each of the three hosts as soon as its record resolves; nothing to do on the VM. `CNAME app` must exist before a release with the `app.shelfie.kids` Caddyfile goes live, or the app has no certificate and is down.
+
+### Moving the app to app.shelfie.kids (once)
+
+The release that adds the marketing site moves the app from `shelfie.kids` to `app.shelfie.kids` (`docs/adr/0017-marketing-site-and-app-host.md`). Before merging it:
+
+1. Add `CNAME app shelfie.kids.` at Namecheap and wait until `dig +short app.shelfie.kids` returns the VM's IP.
+2. On the VM set `APP_URL=https://app.shelfie.kids` in `/etc/shelfie/env` and `sudo systemctl restart shelfie`, so reset and invite links point at the new host. Links already sent to `shelfie.kids` keep working through the redirect.
+3. Merge. Everyone signs in once more on the new host: the session cookie is host-only.
+4. `shelfie-admin` now defaults to `https://app.shelfie.kids`; run `shelfie-admin login` once to store the token for that URL.
 
 SSH is allowed only from the IP you ran bootstrap from. If yours changes, rerun bootstrap (it is idempotent) or `ADMIN_IP=<new ip> bash infra/bootstrap.sh`.
 
 ## Deploying
 
-Merging a pull request into `main` runs `.github/workflows/deploy.yml`: CI, then a release tarball is built, uploaded to the `releases` container, unpacked on the VM and activated by `infra/host/deploy.sh`, which restarts the API (it applies any new `apps/api/migrations/*.sql` before it listens), waits for `GET /api/health`, rolls back on failure and reloads Caddy. The job ends by checking `https://shelfie.kids/api/health`.
+Merging a pull request into `main` runs `.github/workflows/deploy.yml`: CI, then a release tarball is built, uploaded to the `releases` container, unpacked on the VM and activated by `infra/host/deploy.sh`, which restarts the API (it applies any new `apps/api/migrations/*.sql` before it listens), waits for `GET /api/health`, rolls back on failure and reloads Caddy. The job ends by checking `https://app.shelfie.kids/api/health` and loading `https://www.shelfie.kids/`. The tarball carries the marketing page in `marketing/`.
 
 To redeploy the same commit, re-run the workflow from the Actions tab.
 
@@ -91,7 +101,7 @@ To restore a dump into the existing server (the server is private, so run this o
 3. Recreate the empty database: `psql "host=$DB_HOST user=shelfie_admin dbname=postgres" -c 'DROP DATABASE shelfie' -c 'CREATE DATABASE shelfie OWNER shelfie_app'`
 4. `pg_restore --no-owner --no-privileges --role=shelfie_app -d "host=$DB_HOST user=shelfie_admin dbname=shelfie" shelfie-2026-10-17.dump` (download the dump first, see above)
 5. `sudo systemctl start shelfie`
-6. `curl -fsS https://shelfie.kids/api/health`
+6. `curl -fsS https://app.shelfie.kids/api/health`
 
 ## Erasing a household
 
@@ -107,7 +117,7 @@ The one `DELETE` removes the household's profiles, devices, sessions, password r
 
 ## Changing settings
 
-Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL`, `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work). `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged. The same key switches on suggested questions on Manage a book (`docs/detailed-designs/books/suggest-questions/`): when a parent presses "Suggest questions" the API sends the book's title, author, next chapter number and existing questions to Anthropic (`claude-opus-5-5`), at most 5 asks per household in 10 minutes; without the key the dialog says suggestions aren’t switched on and adding questions by hand keeps working. The same key turns on the AI fallback of book autocomplete on Add a book (`docs/detailed-designs/books/autocomplete-book/`); unset, titles are looked up in the Open Library catalogue only. The VM needs outbound HTTPS to `openlibrary.org`, `covers.openlibrary.org` and, with the key, `api.anthropic.com`. `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (a `mailto:` or `https:` contact for the push services) turn on push notifications for feedback (`docs/detailed-designs/shell/push-notifications/`, ADR-0016); all are optional, and with the two keys unset Settings says "Notifications aren’t set up", the shelf offers nothing and nothing is sent. Make a pair once with `npx web-push generate-vapid-keys` and keep it: a new pair strands every stored subscription until each person turns notifications on again. A message carries only a title, a body, a tag and a page, never answers, notes or reward text. The VM needs outbound HTTPS to the browser vendors' push services (for Chrome, `fcm.googleapis.com`).
+Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL` (`https://app.shelfie.kids`; the host that reset and invite links point at), `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work). `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged. The same key switches on suggested questions on Manage a book (`docs/detailed-designs/books/suggest-questions/`): when a parent presses "Suggest questions" the API sends the book's title, author, next chapter number and existing questions to Anthropic (`claude-opus-5-5`), at most 5 asks per household in 10 minutes; without the key the dialog says suggestions aren’t switched on and adding questions by hand keeps working. The same key turns on the AI fallback of book autocomplete on Add a book (`docs/detailed-designs/books/autocomplete-book/`); unset, titles are looked up in the Open Library catalogue only. The VM needs outbound HTTPS to `openlibrary.org`, `covers.openlibrary.org` and, with the key, `api.anthropic.com`. `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (a `mailto:` or `https:` contact for the push services) turn on push notifications for feedback (`docs/detailed-designs/shell/push-notifications/`, ADR-0016); all are optional, and with the two keys unset Settings says "Notifications aren’t set up", the shelf offers nothing and nothing is sent. Make a pair once with `npx web-push generate-vapid-keys` and keep it: a new pair strands every stored subscription until each person turns notifications on again. A message carries only a title, a body, a tag and a page, never answers, notes or reward text. The VM needs outbound HTTPS to the browser vendors' push services (for Chrome, `fcm.googleapis.com`).
 
 ## Changing the infrastructure
 
@@ -122,7 +132,7 @@ Edit `infra/main.bicep` and rerun `infra/bootstrap.sh`. The VM's cloud-init (`in
 The admin API ships with the normal deploy: merge to `main`. On start the API adds the `admin_token` and `admin_audit` tables to the existing database. No Caddy, Bicep or settings change is needed. Check it after the deploy:
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' https://shelfie.kids/api/admin/v1/whoami   # 401 means it is live
+curl -s -o /dev/null -w '%{http_code}\n' https://app.shelfie.kids/api/admin/v1/whoami   # 401 means it is live
 ```
 
 ### Installing the CLI
