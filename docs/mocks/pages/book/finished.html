@@ -7,7 +7,7 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="book">
 <meta name="mock:state" content="finished">
-<meta name="mock:requirements" content="L2-008 L2-047">
+<meta name="mock:requirements" content="L2-008 L2-047 L2-118">
 <meta name="description" content="Matilda: all 21 chapters logged, trophy card says the reward is coming.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
@@ -45,8 +45,12 @@
     <h2 style="font: var(--text-h4);">You finished Matilda on Tuesday!</h2>
     <p class="text-muted">Dad is picking your reward. It will show up here and on your shelf.</p>
   </div>
-  <a class="btn btn--primary" href="../../pages/shelf/default.html">Back to my shelf</a>
+  <div class="cluster">
+    <a class="btn btn--primary" href="../../pages/shelf/default.html">Back to my shelf</a>
+    <a class="btn" href="../../pages/certificate/default.html" download><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 9V3h12v6M6 14h12v7H6z"/></svg>Print my certificate</a>
+  </div>
 </section>
+<p class="mock-note" style="top: 14rem; right: 1rem;">"Print my certificate" downloads a PDF the API draws (L2-118). It is a plain link; nothing else on the page changes.</p>
 <section class="section" aria-labelledby="chapters">
   <h2 id="chapters" style="font: var(--text-h3); margin-bottom: var(--space-4);">All 21 chapters</h2>
   <div class="card card--flush"><a class="chapter chapter--done" href="../../pages/chapter/default.html">
