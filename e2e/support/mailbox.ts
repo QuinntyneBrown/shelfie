@@ -2,13 +2,14 @@ interface Mail {
   to: string;
   subject: string;
   text: string;
+  html: string;
 }
 
 const outbox: Mail[] = [];
 
 /** Stands in for the API's mail sender: keeps every mail here instead of sending it. */
-export async function deliver(to: string, subject: string, text: string) {
-  outbox.push({ to, subject, text });
+export async function deliver(to: string, subject: string, text: string, html: string) {
+  outbox.push({ to, subject, text, html });
 }
 
 export function clearMailbox() {

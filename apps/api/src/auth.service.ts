@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { get, run, transaction, type Db } from './db.ts';
 import { sendMail, type Mail } from './mail.ts';
+import { renderMail } from './mail-template.ts';
 import { Problem } from './problem.ts';
 import { photoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
@@ -132,7 +133,13 @@ export async function requestPasswordReset(db: Db, email: string, mail: Mail = s
   const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
   await run(db, 'INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES ($1, $2, $3)', [sha256(token), profile.id, expires]);
   const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-  await mail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
+  const { html, text } = renderMail({
+    heading: 'Choose a new password',
+    paragraphs: [`Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.`],
+    button: { label: 'Choose a new password', url: link },
+    footer: 'You got this because someone asked to reset the password for this address. If it wasn’t you, ignore this e-mail; your password stays the same.',
+  });
+  await mail(email, 'Choose a new Shelfie password', text, html);
 }
 
 /** Spends a reset token: sets the new password, ends every session of the parent and signs them in. Null when the link is used or expired. */
