@@ -31,7 +31,7 @@ test('Given a migrated database, when the API migrates again, then nothing runs 
 
     await migrate(db.pool);
 
-    assert.equal((await applied(db.pool)).length, 5);
+    assert.equal((await applied(db.pool)).length, 6);
     assert.equal((await get<{ id: string }>(db.pool, 'SELECT id FROM household'))?.id, 'h1');
   } finally {
     await db.drop();
