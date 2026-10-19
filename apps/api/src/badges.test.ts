@@ -1,4 +1,4 @@
-// Traces to: L2-096, L2-097, L2-098, L2-099
+// Traces to: L2-096, L2-097, L2-098, L2-099, L2-019, L2-020
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -130,6 +130,32 @@ test('Given a book finished late in the evening in another time zone, then First
   const cookie = await signIn(SEED.readerUsername, SEED.readerPassword);
 
   assert.equal((await badgesOf(cookie, '/api/shelf')).find((b) => b.id === 'first-book')!.earnedOn, '2026-10-10');
+});
+
+test('Given Nia read on Saturday 10 Oct, when she logs a chapter read on the Sunday after, then the log result names Weekend reader as earned and carries her streak and week', async () => {
+  const cookie = await signIn(SEED.readerUsername, SEED.readerPassword);
+  const response = await fetch(`${url}/api/books/b-lion/chapters/12`, {
+    method: 'POST',
+    headers: { ...APP, Cookie: cookie, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ readOn: '2026-10-11', answers: [{ position: 1, text: 'Peter met Aslan at the Stone Table.' }] }),
+  });
+  assert.equal(response.status, 201);
+  const result = (await response.json()) as { badgesEarned: Badge[]; streak: number; week: { date: string; read: boolean; today: boolean }[] };
+
+  assert.deepEqual(result.badgesEarned.map((b) => b.id), ['weekend-reader']);
+  assert.equal(typeof result.streak, 'number');
+  assert.equal(result.week.length, 7);
+  assert.equal(result.week.filter((d) => d.today).length, 1);
+});
+
+test('Given Nia opens her shelf, then it carries this week, Monday to Sunday, with today marked', async () => {
+  const cookie = await signIn(SEED.readerUsername, SEED.readerPassword);
+  const response = await fetch(`${url}/api/shelf`, { headers: { ...APP, Cookie: cookie } });
+  const shelf = (await response.json()) as { week: { date: string; read: boolean; today: boolean }[] };
+
+  assert.equal(shelf.week.length, 7);
+  assert.equal(new Date(`${shelf.week[0]!.date}T00:00:00Z`).getUTCDay(), 1);
+  assert.equal(shelf.week.filter((d) => d.today).length, 1);
 });
 
 test('Given another household, then it sees only its own badges, and no session gets 401', async () => {

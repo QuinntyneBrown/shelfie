@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,6 +8,7 @@ import {
   inject,
   input,
   model,
+  output,
   signal,
 } from '@angular/core';
 
@@ -40,6 +42,7 @@ let listeningField: QuestionField | null = null;
 
 @Component({
   selector: 'sh-question-field',
+  imports: [NgTemplateOutlet],
   templateUrl: './question-field.html',
   styleUrl: './question-field.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,10 +55,16 @@ export class QuestionField {
   readonly error = input<string | null>(null);
   readonly maxlength = input(2000);
   readonly value = model('');
+  /** 'chat' draws the question as Olive's bubble and the answer as the reader's bubble. */
+  readonly layout = input<'form' | 'chat'>('form');
+  /** In the chat, whether to offer "Next" under the answer. */
+  readonly showNext = input(false);
+  readonly next = output<void>();
 
   protected readonly inputId = computed(() => `q${this.number()}`);
   protected readonly charactersLeft = computed(() => this.maxlength() - this.value().length);
   protected readonly showCounter = computed(() => this.charactersLeft() <= COUNTER_FROM);
+  protected readonly answered = computed(() => this.value().trim().length > 0);
 
   /** The microphone button is drawn only where the browser can recognise speech. */
   protected readonly supported = recognitionConstructor() !== undefined;

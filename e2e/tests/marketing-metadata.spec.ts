@@ -5,13 +5,13 @@ import { MarketingPage } from '../pages/marketing.page';
 test('Given the marketing page, then it carries its description, canonical, Open Graph and Twitter tags', async ({ page }) => {
   const marketing = new MarketingPage(page);
   await marketing.open();
-  await expect(page).toHaveTitle('Shelfie — Every chapter is a step to a reward');
+  await expect(page).toHaveTitle('Shelfie — Every chapter, rewarded');
   expect(await marketing.meta('description')).toMatch(/reading/i);
   expect(await marketing.meta('theme-color')).toBeTruthy();
   expect(await marketing.canonical()).toBe('https://www.shelfie.kids/');
   expect(await marketing.meta('og:type')).toBe('website');
   expect(await marketing.meta('og:url')).toBe('https://www.shelfie.kids/');
-  expect(await marketing.meta('og:title')).toBe('Shelfie — Every chapter is a step to a reward');
+  expect(await marketing.meta('og:title')).toBe('Shelfie — Every chapter, rewarded');
   expect(await marketing.meta('og:description')).toBeTruthy();
   expect(await marketing.meta('og:image')).toBe('https://www.shelfie.kids/assets/social-card.png');
   expect(await marketing.meta('og:image:width')).toBe('1200');

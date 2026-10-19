@@ -1,4 +1,4 @@
-// Traces to: L2-011
+// Traces to: L2-011, L2-019
 import { test, expect } from '../support/test';
 import { signInAsNia } from '../support/signed-in';
 import { ShelfPage } from '../pages/shelf.page';
@@ -17,7 +17,8 @@ test('Given Nia is on the next chapter, when she answers question 1 and presses 
   await log.done();
 
   await expect(log.heading()).toHaveText('Chapter 12 done!');
-  await expect(log.progressSummary()).toContainText('That’s 12 of 17');
+  await expect(log.progressLabel()).toHaveText('12 of 17');
+  await expect(log.chaptersToGo()).toContainText('Only 5 chapters to go');
   await expect(log.progressBar('12 of 17 chapters read')).toBeVisible();
 
   await log.backToShelf();
@@ -25,14 +26,14 @@ test('Given Nia is on the next chapter, when she answers question 1 and presses 
   await expect(shelf.book('On the go', LION).getByRole('link', { name: 'Log Chapter 13' })).toBeVisible();
 });
 
-test('Given question 1 is blank, when she presses I’m done!, then an inline error shows, nothing is saved, and blank answers 2 and 3 are fine once question 1 is answered', async ({ page }) => {
+test('Given question 1 is blank, when she presses I’m done!, then an inline error shows, nothing is saved, and blank later answers are fine once question 1 is answered', async ({ page }) => {
   await signInAsNia(page);
   const shelf = new ShelfPage(page);
   await shelf.logChapter('On the go', LION, 12);
   const log = new LogChapterPage(page);
 
   await log.answer(1, '   ');
-  await log.answer(2, 'Edmund');
+  await expect(log.nextButton(1)).toBeDisabled();
   await log.done();
 
   await expect(log.summary()).toContainText('Question 1 needs an answer');
@@ -183,14 +184,16 @@ test('Given she has started writing, when she comes back to the same chapter on 
   await new ShelfPage(page).logChapter('On the go', LION, 12);
 
   await log.chooseDay('Yesterday');
-  await log.answer(1, 'Edmund said sorry');
+  await log.answerAndNext(1, 'Edmund said sorry');
+  await log.answerAndNext(2, 'Lucy');
   await log.answer(3, 'Aslan will help');
   await log.letTimePass(3000);
   await log.reload();
 
   await expect(log.answerBox(1)).toHaveValue('Edmund said sorry');
-  await expect(log.answerBox(2)).toHaveValue('');
+  await expect(log.answerBox(2)).toHaveValue('Lucy');
   await expect(log.answerBox(3)).toHaveValue('Aslan will help');
+  await expect(log.questionsShown()).toHaveCount(3);
   await expect(log.dayChosen('Yesterday')).toHaveAttribute('aria-pressed', 'true');
 });
 
@@ -280,8 +283,8 @@ test('Given she is on a book’s last chapter, when she logs it, then the finish
   await log.answer(1, 'The giant blew dreams into bedrooms.');
   await log.done();
 
-  await expect(log.finishedHeading()).toBeVisible();
-  await expect(page.getByText('All 3 chapters of The BFG. Dad will pick your reward')).toBeVisible();
+  await expect(log.finishedHeading('The BFG')).toBeVisible();
+  await expect(log.celebrationRow('The BFG')).toContainText('All 3 chapters · Dad is picking your reward');
 
   await log.backToShelf();
   await expect(shelf.finishedBook('The BFG')).toContainText('Dad is picking your reward');
@@ -314,4 +317,46 @@ test('Given Nia logged chapters 12 and 13 just now, when an undo of chapter 12 i
 
   expect([undo.status(), (await undo.json()).type]).toEqual([409, 'undo-not-latest']);
   expect(await readOnOf('b-lion', 12)).toBeDefined();
+});
+
+test('Given the questions, when the page opens, then Olive greets her and only question 1 shows, with how many are left', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await expect(log.greeting()).toContainText('Hi Nia! Dad wants to hear about Chapter 12.');
+  await expect(log.questionsShown()).toHaveCount(1);
+  await expect(log.moreQuestionsHint()).toHaveText('2 more questions after this one.');
+  await expect(log.nextButton(1)).toBeDisabled();
+});
+
+test('Given question 1 is answered, when she presses Next, then Olive replies and question 2 appears; I’m done! still sends what she has', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.answerAndNext(1, 'Edmund said sorry to the animals.');
+  await expect(log.oliveReplies()).toHaveCount(1);
+  await expect(log.oliveReplies().first()).toHaveText('Nice! I wondered about that too.');
+  await expect(log.questionsShown()).toHaveCount(2);
+  await expect(log.answerBox(2)).toBeFocused();
+  await expect(log.moreQuestionsHint()).toHaveText('1 more question after this one.');
+
+  await log.done();
+  await expect(log.heading()).toHaveText('Chapter 12 done!');
+});
+
+test('Given she logs a chapter on the Sunday after a Saturday she read, then the celebration stacks progress, the badge she earned and this week', async ({ page }) => {
+  await signInAsNia(page);
+  await new ShelfPage(page).logChapter('On the go', LION, 12);
+  const log = new LogChapterPage(page);
+
+  await log.chooseDay('Another day');
+  await log.pickDay('2026-10-11');
+  await log.answer(1, 'Edmund said sorry.');
+  await log.done();
+
+  await expect(log.progressLabel()).toHaveText('12 of 17');
+  await expect(log.celebrationRow('Badge earned: Weekend reader')).toBeVisible();
+  await expect(log.celebrationWeek()).toBeVisible();
 });

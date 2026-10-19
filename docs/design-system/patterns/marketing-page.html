@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marketing page — Shelfie design system</title>
-<meta name="description" content="The layout of the static marketing page at www.shelfie.kids: hero, value cards, journey steps, screenshot showcase, bento grid and final call to action.">
+<meta name="description" content="The layout of the static marketing page at www.shelfie.kids: a two-tone hero, short section titles, tinted step and feature cards, wavy section edges and a final call to action.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -67,6 +67,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -89,62 +90,110 @@
       <li><a href="../patterns/notifications.html">Notifications</a></li>
       <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
       <li><a href="../patterns/marketing-page.html">Marketing page</a></li>
-    </ul></details>
-  </nav>
-
-  <main id="main" class="ds-main">
+    <  <main id="main" class="ds-main">
     <header class="ds-header">
       <p class="ds-kicker">Pattern · Marketing</p>
       <h1>Marketing page</h1>
-      <p class="ds-lead">The one public page, at www.shelfie.kids. It tells a family what Shelfie is in the order they wonder about it (what, why, how, what it looks like, what else) and ends every path at "Create a parent account" or "Sign in". It is static HTML outside the Angular workspace, so it is built from tokens, not from <code>sh-*</code> components (ADR-0017).</p>
-      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span></div>
+      <p class="ds-lead">The one public page, at www.shelfie.kids. It says what Shelfie is in as few words as possible, shows the real app on soft tinted cards, and ends every path at "Create a parent account" or "Sign in". It is static HTML outside the Angular workspace, so it is built from tokens, not from <code>sh-*</code> components (ADR-0017).</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span><span class="ds-pill">Updated 2026-10-19</span></div>
       <ul class="ds-toc">
-        <li><a href="#structure">Structure</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#motion">Motion</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#sources">Sources</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#motion">Motion</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>The page reads like the app feels: big friendly type, pastel washes, real screenshots, very little text. The hero is a large two-tone headline ("Every chapter, <em>rewarded.</em>") over a field of scattered pastel dots. Every section after it has a title of four words or fewer and no kicker or sub-paragraph; the cards carry the detail. "How it works" is three tinted cards with icon tiles, and "Inside the app" is four tinted feature cards with cropped, slightly rotated screenshots. Sections meet with a wavy edge instead of a straight line.</p>
+    </section>
+
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <ul>
+        <li>Only for the public page at www.shelfie.kids (and its menu-open and reduced-motion states). Signed-in screens use the app shell and the <a href="navigation.html">navigation</a> pattern.</li>
+        <li>Use tinted cards with icon tiles to explain steps; use feature cards with a screenshot when showing a real screen. Use plain surface cards (the bento grid) for short facts that need no picture.</li>
+        <li>Don't use the wavy edge, two-tone headlines or rotated screenshots inside the app; they are marketing gestures.</li>
+      </ul>
+    </section>
 
     <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">What it holds</th></tr></thead>
         <tbody>
           <tr><td>Header</td><td>Sticky, translucent with a blur on a layer behind it. Logo, four anchor links, "Open the app" as a primary pill.</td></tr>
-          <tr><td>Hero</td><td>Kicker, H1 with the accent on its second half, a lede of at most four lines, a large primary pill and a text link, a trust line; a phone frame with a real screenshot and two stickers.</td></tr>
-          <tr><td>Value cards</td><td>Three <code>.card</code>s, each with a tinted icon tile in a cover pastel, an H3 and one sentence.</td></tr>
-          <tr><td>Journey steps</td><td>An ordered list; each step numbered "01" to "05" in the accent, an H3 and one sentence, on the sunken surface.</td></tr>
-          <tr><td>Screenshot showcase</td><td>A focusable, labelled region that scrolls sideways with snap points; each screenshot in a <code>figure</code> with a caption.</td></tr>
-          <tr><td>Bento grid</td><td>Cards in three columns on desktop, two wide; each with an icon tile, an uppercase kicker and an H3.</td></tr>
-          <tr><td>Final call to action</td><td>Centred icon, H2, lede and two pills: primary "Create a parent account", secondary "Sign in".</td></tr>
+          <tr><td>Hero</td><td>No kicker. A large two-tone H1, "Every chapter, <em>rewarded.</em>" (<code>--font-size-5xl</code> up to 4.75rem, line height 1.05, the second half in <code>--color-fg-accent</code>), a one-sentence lede, a large primary pill and a text link, a trust line ("No ads · No analytics"); a phone frame with a real screenshot and two stickers, over scattered pastel dots (radial gradients in the cover colours at 70%).</td></tr>
+          <tr><td>Value cards ("Fun, not homework.")</td><td>Three <code>.card</code>s, each with an icon tile in a cover pastel, an H3 and one sentence.</td></tr>
+          <tr><td>How it works ("Three steps, one finish.")</td><td>An ordered list of three cards, no numbers: each washed in a cover tint (<code>.tint-bg-sage</code>, <code>-sky</code>, <code>-rose</code>), with a 56px icon tile, an H3 and one sentence, <code>--radius-xl</code> corners.</td></tr>
+          <tr><td>Inside the app ("Real screens. Real encouragement.")</td><td>Four feature cards (<code>.tint-bg-mint</code>, <code>-sun</code>, <code>-rose</code>, <code>-lilac</code>, <code>--radius-xl</code>), each with a 14rem window cropping a phone screenshot rotated −3° and dropped by <code>--space-5</code>, then an H3 at <code>--font-size-2xl</code> and one line.</td></tr>
+          <tr><td>Bento grid ("For the whole family.")</td><td>Plain cards in three columns on desktop, two wide; each with an icon tile and an H3, a short line where needed.</td></tr>
+          <tr><td>Wavy edges</td><td>The "How it works" and family sections draw a <code>--space-8</code> band above themselves in their own background, shaped by a CSS <code>mask</code> wave, so the section boundary curves.</td></tr>
+          <tr><td>Final call to action</td><td>Centred app icon, H2 "Start her <em>next chapter.</em>", a short lede and two pills: primary "Create a parent account", secondary "Sign in".</td></tr>
           <tr><td>Footer</td><td>Brand and tagline, a Product column, copyright with the current year. No project links (source, docs, license).</td></tr>
         </tbody>
       </table></div>
+      <h3>Composed example: How it works</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><p style="font: var(--text-h2);">Three steps, <em style="font-style: normal; color: var(--color-fg-accent);">one finish.</em></p><ol class="stack" style="padding: 0; margin: 0;"><li class="card" style="--card-bg: var(--color-tint-sage); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-sage); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">📖</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Read and log</h4><p class="text-muted">She reads a chapter and logs it in one tap.</p></li><li class="card" style="--card-bg: var(--color-tint-sky); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-sky); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">💬</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Answer Olive’s questions</h4><p class="text-muted">Olive asks one at a time. She types or talks.</p></li><li class="card" style="--card-bg: var(--color-tint-rose); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-rose); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">🎁</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Stickers and a reward</h4><p class="text-muted">You send a sticker. Finish the book, and the reward is hers.</p></li></ol></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><p style="font: var(--text-h2);">Three steps, <em style="font-style: normal; color: var(--color-fg-accent);">one finish.</em></p><ol class="stack" style="padding: 0; margin: 0;"><li class="card" style="--card-bg: var(--color-tint-sage); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-sage); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">📖</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Read and log</h4><p class="text-muted">She reads a chapter and logs it in one tap.</p></li><li class="card" style="--card-bg: var(--color-tint-sky); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-sky); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">💬</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Answer Olive’s questions</h4><p class="text-muted">Olive asks one at a time. She types or talks.</p></li><li class="card" style="--card-bg: var(--color-tint-rose); border-radius: var(--radius-xl); list-style: none;"><span class="avatar avatar--lg" style="background: var(--color-cover-rose); color: var(--color-fg-on-cover); border-radius: var(--radius-lg);" aria-hidden="true">🎁</span><h4 style="font: var(--text-h4); margin-top: var(--space-3);">Stickers and a reward</h4><p class="text-muted">You send a sticker. Finish the book, and the reward is hers.</p></li></ol></div></div>
+      </div>
+      <p>The example uses the app's <code>.card</code> with <code>--card-bg</code> for brevity. The marketing page itself sets washes with <code>.tint-bg-*</code> classes in <code>shelfie.css</code>, because its Content Security Policy forbids inline styles.</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <ul>
+        <li><b>Default</b> (<a href="../../mocks/pages/marketing/default.html">default</a>): sections rise into view as they scroll in.</li>
+        <li><b>Menu open</b> (<a href="../../mocks/pages/marketing/menu-open.html">menu-open</a>): below 1024px the menu button opens a full-screen menu of the anchor links and both calls to action; the rest of the page is <code>inert</code>.</li>
+        <li><b>Reduced motion</b> (<a href="../../mocks/pages/marketing/reduced-motion.html">reduced-motion</a>): everything shows at once, nothing rises, smooth scrolling is off.</li>
+        <li>Both themes follow the device. Dark uses the deep tint bases, so the washes stay coloured without glowing.</li>
+      </ul>
     </section>
 
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive</a></h2>
       <ul>
         <li>Below <code>--layout-breakpoint-lg</code> (1024px) the anchor links and header CTA give way to a 44px menu button that opens a full-screen menu.</li>
-        <li>Value cards: one column, three from 768px. Journey: one column, two from 768px, five from 1024px. Bento: one, two, then three columns.</li>
-        <li>Nothing scrolls sideways at any width; only the screenshot region scrolls, inside itself.</li>
+        <li>The hero headline scales with the viewport from <code>--font-size-5xl</code> to 4.75rem; the phone frame drops under the copy on phones.</li>
+        <li>Value cards: one column, three from 768px. How it works: one column, three from 768px. Inside the app: one, two from 768px, four from 1024px. Bento: one, two, then three columns.</li>
+        <li>Nothing scrolls sideways at any width; the rotated screenshots are clipped by their 14rem window.</li>
       </ul>
     </section>
 
     <section class="ds-section" id="motion"><h2><a href="#motion">Motion</a></h2>
-      <p>Sections rise <code>--space-6</code> and fade in over <code>--duration-deliberate</code> with <code>--ease-enter</code> as they scroll into view. Under <code>prefers-reduced-motion: reduce</code> everything is shown at once and smooth scrolling is off.</p>
+      <p>Sections rise <code>--space-6</code> and fade in over <code>--duration-deliberate</code> with <code>--ease-enter</code> as they scroll into view. Under <code>prefers-reduced-motion: reduce</code> everything is shown at once and smooth scrolling is off. The dots, waves and screenshot tilt are static.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <ul>
-        <li>Skip link to <code>#main</code>; one H1; every section headed by an H2.</li>
+        <li>Skip link to <code>#main</code>; one H1; every section headed by an H2. The accent half of a headline is an <code>&lt;em&gt;</code> inside the heading, so it is read as one sentence.</li>
         <li>Menu button: <code>aria-controls</code>, <code>aria-expanded</code> and a name that says what it will do ("Open navigation" / "Close navigation"). The closed menu is <code>inert</code>; Escape closes it.</li>
-        <li>Decorative icons and stickers are <code>aria-hidden</code>; every screenshot has alt text that says what it shows.</li>
+        <li>Decorative icons, stickers, dots and waves are <code>aria-hidden</code> or pure CSS; every screenshot has alt text that says what it shows.</li>
+        <li>Text on every wash passes AA in both themes: muted text, accent text and the primary pill are checked against each <code>--color-tint-*</code> (see <a href="../foundations/color.html#contrast">Color</a>).</li>
       </ul>
     </section>
 
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Section titles are four words or fewer, two-tone, ending in a full stop: "Fun, not homework.", "Three steps, one finish.", "For the whole family.", "Start her next chapter."</li>
+        <li>No kickers above titles and no sub-paragraphs under them. If a section needs explaining, the cards do it.</li>
+        <li>Cards: an H3 of a few words and at most one short sentence.</li>
+        <li>Calls to action are verbs: "Start reading free", "Create a parent account", "Sign in".</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><p style="font: var(--text-h3);">Three steps, <em style="font-style: normal; color: var(--color-fg-accent);">one finish.</em></p></div><figcaption>Do title a section in four words or fewer and let the cards explain.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div><p class="text-muted" style="font: var(--text-overline); text-transform: uppercase;">How it works</p><p style="font: var(--text-h3);">From the first page to the last chapter</p><p class="text-muted">Shelfie turns every chapter she reads into a small win that you can see and reward.</p></div></div><figcaption>Don't stack a kicker, a long title and a sub-paragraph; the earlier draft did this on every section.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><code>&lt;li class="step tint-bg-sky"&gt;</code></div><figcaption>Do set a card's wash with a <code>.tint-bg-*</code> class.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;li class="step" style="background: …"&gt;</code></div><figcaption>Don't colour cards inline; the page's CSP blocks inline styles.</figcaption></figure>
+      </div>
+    </section>
+
     <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
-      <p>No new tokens. The page uses a copy of <code>tokens/tokens.css</code> and the app's font stack; light and dark follow the device. Icon tiles use <code>--color-cover-*</code> with <code>--color-fg-on-cover</code>.</p>
+      <p>The page uses a copy of <code>tokens/tokens.css</code> and the app's font stack; light and dark follow the device. Washes read <code>--color-tint-*</code> through a local <code>--tint</code> variable; icon tiles and dots use <code>--color-cover-*</code> with <code>--color-fg-on-cover</code>; cards and screenshot windows use <code>--radius-xl</code> and <code>--radius-lg</code>; screenshots carry <code>--shadow-3</code>. No marketing-only tokens.</p>
     </section>
 
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
-      <p><a href="../../mocks/pages/marketing/default.html">docs/mocks/pages/marketing/</a> (default, menu-open, reduced-motion); built in <code>apps/marketing/</code>; design in <code>docs/detailed-designs/platform/serve-marketing-site/</code>.</p>
+      <p><a href="../../mocks/pages/marketing/default.html">docs/mocks/pages/marketing/</a> (default, menu-open, reduced-motion) and <code>docs/mocks/assets/marketing/shelfie.css</code>; built in <code>apps/marketing/</code>; design in <code>docs/detailed-designs/platform/serve-marketing-site/</code>. Reworked on 2026-10-19 after the Beanstack review (R7 and R8): numbered journey steps and the sideways screenshot carousel were replaced by tinted step and feature cards.</p>
+    </section>
+
+de>.</p>
     </section>
 
     <footer class="ds-footer"><span>Shelfie design system · added 2026-10-19</span><a href="#top">Back to top</a></footer>

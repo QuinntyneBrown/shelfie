@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Streak — Shelfie design system</title>
-<meta name="description" content="The streak pill shows how many days in a row Nia has logged a chapter. A flame and a number in the reader's top bar.">
+<meta name="description" content="The streak pill shows how many days in a row Nia has logged a chapter: a flame and a number in the reader's top bar, plus the week strip under her shelf greeting.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -69,6 +69,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -106,7 +107,7 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>The streak is derived, never edited: it counts consecutive days with at least one chapter logged. Nia sees it in the top bar ("5 days") and in her shelf greeting ("🔥 5-day streak"); Dad sees the same number as a <a href="stat.html">stat</a> on Review. Use the pill only for the streak. Other statuses use a <a href="badge.html">badge</a>.</p>
+      <p>The streak is derived, never edited: it counts consecutive days with at least one chapter logged. Nia sees it in the top bar ("5 days") and in her shelf greeting ("🔥 5-day streak"); Dad sees the same number as a <a href="stat.html">stat</a> on Review. Use the pill only for the streak. Other statuses use a <a href="badge.html">badge</a>. Under the greeting and in the chapter-logged celebration the same streak is drawn as a <b>week strip</b> (<code>.day-path--week</code>): seven days, logged days joined into one accent band, today carrying the flame.</p>
     </section>
 
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -126,7 +127,7 @@
     </section>
 
     <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
-      <p>One variant. In running text the streak is written out instead of drawn as a pill.</p>
+      <p>Two variants: the <b>pill</b> in the top bar and the <b>week strip</b> under the shelf greeting. In running text the streak is written out instead of drawn.</p>
       <div class="ds-example">
         <div class="ds-example__canvas">
           <span class="streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days<span class="visually-hidden"> reading streak</span></span>
@@ -137,10 +138,30 @@
   &lt;svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"&gt;…&lt;/svg&gt; 5 days&lt;span class="visually-hidden"&gt; reading streak&lt;/span&gt;
 &lt;/span&gt;</code></pre></details>
       </div>
+      <h3>Week strip</h3>
+      <p><code>.day-path.day-path--week</code> shows this week, Monday to Sunday, as a track. Logged days (<code>.day-path__day--done</code>) are filled with the accent and run together into one rounded band; a missed day breaks the band, so a gap is visible at a glance. Today adds <code>.day-path__day--today</code>, which pins a small 🔥 to its top-right corner. Days still to come are outlined. It sits under the greeting on her shelf and inside the streak row of the chapter-logged <a href="celebration.html">celebration</a>.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <div><p style="font: var(--text-h2);">Hi Nia 👋</p><p class="subtitle">🔥 5-day streak · 2 books on the go · 1 reward waiting</p>
+          <div class="day-path day-path--week" role="img" aria-label="This week: read 5 days in a row, Monday to today"><span class="day-path__day day-path__day--done" aria-hidden="true">M</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done" aria-hidden="true">W</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done day-path__day--today" aria-hidden="true">F</span><span class="day-path__day" aria-hidden="true">S</span><span class="day-path__day" aria-hidden="true">S</span></div>
+          </div>
+          <div class="day-path day-path--week" role="img" aria-label="This week: read Monday, Tuesday, Thursday and today; missed Wednesday"><span class="day-path__day day-path__day--done" aria-hidden="true">M</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day" aria-hidden="true">W</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done day-path__day--today" aria-hidden="true">F</span><span class="day-path__day" aria-hidden="true">S</span><span class="day-path__day" aria-hidden="true">S</span></div>
+        </div>
+        <div class="ds-example__caption"><span>Under the shelf greeting: five days in a row, Friday is today. Below: a missed Wednesday splits the band.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="day-path day-path--week" role="img" aria-label="This week: read 5 days in a row, Monday to today"&gt;
+  &lt;span class="day-path__day day-path__day--done" aria-hidden="true"&gt;M&lt;/span&gt;
+  &lt;span class="day-path__day day-path__day--done" aria-hidden="true"&gt;T&lt;/span&gt;
+  &lt;span class="day-path__day day-path__day--done" aria-hidden="true"&gt;W&lt;/span&gt;
+  &lt;span class="day-path__day day-path__day--done" aria-hidden="true"&gt;T&lt;/span&gt;
+  &lt;span class="day-path__day day-path__day--done day-path__day--today" aria-hidden="true"&gt;F&lt;/span&gt;
+  &lt;span class="day-path__day" aria-hidden="true"&gt;S&lt;/span&gt;
+  &lt;span class="day-path__day" aria-hidden="true"&gt;S&lt;/span&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
     </section>
 
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size, 32px tall (<code>--control-height-sm</code>), to sit beside the 32px top-bar avatar.</p>
+      <p>One size each. The pill is 32px tall (<code>--control-height-sm</code>), to sit beside the 32px top-bar avatar. The week strip is at most 18rem wide; each day is a square seventh of it (about 41px at full width) with an <code>--font-size-xs</code> letter.</p>
     </section>
 
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
@@ -154,8 +175,8 @@
       </table></div>
       <h3>Both themes</h3>
       <div class="ds-themes">
-        <div data-theme="light"><div class="topbar" style="position: static;"><span class="topbar__brand">Shelfie</span><span class="topbar__spacer"></span><span class="streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days<span class="visually-hidden"> reading streak</span></span><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span></div></div>
-        <div data-theme="dark"><div class="topbar" style="position: static;"><span class="topbar__brand">Shelfie</span><span class="topbar__spacer"></span><span class="streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days<span class="visually-hidden"> reading streak</span></span><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span></div></div>
+        <div data-theme="light"><div class="topbar" style="position: relative; top: 0; width: 100%; margin: 0;"><span class="topbar__brand">Shelfie</span><span class="topbar__spacer"></span><span class="streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days<span class="visually-hidden"> reading streak</span></span><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span></div></div>
+        <div data-theme="dark"><div class="topbar" style="position: relative; top: 0; width: 100%; margin: 0;"><span class="topbar__brand">Shelfie</span><span class="topbar__spacer"></span><span class="streak"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-1 .3-2 1-3 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg> 5 days<span class="visually-hidden"> reading streak</span></span><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span></div></div>
       </div>
     </section>
 
@@ -163,16 +184,18 @@
       <ul>
         <li>The pill stays in the top bar at every width, between the spacer and the avatar.</li>
         <li>It never wraps or truncates; "5 days" is short at any count a child will reach.</li>
+        <li>The week strip fills its column up to 18rem and its days shrink evenly on narrow phones; it never wraps onto two lines.</li>
       </ul>
     </section>
 
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Reads <code>--color-warning-bg</code> and <code>--color-warning-fg</code>: a warm amber that reads as fire without meaning "warning" here. Both tokens flip in dark mode, keeping the pair above 4.5:1.</p>
+      <p>The pill reads <code>--color-warning-bg</code> and <code>--color-warning-fg</code>: a warm amber that reads as fire without meaning "warning" here. Both tokens flip in dark mode, keeping the pair above 4.5:1. The week strip reads <code>--color-accent</code> with <code>--color-fg-on-accent</code> letters for logged days, and a hairline <code>--color-border-default</code> outline with <code>--color-fg-muted</code> letters for the rest; when a streak reward is ready the band turns <code>--color-success-solid</code>.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
       <p>A plain <code>&lt;span&gt;</code> of text; no role and no ARIA. The flame is <code>aria-hidden</code>.</p>
+      <p>The week strip is one image: <code>role="img"</code> on the strip with an <code>aria-label</code> that says the whole week in words ("This week: read 5 days in a row, Monday to today"), and every day letter <code>aria-hidden</code>, so a screen reader hears one sentence instead of seven letters. Logged versus not logged is also fill versus outline, never colour alone.</p>
       <h3>Keyboard</h3>
       <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>Tab</kbd></td><td>Skips the pill; it is not interactive.</td></tr>
@@ -183,6 +206,7 @@
       <p>Screen readers read "5 days reading streak" from the visible count and the visually hidden words. Do not put <code>aria-label</code> on the span: a generic element's label is ignored by most screen readers.</p>
       <h3>Contrast</h3>
       <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Count on pill</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Count on pill</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div></div></div></div>
+      <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Week strip: letter on a logged day</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div><div class="ds-pair"><span>Week strip: letter on a day to come</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Week strip: logged band against the page</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-canvas" data-min="3"></span></div></div>
       <h3>Motion</h3>
       <p>None. The streak does not animate when it grows; the celebration screen after logging is where delight happens.</p>
       <h3>Touch</h3>
@@ -217,6 +241,9 @@
           <tr><td>Icon</td><td><code>--size-icon-sm</code></td><td colspan="2"><span data-token="--size-icon-sm"></span></td></tr>
           <tr><td>Font</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
+          <tr><td>Week strip: logged day</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Week strip: day to come (outline)</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Week strip: letters</td><td><code>--color-fg-on-accent</code> / <code>--color-fg-muted</code>, <code>--font-size-xs</code></td><td colspan="2"><span data-token="--font-size-xs"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -231,13 +258,18 @@
         <tr><td><code>.streak</code></td><td>Amber pill, 32px tall, icon and count in a row.</td></tr>
         <tr><td><code>.icon.icon--sm</code></td><td>The 16px flame.</td></tr>
         <tr><td><code>.visually-hidden</code></td><td>Completes the sentence for screen readers.</td></tr>
+        <tr><td><code>.day-path.day-path--week</code></td><td>Seven-day strip, max 18rem; logged days join into one rounded accent band.</td></tr>
+        <tr><td><code>.day-path__day</code> / <code>--done</code></td><td>One day: outlined, or filled with the accent once logged.</td></tr>
+        <tr><td><code>.day-path__day--today</code></td><td>Pins a small 🔥 to today's corner.</td></tr>
+        <tr><td><code>&lt;sh-week-strip&gt;</code></td><td>The library component that renders the week strip.</td></tr>
       </tbody></table>
     </section>
 
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
       <p>Extracted from these mocks:</p>
       <ul>
-        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (top bar and "🔥 5-day streak" greeting)</li>
+        <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a> (top bar, "🔥 5-day streak" greeting and the week strip under it)</li>
+        <li><a href="../../mocks/pages/log-chapter/success.html">pages/log-chapter/success</a> (week strip inside the celebration)</li>
         <li><a href="../../mocks/pages/shelf/loading.html">pages/shelf/loading</a> (streak shown while the shelf loads)</li>
         <li><a href="../../mocks/pages/book/default.html">pages/book/default</a> (top bar)</li>
         <li><a href="../../mocks/pages/log-chapter/default.html">pages/log-chapter/default</a> (top bar)</li>

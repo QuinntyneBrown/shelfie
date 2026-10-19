@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book card — Shelfie design system</title>
-<meta name="description" content="The book card pairs a cover with a title, author, progress and the next thing to do. It is how books appear on Nia's shelf and at the top of book pages.">
+<meta name="description" content="The book card pairs a cover with a title, author, progress and the next thing to do, on a card washed in its cover colour. It is how books appear on Nia's shelf and at the top of book pages.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -69,6 +69,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -108,7 +109,7 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a book card wherever one book is the subject: each book on the shelf, the header of a book page, the header of Log a chapter, and the book being rewarded or removed in a dialog. For many books in a compact column, use a <a href="list.html">list</a> row with a small cover; for a finished book on the trophy shelf, use a <a href="trophy.html">trophy</a>.</p>
       <ul>
-        <li><b>Shelf card</b>: inside a <code>.card</code>, with progress and one action.</li>
+        <li><b>Shelf card</b>: inside a <code>.card</code>, with progress and one action. The card takes a wash of its cover colour automatically (<code>--color-tint-*</code>, see <a href="card.html#variants">Card</a>).</li>
         <li><b>Page header</b>: no card, large cover, the title is the page's <code>&lt;h1&gt;</code>.</li>
         <li><b>Compact</b>: small cover, title and one line, no action. Used in dialogs and the "finished" card on Review.</li>
       </ul>
@@ -240,7 +241,7 @@
     </section>
 
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>The book card adds no colours of its own: title in <code>--color-fg-default</code>, author in <code>--color-fg-muted</code>, plus whatever the card, cover and progress bar read. It themes through those components.</p>
+      <p>The book card adds no colours of its own: title in <code>--color-fg-default</code>, author in <code>--color-fg-muted</code>, plus whatever the card, cover and progress bar read. It themes through those components. On the shelf the surrounding card reads <code>--color-tint-*</code> for its cover colour: a pale wash in light, a near-black base that keeps the hue in dark. Muted text, accent text and the primary button pass AA on every tint in both themes.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
@@ -278,7 +279,7 @@
         <figure class="ds-do"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><span class="book-card__title">The Lion, the Witch and the Wardrobe</span><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Log Chapter 12</a></div></div></div></div><figcaption>Name the next chapter in the action.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--sage" aria-hidden="true">🦁</span><div class="book-card__body"><span class="book-card__title">The Lion, the Witch and the Wardrobe</span><div class="book-card__actions"><a class="btn btn--sm" href="../../mocks/pages/log-chapter/default.html">Go</a></div></div></div></div><figcaption>A vague "Go"; out of context, a screen reader hears three identical buttons.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><div class="book-card"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda is finished!</span></div></div></div><figcaption>Put a finished book's celebration in <code>.card--warning</code> or <code>.card--success</code>.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><div class="book-card" style="background: var(--color-warning-bg);"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda is finished!</span></div></div></div><figcaption>Tinting the card with an inline gradient or background, as the Review mock did.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="book-card" style="background: var(--color-warning-bg);"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title">Matilda is finished!</span></div></div></div><figcaption>Tinting the card with an inline gradient or background, as the Review mock did. A shelf card already takes its cover's wash from <code>.card:has(&gt; .cover--*)</code>; a celebration uses the status variants. Never paint either by hand.</figcaption></figure>
       </div>
     </section>
 

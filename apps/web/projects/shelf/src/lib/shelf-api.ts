@@ -59,6 +59,7 @@ export interface ShelfBook {
   coverImage: string | null;
   loggedCount: number;
   nextChapter: number;
+  lastLoggedAt: string | null;
 }
 
 export interface FinishedBook {
@@ -124,9 +125,16 @@ export interface StreakReward {
   givenOn: string | null;
 }
 
+export interface WeekDay {
+  date: string;
+  read: boolean;
+  today: boolean;
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
+  week: WeekDay[];
   badges: Badge[];
   streakRewards: StreakReward[];
   grownUpName: string;

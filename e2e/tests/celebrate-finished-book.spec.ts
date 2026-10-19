@@ -5,6 +5,7 @@ import { LogChapterPage } from '../pages/log-chapter.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { ShellPage } from '../pages/shell.page';
 import { AddBookPage } from '../pages/add-book.page';
+import { BookPage } from '../pages/book.page';
 
 async function finishTheBfg(page: import('@playwright/test').Page) {
   await signInAsNia(page);
@@ -12,7 +13,7 @@ async function finishTheBfg(page: import('@playwright/test').Page) {
   const log = new LogChapterPage(page);
   await log.answer(1, 'The giant blew dreams into bedrooms.');
   await log.done();
-  await expect(log.finishedHeading()).toBeVisible();
+  await expect(log.finishedHeading('The BFG')).toBeVisible();
   return log;
 }
 
@@ -36,5 +37,7 @@ test('Given a finished book, when Nia opens its page, then it says when she fini
   await signInAsNia(page);
   await new ShelfPage(page).openFinishedBook('Matilda');
 
-  await expect(page.getByText('You finished Matilda on Tue 13 Oct!')).toBeVisible();
+  const book = new BookPage(page);
+  await expect(book.finishedHeading('Matilda')).toBeVisible();
+  await expect(book.finishedOn('Tue 13 Oct')).toBeVisible();
 });

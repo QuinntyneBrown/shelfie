@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Celebration — Shelfie design system</title>
-<meta name="description" content="The confetti card shown when Nia logs a chapter or finishes a book, and when Dad sends feedback. Variants, confetti, reduced motion, both themes and accessibility.">
+<meta name="description" content="The confetti card shown when Nia logs a chapter or finishes a book, and when Dad sends feedback: progress, the badge she earned and her week stacked on one surface. Variants, confetti, reduced motion, both themes and accessibility.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -69,6 +69,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -108,8 +109,8 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a celebration as the success state of the two big moments in Shelfie, and nowhere else, so it stays special.</p>
       <ul>
-        <li><b>Chapter logged</b> (Nia): 🎉, "Chapter 12 done!", progress, confetti.</li>
-        <li><b>Book finished</b> (Nia): the book's cover, 🏆, "You finished the whole book!", more confetti, on a warm <code>.card--warning</code> tint.</li>
+        <li><b>Chapter logged</b> (Nia): 🎉, "Chapter 12 done!", progress with a big accent label, then a stack of rows (<code>ul.celebrate__rows</code>): any <a href="achievement-badge.html">badge</a> she just earned and her streak with the <a href="streak.html#variants">week strip</a>. Confetti.</li>
+        <li><b>Book finished</b> (Nia): the book's cover, 🏆, "You finished the whole book!", a full progress bar, rows for the <a href="trophy.html">trophy</a> and her streak, more confetti, on a warm <code>.card--warning</code> tint.</li>
         <li><b>Feedback sent</b> (Dad): the sticker he gave, "Sent to Nia", and the next chapter to review. No confetti; it is a quiet confirmation.</li>
       </ul>
       <p>For small successes (saved settings, a toast after Undo) use a <a href="toast.html">toast</a> or a success <a href="alert.html">alert</a>. The finished-book card on the book page is a <a href="card.html">card</a> with <code>.card--warning</code>, not a celebration.</p>
@@ -122,23 +123,26 @@
             <div class="confetti" aria-hidden="true"><span style="--x: 8%; --d: 0s; --c: var(--color-cover-rose);"></span><span style="--x: 20%; --d: 0.6s; --c: var(--color-cover-sun);"></span><span style="--x: 33%; --d: 1.1s; --c: var(--color-cover-sky);"></span><span style="--x: 47%; --d: 0.2s; --c: var(--color-cover-mint);"></span><span style="--x: 58%; --d: 0.9s; --c: var(--color-cover-lilac);"></span><span style="--x: 70%; --d: 1.4s; --c: var(--color-cover-peach);"></span><span style="--x: 83%; --d: 0.4s; --c: var(--color-cover-sage);"></span><span style="--x: 93%; --d: 1.0s; --c: var(--color-cover-rose);"></span></div>
             <span class="sticker sticker--xl" aria-hidden="true">🎉</span>
             <h2>Chapter 12 done!</h2>
-            <p class="text-muted">That’s 12 of 17. Only 5 chapters to go — Dad will read your answers soon.</p>
-            <div class="progress-row" style="width: 100%;"><div class="progress progress--lg" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="17" aria-label="12 of 17 chapters read"><div class="progress__bar" style="--value: 71%;"></div></div><span class="progress-row__label">12 of 17</span></div>
-            <div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/shelf/default.html">Back to my shelf</a></div>
+            <div class="progress-row"><div class="progress progress--lg" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="17" aria-label="12 of 17 chapters read"><div class="progress__bar" style="--value: 71%;"></div></div><span class="progress-row__label">12 of 17</span></div>
+            <ul class="celebrate__rows"><li class="achievement"><span class="achievement__icon" aria-hidden="true">✌️</span><div class="achievement__body"><div class="achievement__name">Badge earned: Double chapter</div><div class="achievement__note">Two chapters in one day · Earned today</div></div></li><li class="achievement"><span class="achievement__icon" aria-hidden="true">🔥</span><div class="achievement__body"><div class="achievement__name">5 days in a row</div><div class="day-path day-path--week" role="img" aria-label="This week: read 5 days in a row, Monday to today"><span class="day-path__day day-path__day--done" aria-hidden="true">M</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done" aria-hidden="true">W</span><span class="day-path__day day-path__day--done" aria-hidden="true">T</span><span class="day-path__day day-path__day--done day-path__day--today" aria-hidden="true">F</span><span class="day-path__day" aria-hidden="true">S</span><span class="day-path__day" aria-hidden="true">S</span></div></div></li></ul>
+            <p class="text-muted">Only 5 chapters to go. Dad will read your answers soon.</p>
+            <div class="cluster" style="justify-content: center;"><a class="btn btn--primary btn--lg" href="../../mocks/pages/shelf/default.html">Back to my shelf</a><a class="btn" href="../../mocks/pages/log-chapter/default.html">I read Chapter 13 too</a></div>
           </div>
           <span class="ds-callout" style="left: 10%; top: 8%;" aria-hidden="true">1</span>
-          <span class="ds-callout" style="left: 60%; top: 16%;" aria-hidden="true">2</span>
-          <span class="ds-callout" style="left: 70%; top: 38%;" aria-hidden="true">3</span>
-          <span class="ds-callout" style="left: 84%; top: 52%;" aria-hidden="true">4</span>
-          <span class="ds-callout" style="left: 90%; top: 66%;" aria-hidden="true">5</span>
-          <span class="ds-callout" style="left: 76%; top: 84%;" aria-hidden="true">6</span>
+          <span class="ds-callout" style="left: 60%; top: 9%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 74%; top: 24%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 90%; top: 32%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 90%; top: 50%;" aria-hidden="true">5</span>
+          <span class="ds-callout" style="left: 80%; top: 76%;" aria-hidden="true">6</span>
+          <span class="ds-callout" style="left: 80%; top: 88%;" aria-hidden="true">7</span>
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Confetti</b><small><code>.confetti</code> layer of 8–14 <code>&lt;span&gt;</code>s; each sets <code>--x</code> (left), <code>--d</code> (delay) and <code>--c</code> (a cover colour). Decorative.</small></div></li>
           <li><div><b>Sticker</b><small><code>.sticker--xl</code>, 96px: 🎉, 🏆, or the sticker Dad gave.</small></div></li>
           <li><div><b>Heading</b><small>The page <code>&lt;h1&gt;</code>: the cheer.</small></div></li>
-          <li><div><b>Message</b><small>Muted paragraph, 36ch max: how far, and what happens next.</small></div></li>
-          <li><div><b>Progress (chapter only)</b><small>Large <a href="progress.html">progress</a> row.</small></div></li>
+          <li><div><b>Progress</b><small>Large <a href="progress.html">progress</a> row, at most 28rem wide; its label is <code>--text-h4</code> in <code>--color-fg-accent</code> so "12 of 17" reads as part of the cheer.</small></div></li>
+          <li><div><b>Rows</b><small><code>ul.celebrate__rows</code>, a left-aligned stack (28rem max, <code>--space-3</code> apart) of what this chapter earned: an <a href="achievement-badge.html">achievement</a> or <a href="trophy.html">trophy</a>, and the streak with its week strip. Each row is 70% surface so the card's tint shows through.</small></div></li>
+          <li><div><b>Message</b><small>Muted paragraph, 36ch max: what happens next.</small></div></li>
           <li><div><b>Actions</b><small>One large primary ("Back to my shelf") and one secondary.</small></div></li>
         </ol>
       </div>
@@ -217,7 +221,7 @@
     </section>
 
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>The card reads <code>--color-bg-surface</code>; the finished variant adds <code>.card--warning</code>, a gradient from <code>--color-warning-bg</code> into the surface. Confetti colours are the seven <code>--color-cover-*</code> tokens, which have light and dark values, passed in through <code>--c</code>.</p>
+      <p>The card reads <code>--color-bg-surface</code>; the finished variant adds <code>.card--warning</code>, a gradient from <code>--color-warning-bg</code> into the surface. The progress label reads <code>--color-fg-accent</code>, and rows in <code>.celebrate__rows</code> sit on <code>color-mix(--color-bg-surface 70%, transparent)</code> so the tint behind them still shows. Confetti colours are the seven <code>--color-cover-*</code> tokens, which have light and dark values, passed in through <code>--c</code>.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
@@ -236,6 +240,7 @@
       <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Heading on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Message on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Progress label (accent) on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Primary action</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Sticker on rose cover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-cover|--color-cover-rose" data-min="4.5"></span></div>
       </div>
@@ -270,6 +275,7 @@
         <tbody>
           <tr><td>Card</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
           <tr><td>Finished tint</td><td><code>--color-warning-bg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span></td></tr>
+          <tr><td>Progress label</td><td><code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
           <tr><td>Message</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
           <tr><td>Confetti (examples)</td><td><code>--color-cover-rose</code>, <code>--color-cover-sun</code>, <code>--color-cover-sky</code>…</td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-cover-sun" data-swatch></i><span data-token="--color-cover-sun"></span></span></td></tr>
           <tr><td>Confetti default</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
@@ -292,7 +298,11 @@
   &lt;span class="sticker sticker--xl" aria-hidden="true"&gt;🎉&lt;/span&gt;
   &lt;h1 tabindex="-1"&gt;Chapter 12 done!&lt;/h1&gt;
   &lt;p class="text-muted"&gt;That’s 12 of 17. Only 5 chapters to go — Dad will read your answers soon.&lt;/p&gt;
-  &lt;div class="progress-row"&gt;…&lt;/div&gt;
+  &lt;div class="progress-row"&gt;…&lt;span class="progress-row__label"&gt;12 of 17&lt;/span&gt;&lt;/div&gt;
+  &lt;ul class="celebrate__rows"&gt;
+    &lt;li class="achievement"&gt;…Badge earned: Double chapter…&lt;/li&gt;
+    &lt;li class="achievement"&gt;…5 days in a row &lt;div class="day-path day-path--week" role="img" aria-label="…"&gt;…&lt;/div&gt;&lt;/li&gt;
+  &lt;/ul&gt;
   &lt;div class="cluster" style="justify-content: center;"&gt;
     &lt;a class="btn btn--primary btn--lg" href="/shelf"&gt;Back to my shelf&lt;/a&gt;
     &lt;a class="btn" href="/log"&gt;I read Chapter 13 too&lt;/a&gt;
@@ -301,6 +311,8 @@
       <table class="ds-table"><thead><tr><th scope="col">Class / property</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.celebrate</code></td><td>Centred column, 48 × 24px padding; use with <code>.card</code>.</td></tr>
         <tr><td><code>.card--warning</code></td><td>Warm tint for a finished book.</td></tr>
+        <tr><td><code>.celebrate__rows</code></td><td>Left-aligned stack of achievement, trophy and streak rows under the progress; rows go 70% surface.</td></tr>
+        <tr><td><code>.celebrate .progress-row__label</code></td><td>Progress label grows to <code>--text-h4</code> in the accent colour.</td></tr>
         <tr><td><code>.confetti</code></td><td>Clipped, pointer-transparent layer; hidden under reduced motion.</td></tr>
         <tr><td><code>--x</code> / <code>--d</code> / <code>--c</code></td><td>Per piece: left position, delay, colour (defaults 50%, 0s, accent).</td></tr>
         <tr><td><code>.sticker--xl</code></td><td>96px sticker.</td></tr>
@@ -310,7 +322,7 @@
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
       <p>Extracted from these mocks:</p>
       <ul>
-        <li><a href="../../mocks/pages/log-chapter/success.html">pages/log-chapter/success</a> (Chapter 12 done, confetti 2.5 s)</li>
+        <li><a href="../../mocks/pages/log-chapter/success.html">pages/log-chapter/success</a> (Chapter 12 done, confetti 2.5 s, stacked badge and streak rows)</li>
         <li><a href="../../mocks/pages/log-chapter/finished.html">pages/log-chapter/finished</a> (Matilda finished)</li>
         <li><a href="../../mocks/pages/review-chapter/success.html">pages/review-chapter/success</a> (Sent to Nia)</li>
         <li><a href="../../mocks/pages/book/finished.html">pages/book/finished</a> (the finished-book card on the book page)</li>

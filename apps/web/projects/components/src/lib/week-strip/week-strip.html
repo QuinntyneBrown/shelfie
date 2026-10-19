@@ -1,0 +1,7 @@
+<div class="day-path day-path--week" role="img" [attr.aria-label]="label()">
+  @for (day of cells(); track day.date) {
+    <span class="day-path__day" [class.day-path__day--done]="day.read" [class.day-path__day--today]="day.today" aria-hidden="true">{{
+      day.letter
+    }}</span>
+  }
+</div>

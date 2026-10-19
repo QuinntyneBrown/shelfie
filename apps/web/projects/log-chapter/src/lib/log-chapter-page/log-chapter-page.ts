@@ -8,16 +8,21 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AchievementBadge,
   Celebration,
+  ChatBubble,
   Cover,
   Progress,
   QuestionField,
+  RewardCard,
   Segmented,
   SegmentedOption,
+  WeekStrip,
 } from 'components';
-import { ApiError, DraftStore, OfflineQueue, ToastService } from 'core';
+import { ApiError, DraftStore, OfflineQueue, SessionService, ToastService } from 'core';
 import { ChapterForm, ChaptersApi, LogResult } from '../chapters-api';
 
 const addDays = (isoDay: string, days: number) => {
@@ -29,12 +34,15 @@ const addDays = (isoDay: string, days: number) => {
 /** How long the Undo toast stays up; the API gives the same window. */
 const UNDO_TOAST_MS = 10000;
 
+/** What Olive says after an answer, before the next question; they take turns. */
+const OLIVE_REPLIES = ['Nice! I wondered about that too.', 'Good pick!', 'Ooh, we’ll find out soon.', 'Great thinking!'];
+
 /** How long she pauses before a draft is saved. */
 const DRAFT_DELAY_MS = 3000;
 
 @Component({
   selector: 'sh-log-chapter-page',
-  imports: [Celebration, Cover, Progress, QuestionField, RouterLink, Segmented],
+  imports: [NgTemplateOutlet, AchievementBadge, Celebration, ChatBubble, Cover, Progress, QuestionField, RewardCard, RouterLink, Segmented, WeekStrip],
   templateUrl: './log-chapter-page.html',
   styleUrl: './log-chapter-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +59,10 @@ export class LogChapterPage {
 
   protected readonly form = signal<ChapterForm | null>(null);
   protected readonly answers = signal<string[]>([]);
+  /** How many questions the chat has reached; Next reveals one more. */
+  protected readonly shown = signal(1);
+  protected readonly reply = (index: number) => OLIVE_REPLIES[index % OLIVE_REPLIES.length];
+  protected readonly session = inject(SessionService);
   protected readonly result = signal<LogResult | null>(null);
   protected readonly submitting = signal(false);
   protected readonly questionOneMissing = signal(false);
@@ -81,6 +93,7 @@ export class LogChapterPage {
       this.dayInFuture.set(false);
       this.api.form(id, n).then((form) => {
         this.answers.set(form.questions.map(() => ''));
+        this.shown.set(1);
         this.restoreDraft(form);
         this.form.set(form);
       });
@@ -156,6 +169,8 @@ export class LogChapterPage {
     const draft = this.drafts.load(this.draftKey());
     if (!draft) return;
     this.answers.set(form.questions.map((_, i) => draft.answers[i] ?? ''));
+    const lastAnswered = this.answers().reduce((last, answer, i) => (answer.trim() ? i : last), 0);
+    this.shown.set(lastAnswered + 1);
     if (draft.readOn === addDays(form.today, -1)) this.day.set('yesterday');
     else if (draft.readOn !== form.today) {
       this.day.set('other');
@@ -166,6 +181,12 @@ export class LogChapterPage {
   private readOn(form: ChapterForm) {
     if (this.day() === 'yesterday') return addDays(form.today, -1);
     return this.day() === 'other' ? this.otherDay() || form.today : form.today;
+  }
+
+  /** Olive replies and the next question appears, ready to answer. */
+  protected next(index: number) {
+    this.shown.set(index + 2);
+    setTimeout(() => this.fields()[index + 1]?.focus());
   }
 
   protected focusFirstQuestion() {

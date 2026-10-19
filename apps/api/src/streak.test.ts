@@ -1,7 +1,7 @@
 // Traces to: L2-020
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeStreak, todayIn } from './streak.ts';
+import { computeStreak, computeWeek, todayIn } from './streak.ts';
 
 const TODAY = '2026-10-17';
 
@@ -26,4 +26,27 @@ test('Given the same moment, then today depends on the household time zone', () 
   const lateEvening = new Date('2026-10-17T03:30:00Z');
   assert.equal(todayIn('UTC', lateEvening), '2026-10-17');
   assert.equal(todayIn('America/Toronto', lateEvening), '2026-10-16');
+});
+
+test('Given a Friday with reading Monday to Friday, then the week runs Monday to Sunday with those five days read and Friday as today', () => {
+  // 2026-10-16 is a Friday.
+  const week = computeWeek(['2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16', '2026-10-09'], '2026-10-16');
+  assert.deepEqual(
+    week.map((d) => [d.date, d.read, d.today]),
+    [
+      ['2026-10-12', true, false],
+      ['2026-10-13', true, false],
+      ['2026-10-14', true, false],
+      ['2026-10-15', true, false],
+      ['2026-10-16', true, true],
+      ['2026-10-17', false, false],
+      ['2026-10-18', false, false],
+    ],
+  );
+});
+
+test('Given today is a Sunday, then the week still starts on the Monday before it', () => {
+  const week = computeWeek(['2026-10-18'], '2026-10-18');
+  assert.equal(week[0]!.date, '2026-10-12');
+  assert.deepEqual(week[6], { date: '2026-10-18', read: true, today: true });
 });

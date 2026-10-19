@@ -1,7 +1,7 @@
 import { badgesFor, type Badge } from './badges.ts';
 import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, type Db } from './db.ts';
-import { streakFor } from './streak.ts';
+import { streakFor, weekFor, type WeekDay } from './streak.ts';
 import { streakRewardsOf, type StreakReward } from './streak-rewards.service.ts';
 
 export interface ShelfBook {
@@ -39,6 +39,7 @@ export interface UnseenFeedback {
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
+  week: WeekDay[];
   badges: Badge[];
   streakRewards: StreakReward[];
   grownUpName: string;
@@ -106,6 +107,7 @@ export async function getShelf(db: Db, householdId: string): Promise<ShelfRespon
   return {
     unseenFeedback,
     streak: await streakFor(db, householdId),
+    week: await weekFor(db, householdId),
     badges: await badgesFor(db, householdId),
     streakRewards: await streakRewardsOf(db, householdId),
     grownUpName: grownUp.name,

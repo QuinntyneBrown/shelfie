@@ -29,7 +29,7 @@ export class BooksPage {
   }
 
   emptyState() {
-    return this.page.getByRole('heading', { name: 'No books on Nia’s shelf' });
+    return this.page.getByRole('heading', { name: 'Nia’s shelf is empty' });
   }
 
   /** Asks the API for the list, as a client that skips the page would. */

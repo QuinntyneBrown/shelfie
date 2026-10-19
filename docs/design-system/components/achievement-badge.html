@@ -68,6 +68,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -100,7 +101,7 @@
       <p class="ds-lead">A small tile for a reading feat: earned with the day it happened, or still to earn with a hint of how. Nia sees them on her shelf; Dad sees the same tiles on Review.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Library: <code>sh-achievement-badge</code></span></div>
       <ul class="ds-toc">
-        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
 
@@ -113,20 +114,41 @@
       <div class="ds-anatomy">
         <figure class="ds-anatomy__figure">
           <ul class="achievements" style="width: 100%; max-width: 16rem;"><li class="achievement"><span class="achievement__icon" aria-hidden="true">📚</span><div class="achievement__body"><div class="achievement__name">First book</div><div class="achievement__note">Earned Sun 23 Aug</div></div></li></ul>
-          <span class="ds-callout" style="left: 4%; top: 40%;" aria-hidden="true">1</span>
-          <span class="ds-callout" style="left: 36%; top: 10%;" aria-hidden="true">2</span>
-          <span class="ds-callout" style="left: 36%; top: 70%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 62%; top: 22%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 67%; top: 56%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 73%; top: 68%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Icon</b><small>An emoji in a <code>--control-height-md</code> circle on <code>--color-accent-subtle</code>; decorative, so it is <code>aria-hidden</code>.</small></div></li>
+          <li><div><b>Icon</b><small>An emoji in a <code>--size-avatar-lg</code> circle on <code>--color-accent-subtle</code>, wrapped in two rings drawn with <code>box-shadow</code>: a <code>--border-width-thick</code> gap in the surface colour, then a thick <code>--color-accent</code> ring (the border colour when locked). Once earned, a green <code>--color-success-solid</code> disc with a ✓ sits on its bottom-right edge (<code>::after</code>). Decorative, so it is <code>aria-hidden</code>.</small></div></li>
           <li><div><b>Name</b><small><code>--text-label</code>. The feat's name, never shortened.</small></div></li>
-          <li><div><b>Note</b><small><code>--text-body-sm</code> in <code>--color-fg-muted</code>: "Earned Sun 23 Aug", or "Not yet · " and the hint.</small></div></li>
+          <li><div><b>Note</b><small><code>--text-body-sm</code>: "Earned Sun 23 Aug" in <code>--color-success-fg</code>, or "Not yet · " and the hint in <code>--color-fg-muted</code>.</small></div></li>
         </ol>
       </div>
     </section>
 
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>One badge object, two arrangements. The tile is the same everywhere; its container decides the layout.</p>
+      <ul>
+        <li><b>Grid tile</b>: inside <code>ul.achievements</code> each tile is a centred column (icon over name over note), the way Nia collects them on her shelf and Dad sees them on Review.</li>
+        <li><b>Row</b>: anywhere else, such as the stacked <a href="celebration.html">celebration</a> after a chapter (<code>ul.celebrate__rows</code>), the tile is a row with the icon on the left so it can carry a longer note or a <a href="streak.html#variants">week strip</a>.</li>
+      </ul>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack">
+          <ul class="achievements" style="width: 100%;"><li class="achievement"><span class="achievement__icon" aria-hidden="true">📚</span><div class="achievement__body"><div class="achievement__name">First book</div><div class="achievement__note">Earned Sun 23 Aug</div></div></li><li class="achievement"><span class="achievement__icon" aria-hidden="true">🌤️</span><div class="achievement__body"><div class="achievement__name">Weekend reader</div><div class="achievement__note">Earned Sun 23 Aug</div></div></li><li class="achievement achievement--locked"><span class="achievement__icon" aria-hidden="true">🔥</span><div class="achievement__body"><div class="achievement__name">Week streak</div><div class="achievement__note">Not yet · Read every day for a week</div></div></li></ul>
+          <ul class="celebrate__rows"><li class="achievement"><span class="achievement__icon" aria-hidden="true">✌️</span><div class="achievement__body"><div class="achievement__name">Badge earned: Double chapter</div><div class="achievement__note">Two chapters in one day · Earned today</div></div></li></ul>
+        </div>
+        <div class="ds-example__caption"><span>Grid tiles on the shelf (two earned, one locked), and the row inside the chapter-logged celebration.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="achievements"&gt;&lt;li class="achievement"&gt;…&lt;/li&gt;&lt;/ul&gt;      &lt;!-- centred column tiles --&gt;
+&lt;ul class="celebrate__rows"&gt;&lt;li class="achievement"&gt;…&lt;/li&gt;&lt;/ul&gt;  &lt;!-- row --&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="one size"><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size. The icon circle is always <code>--size-avatar-lg</code> (56px) with a <code>--font-size-2xl</code> emoji; the grid tile is at least 14rem wide and fills its column.</p>
+    </section>
+
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>Two states: earned and locked. A locked badge is also marked by a dashed border and the words "Not yet", so colour is never the only signal.</p>
+      <p>Two states: earned and locked. Earned has the accent ring, the green ✓ disc and a green "Earned …" note. Locked is the same shape greyed out: a grey ring, no check, a dashed tile border and the words "Not yet", so colour is never the only signal.</p>
       <div class="ds-example">
         <div class="ds-example__canvas">
           <ul class="achievements" style="width: 100%;"><li class="achievement"><span class="achievement__icon" aria-hidden="true">📚</span><div class="achievement__body"><div class="achievement__name">First book</div><div class="achievement__note">Earned Sun 23 Aug</div></div></li><li class="achievement"><span class="achievement__icon" aria-hidden="true">🌤️</span><div class="achievement__body"><div class="achievement__name">Weekend reader</div><div class="achievement__note">Earned Sun 23 Aug</div></div></li><li class="achievement achievement--locked"><span class="achievement__icon" aria-hidden="true">✌️</span><div class="achievement__body"><div class="achievement__name">Double chapter</div><div class="achievement__note">Not yet · Read two chapters in one day</div></div></li><li class="achievement achievement--locked"><span class="achievement__icon" aria-hidden="true">🔥</span><div class="achievement__body"><div class="achievement__name">Week streak</div><div class="achievement__note">Not yet · Read 7 days in a row</div></div></li></ul>
@@ -159,12 +181,12 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>The list is a grid of tiles at least 14rem wide: one column on a phone, two or more from tablet up. Nothing scrolls sideways.</li>
-        <li>Names and notes wrap inside the tile; the icon never shrinks.</li>
+        <li>Names and notes wrap inside the tile; the icon never shrinks. Tiles in the grid stay centred columns at every width; rows stay rows.</li>
       </ul>
     </section>
 
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Colours come from semantic tokens only, so both themes work without extra rules. The locked tile uses the sunken surface and a dashed border.</p>
+      <p>Colours come from semantic tokens only, so both themes work without extra rules. The ring gap is painted in <code>--color-bg-surface</code> so it reads as a gap on the card in either theme; the ring is <code>--color-accent</code>, the check disc <code>--color-success-solid</code> with a <code>--color-fg-inverse</code> tick, and the earned note <code>--color-success-fg</code>. The locked tile uses the sunken surface, a dashed border and a <code>--color-border-default</code> ring. Inside a celebration the tile becomes 70% surface so the card's wash shows through.</p>
     </section>
 
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
@@ -175,7 +197,9 @@
       <h3>Contrast</h3>
       <div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Name</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Note, earned</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Note, earned</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Accent ring on card</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Check disc on card</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Note, locked</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
       </div>
@@ -197,6 +221,8 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><ul class="achievements" style="width: 100%;"><li class="achievement achievement--locked"><span class="achievement__icon" aria-hidden="true">✌️</span><div class="achievement__body"><div class="achievement__name">Double chapter</div><div class="achievement__note">Not yet · Read two chapters in one day</div></div></li></ul></div><figcaption>Do say how to earn a locked badge.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><ul class="achievements" style="width: 100%;"><li class="achievement achievement--locked"><span class="achievement__icon" aria-hidden="true">✌️</span><div class="achievement__body"><div class="achievement__name">???</div></div></li></ul></div><figcaption>Don't hide a locked badge's name or how to earn it.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><code>&lt;li class="achievement"&gt;</code> in both the badges grid and the celebration</div><figcaption>Do use the one badge object everywhere; the container picks column or row.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;span class="sticker"&gt;✌️&lt;/span&gt; Badge earned!</code></div><figcaption>Don't draw a one-off badge (a loose sticker and text) on the celebration; it loses the ring, the check and the earned date.</figcaption></figure>
       </div>
     </section>
 
@@ -206,7 +232,10 @@
         <tbody>
           <tr><td>Tile background</td><td><code>--color-bg-surface</code>, locked <code>--color-bg-surface-sunken</code></td></tr>
           <tr><td>Tile border</td><td><code>--color-border-default</code> (dashed when locked)</td></tr>
-          <tr><td>Icon circle</td><td><code>--color-accent-subtle</code>, locked <code>--color-bg-subtle</code></td></tr>
+          <tr><td>Icon circle</td><td><code>--size-avatar-lg</code>; <code>--color-accent-subtle</code>, locked <code>--color-bg-subtle</code></td></tr>
+          <tr><td>Rings (gap / ring)</td><td><code>--border-width-thick</code> of <code>--color-bg-surface</code>, then <code>--color-accent</code> (locked <code>--color-border-default</code>)</td></tr>
+          <tr><td>Earned check</td><td><code>--color-success-solid</code> disc, <code>--color-fg-inverse</code> tick</td></tr>
+          <tr><td>Earned note</td><td><code>--color-success-fg</code></td></tr>
           <tr><td>Radius / spacing</td><td><code>--radius-lg</code> / <code>--space-3</code></td></tr>
         </tbody>
       </table></div>
@@ -214,9 +243,9 @@
 
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <table class="ds-table"><thead><tr><th scope="col">Class</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.achievements</code></td><td>Responsive grid of tiles.</td></tr>
-        <tr><td><code>.achievement</code></td><td>One tile.</td></tr>
-        <tr><td><code>.achievement--locked</code></td><td>Not earned yet: sunken, dashed, icon greyed.</td></tr>
+        <tr><td><code>.achievements</code></td><td>Responsive grid of tiles; each tile inside is a centred column.</td></tr>
+        <tr><td><code>.achievement</code></td><td>One badge: ringed icon, a ✓ disc once earned, name and green earned note. A row outside <code>.achievements</code>.</td></tr>
+        <tr><td><code>.achievement--locked</code></td><td>Not earned yet: sunken, dashed, icon greyed, grey ring, no check.</td></tr>
       </tbody></table>
     </section>
 
@@ -224,6 +253,7 @@
       <ul>
         <li><a href="../../mocks/pages/shelf/default.html">pages/shelf/default</a>, <a href="../../mocks/pages/shelf/badges-none.html">badges-none</a> and <a href="../../mocks/pages/shelf/badges-all.html">badges-all</a></li>
         <li><a href="../../mocks/pages/review/default.html">pages/review/default</a> ("Nia’s badges")</li>
+        <li><a href="../../mocks/pages/log-chapter/success.html">pages/log-chapter/success</a> (row inside the celebration)</li>
       </ul>
     </section>
 

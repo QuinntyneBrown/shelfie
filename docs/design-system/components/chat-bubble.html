@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat bubble — Shelfie design system</title>
+<meta name="description" content="Chapter questions as a chat with Olive the owl: buddy bubbles ask, the reader answers in a bubble that is the textarea itself, with a small mic and a Next button. Every state, both themes, accessibility.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Shelfie DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/combobox.html">Combobox</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/suggestion.html">Suggestion</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/swatch-picker.html">Swatch picker</a></li>
+      <li><a href="../components/sticker-picker.html">Sticker picker</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/hero.html">Hero</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/feed.html">Activity feed</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/photo-picker.html">Photo picker</a></li>
+      <li><a href="../components/logo-mark.html">Logo mark</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/streak.html">Streak</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/cover.html">Book cover</a></li>
+      <li><a href="../components/cover-picker.html">Cover picker</a></li>
+      <li><a href="../components/cover-gallery.html">Cover gallery</a></li>
+      <li><a href="../components/picture-list.html">Picture list</a></li>
+      <li><a href="../components/book-card.html">Book card</a></li>
+      <li><a href="../components/chapter-row.html">Chapter row</a></li>
+      <li><a href="../components/sticker.html">Sticker</a></li>
+      <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
+      <li><a href="../components/feedback-note.html">Feedback note</a></li>
+      <li><a href="../components/trophy.html">Trophy</a></li>
+      <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+      <li><a href="../components/celebration.html">Celebration</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/lists-and-tables.html">Lists and tables</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+      <li><a href="../patterns/marketing-page.html">Marketing page</a></li>
+    </ul></details>
+  </nav>
+
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Shelfie</p>
+      <h1>Chat bubble</h1>
+      <p class="ds-lead">Chapter questions as a little chat. Olive the owl asks in a bubble, Nia answers in a bubble that is the textarea itself, and a Next button moves her on. It feels like talking about the book, not filling in a worksheet.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: new</span><span class="ds-pill">Since 2026-10-19</span><span class="ds-pill">Library: <code>sh-chat-bubble</code></span><span class="ds-pill">Native <code>&lt;fieldset&gt;</code>, <code>&lt;label&gt;</code>, <code>&lt;textarea&gt;</code></span></div>
+      <ul class="ds-toc">
+        <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
+      </ul>
+    </header>
+
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use the chat for the comprehension questions on <a href="../../mocks/pages/log-chapter/default.html">Log a chapter</a>, and only there. It is a form dressed as a conversation: every question is a real <code>&lt;label&gt;</code> and every answer a real <a href="textarea.html">textarea</a>, so it submits, validates and reads to assistive technology like any other form.</p>
+      <ul>
+        <li><b>Buddy bubble</b> (<code>.bubble--buddy</code>): Olive's face and a speech bubble. A welcome or a short reply is a <code>p.bubble__text</code>; a question is a <code>label.bubble__text</code> pointing at the answer below it.</li>
+        <li><b>Answer bubble</b> (<code>.bubble--me</code>): the textarea, indented past Olive's face, with a small "Speak your answer" mic and a Next button. Next stays disabled until there is text.</li>
+        <li><b>Hint</b> (<code>.chat__hint</code>): how many questions are left.</li>
+      </ul>
+      <p>Once answers are sent they are played back with <a href="question-answer.html">Question and answer</a>, not the chat. For Dad's notes back to Nia use the <a href="feedback-note.html">feedback note</a>.</p>
+    </section>
+
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <fieldset class="card chat" style="width: 100%;"><legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Hi Nia! Dad wants to hear about Chapter 12. A sentence or two is perfect, and spelling doesn’t matter.</p></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-a-q1"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-a-q1" name="cb-a-q1" rows="3" required placeholder="Type here, or tap the mic…"></textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div><p class="chat__hint">3 more questions after this one.</p></fieldset>
+          <span class="ds-callout" style="left: 6%; top: 34%;" aria-hidden="true">1</span>
+          <span class="ds-callout" style="left: 40%; top: 20%;" aria-hidden="true">2</span>
+          <span class="ds-callout" style="left: 46%; top: 42%;" aria-hidden="true">3</span>
+          <span class="ds-callout" style="left: 70%; top: 56%;" aria-hidden="true">4</span>
+          <span class="ds-callout" style="left: 58%; top: 74%;" aria-hidden="true">5</span>
+          <span class="ds-callout" style="left: 92%; top: 78%;" aria-hidden="true">6</span>
+          <span class="ds-callout" style="left: 40%; top: 90%;" aria-hidden="true">7</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Olive's face</b><small><code>img.bubble__face</code>, <code>../assets/olive.svg</code>, <code>--size-avatar-md</code> (40px), <code>alt=""</code>: decorative, she is a character, not information.</small></div></li>
+          <li><div><b>Speech bubble</b><small><code>p.bubble__text</code>: <code>--color-accent-subtle</code>, <code>--radius-lg</code> with a small <code>--radius-xs</code> tail corner at the bottom left, <code>--text-body</code>.</small></div></li>
+          <li><div><b>Question bubble</b><small><code>label.bubble__text for="q1"</code> with a <code>.qa__num</code> number; tapping it focuses the answer.</small></div></li>
+          <li><div><b>Answer bubble</b><small><code>.bubble--me.field</code> holding <code>textarea.textarea</code>; <code>--radius-lg</code> with the tail corner at the bottom right; indented by the face width plus <code>--space-3</code>.</small></div></li>
+          <li><div><b>Mic</b><small>Ghost small button, "Speak your answer", <code>aria-pressed</code>.</small></div></li>
+          <li><div><b>Next</b><small>Secondary small button, disabled until the answer has text; reveals the next question.</small></div></li>
+          <li><div><b>Hint</b><small><code>p.chat__hint</code>, <code>--text-body-sm</code> in <code>--color-fg-subtle</code>, aligned with the bubbles.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Three bubbles make up the chat. Olive speaks (welcome or reply), Olive asks (a question, which is a label), Nia answers. Olive's replies are canned and short ("Nice! I wondered about that too.", "Good pick!"); they never judge the answer.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <fieldset class="card chat" style="width: 100%;"><legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Hi Nia! Dad wants to hear about Chapter 12. A sentence or two is perfect, and spelling doesn’t matter.</p></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-v-q1"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-v-q1" name="cb-v-q1" rows="3" required placeholder="Type here, or tap the mic…"></textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div><p class="chat__hint">3 more questions after this one.</p></fieldset>
+        </div>
+        <div class="ds-example__caption"><span>First question: welcome, question 1, empty answer with Next disabled, and the hint.</span></div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
+          <fieldset class="card chat" style="width: 100%;"><legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-r-q1"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-r-q1" name="cb-r-q1" rows="3" required readonly placeholder="Type here, or tap the mic…">Lucy found a way into Narnia through the wardrobe.</textarea></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Nice! I wondered about that too.</p></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-r-q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-r-q2" name="cb-r-q2" rows="3" placeholder="Type here, or tap the mic…"></textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 2">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div><p class="chat__hint">2 more questions after this one.</p></fieldset>
+        </div>
+        <div class="ds-example__caption"><span>After Next: the first answer stays on screen, Olive replies, and question 2 appears below.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="bubble bubble--buddy"&gt;&lt;img class="bubble__face" src="olive.svg" alt="" width="40" height="40"&gt;&lt;p class="bubble__text"&gt;Nice! I wondered about that too.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="bubble bubble--buddy"&gt;&lt;img class="bubble__face" src="olive.svg" alt="" width="40" height="40"&gt;&lt;label class="bubble__text" for="q2"&gt;&lt;span class="qa__num"&gt;2.&lt;/span&gt; Who was your favourite character in this chapter, and why?&lt;/label&gt;&lt;/div&gt;
+&lt;div class="bubble bubble--me field"&gt;&lt;textarea class="textarea" id="q2" name="q2" rows="3" placeholder="Type here, or tap the mic…"&gt;&lt;/textarea&gt; … &lt;/div&gt;</code></pre></details>
+      </div>
+    </section>
+
+    <section class="ds-section" id="sizes" data-na="one size"><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size. Bubbles are at most 40rem wide, Olive's face is <code>--size-avatar-md</code> (40px) and the answer box is the standard textarea (three rows, grows by drag). The mic and Next are small buttons (36px).</p>
+    </section>
+
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>States live on the answer bubble; Olive's bubbles never change. Each row uses the real attribute: <code>disabled</code> on Next, <code>aria-pressed</code> on the mic, <code>aria-invalid</code> and <code>aria-describedby</code> on the textarea, <code>readonly</code> while sending, <code>aria-busy</code> while loading. Focus is shown with <code>data-state="focus"</code>.</p>
+      <div class="ds-matrix" style="display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); overflow: visible;">
+          <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-def"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-def" name="cb-s-def" rows="3" required placeholder="Type here, or tap the mic…"></textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div></div><div class="ds-example__caption"><span>Default<br><small>empty, Next disabled</small></span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-focus"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-focus" name="cb-s-focus" rows="3" required data-state="focus" placeholder="Type here, or tap the mic…"></textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div></div><div class="ds-example__caption"><span>Focus</span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-fill"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-fill" name="cb-s-fill" rows="3" required placeholder="Type here, or tap the mic…">Lucy found a way into Narnia through the wardrobe.</textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div></div><div class="ds-example__caption"><span>Filled<br><small>Next enabled</small></span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-dict"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-dict" name="cb-s-dict" rows="3" placeholder="Type here, or tap the mic…">Mr Tumnus, because he was kind to Lucy even though he was scared</textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="true" aria-label="Speak your answer to question 2"><span class="mic-dot" aria-hidden="true"></span>Speak your answer</button><button class="btn btn--sm" type="button" aria-label="Next question after question 2">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button><span class="field__help">Listening… tap to stop</span></div></div></div></div><div class="ds-example__caption"><span>Dictating</span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-deny"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-deny" name="cb-s-deny" rows="3" aria-describedby="cb-s-deny-mic-error" placeholder="Type here, or tap the mic…">Mr Tumnus</textarea><div class="field__error" id="cb-s-deny-mic-error">Shelfie can’t hear you. You can type your answer instead.</div><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" aria-label="Next question after question 2">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div></div><div class="ds-example__caption"><span>Mic denied</span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-inv"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-inv" name="cb-s-inv" rows="3" required aria-invalid="true" aria-describedby="cb-s-inv-error" placeholder="Type here, or tap the mic…"></textarea><div class="field__error" id="cb-s-inv-error">Write a sentence or two about what happened. There are no wrong answers!</div><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div></div><div class="ds-example__caption"><span>Invalid</span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="chat"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-s-ro"><span class="qa__num">1.</span> What happened in this chapter?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-s-ro" name="cb-s-ro" rows="3" required readonly placeholder="Type here, or tap the mic…">The Witch’s sledge got stuck because the snow was melting and Edmund saw spring coming.</textarea></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Nice! I wondered about that too.</p></div></div></div><div class="ds-example__caption"><span>Read-only<br><small>submitting</small></span></div></div><div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack"><div class="card chat" style="width: 100%;" aria-busy="true" aria-label="Loading questions"><span class="skeleton skeleton--title" aria-hidden="true"></span><div class="bubble bubble--buddy"><span class="bubble__face skeleton" style="border-radius: var(--radius-full);" aria-hidden="true"></span><span class="bubble__text skeleton" style="width: 60%; height: 3.5rem;" aria-hidden="true"></span></div><div class="bubble bubble--buddy"><span class="bubble__face skeleton" style="border-radius: var(--radius-full);" aria-hidden="true"></span><span class="bubble__text skeleton" style="width: 45%; height: 2.5rem;" aria-hidden="true"></span></div><div class="bubble bubble--me"><span class="skeleton skeleton--rect" style="height: 5rem;" aria-hidden="true"></span></div></div></div><div class="ds-example__caption"><span>Loading<br><small>skeleton bubbles, aria-busy</small></span></div></div>
+      </div>
+      <ul>
+        <li><b>Dictating</b>: the mic is pressed and shows a pulsing <code>.mic-dot</code>; "Listening… tap to stop" sits beside it; words appear in the box and stay editable.</li>
+        <li><b>Mic denied</b>: the typed answer stays and the message sits under the box; she can tap Speak your answer again.</li>
+        <li><b>Invalid</b>: only question 1 is required. The message is kind and says what to do.</li>
+        <li><b>Read-only (submitting)</b>: after "I'm done!" every answer is <code>readonly</code> and the mic and Next go away while the form sends.</li>
+      </ul>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><fieldset class="card chat" style="width: 100%;"><legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Nice! I wondered about that too.</p></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-light-q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-light-q2" name="cb-light-q2" rows="3" placeholder="Type here, or tap the mic…">Mr Tumnus, because he was kind</textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" aria-label="Next question after question 2">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div><p class="chat__hint">2 more questions after this one.</p></fieldset></div></div><div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><fieldset class="card chat" style="width: 100%;"><legend style="font: var(--text-h4); margin-bottom: var(--space-1);">Tell Dad about it</legend><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Nice! I wondered about that too.</p></div><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><label class="bubble__text" for="cb-dark-q2"><span class="qa__num">2.</span> Who was your favourite character in this chapter, and why?</label></div><div class="bubble bubble--me field"><textarea class="textarea" id="cb-dark-q2" name="cb-dark-q2" rows="3" placeholder="Type here, or tap the mic…">Mr Tumnus, because he was kind</textarea><div class="cluster" style="justify-content: flex-end;"><button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 2"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak your answer</button><button class="btn btn--sm" type="button" aria-label="Next question after question 2">Next<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div><p class="chat__hint">2 more questions after this one.</p></fieldset></div></div></div>
+    </section>
+
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Mobile first: the chat fills the card. Bubbles grow to their text and stop at 40rem, so lines stay readable on a desktop.</li>
+        <li>The answer bubble keeps its indent (face width plus <code>--space-3</code>) at every width, which lines it up under Olive's words. At 320px that still leaves about 220px for typing.</li>
+        <li>The mic and Next sit right-aligned under the box in a wrapping cluster; on a phone Next drops under the mic, and "Listening… tap to stop" wraps under them.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Olive's bubbles read <code>--color-accent-subtle</code> with <code>--color-fg-default</code> text and <code>--color-fg-accent</code> numbers; the answer bubble is the textarea, so it reads the field tokens (<code>--color-bg-surface</code>, <code>--color-border-strong</code>, focus and danger). All of them flip with the theme. Olive herself is a fixed illustration that reads on both the light and dark card. To re-theme, override <code>--color-accent-subtle</code> or the field component tokens on the chat; never colour a bubble inline.</p>
+    </section>
+
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>It is a form, not a chat log. The chat is a <code>&lt;fieldset&gt;</code> whose <code>&lt;legend&gt;</code> ("Tell Dad about it") names the group. Each question is a native <code>&lt;label for&gt;</code> on its textarea; the mic is a toggle button (WAI-ARIA <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/">button pattern</a>, <code>aria-pressed</code>). Olive's welcome and replies are plain paragraphs: no <code>role="log"</code>, no live region, so a screen reader is not interrupted each time she speaks. Olive's face is <code>alt=""</code>.</p>
+      <h3>Keyboard</h3>
+      <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Answer, then Speak your answer, then Next (when enabled), then the next answer.</td></tr>
+        <tr><td><kbd>Enter</kbd> in the answer</td><td>New line. It never submits or moves on.</td></tr>
+        <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd> on the mic</td><td>Starts or stops listening.</td></tr>
+        <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd> on Next</td><td>Shows Olive's reply and the next question, and moves focus into the new answer.</td></tr>
+      </tbody></table>
+      <h3>Focus</h3>
+      <p>The answer shows the shared focus ring and border, like any textarea. Next moves focus to the new answer box, so the new question label is read with it. Clicking a question bubble focuses its answer.</p>
+      <h3>Labelling</h3>
+      <p>The accessible name of each answer is its question, number included ("1. What happened in this chapter?"). The mic and Next buttons repeat the question number in <code>aria-label</code> ("Speak your answer to question 1", "Next question after question 1") because several are on the page. Error and mic messages are tied in with <code>aria-describedby</code>. "Listening" and "Stopped listening" are announced once through the page's polite status region, not by the bubbles.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Olive’s words on her bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Question number on her bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Answer text in the reader’s bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Placeholder in the reader’s bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Answer bubble edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div><div class="ds-pair"><span>Hint under the chat</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Error message</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Olive’s words on her bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Question number on her bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div><div class="ds-pair"><span>Answer text in the reader’s bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Placeholder in the reader’s bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Answer bubble edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div><div class="ds-pair"><span>Hint under the chat</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Error message</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>No typing dots or sliding bubbles: a new question simply appears. The only motion is the mic's pulsing dot, which stops under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>The whole question bubble is a label, so it is a large tap target for the answer. The mic and Next are 36px tall with <code>--space-2</code> between them, above the 24px minimum.</p>
+    </section>
+
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Olive talks to Nia by name, in short, warm sentences: "Hi Nia! Dad wants to hear about Chapter 12. A sentence or two is perfect, and spelling doesn’t matter."</li>
+        <li>Questions are numbered and end with a question mark. Dad's own questions appear word for word.</li>
+        <li>Replies are one short line of encouragement that fits any answer ("Nice! I wondered about that too.", "Good pick!", "Ooh, we’ll find out soon."). Never "Correct" or "Wrong".</li>
+        <li>Placeholder: "Type here, or tap the mic…". Buttons: "Speak your answer", "Next".</li>
+        <li>Hint: "3 more questions after this one."; drop it on the last question.</li>
+      </ul>
+    </section>
+
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><code>&lt;label class="bubble__text" for="q1"&gt;…&lt;/label&gt;</code></div><figcaption>Make every question bubble the label of its answer, so the form still works without seeing the chat.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;p class="bubble__text"&gt;1. What happened…&lt;/p&gt; &lt;textarea aria-label="Answer"&gt;</code></div><figcaption>Don't put the question in a paragraph and give the box a generic name; four answers all called "Answer".</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="chat" style="width: 100%;"><div class="bubble bubble--buddy"><img class="bubble__face" src="../assets/olive.svg" alt="" width="40" height="40"><p class="bubble__text">Good pick!</p></div></div></div><figcaption>Keep Olive's replies short, kind and true for any answer.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><code>&lt;div class="chat" role="log" aria-live="polite"&gt;</code></div><figcaption>Don't make the chat a live log; every reply would interrupt her while she types the next answer.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Olive’s bubble</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Bubble text</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Question number</td><td><code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Answer bubble background</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Answer bubble edge</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
+          <tr><td>Hint</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
+          <tr><td>Bubble radius / tail corner</td><td><code>--radius-lg / --radius-xs</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+          <tr><td>Face size</td><td><code>--size-avatar-md</code></td><td colspan="2"><span data-token="--size-avatar-md"></span></td></tr>
+          <tr><td>Gap between bubbles and face</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+          <tr><td>Bubble font</td><td><code>--text-body</code></td><td colspan="2"><span data-token="--text-body"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;fieldset class="card chat"&gt;
+  &lt;legend&gt;Tell Dad about it&lt;/legend&gt;
+  &lt;div class="bubble bubble--buddy"&gt;
+    &lt;img class="bubble__face" src="assets/olive.svg" alt="" width="40" height="40"&gt;
+    &lt;p class="bubble__text"&gt;Hi Nia! Dad wants to hear about Chapter 12. …&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="bubble bubble--buddy"&gt;
+    &lt;img class="bubble__face" src="assets/olive.svg" alt="" width="40" height="40"&gt;
+    &lt;label class="bubble__text" for="q1"&gt;&lt;span class="qa__num"&gt;1.&lt;/span&gt; What happened in this chapter?&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;div class="bubble bubble--me field"&gt;
+    &lt;textarea class="textarea" id="q1" name="q1" rows="3" required placeholder="Type here, or tap the mic…"&gt;&lt;/textarea&gt;
+    &lt;div class="cluster" style="justify-content: flex-end;"&gt;
+      &lt;button class="btn btn--ghost btn--sm" type="button" aria-pressed="false" aria-label="Speak your answer to question 1"&gt;…Speak your answer&lt;/button&gt;
+      &lt;button class="btn btn--sm" type="button" disabled aria-label="Next question after question 1"&gt;Next …&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p class="chat__hint"&gt;3 more questions after this one.&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre>
+      <table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.chat</code></td><td>Column of bubbles, <code>--space-3</code> apart. Use on the <code>fieldset.card</code>.</td></tr>
+        <tr><td><code>.bubble</code></td><td>Row of face and bubble, bottom-aligned, at most 40rem.</td></tr>
+        <tr><td><code>.bubble--buddy</code></td><td>Olive speaking or asking.</td></tr>
+        <tr><td><code>.bubble__face</code></td><td>Olive's 40px face; <code>alt=""</code>.</td></tr>
+        <tr><td><code>.bubble__text</code></td><td>The speech bubble. On a <code>&lt;label&gt;</code> it gets a pointer cursor.</td></tr>
+        <tr><td><code>.bubble--me</code></td><td>Reader's answer: a column, indented past the face; its <code>.textarea</code> gets the bubble corners.</td></tr>
+        <tr><td><code>.chat__hint</code></td><td>Small subtle line, indented to match the bubbles.</td></tr>
+        <tr><td><code>.btn .mic-dot</code></td><td>Pulsing dot inside the pressed mic button.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks (Beanstack review, R4):</p>
+      <ul>
+        <li><a href="../../mocks/pages/log-chapter/default.html">pages/log-chapter/default</a> (first question, Next disabled)</li>
+        <li><a href="../../mocks/pages/log-chapter/dictating.html">pages/log-chapter/dictating</a> (reply bubble, mic pressed)</li>
+        <li><a href="../../mocks/pages/log-chapter/dictation-denied.html">pages/log-chapter/dictation-denied</a></li>
+        <li><a href="../../mocks/pages/log-chapter/invalid.html">pages/log-chapter/invalid</a></li>
+        <li><a href="../../mocks/pages/log-chapter/submitting.html">pages/log-chapter/submitting</a> (all answers read-only)</li>
+        <li><a href="../../mocks/pages/log-chapter/loading.html">pages/log-chapter/loading</a> (skeleton bubbles)</li>
+      </ul>
+      <p>Olive is <code>assets/olive.svg</code>, copied from the mocks. Drift: none corrected; the mocks set the legend style inline, as the other log-chapter fieldsets do.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Shelfie design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-19</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

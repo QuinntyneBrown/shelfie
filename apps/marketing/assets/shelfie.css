@@ -58,7 +58,8 @@ h3 {
 }
 
 h1 {
-  font-size: clamp(var(--font-size-4xl), 4vw + var(--font-size-md), var(--font-size-5xl));
+  font-size: clamp(var(--font-size-5xl), 5vw + var(--font-size-md), 4.75rem);
+  line-height: 1.05;
 }
 
 h2 {
@@ -312,6 +313,11 @@ em {
 .hero {
   padding-block: var(--space-16) var(--space-12);
   background:
+    radial-gradient(circle at 8% 18%, color-mix(in srgb, var(--color-cover-rose) 70%, transparent) 7px, transparent 8px),
+    radial-gradient(circle at 22% 80%, color-mix(in srgb, var(--color-cover-sun) 70%, transparent) 5px, transparent 6px),
+    radial-gradient(circle at 58% 8%, color-mix(in srgb, var(--color-cover-sky) 70%, transparent) 9px, transparent 10px),
+    radial-gradient(circle at 93% 72%, color-mix(in srgb, var(--color-cover-mint) 70%, transparent) 6px, transparent 7px),
+    radial-gradient(circle at 46% 92%, color-mix(in srgb, var(--color-cover-lilac) 70%, transparent) 4px, transparent 5px),
     radial-gradient(circle at 85% 10%, var(--color-accent-subtle), transparent 50%),
     radial-gradient(circle at 5% 95%, var(--color-accent-subtle), transparent 35%);
 }
@@ -329,7 +335,9 @@ em {
 }
 
 .hero-copy .lede {
-  max-width: 34rem;
+  max-width: 30rem;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-xl);
 }
 
 .hero-actions {
@@ -440,9 +448,36 @@ em {
 .tint-mint { background: var(--color-cover-mint); }
 .tint-peach { background: var(--color-cover-peach); }
 
+/* Card washes (CSP-safe: no inline styles). */
+.tint-bg-sage { --tint: var(--color-tint-sage); }
+.tint-bg-rose { --tint: var(--color-tint-rose); }
+.tint-bg-sky { --tint: var(--color-tint-sky); }
+.tint-bg-sun { --tint: var(--color-tint-sun); }
+.tint-bg-lilac { --tint: var(--color-tint-lilac); }
+.tint-bg-mint { --tint: var(--color-tint-mint); }
+.tint-bg-peach { --tint: var(--color-tint-peach); }
+
 /* --- how it works --------------------------------------------------------- */
 .journey {
   background: var(--color-bg-surface);
+}
+
+/* Wavy section edges: a masked band above the section, painted in its own background. */
+.journey,
+.family {
+  position: relative;
+}
+
+.journey::before,
+.family::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--space-8));
+  right: 0;
+  left: 0;
+  height: var(--space-8);
+  background: inherit;
+  mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 32' preserveAspectRatio='none'%3E%3Cpath d='M0 32V18C30 0 60 34 90 18s30-10 30 0v14z'/%3E%3C/svg%3E") repeat-x bottom / 7.5rem 100%;
 }
 
 .steps {
@@ -451,35 +486,24 @@ em {
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: step;
 }
 
 @media (width >= 48rem) {
   .steps {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width >= 64rem) {
-  .steps {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 .step {
-  counter-increment: step;
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-canvas);
+  border-radius: var(--radius-xl);
+  background: var(--tint, var(--color-bg-canvas));
 }
 
-.step::before {
-  content: "0" counter(step);
-  display: block;
-  margin-bottom: var(--space-2);
-  color: var(--color-fg-accent);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-spacing-wide);
+.step .card-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-lg);
 }
 
 .step p {
@@ -488,34 +512,51 @@ em {
 }
 
 /* --- inside the app ------------------------------------------------------- */
-.screen-showcase {
+.feature-grid {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min(16rem, 70vw);
   gap: var(--space-6);
-  margin: 0;
-  padding: var(--space-2) var(--space-2) var(--space-6);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+}
+
+@media (width >= 48rem) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 64rem) {
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.feature-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--tint, var(--color-bg-surface));
+}
+
+.feature-shot {
+  height: 14rem;
+  margin-bottom: var(--space-5);
+  overflow: hidden;
   border-radius: var(--radius-lg);
 }
 
-.showcase-card {
-  margin: 0;
-  scroll-snap-align: start;
-}
-
-.showcase-card img {
+.feature-shot img {
   width: 100%;
-  border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-3);
+  rotate: -3deg;
+  translate: var(--space-2) var(--space-5);
 }
 
-.showcase-card figcaption {
-  margin-top: var(--space-3);
+.feature-card h3 {
+  font-size: var(--font-size-2xl);
+}
+
+.feature-card p {
+  margin-top: var(--space-2);
   color: var(--color-fg-muted);
-  font-weight: var(--font-weight-semibold);
 }
 
 /* --- for families ----------------------------------------------------------- */

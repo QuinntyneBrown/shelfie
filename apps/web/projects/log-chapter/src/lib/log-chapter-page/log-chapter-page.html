@@ -10,11 +10,25 @@
             size="xl"
           />
           <span class="sticker sticker--xl" aria-hidden="true">🏆</span>
-          <h1>You finished the whole book!</h1>
-          <p class="text-muted">
-            All {{ result.chapterCount }} chapters of {{ form.book.title }}.
-            {{ form.grownUpName }} will pick your reward — watch your shelf.
-          </p>
+          <h1>You finished {{ form.book.title }}!</h1>
+          <sh-progress
+            [value]="result.chaptersLogged"
+            [max]="result.chapterCount"
+            [label]="result.chaptersLogged + ' of ' + result.chapterCount + ' chapters read'"
+          />
+          <ul class="celebrate__rows">
+            <li>
+              <sh-reward-card
+                [title]="form.book.title"
+                [coverColor]="form.book.coverColor"
+                [sticker]="form.book.sticker"
+                [coverImage]="form.book.coverImage"
+                [note]="'All ' + result.chapterCount + ' chapters · ' + form.grownUpName + ' is picking your reward'"
+              />
+            </li>
+            <ng-container [ngTemplateOutlet]="streakRow" [ngTemplateOutletContext]="{ result, form }" />
+          </ul>
+          <p class="text-muted">Watch your shelf for the reward.</p>
           <div class="cluster done-actions">
             <a class="btn btn--primary btn--lg" routerLink="/shelf">Back to my shelf</a>
             <a class="btn" routerLink="/add-book">Add my next book</a>
@@ -24,16 +38,28 @@
         <sh-celebration>
           <span class="sticker sticker--xl" aria-hidden="true">🎉</span>
           <h1>Chapter {{ form.chapterNumber }} done!</h1>
-          <p class="text-muted">
-            That’s {{ result.chaptersLogged }} of {{ result.chapterCount }}. Only
-            {{ chaptersToGo() }} {{ chaptersToGo() === 1 ? 'chapter' : 'chapters' }} to go —
-            {{ form.grownUpName }} will read your answers soon.
-          </p>
           <sh-progress
             [value]="result.chaptersLogged"
             [max]="result.chapterCount"
             [label]="result.chaptersLogged + ' of ' + result.chapterCount + ' chapters read'"
           />
+          <ul class="celebrate__rows">
+            @for (badge of result.badgesEarned; track badge.id) {
+              <li>
+                <sh-achievement-badge
+                  [icon]="badge.icon"
+                  [name]="'Badge earned: ' + badge.name"
+                  [hint]="badge.hint"
+                  [earnedOn]="badge.earnedOn"
+                />
+              </li>
+            }
+            <ng-container [ngTemplateOutlet]="streakRow" [ngTemplateOutletContext]="{ result, form }" />
+          </ul>
+          <p class="text-muted">
+            Only {{ chaptersToGo() }} {{ chaptersToGo() === 1 ? 'chapter' : 'chapters' }} to go.
+            {{ form.grownUpName }} will read your answers soon.
+          </p>
           <div class="cluster done-actions">
             <a class="btn btn--primary btn--lg" routerLink="/shelf">Back to my shelf</a>
             @if (form.chapterNumber < result.chapterCount) {
@@ -104,23 +130,35 @@
             <div class="field__error">Pick today or an earlier day.</div>
           }
         </fieldset>
-        <fieldset class="card stack">
+        <fieldset class="card chat">
           <legend class="legend">Tell {{ form.grownUpName }} about it</legend>
-          <p class="text-muted hint">
-            A sentence or two for each one is perfect. Spelling doesn’t matter.
-          </p>
+          <sh-chat-bubble
+            >Hi {{ session.current()?.name }}! {{ form.grownUpName }} wants to hear about Chapter
+            {{ form.chapterNumber }}. A sentence or two is perfect, and spelling doesn’t matter.</sh-chat-bubble
+          >
           @for (question of form.questions; track question.position; let i = $index) {
-            <sh-question-field
-              [number]="question.position"
-              [label]="question.text"
-              [value]="answers()[i]"
-              [error]="
-                i === 0 && questionOneMissing()
-                  ? 'Write a sentence or two about what happened. There are no wrong answers!'
-                  : null
-              "
-              (valueChange)="setAnswer(i, $event)"
-            />
+            @if (i < shown()) {
+              @if (i > 0) {
+                <sh-chat-bubble>{{ reply(i - 1) }}</sh-chat-bubble>
+              }
+              <sh-question-field
+                layout="chat"
+                [number]="question.position"
+                [label]="question.text"
+                [value]="answers()[i]"
+                [showNext]="i === shown() - 1 && i < form.questions.length - 1"
+                [error]="
+                  i === 0 && questionOneMissing()
+                    ? 'Write a sentence or two about what happened. There are no wrong answers!'
+                    : null
+                "
+                (valueChange)="setAnswer(i, $event)"
+                (next)="next(i)"
+              />
+            }
+          }
+          @if (form.questions.length - shown(); as left) {
+            <p class="chat__hint">{{ left }} more {{ left === 1 ? 'question' : 'questions' }} after this one.</p>
           }
         </fieldset>
         <div class="form-actions">
@@ -140,3 +178,16 @@
     }
   }
 </div>
+
+<ng-template #streakRow let-result="result" let-form="form">
+  <li>
+    <sh-achievement-badge
+      icon="🔥"
+      [name]="result.streak > 0 ? result.streak + (result.streak === 1 ? ' day' : ' days') + ' in a row' : 'Your reading this week'"
+      hint=""
+      [earnedOn]="form.today"
+      [note]="null"
+      ><sh-week-strip [days]="result.week"
+    /></sh-achievement-badge>
+  </li>
+</ng-template>

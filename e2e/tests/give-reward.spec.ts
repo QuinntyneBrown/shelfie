@@ -3,6 +3,7 @@ import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { ReviewPage } from '../pages/review.page';
 import { ShelfPage } from '../pages/shelf.page';
+import { ManageBookPage } from '../pages/manage-book.page';
 
 test('Given a finished book, when Dad picks a quick reward and gives it, then Review moves on and the reward is on Nia’s trophy shelf', async ({ page, browser, baseURL }) => {
   await signInAsDad(page);
@@ -72,5 +73,5 @@ test('Given a book with a reward, when Dad manages it, then the reward is shown 
   await signInAsDad(page);
   await page.goto('/manage-book/b-web');
 
-  await expect(page.getByRole('region', { name: /Rewarded/ })).toContainText('Rewarded: Movie night with popcorn');
+  await expect(new ManageBookPage(page).rewardedCard()).toContainText('Movie night with popcorn');
 });

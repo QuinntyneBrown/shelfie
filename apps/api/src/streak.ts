@@ -21,20 +21,46 @@ export function computeStreak(readOnDays: string[], today: string): number {
   return streak;
 }
 
+export interface WeekDay {
+  date: string;
+  read: boolean;
+  today: boolean;
+}
+
+/** This week, Monday to Sunday, with the days a chapter was read and today marked. */
+export function computeWeek(readOnDays: string[], today: string): WeekDay[] {
+  const days = new Set(readOnDays);
+  const monday = new Date(`${today}T00:00:00Z`);
+  monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(monday);
+    date.setUTCDate(monday.getUTCDate() + i);
+    const day = date.toISOString().slice(0, 10);
+    return { date: day, read: days.has(day), today: day === today };
+  });
+}
+
 /** The calendar day it is in a time zone at a moment. */
 export function todayIn(timeZone: string, now: Date): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone }).format(now);
 }
 
-export async function streakFor(db: Db, householdId: string, now = new Date()): Promise<number> {
+async function readingDays(db: Db, householdId: string, now: Date) {
   const { time_zone } = (await get<{ time_zone: string }>(db, 'SELECT time_zone FROM household WHERE id = $1', [householdId]))!;
   const days = await all<{ read_on: string }>(
     db,
     'SELECT DISTINCT c.read_on FROM chapter_log c JOIN book b ON b.id = c.book_id WHERE b.household_id = $1',
     [householdId],
   );
-  return computeStreak(
-    days.map((d) => d.read_on),
-    todayIn(time_zone, now),
-  );
+  return { days: days.map((d) => d.read_on), today: todayIn(time_zone, now) };
+}
+
+export async function streakFor(db: Db, householdId: string, now = new Date()): Promise<number> {
+  const { days, today } = await readingDays(db, householdId, now);
+  return computeStreak(days, today);
+}
+
+export async function weekFor(db: Db, householdId: string, now = new Date()): Promise<WeekDay[]> {
+  const { days, today } = await readingDays(db, householdId, now);
+  return computeWeek(days, today);
 }

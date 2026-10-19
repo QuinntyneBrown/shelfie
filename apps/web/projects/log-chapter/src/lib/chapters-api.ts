@@ -29,6 +29,9 @@ export interface LogResult {
   chaptersLogged: number;
   chapterCount: number;
   bookFinished: boolean;
+  streak: number;
+  week: { date: string; read: boolean; today: boolean }[];
+  badgesEarned: { id: string; icon: string; name: string; hint: string; earnedOn: string | null }[];
 }
 
 export interface ChapterView {

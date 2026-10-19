@@ -1,0 +1,9 @@
+<ng-template #content><ng-content /></ng-template>
+@if (variant() === 'buddy') {
+  <div class="bubble bubble--buddy">
+    <img class="bubble__face" src="mascot/olive.svg" alt="" width="40" height="40" />
+    <p class="bubble__text"><ng-container [ngTemplateOutlet]="content" /></p>
+  </div>
+} @else {
+  <div class="bubble bubble--me"><ng-container [ngTemplateOutlet]="content" /></div>
+}

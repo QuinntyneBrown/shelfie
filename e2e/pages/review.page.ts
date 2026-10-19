@@ -134,9 +134,26 @@ export class ReviewPage {
     return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   }
 
+  /** Makes loading the review queue fail, as a dropped connection would. */
+  async breakLoading() {
+    await this.page.route('**/api/review', (route) => route.abort());
+  }
+
+  async repairLoading() {
+    await this.page.unroute('**/api/review');
+  }
+
+  loadError() {
+    return this.page.getByRole('heading', { name: 'Review didn’t load' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
   /** The card for an earned streak reward that has not been given yet. */
   streakRewardCard(days: number) {
-    return this.page.getByRole('region', { name: `Nia reached a ${days}-day streak` });
+    return this.page.getByRole('region', { name: `${days}-day streak reached!` });
   }
 
   async giveStreakReward(days: number) {

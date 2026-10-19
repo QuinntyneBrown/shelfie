@@ -36,6 +36,7 @@ test('Given a browser with speech recognition, when she dictates, then her words
 test('Given she is listening, when she chooses the button again, then listening stops and the words stay; the same when the browser ends it', async ({ page }) => {
   const log = new LogChapterPage(page);
   await openChapter(page, log);
+  await log.answerAndNext(1, 'Lucy went through the wardrobe.');
 
   await log.dictate(2);
   await log.hear('Mr Tumnus');
@@ -76,6 +77,7 @@ test('Given an answer near its limit, when she dictates more, then the answer is
 test('Given she is dictating in one answer, when she starts in another, then the first stops', async ({ page }) => {
   const log = new LogChapterPage(page);
   await openChapter(page, log);
+  await log.answerAndNext(1, 'Lucy went through the wardrobe.');
 
   await log.dictate(1);
   await log.dictate(2);
@@ -111,6 +113,7 @@ test('Given a browser without speech recognition, then no microphone button show
 test('Given the microphone is refused, then she is told she can type, what she typed stays, and she can try again', async ({ page }) => {
   const log = new LogChapterPage(page);
   await openChapter(page, log);
+  await log.answerAndNext(1, 'Lucy went through the wardrobe.');
 
   await log.answer(2, 'Mr Tumnus');
   await log.dictate(2);

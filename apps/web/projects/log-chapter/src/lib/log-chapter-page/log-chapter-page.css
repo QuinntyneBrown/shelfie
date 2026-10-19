@@ -2,9 +2,6 @@
   font: var(--text-h4);
   margin-bottom: var(--space-1);
 }
-.hint {
-  margin-bottom: var(--space-2);
-}
 .done-actions {
   justify-content: center;
 }

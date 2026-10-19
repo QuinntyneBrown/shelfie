@@ -21,6 +21,7 @@ Every mock tells the same story so a reviewer can follow it across screens. Reus
   Invited:    Mum = Priya Bell, priya@example.com, username priya. Avatar "P", lilac. Dad invited her today; she has not joined yet.
   New reader: Theo (6). Avatar "T", mint. Username theo; the reader Dad adds in the edit-reader dialog.
   Photos:     Nia and Dad each upload their own photo (assets/photos/nia.jpg, dad.jpg) in the photo states; elsewhere they show their letters.
+  Mascot:     Olive the owl (assets/olive.svg). She asks the chapter questions one at a time in a chat on Log a chapter, with a short reply between questions.
   Everyone signs in on one form: username, password and "Keep me signed in on this device" (30 days of use; off = ends with the browser).
   Today:      Friday 17 October 2026, late afternoon.
 
@@ -47,6 +48,7 @@ Every mock tells the same story so a reviewer can follow it across screens. Reus
 | Dad (Marcus Bell) | The parent who signed up. Username `marcus`, e-mail `marcus@example.com`. Avatar "D" in sky. |
 | Mum (Priya Bell) | Invited parent, `priya@example.com`. Accepts the invite as username `priya`. Avatar "P" in lilac. |
 | Theo | The reader Dad adds next, 6. Username `theo`. Avatar "T" in mint. |
+| Olive | The owl who asks the chapter questions. Appears only on Log a chapter. |
 | Today | Friday 17 October 2026 |
 
 | Book | Author | Chapters | Where it is |
@@ -80,7 +82,7 @@ These are decisions the mocks make that nobody has confirmed. Each is marked in 
 2. **Accounts and profiles (L2-002, L2-003, L2-021, L2-033 to L2-036).** Only parents hold accounts, created by signing up (starts a household) or by accepting another parent's invite (the link works 7 days, once). Readers are profiles a parent adds in Settings with a name, colour, username and password. Everyone signs in on one form with username, password and "Keep me signed in" (on: 30 days of use; off: ends with the browser). No PIN, no profile picker. Usernames are 3–20 letters, digits, dots or underscores and unique ignoring case. Removing a reader or parent is not mocked; it is out of scope.
 3. **Chapters are numbered, not titled.** Adding a book asks only for the number of chapters. A chapter row shows the first line of her first answer instead of a title.
 4. **Covers are made, then optionally pictured.** A cover is a pastel colour plus a sticker chosen when the book is added; a picture can be added over it (13) or come from the title lookup (14).
-5. **Only question 1 is required.** The other answers can be left blank so a tired reader can still log a chapter.
+5. **Only question 1 is required.** The other answers can be left blank so a tired reader can still log a chapter. **Questions arrive as a chat.** Olive asks one question at a time in a speech bubble; Nia’s answer box is her bubble, and a small Next button (enabled once she has an answer) brings a short encouraging reply and the next question. Tapping I’m done at any point sends what she has.
 6. **Answers are final once sent.** There is no edit after "I'm done!"; Undo on the success toast is the only way back, for the life of the toast (10 seconds).
 7. **A sticker is required to send feedback;** the note is optional. The reader sees feedback on the chapter page and in a banner on her shelf.
 8. **Rewards are free text** with four quick picks. Giving a reward is the only "finish" step for Dad; there is no approval of the book itself.

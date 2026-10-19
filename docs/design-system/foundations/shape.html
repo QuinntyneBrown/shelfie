@@ -67,6 +67,7 @@
       <li><a href="../components/chapter-row.html">Chapter row</a></li>
       <li><a href="../components/sticker.html">Sticker</a></li>
       <li><a href="../components/question-answer.html">Question and answer</a></li>
+      <li><a href="../components/chat-bubble.html">Chat bubble</a></li>
       <li><a href="../components/feedback-note.html">Feedback note</a></li>
       <li><a href="../components/trophy.html">Trophy</a></li>
       <li><a href="../components/achievement-badge.html">Achievement badge</a></li>
@@ -104,7 +105,7 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Shelfie is soft: 12px corners on controls, 16px on cards and dialogs, full pills for badges, chips, avatars and stickers. Rounder means friendlier for a young reader, and one radius per size keeps it from looking random. This page also holds the fixed sizes for avatars and book covers.</p>
+      <p>Shelfie is soft: 12px corners on fields and covers, 24px on cards, the hero and dialogs, 32px on sheets and streak rewards, and full pills for buttons, badges, chips, avatars and stickers. Rounder means friendlier for a young reader, and one radius per size keeps it from looking random. This page also holds the fixed sizes for avatars and book covers.</p>
     </section>
 
     <section class="ds-section" id="radius"><h2><a href="#radius">Radius scale</a></h2>
@@ -114,13 +115,13 @@
         <tbody>
           <tr><td><code>--radius-xs</code></td><td>Confetti pieces, documentation swatches</td></tr>
           <tr><td><code>--radius-sm</code></td><td>Small covers, menu items, skeleton lines, close buttons</td></tr>
-          <tr><td><code>--radius-md</code></td><td>Buttons, text fields, menus, alerts, toasts, book-card covers, her answer wells, sticker choices</td></tr>
-          <tr><td><code>--radius-lg</code></td><td>Cards, hero, tables, dialogs from 640px, large covers, feedback note, trophy</td></tr>
-          <tr><td><code>--radius-xl</code></td><td>Top corners of a bottom sheet (dialogs under 640px)</td></tr>
-          <tr><td><code>--radius-full</code></td><td>Badges, chips, streak, avatars, stickers, swatches and progress bars</td></tr>
+          <tr><td><code>--radius-md</code></td><td>Text fields, menus, alerts, toasts, every cover from md up (book card, hero, celebration), her answer wells, sticker choices</td></tr>
+          <tr><td><code>--radius-lg</code></td><td>Cards, hero, tables, dialogs from 640px, feedback note, trophy, achievement badges, chat bubbles, logo tile</td></tr>
+          <tr><td><code>--radius-xl</code></td><td>Top corners of a bottom sheet (dialogs under 640px), streak-reward cards, marketing feature cards</td></tr>
+          <tr><td><code>--radius-full</code></td><td>Buttons (pills), the floating top bar, badges, chips, streak, avatars, stickers, swatches and progress bars</td></tr>
         </tbody>
       </table></div>
-      <p>Rule of thumb: the bigger the object, the bigger the radius, and a child's radius is never larger than its parent's. A 44px control gets 12px; a 24px badge is a pill.</p>
+      <p>Rule of thumb: the bigger the object, the bigger the radius, and a child's radius is never larger than its parent's. A 44px field gets 12px; a button or a 24px badge is a pill; a card gets 24px so the 12px cover inside it never looks rounder than its parent.</p>
     </section>
 
     <section class="ds-section" id="borders"><h2><a href="#borders">Border widths</a></h2>
@@ -143,7 +144,7 @@
         <span class="cover cover--sage" aria-hidden="true">🦁</span>
         <span class="cover cover--sage cover--lg" aria-hidden="true">🦁</span>
         <span class="cover cover--rose cover--xl" aria-hidden="true">📚</span>
-      </div><div class="ds-example__caption"><span>Cover sm 44px (lists, tables; radius sm), md 80px (book cards; radius md), lg 120px (hero, book page; radius lg), xl 160px (finished-book celebration). Covers are 2:3 and the sticker is 40% of the width (drift D13).</span></div></div>
+      </div><div class="ds-example__caption"><span>Cover sm 44px (lists, tables; radius sm), md 80px (book cards), lg 120px (hero, book page), xl 160px (finished-book celebration). md and up all use radius md, like a real book. Covers are 2:3 and the sticker is 40% of the width (drift D13).</span></div></div>
     </section>
 
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
@@ -161,10 +162,10 @@
         <tbody>
           <tr><td>Checkbox</td><td><code>--radius-xs</code></td><td colspan="2"><span data-token="--radius-xs"></span></td></tr>
           <tr><td>Badges, inputs (compact)</td><td><code>--radius-sm</code></td><td colspan="2"><span data-token="--radius-sm"></span></td></tr>
-          <tr><td>Buttons, inputs, cards</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
-          <tr><td>Dialogs, large cards, covers</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
-          <tr><td>Sheets</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr>
-          <tr><td>Pills, avatars</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
+          <tr><td>Inputs, covers</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Cards, hero, dialogs, trophies</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+          <tr><td>Sheets, streak rewards, feature cards</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr>
+          <tr><td>Buttons, top bar, pills, avatars</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>&nbsp;</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>&nbsp;</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
           <tr><td>Top bar</td><td><code>--size-avatar-sm</code></td><td colspan="2"><span data-token="--size-avatar-sm"></span></td></tr>
