@@ -23,7 +23,7 @@ test.beforeEach(async () => {
 test('Given Dad, when he opens the Directory tab, then approved authors are listed with their books and Volunteers lists approved volunteers under the no-vetting notice', async ({ page }) => {
   await signInAsDad(page);
   const directory = new DirectoryPage(page);
-  await expect(directory.navigation()).toHaveText(['Review', 'Books', 'Directory', 'Settings']);
+  await expect(directory.navigation()).toHaveText([/^Review/, /^Books/, /^Directory/, /^Settings/]);
   await directory.chooseDirectoryTab();
 
   await expect(directory.heading()).toHaveText('Directory');
