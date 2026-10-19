@@ -105,11 +105,11 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Shelfie's structure is deliberately shallow. The reader's world is the shelf and the pages under one book; the grown-up's world is Review, Books and Settings. There are no tabs, no sidebar and no sub-navigation.</p>
+      <p>Shelfie's structure is deliberately shallow. The reader's world is the shelf and the pages under one book; the parent's world is Review, Books, Directory and Settings; an author's is My profile and My catalogue, and a volunteer's is My profile alone. There are no tabs, no sidebar and no sub-navigation.</p>
       <ul>
         <li><b>Sign-in shell</b>: no top bar. A centred card (<code>.auth-layout</code> + <code>.auth-card</code>) under the Shelfie sticker. Sign in, sign up, accept invite, forgot password, reset password.</li>
         <li><b>Reader shell</b>: <a href="../components/top-bar.html">top bar</a> with the brand (links to the shelf), the <a href="../components/streak.html">streak</a> and Nia's <a href="../components/avatar.html">avatar</a>, which opens the account <a href="../components/menu.html">menu</a>. Nothing else.</li>
-        <li><b>Grown-up shell</b>: top bar with the brand (links to Review), Review / Books / Settings as nav links from 768px, and Dad's avatar. Below 768px the links move to a bottom <a href="../components/tab-bar.html">tab bar</a>.</li>
+        <li><b>Grown-up shell</b>: top bar with the brand (links to Review), Review / Books / Directory / Settings as nav links from 768px, and Dad's avatar. Below 768px the links move to a bottom <a href="../components/tab-bar.html">tab bar</a>.</li>
         <li><b>Page header</b>: every page starts with <code>.page-header</code>: the <code>&lt;h1&gt;</code>, a one-line subtitle that summarises the page's state, and at most one action.</li>
         <li><b>Breadcrumb</b>: every page that is not a top-level page shows a <a href="../components/breadcrumb.html">breadcrumb</a> above the page header.</li>
       </ul>
@@ -123,7 +123,8 @@
           <tr><td>My shelf</td><td>Reader</td><td>None (top level)</td><td>Add a book</td></tr>
           <tr><td>Book, add a book</td><td>Reader</td><td>My shelf / [book]</td><td>I read Chapter 12</td></tr>
           <tr><td>Log a chapter, chapter answers</td><td>Reader</td><td>My shelf / [book] / Chapter 12</td><td>None; the form ends with its own actions</td></tr>
-          <tr><td>Review, Books, Settings</td><td>Grown-up</td><td>None (top level)</td><td>Books: Add a book</td></tr>
+          <tr><td>Review, Books, Directory, Settings</td><td>Parent</td><td>None (top level)</td><td>Books: Add a book; Directory: an author's or volunteer's profile</td></tr>
+          <tr><td>My profile, My catalogue</td><td>Author (volunteer: My profile only)</td><td>None (top level)</td><td>My catalogue: Add or edit a book</td></tr>
           <tr><td>Review a chapter</td><td>Grown-up</td><td>Review / Chapter 11 · [book]</td><td>None</td></tr>
           <tr><td>Manage a book</td><td>Grown-up</td><td>Books / [book]</td><td>None</td></tr>
           <tr><td>Error pages</td><td>The shell of whoever is signed in</td><td>None</td><td>None</td></tr>
@@ -251,7 +252,7 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Width</th><th scope="col">Reader</th><th scope="col">Grown-up</th></tr></thead>
         <tbody>
-          <tr><td>Under 768px</td><td>Brand, streak, avatar</td><td>Brand and avatar in the top bar; Review / Books / Settings in the fixed bottom tab bar; the page wrapper has <code>.has-tabbar</code> so content clears it</td></tr>
+          <tr><td>Under 768px</td><td>Brand, streak, avatar</td><td>Brand and avatar in the top bar; Review / Books / Directory / Settings (or an author's My profile / My catalogue) in the fixed bottom tab bar; the page wrapper has <code>.has-tabbar</code> so content clears it</td></tr>
           <tr><td>768px and up</td><td>Same</td><td>Nav links in the top bar (<code>.topbar__nav</code>); tab bar hidden; <code>.has-tabbar</code> padding removed</td></tr>
         </tbody>
       </table></div>
@@ -293,7 +294,7 @@
 
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li><b>Area names are one word</b>: Review, Books, Settings. Nia's home is "My shelf" in breadcrumbs.</li>
+        <li><b>Area names are short</b>: Review, Books, Directory, Settings; My profile, My catalogue. Nia's home is "My shelf" in breadcrumbs.</li>
         <li><b>Page titles greet or name</b>: "Hi Nia 👋" on the shelf; the book's title on a book page; "Chapter 12" on the log form; "Review", "Books", "Settings" for Dad.</li>
         <li><b>Subtitles summarise state</b> with middots: "🔥 5-day streak · 2 books on the go · 1 reward waiting"; "5 books · 2 on the go · 2 finished · 1 up next".</li>
         <li><b>Crumbs use the page's title</b>, so the last crumb matches the <code>&lt;h1&gt;</code>: "Chapter 12", "Chapter 11 · The Lion, the Witch and the Wardrobe".</li>

@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (32 screens, 200 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (44 screens, 271 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0017). It uses a copy of the design tokens.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
@@ -49,7 +49,7 @@ Which `components` library parts build each page, dialog, notification and shell
 | `sh-picture-list` | `PictureList` | yes | review/reward-gallery |
 | `sh-switch` | `Switch` | yes | shell/push-notifications |
 
-Class names carry no `Component` suffix. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`. `sh-text-field` with `type: 'password'` draws the Show password button and accepts `readonly`; `sh-banner` with `summary` is the focusable "Fix N things" summary. `sh-avatar` draws a person's photo over their initial and colour, and falls back to the initial when there is no photo or it fails to load; every avatar on every screen is an `sh-avatar`. `sh-cover` takes an optional `image`, the book's cover picture, drawn over its colour and sticker; it falls back to them when there is no picture or it fails to load. `sh-book-card` and `sh-reward-card` pass a `coverImage` through to their `sh-cover`, and every `sh-cover` on every screen is given the book's `coverImage`. Given a `target` instead of a book, `sh-reward-card` is a gallery reward (its `unit` is `books`, or `days` for a streak reward, which changes only the progress label) (`.trophy--gallery`): an `sh-sticker` lg in place of the cover showing the reward's `picture` (its featured picture) over a 🎁, which it falls back to when there is no picture or it fails to load; the name, the note, the reward's `description` when it has one, and, with `progress`, the goal border, badge and `sh-progress`; its projected content is the action ("Pick this"). `sh-sticker` draws an emoji sticker, optionally with a picture over it, and every reward picture on every screen is an `sh-sticker`. `sh-picture-list` shows a reward's pictures as thumbnails with the featured mark, Make featured, Remove, Try again, Add a picture and Choose one of ours, which opens Shelfie's own pictures and emits the chosen one as a picked file. `sh-switch` is one on or off choice drawn on a native checkbox; its label is a short statement, with no helper line under it, and it can be `disabled`.
+Class names carry no `Component` suffix. There is no `DialogService`: dialogs are feature components that wrap `sh-dialog`. `sh-text-field` with `type: 'password'` draws the Show password button and accepts `readonly`; `sh-banner` with `summary` is the focusable "Fix N things" summary. `sh-avatar` draws a person's photo over their initial and colour, and falls back to the initial when there is no photo or it fails to load; every avatar on every screen is an `sh-avatar`. `sh-cover` takes an optional `image`, the book's cover picture, drawn over its colour and sticker; it falls back to them when there is no picture or it fails to load. `sh-book-card` and `sh-reward-card` pass a `coverImage` through to their `sh-cover`, and every `sh-cover` on every screen is given the book's `coverImage`. Given a `target` instead of a book, `sh-reward-card` is a gallery reward (its `unit` is `books`, or `days` for a streak reward, which changes only the progress label) (`.trophy--gallery`): an `sh-sticker` lg in place of the cover showing the reward's `picture` (its featured picture) over a 🎁, which it falls back to when there is no picture or it fails to load; the name, the note, the reward's `description` when it has one, and, with `progress`, the goal border, badge and `sh-progress`; its projected content is the action ("Pick this"). `sh-sticker` draws an emoji sticker, optionally with a picture over it, and every reward picture on every screen is an `sh-sticker`. `sh-picture-list` shows a reward's pictures as thumbnails with the featured mark, Make featured, Remove, Try again, Add a picture and Choose one of ours, which opens Shelfie's own pictures and emits the chosen one as a picked file. `sh-tab-bar` draws one icon per `NavLink.icon`: `review`, `books`, `directory`, `settings`, `profile` and `catalogue`. `sh-switch` is one on or off choice drawn on a native checkbox; its label is a short statement, with no helper line under it, and it can be `disabled`.
 
 Composition rules that hold on every screen:
 
@@ -65,8 +65,10 @@ Composition rules that hold on every screen:
 | Skip link | — | `<a href="#main">Skip to content</a>` in `AppComponent` |
 | Top bar, reader | `sh-top-bar` (`variant: 'reader'`) with `sh-streak-badge`; the bar is a floating sticky capsule | — |
 | Top bar, parent | `sh-top-bar` (`variant: 'parent'`) with nav links and Review count badge; the bar is a floating sticky capsule | — |
-| Account menu | `sh-menu`, opened from the top-bar `sh-avatar` (photo or initial). The reader's menu has "My photo", which opens `ProfilePhotoDialog`; both menus have "Send feedback", which opens `SendFeedbackDialog` | — |
-| Tab bar (parent, phones) | `sh-tab-bar` with Review count | — |
+| Account menu | `sh-menu`, opened from the top-bar `sh-avatar` (photo or initial). The reader's menu has "My photo", which opens `ProfilePhotoDialog`; both menus have "Send feedback", which opens `SendFeedbackDialog`. An author's or volunteer's menu has only "Sign out" (feedback belongs to a household) | — |
+| Tab bar (parent, phones) | `sh-tab-bar` with Review count: Review, Books, Directory (icon `directory`), Settings | — |
+| Top bar and tab bar, author | `sh-top-bar` (home `/me`, no streak) with links My profile (icon `profile`) and My catalogue (icon `catalogue`); `sh-tab-bar` with the same two links on phones | — |
+| Top bar, volunteer | `sh-top-bar` (home `/me`, no links, no streak); no `sh-tab-bar` | — |
 | Banner slot | `sh-banner` per `BannerService.banners()` | — |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
 | Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password) | — | `auth-layout`, `auth-card`, logo and sticker header |
@@ -79,7 +81,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 |---|---|---|
 | Auth layout | sign-in, sign-up, accept-invite, forgot-password, reset-password | `sh-auth-layout` in the `sign-in` library: centred card and logo mark |
 | Switch | sign-in ("Keep me signed in") | local `switch` today. `sh-switch` is now in the catalogue (shell/push-notifications); sign-in moves to it when that page is next changed |
-| Person list row | settings (Parents, Readers) | `list__item`: `sh-avatar`, name, `@username` or e-mail, optional "Invited" badge, trailing action ("Edit", "Send again") |
+| Person list row | settings (Parents, Readers), directory (Authors, Volunteers) | `list__item`: `sh-avatar`, name, `@username` or e-mail, optional "Invited" badge, trailing action ("Edit", "Send again") |
 | Book header | book, chapter, log-chapter, review-chapter, manage-book | `book-card` markup in the mocks: `sh-cover` + title + author / "chapter N of M" + optional `sh-progress`. Designs describe it as cover + title + progress, not `sh-book-card` |
 | Breadcrumb | add-book, book, chapter, log-chapter, review-chapter, manage-book | `nav` with links and current page |
 | Question and answer (read-only) | chapter, review-chapter | `qa`: number, question, answer; on review-chapter, after Dad asks the review assistant, a flagged answer gains an `sh-banner` `warning` "Talk about this" with the reason (never shown to the reader) |
@@ -87,6 +89,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 | Status badge | books, manage-book, shelf (Finished count), settings ("Invited") | `badge--info/success/warning`, plain `badge`. The Review count badge belongs to `sh-top-bar` / `sh-tab-bar` |
 | Book list row | books, review (queue), manage-book (questions list) | `list__item`: `sh-cover` sm, title, meta, trailing action |
 | Stat | review, give-reward background | label + value |
+| Directory profile header | author-profile, volunteer-profile | `card`: `sh-avatar` xl, overline ("Author" / "Reading volunteer"), the name as the page's `h1`, an ages `badge--info` for a volunteer, then the about text |
 | Error-page body | not-found, forbidden, server-error, offline | the designs say `sh-error-state`; the mocks show `empty` with a large sticker — use `sh-error-state` |
 
 ## Pages
@@ -95,7 +98,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 #### Sign in — `/sign-in` (`pages/sign-in`: default, missing, invalid, submitting, error, expired)
 - **Library:** `sh-text-field` ×2 (username; `password`); `sh-button` primary lg block "Sign in" (`busy` when submitting); `sh-banner` `info` "You were signed out" above the card (expired), `danger` (missing: "Fill in 2 things" summary with field errors; invalid: wrong credentials; error with "Try again").
-- **Local:** auth layout; "Keep me signed in" switch; "Forgot your password?" link; "New here? Create a parent account" link under the card.
+- **Local:** auth layout; "Keep me signed in" switch; "Forgot your password?" link; "New here? Create a parent account" link under the card, and under it "Write children’s books or help kids read? Join as an author or volunteer" linking to `/join`.
 
 #### Create a parent account — `/sign-up` (`pages/sign-up`: default, invalid, taken, submitting, error)
 - **Library:** `sh-text-field` ×5 (your name, e-mail `email`, username with help "3–20 letters, numbers, . or _", `password` with help "At least 8 characters", "Type it again" `password`); `sh-button` primary lg block (`busy` when submitting); `sh-banner` `danger` (invalid and taken: "Fix N things" summary with field errors, "That e-mail already has an account. Sign in?"; error with "Try again").
@@ -123,7 +126,8 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 #### Add a book — `/books/new` (`pages/add-book`: default, suggestions, suggestions-ai, searching, no-matches, lookup-failed, picked, invalid, submitting, error, picture, wrong-file, too-large, covers-loading, covers, covers-empty, covers-failed)
 - **Library:** `sh-combobox` (title: the text field with its dropped list of matches, each row an `sh-cover` sm with the catalogue cover or the 📖 placeholder, title and author, a `Suggested` badge on AI rows; its own searching, no-matches and lookup-failed notes); `sh-text-field` ×2 (author optional, chapter count `number` with help); `sh-color-picker` (7 cover colours); `sh-sticker-picker` (emoji grid); `sh-cover-picker` ("Cover picture (optional)": Add a picture / Change picture, Remove picture, inline type and size errors); `sh-button` ghost "More covers" (after a catalogue match is picked); `sh-dialog` "Pick a cover" holding `sh-cover-gallery` (radio grid of `sh-cover` tiles, with its own loading, empty and failed states) and `sh-button` primary "Use this cover" + ghost "Cancel"; `sh-cover` xl (live preview, with the chosen or fetched picture); `sh-button` primary lg + ghost "Cancel"; `sh-banner` `danger` (invalid summary; error with "Try again").
-- **Local:** breadcrumb; preview panel layout; form actions bar; the pick handler that fills author, chapters and picture from the chosen match; the handler that loads the covers when the dialog opens and sets the chosen one as the picture. A picture that fails to upload after the book is saved → `ToastService` `warning` on the shelf; no new UI.
+- **from-catalogue** (a parent arriving from an author's Add to shelf, `/add-book?catalogueBook=:id`): the same library parts, in the parent shell, with title, author, chapters and the catalogue cover picture filled in, and the primary button "Add to Nia’s shelf"; nothing new.
+- **Local:** breadcrumb (Directory › the author › Add a book when from the catalogue); preview panel layout; form actions bar; the pick handler that fills author, chapters and picture from the chosen match; the handler that loads the covers when the dialog opens and sets the chosen one as the picture. A picture that fails to upload after the book is saved → `ToastService` `warning` on the shelf; no new UI.
 
 #### Log a chapter — `/books/:id/chapters/:n/log` (`pages/log-chapter`: default, dictating, dictation-denied, loading, error, invalid, submitting, success, finished)
 - **Library:** `sh-cover`; `sh-segmented` (Today / Yesterday / Another day); the questions as a chat ("Tell Dad about it"): `sh-chat-bubble` `buddy` for Olive's greeting and her short replies, then `sh-question-field` with `layout: 'chat'` per question revealed so far (Olive's question bubble is its label, the answer box is Nia's bubble, with "Speak your answer" when speech recognition is supported and a small "Next" button, disabled until there is an answer, that reveals Olive's reply and the next question: `dictating`, `dictation-denied`); the hint "N more questions after this one"; `sh-button` primary lg "I'm done!" + ghost "Not yet"; `sh-banner` `danger` (invalid summary); `sh-skeleton`; `sh-error-state`; `sh-celebration` (`variant: 'chapter'` on success with `sh-progress` lg and stacked rows: `sh-achievement-badge` for each badge this log earned and a streak row with `sh-week-strip`; `variant: 'book'` on finished with `sh-cover` xl, `sh-progress` lg complete, a `sh-reward-card` row for the book and the streak row).
@@ -132,6 +136,20 @@ These are local UI that more than one screen needs. Build once in the feature li
 #### Chapter answers — `/books/:id/chapters/:n` (`pages/chapter`: default, pending, loading, error)
 - **Library:** `sh-cover`; `sh-button` ghost / primary; `sh-banner` `info` "Waiting for Dad" (pending); `sh-skeleton`; `sh-error-state`.
 - **Local:** breadcrumb; book header; question and answer list; feedback note (default only).
+
+### Authors and volunteers
+
+#### Join as an author or volunteer — `/join` (`pages/join`: default, volunteer, invalid, taken, submitting, error)
+- **Library:** `sh-text-field` ×5 (your name with help, e-mail `email` with help "Only for signing in and password resets. Parents never see it.", username with help, `password` with help, "Type it again" `password`); `sh-button` primary lg block "Create my account" (`busy` when submitting); `sh-banner` `danger` (invalid and taken: "Fix N things" summary with field errors; error with "Try again").
+- **Local:** auth layout; heading and intro line; the "I’m joining as" radio group (native radios styled as `choice` rows with a bold title and a muted hint: "I’m an author", "I volunteer"); the password pair side by side; the two links under the card (sign in, create a parent account).
+
+#### My profile — `/me` (`pages/my-profile`: default, pending, hidden, volunteer, loading, error, invalid, saving, failed)
+- **Library:** author or volunteer shell; `sh-banner` for the listing status (`success` "Parents can see your profile" when approved, `info` "Waiting for approval" when pending, `warning` "Hidden by Shelfie" when hidden); `sh-photo-picker` in a "Your photo" card (uploads on choose, as `ProfilePhotoDialog` does; inline type and size errors); `sh-text-field` (your name; author: website `optional` with help; volunteer: ages you help with, how parents can reach you, both with help); `sh-textarea` "About you" (`maxlength` 500, help); `sh-button` primary "Save profile" (`busy` while saving); `sh-banner` `danger` (invalid "Fix N things" summary; failed with "Try again"); `ToastService` `success` "Profile saved"; `sh-skeleton` (loading); `sh-error-state` (error).
+- **Local:** page header; the two cards' headings ("Your photo", "About you"); form actions bar.
+
+#### My catalogue — `/catalogue` (`pages/my-catalogue`: default, loading, empty, error)
+- **Library:** author shell; `sh-cover` sm per book (with its cover picture); `sh-button` primary "Add a book" (opens `CatalogueBookDialog`), ghost icon "Edit …" and "Remove …" per row (open `CatalogueBookDialog` and `RemoveCatalogueBookDialog`); `ToastService` `success` "… is in your catalogue" after an add; `sh-skeleton` (loading); `sh-empty-state` with "Add a book" (empty); `sh-error-state` (error).
+- **Local:** page header with the count line; book list rows (cover, title, "N chapters · description").
 
 ### Parent
 
@@ -151,14 +169,26 @@ These are local UI that more than one screen needs. Build once in the feature li
 - **Library:** `sh-cover` lg (with the cover picture); `sh-progress` lg; `sh-cover-picker` in the book header ("Cover picture", uploads on choose; `busy` while uploading); `sh-banner` `danger` "The picture didn’t upload" / "The picture wasn’t removed" with "Try again" (picture-failed); `ToastService` `success` on a new picture; `sh-text-field` (title, author, chapter count); `sh-button` primary / ghost / danger / sm; `sh-banner` `danger` (invalid summary); `sh-skeleton`; `sh-error-state`. `sh-button` sm "Suggest questions" beside "Add a question" in the questions card. Opens `DeleteBookDialog`, `EditQuestionDialog` and `SuggestQuestionsDialog`.
 - **Local:** breadcrumb; book header with status badge; questions list headed "Nia’s chapter questions"; chapters table (`table-wrap--flush`, truncated cells); danger zone; inline save status "Saving…" / "Saved" (submitting, success); rewarded card titled "Reward given 🏆" with the reward and dates in its line (rewarded); for a finished book, a plain `a.btn[download]` "Print certificate" to `/api/books/:id/certificate.pdf` in the rewarded card, or in a plain card before the reward (L2-120).
 
+#### Directory — `/directory` (`pages/directory`: default, volunteers, loading, empty, error)
+- **Library:** parent shell with Directory current; `sh-segmented` (Authors / Volunteers); `sh-avatar` per row (photo or initial); `sh-button` sm "View" per row; `sh-banner` `warning` "Shelfie doesn’t vet volunteers" above the volunteers list (volunteers); `sh-skeleton` (loading); `sh-empty-state` "No authors yet" / "No volunteers yet" (empty); `sh-error-state` (error).
+- **Local:** page header with the intro line; person list rows (author: "N books · about…"; volunteer: "ages · about…").
+
+#### Author profile — `/directory/authors/:id` (`pages/author-profile`: default, loading, empty, error, not-found)
+- **Library:** parent shell; `sh-avatar` xl; `sh-cover` sm per catalogue book (with its picture); `sh-button` sm "Add to shelf" per book (a link to `/add-book?catalogueBook=:id`); `sh-skeleton` (loading); `sh-error-state` (error; and not-found: "This profile isn’t available" with "Back to the directory").
+- **Local:** breadcrumb (Directory › name); directory profile header; the website as a plain external link (`rel="noopener noreferrer nofollow"`); "Books by …" card with book list rows; the "hasn’t added any books yet" line (empty).
+
+#### Volunteer profile — `/directory/volunteers/:id` (`pages/volunteer-profile`: default, loading, error, not-found)
+- **Library:** parent shell; `sh-avatar` xl; `sh-banner` `warning` "Shelfie doesn’t vet volunteers" in the contact card; `sh-skeleton` (loading); `sh-error-state` (error; not-found as on Author profile).
+- **Local:** breadcrumb; directory profile header with the ages badge; "How to reach …" card with the contact line as plain text (never a link Shelfie builds).
+
 #### Settings — `/settings` (`pages/settings`: default, loading, error, invalid, submitting, success, photo, rewards-empty, streak-rewards-given, notifications-on, notifications-events-off, notifications-blocked, notifications-unsupported)
 - **Library:** `sh-avatar` in every Parents and Readers row (photo or initial); "Your account" section: `sh-avatar` lg and `sh-button` sm "Add a photo" / "Change photo" (opens `ProfilePhotoDialog`), `sh-text-field` (your name, username `readonly`, e-mail, new password, type it again, current password with help); `sh-button` primary "Save settings", ghost "Sign out", sm "Invite a parent" and "Add a reader" (open the dialogs below), sm ghost "Edit" and "Send again"; `sh-banner` `danger` (invalid summary), `success` "Saved"; `sh-skeleton`; `sh-error-state`. "Streak rewards" section: `sh-button` sm "Set a reward", ghost icon "Edit …" and "Remove …" per set row. "Rewards" section: `sh-sticker` per row (the featured picture, or the 🎁), `sh-button` sm "Add a reward", ghost icon "Edit …" and "Remove …" per row; `ToastService` `success` after a save or removal. "Notifications" section: `sh-switch` "Notify this device" (disabled when blocked) and four household `sh-switch` ("Tell me when Nia logs a chapter", "Tell Nia when I send a sticker or note", "…give a book reward", "…give a streak reward"); `sh-banner` `warning` when the browser has blocked notifications, `sh-banner` `info` when the server cannot send them (the switches are then hidden); `ToastService` `success` "Notifications are on" when the device switch is turned on. Opens `InviteParentDialog`, `EditReaderDialog`, `ProfilePhotoDialog`, `GalleryRewardDialog` and the Remove a reward dialog.
 - **Local:** Parents and Readers cards, each a heading plus a list of person list rows (parents: you, plus invited parents with an "Invited" badge; readers: name and `@username`); Rewards card: heading, explaining line, a list row per reward (`sh-sticker` md with the reward's featured picture over its 🎁, name, "Finish N books") or the "No rewards yet" line (rewards-empty); Appearance radio group (native radios styled as `choice` rows: device / light / dark); Notifications card: heading, divider and the "Pings for the whole house" group label around the switches.
 
 ### Error pages
 
-#### Page not found — `/*`, Grown-ups only — `/review` as reader, Something went wrong — HTTP 500 (`pages/not-found`, `pages/forbidden`, `pages/server-error`: default)
-- **Library:** shell top bar of the current role (server-error shows the parent shell with `sh-tab-bar`); `sh-error-state` with `sh-button` primary.
+#### Page not found — `/*`, Grown-ups only — `/review` as reader, Something went wrong — HTTP 500 (`pages/not-found`, `pages/forbidden`, `pages/server-error`: default; `pages/forbidden`: author)
+- **Library:** shell top bar of the current role (server-error shows the parent shell with `sh-tab-bar`); `sh-error-state` with `sh-button` primary. Forbidden `author` (an author or volunteer opening a family page): the author or volunteer shell, "This part is for families" with "Back to my profile" and "Sign out"; a reader opening the directory gets the `default` Grown-ups only page.
 - **Local:** large sticker in the error-state icon slot.
 
 #### Offline — `/*` offline (`pages/offline`: default)
@@ -170,6 +200,8 @@ These are local UI that more than one screen needs. Build once in the feature li
 | Dialog (mock folder: states) | Overlay surface | Library | Local UI |
 |---|---|---|---|
 | Give a reward (`dialogs/give-reward`: default, busy, invalid, failed, goal) | `sh-dialog`, bottom sheet under 640 px, over Review | `sh-cover` sm, `sh-text-field` (reward), `sh-textarea` (note, optional), `sh-button` primary / ghost / icon close; `sh-banner` `danger` (failed) | "Quick picks" chip buttons (local per the give-reward design); `goal`: the reward field starts with the goal's name |
+| Add / edit a catalogue book (`dialogs/catalogue-book`: default, edit, busy, invalid, too-large, wrong-file, failed) | `sh-dialog`, form, bottom sheet under 640 px, over My catalogue | `sh-cover` lg (preview; `sh-cover` placeholder 📖 without a picture), `sh-cover-picker` ("Cover picture (optional)", inline type and size errors), `sh-text-field` (title; `type: 'number'` chapters with help), `sh-textarea` (short description, optional, `maxlength` 300, help), `sh-button` primary "Add book" / "Save changes" (`busy`) / ghost "Cancel" / icon close; `sh-banner` `danger` (invalid "Fix N things" summary; failed with "Try again") | — |
+| Remove a catalogue book (`dialogs/remove-catalogue-book`: default, busy, failed) | `sh-dialog`, destructive, over My catalogue | `sh-cover` sm, `sh-button` danger "Remove book" / ghost "Keep it" (focused) / icon close; `sh-banner` `danger` (failed) | danger icon in the dialog header; the line that families keep their copies |
 | Remove a book (`dialogs/delete-book`: default, busy, failed) | `sh-dialog`, destructive, over Manage a book | `sh-button` danger / ghost / icon close; `sh-banner` `danger` (failed) | danger icon in the dialog header |
 | Add / edit a question (`dialogs/edit-question`: default, busy, invalid, failed) | `sh-dialog`, form, over Manage a book | `sh-textarea` (question, with field error on invalid), `sh-button` primary / ghost / icon close; `sh-banner` `danger` (failed) | — |
 | Suggested questions (`dialogs/suggest-questions`: busy, none-selected, default, invalid, saving, success, empty, failed, unavailable) | `sh-dialog`, form, over Manage a book | `sh-suggestion` per idea (tick to keep, wording editable, field error on invalid; locked while saving), `sh-skeleton` rows (busy), `sh-empty-state` "No new ideas this time" with "Ask again" (empty), `sh-banner` `danger` with "Try again" (failed) and `info` (unavailable), `sh-button` primary "Add N questions" (`busy` while saving) / ghost "Ask again" / "Cancel" / "Close"; `ToastService` `success` "N questions added" (success) | intro line; "Thinking up questions…" status line; "Tick at least one question" hint |
@@ -186,7 +218,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 | Notification (mock folder: states) | Surface | Library | Local UI |
 |---|---|---|---|
-| Toast (`notifications/toast`: info, success, warning, danger, with-action, stacked) | `sh-toast-stack` region, lifted above `sh-tab-bar` on phones | `sh-toast` (severity icon, title, text, optional action, close, timer bar), via `ToastService.show()` | — |
+| Toast (`notifications/toast`: info, success, warning, danger, with-action, stacked, profile-saved, catalogue-book-added, added-to-shelf) | `sh-toast-stack` region, lifted above `sh-tab-bar` on phones | `sh-toast` (severity icon, title, text, optional action, close, timer bar), via `ToastService.show()` | — |
 | Banner (`notifications/banner`: info, success, warning, danger, persistent) | banner slot under the top bar | `sh-banner` (severity, title, body, optional action, close when dismissible), via `BannerService.show()` | — |
 | Push (`notifications/push`: chapter-logged, feedback, book-reward, streak-reward) | the operating system, from the browser | — (built by the browser; no component) | `sw.js` shows the notification from the pushed title, body, tag and page |
 
@@ -215,6 +247,10 @@ These are local UI that more than one screen needs. Build once in the feature li
 21. Shelf "Reading toward" heading, intro line and reached message.
 22. Send-feedback intro line and the `fieldset` that locks its fields while sending.
 23. Settings Notifications card heading, divider and group label; the push service worker `sw.js`.
+24. Join page: the "I’m joining as" choice rows and the two links under the card; the sign-in page's join link.
+25. My profile and My catalogue page headers, cards and catalogue book rows.
+26. Directory person rows, directory profile header, the "Books by …" card and the volunteer contact card.
+27. Remove-catalogue-book danger icon.
 
 ## Inferred, not read from a mock
 

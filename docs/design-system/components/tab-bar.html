@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tab bar — Shelfie design system</title>
-<meta name="description" content="The grown-up's bottom navigation on phones: Review, Books and Settings with a count badge. Hidden from 768px, where the top bar nav takes over.">
+<meta name="description" content="The grown-up's bottom navigation on phones: Review, Books, Directory and Settings with a count badge, or an author's My profile and My catalogue. Hidden from 768px, where the top bar nav takes over.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -99,7 +99,7 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Navigation</p>
       <h1>Tab bar</h1>
-      <p class="ds-lead">Dad's navigation on a phone: three tabs pinned to the bottom of the screen, within thumb reach. From 768px it hides and the same three links move into the top bar.</p>
+      <p class="ds-lead">Grown-up navigation on a phone, pinned to the bottom of the screen within thumb reach: Dad's four tabs, or an author's two. From 768px it hides and the same links move into the top bar.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;nav&gt;</code> of links</span></div>
       <ul class="ds-toc">
         <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
@@ -107,7 +107,7 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use the tab bar on every grown-up page: Review, Review a chapter, Books, Manage a book, Settings. It is the phone form of the <a href="top-bar.html">top bar</a> nav, with the same three destinations in the same order. Nia's pages never have a tab bar; she has one place to be.</p>
+      <p>Use the tab bar on every parent page (Review, Review a chapter, Books, Manage a book, Directory and its profiles, Settings) and on an author's pages (My profile, My catalogue). It is the phone form of the <a href="top-bar.html">top bar</a> nav, with the same destinations in the same order. Nia's pages never have a tab bar; she has one place to be. A volunteer has only My profile, so their pages have no tab bar either.</p>
       <ul>
         <li>Tabs are links, not ARIA tabs: each one goes to a different page.</li>
         <li>The page wrapper gets <code>.has-tabbar</code> so the last content is not hidden behind the bar.</li>
@@ -121,6 +121,7 @@
           <nav class="tabbar tabbar--static" aria-label="Primary, phone (anatomy)" style="width: 100%;">
             <a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
             <a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+            <a href="../../mocks/pages/directory/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M21 20v-1a6 6 0 0 0-3.5-5.4"/></svg>Directory</a>
             <a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
           </nav>
           <span class="ds-callout" style="left: 3%; top: 14%;" aria-hidden="true">1</span>
@@ -138,25 +139,32 @@
     </section>
 
     <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
-      <p>One variant, three tabs. What changes is which tab is current and whether Review has a count.</p>
+      <p>Two sets of links: the parent's four (Review, Books, Directory, Settings) and the author's two (My profile, My catalogue). What changes is which tab is current and whether Review has a count. Icons are named <code>review</code>, <code>books</code>, <code>directory</code>, <code>settings</code>, <code>profile</code> and <code>catalogue</code> in <code>NavLink.icon</code>.</p>
       <div class="ds-example">
         <div class="ds-example__canvas ds-example__canvas--stack ds-example__canvas--canvas">
           <nav class="tabbar tabbar--static" aria-label="Primary, phone (Books current)">
             <a href="../../mocks/pages/review/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
             <a href="../../mocks/pages/books/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+            <a href="../../mocks/pages/directory/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M21 20v-1a6 6 0 0 0-3.5-5.4"/></svg>Directory</a>
             <a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
           </nav>
           <nav class="tabbar tabbar--static" aria-label="Primary, phone (nothing to review)">
             <a href="../../mocks/pages/review/empty.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review</a>
             <a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+            <a href="../../mocks/pages/directory/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M21 20v-1a6 6 0 0 0-3.5-5.4"/></svg>Directory</a>
             <a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
           </nav>
+          <nav class="tabbar tabbar--static" aria-label="Primary, phone (author)">
+            <a href="../../mocks/pages/my-profile/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21v-1a7 7 0 0 1 14 0v1"/></svg>My profile</a>
+            <a href="../../mocks/pages/my-catalogue/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg>My catalogue</a>
+          </nav>
         </div>
-        <div class="ds-example__caption"><span>Top: Dad on Books with two chapters waiting. Bottom: Review with nothing waiting, so no badge.</span></div>
+        <div class="ds-example__caption"><span>Top: Dad on Books with two chapters waiting. Middle: Review with nothing waiting, so no badge. Bottom: Rosa, an author, on My profile.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;nav class="tabbar" aria-label="Primary, phone"&gt;
   &lt;a href="/review" aria-current="page"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Review
     &lt;span class="badge badge--count" aria-label="2 chapters to review"&gt;2&lt;/span&gt;&lt;/a&gt;
   &lt;a href="/books"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Books&lt;/a&gt;
+  &lt;a href="/directory"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Directory&lt;/a&gt;
   &lt;a href="/settings"&gt;&lt;svg class="icon" aria-hidden="true" …&gt;&lt;/svg&gt;Settings&lt;/a&gt;
 &lt;/nav&gt;</code></pre></details>
       </div>
@@ -185,8 +193,8 @@
       </table></div>
       <h3>Both themes, full bar</h3>
       <div class="ds-themes">
-        <div data-theme="light"><nav class="tabbar tabbar--static" aria-label="Primary, phone, light theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
-        <div data-theme="dark"><nav class="tabbar tabbar--static" aria-label="Primary, phone, dark theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
+        <div data-theme="light"><nav class="tabbar tabbar--static" aria-label="Primary, phone, light theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/directory/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M21 20v-1a6 6 0 0 0-3.5-5.4"/></svg>Directory</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
+        <div data-theme="dark"><nav class="tabbar tabbar--static" aria-label="Primary, phone, dark theme"><a href="../../mocks/pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a><a href="../../mocks/pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a><a href="../../mocks/pages/directory/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M21 20v-1a6 6 0 0 0-3.5-5.4"/></svg>Directory</a><a href="../../mocks/pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a></nav></div>
       </div>
       <ul>
         <li><b>Current</b> turns icon and label <code>--color-fg-accent</code> and sets <code>aria-current="page"</code>. A child page (Review a chapter, Manage a book) keeps its parent tab current.</li>
@@ -196,7 +204,7 @@
 
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Base (phones, up to 767px): fixed to the bottom at <code>--z-sticky</code>, full width, three equal tabs. Padding includes <code>env(safe-area-inset-bottom)</code> so it clears the home indicator.</li>
+        <li>Base (phones, up to 767px): fixed to the bottom at <code>--z-sticky</code>, full width, equal tabs (four for a parent, two for an author). Padding includes <code>env(safe-area-inset-bottom)</code> so it clears the home indicator.</li>
         <li><code>.has-tabbar</code> on the page wrapper adds bottom padding of <code>--layout-tabbar-height</code> + <code>--space-6</code>, so the last card and form actions stay reachable.</li>
         <li>From 768px (<code>--layout-breakpoint-md</code>) the bar is <code>display: none</code> and <code>.has-tabbar</code> drops its padding; the <a href="top-bar.html">top bar</a> nav appears. <code>.tabbar--static</code> is exempt so these docs can show it.</li>
         <li>Toasts sit above the bar on phones (<a href="toast.html">toast</a> region bottom offset).</li>
@@ -212,7 +220,7 @@
       <p>A native <code>&lt;nav aria-label="Primary, phone"&gt;</code> of links with <code>aria-current="page"</code>. Not the APG Tabs pattern: these change the page, so they are links and use plain Tab navigation. Only one primary nav is ever rendered visible (the other is <code>display: none</code>), so screen readers meet one navigation landmark.</p>
       <h3>Keyboard</h3>
       <table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
-        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through Review, Books, Settings. The bar comes last in DOM order, after the page content.</td></tr>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through the tabs in order. The bar comes last in DOM order, after the page content.</td></tr>
         <tr><td><kbd>Enter</kbd></td><td>Follows the link.</td></tr>
       </tbody></table>
       <h3>Focus</h3>
@@ -235,7 +243,7 @@
 
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li>Same three words as the top bar, in the same order: Review, Books, Settings.</li>
+        <li>The same words as the top bar, in the same order: Review, Books, Directory, Settings for a parent; My profile, My catalogue for an author.</li>
         <li>One word per tab; a label that wraps at 360px is too long.</li>
         <li>The badge shows a number only; its spoken label says what the number counts.</li>
       </ul>
