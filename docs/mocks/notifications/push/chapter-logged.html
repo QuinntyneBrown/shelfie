@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Push · chapter-logged — Shelfie mocks</title>
+<meta name="mock:kind" content="notification">
+<meta name="mock:screen" content="push">
+<meta name="mock:state" content="chapter-logged">
+<meta name="mock:requirements" content="L2-125, L2-126, L2-127">
+<meta name="description" content="The push notification Dad sees on a phone lock screen or desktop, and where a tap opens.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="container" style="max-width: 30rem; padding-block: var(--space-8);">
+  <h1 style="font: var(--text-h3);">What Dad sees</h1>
+  <p class="text-muted">Parent devices. The notification arrives from the operating system, even when Shelfie is closed.</p>
+  <div class="os-notification" role="group" aria-label="Notification preview">
+    <img class="os-notification__icon" src="../../assets/logo.png" alt="" width="40" height="40">
+    <div class="os-notification__body">
+      <div class="os-notification__app">Shelfie</div>
+      <div class="os-notification__title">Nia read Chapter 9 of Matilda</div>
+      <div class="os-notification__text">Ready for your feedback.</div>
+    </div>
+  </div>
+  <p>Tap opens <a href="../../pages/review-chapter/default.html">Review → Chapter 9 of Matilda</a>.</p>
+  <dl class="stack" style="gap: var(--space-1);"><dt class="field__label">Replaces</dt><dd>One notification per <code>chapter-&lt;id&gt;</code>, so a second one for the same thing never stacks.</dd></dl>
+</main>
+<p class="mock-note" style="top: 1rem; right: 1rem;">Under 40 characters in the title where possible; the body is one short, warm line. No sound, no vibration pattern, no badge count.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Push</span>
+  <ul class="mock-bar__states"><li><a href="chapter-logged.html" aria-current="page">chapter-logged</a></li><li><a href="feedback.html">feedback</a></li><li><a href="book-reward.html">book-reward</a></li><li><a href="streak-reward.html">streak-reward</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

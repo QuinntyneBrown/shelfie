@@ -1,0 +1,12 @@
+@if (visible()) {
+  <sh-banner
+    severity="info"
+    [title]="'Want a ping when ' + grownUpName() + ' sends a sticker?'"
+    message="We’ll tell you when they read a chapter or give you a reward."
+  >
+    <div class="alert__actions cluster">
+      <button class="btn btn--sm" type="button" (click)="turnOn()">Turn on</button>
+      <button class="btn btn--sm btn--ghost" type="button" (click)="notNow()">Not now</button>
+    </div>
+  </sh-banner>
+}

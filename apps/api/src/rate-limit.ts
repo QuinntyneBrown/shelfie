@@ -43,3 +43,7 @@ export const lookupLimiter = (db: Db) => rateLimiter(db, 60, (req) => `lookup:${
 /** At most ten feedback notes per person in ten minutes, so nobody can flood the table. Use after `requireSession`. */
 export const feedbackLimiter = (db: Db) =>
   rateLimiter(db, 10, (_req, res) => `feedback:${(res.locals['session'] as RequestSession).profileId}`);
+
+/** At most twenty subscription requests per person in ten minutes. Use after `requireSession`. */
+export const pushLimiter = (db: Db) =>
+  rateLimiter(db, 20, (_req, res) => `push:${(res.locals['session'] as RequestSession).profileId}`);

@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 116 days
+- Overall effort: 122 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |
@@ -8,7 +8,7 @@
 | [sign-in](sign-in.md) | 14 days | 100% |
 | [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 12 days | 86% |
-| [shell](shell.md) | 7 days | 97% |
+| [shell](shell.md) | 13 days | 98% |
 | [review](review.md) | 22 days | 99% |
 | [admin-api](admin-api.md) | 6 days | 100% |
 | [admin-cli](admin-cli.md) | 7 days | 100% |
@@ -19,7 +19,7 @@
 
 1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
 2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, notifications, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+3. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
 
 ## Risks and dependencies
 

@@ -35,3 +35,9 @@
 .mock-note::before { content: "Note"; display: block; font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide); }
 [data-chrome="off"] .mock-note { display: none; }
 @media (max-width: 39.99rem) { .mock-bar__states { max-width: 40vw; } }
+
+/* The operating system's own notification, drawn only so the push mocks can show it. Not product UI. */
+.os-notification { display: flex; gap: var(--space-3); align-items: flex-start; margin-block: var(--space-6); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: 1px solid var(--color-border-default); box-shadow: var(--shadow-3); }
+.os-notification__icon { flex: none; border-radius: var(--radius-md); }
+.os-notification__app { font: var(--text-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide); }
+.os-notification__title { font-weight: var(--font-weight-semibold); }

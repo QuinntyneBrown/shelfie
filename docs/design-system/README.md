@@ -32,7 +32,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Textarea](components/textarea.html) | Inputs | answer, note | default, hover, focus, disabled, read-only, invalid | log-chapter, review-chapter, give-reward, edit-question |
 | [Suggestion](components/suggestion.html) | Inputs | one row | not ticked, ticked, focus, invalid, disabled | suggest-questions |
 | [Radio group](components/radio-group.html) | Inputs | vertical with description | default, hover, focus, checked, disabled, invalid | settings, edit-question, add-book |
-| [Switch](components/switch.html) | Inputs | on/off with label | off, on, hover, focus, disabled | sign-in |
+| [Switch](components/switch.html) | Inputs | on/off with label | off, on, hover, focus, disabled | sign-in, settings notifications |
 | [Form layout](components/form-layout.html) | Inputs | actions bar, error summary, danger zone | default, submitting, invalid | manage-book, settings, add-book, sign-in |
 | [Swatch picker](components/swatch-picker.html) | Inputs | cover colour, cover sticker | default, hover, focus, checked | add-book, settings |
 | [Sticker picker](components/sticker-picker.html) | Inputs | sticker choice | default, hover, focus, active, pressed, disabled, invalid | review-chapter, give-reward |
@@ -88,7 +88,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Navigation and page structure](patterns/navigation.html) | Reader and grown-up shells, page header, breadcrumbs, back |
 | [Dialogs and overlays](patterns/dialogs-and-overlays.html) | Dialog vs menu vs page; bottom sheets |
 | [Lists and tables](patterns/lists-and-tables.html) | Chapter lists, book lists, chapters table, long lists |
-| [Notifications](patterns/notifications.html) | Toast vs banner, priority, auto-dismiss, stacking |
+| [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
 
 ## Tokens

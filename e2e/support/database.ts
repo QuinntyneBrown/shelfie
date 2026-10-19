@@ -129,3 +129,13 @@ export function storedFeedback() {
     'SELECT household_id, profile_id, kind, score, message FROM feedback ORDER BY created_at',
   );
 }
+
+/** The push subscriptions stored for a person, by username, oldest first. */
+export async function pushDevicesOf(username: string): Promise<string[]> {
+  const found = await rows<{ endpoint: string }>(
+    'SELECT s.endpoint FROM push_subscription s JOIN profile p ON p.id = s.profile_id WHERE p.username = $1 ORDER BY s.created_at, s.id',
+    [username],
+  );
+  return found.map((r) => r.endpoint);
+}
+

@@ -23,6 +23,28 @@ export class ShelfPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  /** The one-time offer to turn on notifications for this device. */
+  pushOffer() {
+    return this.page.getByRole('status').filter({ hasText: 'Want a ping when' });
+  }
+
+  async turnOnNotifications() {
+    await this.pushOffer().getByRole('button', { name: 'Turn on' }).click();
+  }
+
+  async notNow() {
+    await this.pushOffer().getByRole('button', { name: 'Not now' }).click();
+  }
+
+  async breakStoringSubscriptions() {
+    await this.page.route('**/api/push/subscriptions', (route) => route.abort());
+  }
+
+  /** Whether the page scrolls sideways at the current width. */
+  async scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  }
+
   group(name: 'On the go' | 'Up next' | 'Finished') {
     return this.page.getByRole('region', { name });
   }

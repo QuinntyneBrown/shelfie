@@ -6,3 +6,4 @@
 | notify | 1 days | 100% |
 | work-offline | 2 days | 90% |
 | send-feedback | 2 days | 100% |
+| push-notifications | 6 days | 100% |
