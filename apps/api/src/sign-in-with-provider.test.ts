@@ -1,10 +1,11 @@
-// Traces to: L2-137, L2-138, L2-142
+// Traces to: L2-137, L2-138, L2-139, L2-142
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
 import { call, seededDb } from './admin-test-api.ts';
 import { createApp } from './app.ts';
 import { readCookie } from './session.ts';
+import { get } from './db.ts';
 import { configuredProviders } from './oauth.ts';
 import { startFakeProvider, type FakeProvider } from './oauth-fake.ts';
 
@@ -130,6 +131,47 @@ test('Given no start cookie at all, when the callback is called, then it is refu
     const callback = await site.get('/api/auth/google/callback?code=x&state=y');
     assert.equal(callback.headers.get('location'), '/sign-in?reason=failed&provider=google');
     assert.equal(readCookie(callback.headers.get('set-cookie') ?? '', 'shelfie_session'), null);
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given an e-mail nobody has, when the round trip completes, then a household starts with one parent from the provider’s name and e-mail, a generated username and no password', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ email: 'Priya.Bell@Example.com', name: 'Priya Bell', verified: true });
+
+    const { callback } = await site.roundTrip('google', 'from=sign-up');
+
+    assert.equal(callback.headers.get('location'), '/review');
+    const parent = (await get<{ name: string; username: string; email: string; role: string; password_hash: string | null; household_id: string }>(db, "SELECT name, username, email, role, password_hash, household_id FROM profile WHERE email = 'priya.bell@example.com'"))!;
+    assert.deepEqual([parent.name, parent.username, parent.role, parent.password_hash], ['Priya Bell', 'priya.bell', 'parent', null]);
+    assert.notEqual(parent.household_id, 'h1');
+    assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile WHERE household_id = $1', [parent.household_id]))!.n, 1);
+    const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
+    assert.equal((await me.json()).name, 'Priya Bell');
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given the provider sends no name and a local part that is taken, too short or odd, then the name falls back to the local part and the username is made free and well-formed', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    for (const [email, username, name] of [
+      ['dad@other.example.com', 'dad2', 'dad'],
+      ['ab@example.com', 'ab_', 'ab'],
+      ['Jo Ann+Reads!@example.com', 'joannreads', 'Jo Ann+Reads!'],
+      ['averyveryverylongemailaddress@example.com', 'averyveryverylongema', 'averyveryverylongemailaddress'],
+    ]) {
+      provider.answer({ email, name: null, verified: true });
+      const { callback } = await site.roundTrip('google');
+      assert.equal(callback.headers.get('location'), '/review', email);
+      const row = (await get<{ username: string; name: string }>(db, 'SELECT username, name FROM profile WHERE email = $1', [email.toLowerCase()]))!;
+      assert.deepEqual([row.username, row.name], [username, name], email);
+    }
   } finally {
     await site.close();
   }

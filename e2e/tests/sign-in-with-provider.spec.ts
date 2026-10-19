@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138
+// Traces to: L2-137, L2-138, L2-139
 import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
 import { providerAnswers } from '../support/provider';
@@ -6,6 +6,11 @@ import { SignInPage } from '../pages/sign-in.page';
 import { SignUpPage } from '../pages/sign-up.page';
 import { ReviewPage } from '../pages/review.page';
 import { ShellPage } from '../pages/shell.page';
+import { ForgotPasswordPage } from '../pages/forgot-password.page';
+import { ResetPasswordPage } from '../pages/reset-password.page';
+import { resetLinkFor } from '../support/mailbox';
+
+const PRIYA = { email: 'priya@example.com', name: 'Priya Bell' };
 
 test('Given Google and Facebook are configured, when sign-in opens, then both Continue buttons show below the form, labelled for parents', async ({ page }) => {
   const signIn = new SignInPage(page);
@@ -85,4 +90,52 @@ test('Given Continue with Google is pressed, when the browser is still leaving, 
   await expect(signIn.continueWithButton('Facebook')).toBeVisible();
 
   expect(signIn.providerStartCount()).toBe(1);
+});
+
+test('Given nobody has priya@example.com, when Priya continues with Google from sign-up, then a household of her own starts and she lands on Review signed in', async ({ page }) => {
+  providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: true });
+  const signUp = new SignUpPage(page);
+  await signUp.open();
+
+  await signUp.continueWith('Google');
+
+  await expect(page).toHaveURL(/\/review$/);
+  const review = new ReviewPage(page);
+  await expect(review.heading()).toHaveText('Review');
+  await expect(review.caughtUp()).toBeVisible();
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Priya Bell');
+  await expect(shell.menu()).toContainText('@priya · parent');
+});
+
+test('Given Priya’s account came from Google, when she tries her generated username with a password, then it fails, and once she sets one through Forgot password both ways in work', async ({ page }) => {
+  providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: true });
+  const signUp = new SignUpPage(page);
+  await signUp.open();
+  await signUp.continueWith('Google');
+  await expect(page).toHaveURL(/\/review$/);
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Priya Bell');
+  await shell.menuItem('Sign out').click();
+
+  const signIn = new SignInPage(page);
+  await signIn.signInWithPassword('priya', 'any-password-1');
+  await expect(signIn.failureSummary()).toContainText('Username or password is wrong');
+
+  const forgot = new ForgotPasswordPage(page);
+  await forgot.open();
+  await forgot.requestLink(PRIYA.email);
+  await expect(forgot.confirmation()).toBeVisible();
+  const reset = new ResetPasswordPage(page);
+  await reset.openLink(await resetLinkFor(PRIYA.email));
+  await reset.choosePassword('bookworm-2026');
+  await reset.goToReview();
+  await expect(page).toHaveURL(/\/review$/);
+  await shell.openAccountMenu('Priya Bell');
+  await shell.menuItem('Sign out').click();
+
+  await signIn.signInWithPassword('priya', 'bookworm-2026');
+  await expect(page).toHaveURL(/\/review$/);
+  await signIn.open();
+  await expect(page).toHaveURL(/\/review$/);
 });

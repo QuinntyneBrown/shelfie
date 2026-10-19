@@ -129,7 +129,41 @@ export async function signInWithProvider(pool: Pool, provider: ProviderName, ide
   const profile = await get<ProfileRow>(pool, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE email = $1`, [email]);
   if (profile?.role === 'reader') throw new Problem(403, 'reader');
   if (profile) return createSession(pool, profile, remember);
-  throw new Problem(400, 'failed');
+
+  // Nobody has the e-mail: start a household, as sign-up does, with no password and a username the parent never types (L2-139).
+  const localPart = identity.email.trim().split('@')[0];
+  const householdId = randomUUID();
+  const parent = {
+    id: randomUUID(),
+    name: (identity.name?.trim() || localPart).slice(0, 40),
+    username: await freeUsername(pool, localPart),
+    role: 'parent' as const,
+    color: 'sky',
+    email,
+    household_id: householdId,
+  };
+  return transaction(pool, async (db) => {
+    await run(db, 'INSERT INTO household (id) VALUES ($1)', [householdId]);
+    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, NULL)', [
+      parent.id,
+      householdId,
+      parent.role,
+      parent.name,
+      parent.color,
+      parent.username,
+      email,
+    ]);
+    return createSession(db, parent, remember);
+  });
+}
+
+/** A username nobody holds, ignoring case, made from the e-mail's local part: 3 to 20 of [a-z0-9._], with a number when taken. */
+export async function freeUsername(db: Db, localPart: string): Promise<string> {
+  const base = localPart.toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 20).padEnd(3, '_');
+  for (let n = 1; ; n++) {
+    const candidate = n === 1 ? base : `${base.slice(0, 20 - String(n).length)}${n}`;
+    if (!(await get(db, 'SELECT 1 FROM profile WHERE lower(username) = lower($1)', [candidate]))) return candidate;
+  }
 }
 
 const RESET_HOURS = 1;
