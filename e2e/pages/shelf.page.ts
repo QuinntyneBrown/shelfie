@@ -193,4 +193,21 @@ export class ShelfPage {
   badgeNames() {
     return this.badges().locator('.achievement__name');
   }
+
+  /** The "Streak rewards" section of the shelf; absent until a parent sets a reward. */
+  streakRewards() {
+    return this.page.getByRole('region', { name: 'Streak rewards', exact: true });
+  }
+
+  streakReward(name: string) {
+    return this.streakRewards().getByRole('listitem').filter({ hasText: name });
+  }
+
+  streakRewardProgress(name: string) {
+    return this.streakReward(name).getByRole('progressbar');
+  }
+
+  streakCelebration() {
+    return this.streakRewards().getByRole('heading', { name: /You did it!/ });
+  }
 }
