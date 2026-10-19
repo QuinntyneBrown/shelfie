@@ -31,7 +31,14 @@
         "invalid",
         "submitting",
         "error",
-        "expired"
+        "expired",
+        "one-provider",
+        "no-providers",
+        "redirecting",
+        "provider-no-email",
+        "provider-reader",
+        "provider-cancelled",
+        "provider-failed"
       ],
       "not_applicable": {
         "loading": "The sign-in form needs no data before it renders.",
@@ -39,7 +46,10 @@
       },
       "requirements": [
         "L2-002",
-        "L2-003"
+        "L2-003",
+        "L2-137",
+        "L2-140",
+        "L2-141"
       ]
     },
     {
@@ -48,14 +58,24 @@
       "title": "Create a parent account",
       "route": "/sign-up",
       "requirements": [
-        "L2-033"
+        "L2-033",
+        "L2-137",
+        "L2-139",
+        "L2-140"
       ],
       "states": [
         "default",
         "invalid",
         "taken",
         "submitting",
-        "error"
+        "error",
+        "one-provider",
+        "no-providers",
+        "redirecting",
+        "provider-no-email",
+        "provider-reader",
+        "provider-cancelled",
+        "provider-failed"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
