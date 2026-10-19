@@ -1,4 +1,14 @@
 @if (view(); as view) {
+  @if (!view.current) {
+    <sh-empty-state
+      title="No challenge yet"
+      text="Set a goal for a week, two weeks or a month and your readers can race to it on their shelves."
+    >
+      <button class="btn btn--primary" type="button" (click)="starting.set(true)">Start a challenge</button>
+    </sh-empty-state>
+  } @else if (canStart(view)) {
+    <div><button class="btn btn--primary" type="button" (click)="starting.set(true)">Start a challenge</button></div>
+  }
   @if (view.current; as challenge) {
     <section class="card stack" aria-labelledby="challenge-title">
       <div>
@@ -12,6 +22,14 @@
       <sh-leaderboard [rows]="challenge.standings" [goal]="challenge.goal" [unit]="challenge.measure" />
     </section>
   }
+  <sh-start-challenge-dialog
+    [open]="starting()"
+    [readers]="view.readers"
+    [today]="view.today"
+    (started)="started()"
+    (alreadyRunning)="alreadyRunning()"
+    (closed)="starting.set(false)"
+  />
 } @else if (failed()) {
   <sh-empty-state
     tone="error"

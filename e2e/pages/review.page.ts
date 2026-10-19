@@ -189,4 +189,16 @@ export class ReviewPage {
   leaderboard() {
     return this.page.getByRole('list', { name: 'Leaderboard' }).first().getByRole('listitem');
   }
+
+  async startChallenge() {
+    await this.page.getByRole('button', { name: 'Start a challenge' }).click();
+  }
+
+  startChallengeButton() {
+    return this.page.getByRole('button', { name: 'Start a challenge' });
+  }
+
+  noChallengeYet() {
+    return this.page.getByRole('heading', { name: 'No challenge yet' });
+  }
 }

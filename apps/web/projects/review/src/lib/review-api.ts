@@ -154,4 +154,8 @@ export class ReviewApi {
   challenges() {
     return this.api.get<Challenges>('/challenges');
   }
+
+  startChallenge(body: { name: string; measure: string; goal: number; length: string; readerIds: string[] }) {
+    return this.api.post<Challenge>('/challenges', body);
+  }
 }

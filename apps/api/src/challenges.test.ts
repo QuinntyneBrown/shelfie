@@ -281,3 +281,52 @@ test('Given chapters logged before this release, then a household with one reade
     await fresh.drop();
   }
 });
+
+test('Given a challenge running, when Dad starts another, then the API answers 409 challenge-running and stores nothing', async () => {
+  const cookie = await dad();
+  await start(cookie);
+  const response = await call(cookie, 'POST', '/challenges', { ...RACE, name: 'Second' });
+  assert.equal(response.status, 409);
+  assert.equal(((await response.json()) as { type: string }).type, 'challenge-running');
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM challenge'))?.n, 1);
+});
+
+test('Given the running challenge has ended, then Dad can start the next one, and the last becomes past', async () => {
+  const cookie = await dad();
+  const first = await start(cookie);
+  await db.pool.query('UPDATE challenge SET ended_at = $1 WHERE id = $2', [now(), first.id]);
+  const second = await start(cookie, { ...RACE, name: 'Second' });
+  const read = await view(cookie);
+  assert.equal(read.current?.id, second.id);
+  assert.deepEqual(read.past.map((c) => c.id), [first.id]);
+});
+
+test('Given one household runs a challenge, then another household can still start its own', async () => {
+  await start(await dad());
+  const response = await call(await zedsDad(), 'POST', '/challenges', { ...RACE, readerIds: ['p-other-reader'] });
+  assert.equal(response.status, 201);
+});
+
+test('Given a name, measure, goal, length or readers the rules refuse, then the API answers 400 validation naming the field and stores nothing', async () => {
+  const cookie = await dad();
+  const cases: [object, string][] = [
+    [{ name: '   ' }, 'name'],
+    [{ name: 'x'.repeat(61) }, 'name'],
+    [{ measure: 'minutes' }, 'measure'],
+    [{ goal: 0 }, 'goal'],
+    [{ goal: 501 }, 'goal'],
+    [{ goal: 2.5 }, 'goal'],
+    [{ length: 'year' }, 'length'],
+    [{ readerIds: [] }, 'readerIds'],
+    [{ readerIds: ['p-nia', 'p-nia'] }, 'readerIds'],
+    [{ readerIds: ['p-dad'] }, 'readerIds'],
+  ];
+  for (const [change, field] of cases) {
+    const response = await call(cookie, 'POST', '/challenges', { ...RACE, ...change });
+    assert.equal(response.status, 400, JSON.stringify(change));
+    const problem = (await response.json()) as { type: string; errors: { field: string }[] };
+    assert.equal(problem.type, 'validation');
+    assert.ok(problem.errors.some((e) => e.field === field), `${JSON.stringify(change)} names ${field}`);
+  }
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM challenge'))?.n, 0);
+});
