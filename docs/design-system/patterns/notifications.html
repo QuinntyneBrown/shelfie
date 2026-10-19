@@ -95,18 +95,19 @@
     <header class="ds-header">
       <p class="ds-kicker">Pattern · Feedback</p>
       <h1>Notifications</h1>
-      <p class="ds-lead">A toast reports something that just happened and then gets out of the way. A banner reports something that is still true, or news that is waiting, and stays until it is no longer true or is dismissed.</p>
+      <p class="ds-lead">A toast reports something that just happened and then gets out of the way. A banner reports something that is still true, or news that is waiting, and stays until it is no longer true or is dismissed. A push reaches the person when Shelfie is closed.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Pattern</span></div>
       <ul class="ds-toc">
-        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li>
+        <li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#push">Push</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li>
       </ul>
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Shelfie has two notification surfaces and no notification centre, no e-mail and no push notifications.</p>
+      <p>Shelfie has two in-app notification surfaces and one that arrives from the operating system. It has no notification centre and no e-mail.</p>
       <ul>
         <li><b><a href="../components/toast.html">Toast</a></b>: dark, floating, bottom-right (bottom of the screen on phones). Short-lived results: "Chapter 12 saved", "Dad added a book", "Back online", "Couldn’t save your answers". Often has one action: Undo, Retry, See it, Review Chapter 10.</li>
         <li><b><a href="../components/alert.html">Banner</a></b> (<code>.alert.banner</code>): full-width strip under the top bar that pushes the page down. Lasting conditions ("No internet connection", "Shelfie’s server isn’t answering"), news for Nia ("Dad read Chapter 9 and gave you a Star ⭐", "Dad gave you a reward for Matilda") and Dad's waiting work ("2 chapters are waiting for your feedback").</li>
+        <li><b>Push</b> (the operating system's own notification): arrives when Shelfie is closed or in the background, and is built by the browser, not by a component. See <a href="#push">Push</a>.</li>
       </ul>
       <p>For feedback tied to a field, a form or a region, see <a href="feedback-and-loading.html">feedback and loading</a>; notifications are for things that are not attached to what the person is looking at.</p>
     </section>
@@ -148,6 +149,26 @@
           <tr><td>Condition banners (offline, server, chapters waiting)</td><td>Stay while the condition is true; no close button.</td></tr>
         </tbody>
       </table></div>
+    </section>
+
+    <section class="ds-section" id="push"><h2><a href="#push">Push</a></h2>
+      <p>A push says something is waiting while the person is somewhere else. It is the same news as a banner, delivered earlier. When Shelfie is open the person already sees the toast or banner, so a push is for the closed app.</p>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Event</th><th scope="col">Goes to</th><th scope="col">Title</th><th scope="col">Body</th><th scope="col">Opens</th><th scope="col">Replaces (<code>tag</code>)</th></tr></thead>
+        <tbody>
+          <tr><td>Chapter logged</td><td>Parents</td><td>Nia read Chapter 9 of Matilda</td><td>Ready for your feedback.</td><td>Review of that chapter</td><td><code>chapter-&lt;id&gt;</code></td></tr>
+          <tr><td>Sticker or note sent</td><td>Readers</td><td>Dad read Chapter 9 and gave you a Star ⭐</td><td>See what he said.</td><td>That chapter</td><td><code>feedback-&lt;id&gt;</code></td></tr>
+          <tr><td>Book reward given</td><td>Readers</td><td>🏆 Dad gave you a reward for Matilda</td><td>Come and see what it is.</td><td>Her shelf</td><td><code>reward-&lt;book&gt;</code></td></tr>
+          <tr><td>Streak reward given</td><td>Readers</td><td>🔥 7 days in a row! Dad gave you a reward</td><td>Come and see what it is.</td><td>Her shelf</td><td><code>streak-&lt;milestone&gt;</code></td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><b>Ask only after a tap.</b> The browser's permission prompt appears only after the person taps <b>Turn on</b> (the shelf banner for readers, the "Notify this device" switch in Settings for parents). Never on page load.</li>
+        <li><b>Blocked is explained, not nagged.</b> If the browser has blocked notifications, the switch is disabled and the card says where to allow them. If the server cannot send pushes, the card says so and the shelf banner never shows.</li>
+        <li><b>One line each, no noise.</b> No sound, no badge count and no more than one notification per <code>tag</code>: a second one about the same thing replaces the first.</li>
+        <li><b>Copy is the in-app copy.</b> Title and body use the words of the matching banner, so Nia hears the same voice in both places.</li>
+      </ul>
+      <p>Mocks: <a href="../../mocks/notifications/push/chapter-logged.html">chapter-logged</a>, <a href="../../mocks/notifications/push/feedback.html">feedback</a>, <a href="../../mocks/notifications/push/book-reward.html">book-reward</a>, <a href="../../mocks/notifications/push/streak-reward.html">streak-reward</a>; <a href="../../mocks/pages/shelf/push-offer.html">shelf offer</a>, <a href="../../mocks/pages/settings/notifications-on.html">Settings card</a>.</p>
     </section>
 
     <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
@@ -302,6 +323,9 @@
       <ul>
         <li>Toasts: <a href="../../mocks/notifications/toast/info.html">info</a>, <a href="../../mocks/notifications/toast/success.html">success</a>, <a href="../../mocks/notifications/toast/warning.html">warning</a>, <a href="../../mocks/notifications/toast/danger.html">danger</a>, <a href="../../mocks/notifications/toast/with-action.html">with-action</a>, <a href="../../mocks/notifications/toast/stacked.html">stacked</a></li>
         <li>Banners: <a href="../../mocks/notifications/banner/info.html">info</a>, <a href="../../mocks/notifications/banner/success.html">success</a>, <a href="../../mocks/notifications/banner/warning.html">warning</a>, <a href="../../mocks/notifications/banner/danger.html">danger</a>, <a href="../../mocks/notifications/banner/persistent.html">persistent</a>; <a href="../../mocks/pages/offline/default.html">pages/offline/default</a></li>
+      </ul>
+      <ul>
+        <li>Push: <a href="../../mocks/notifications/push/chapter-logged.html">chapter-logged</a>, <a href="../../mocks/notifications/push/feedback.html">feedback</a>, <a href="../../mocks/notifications/push/book-reward.html">book-reward</a>, <a href="../../mocks/notifications/push/streak-reward.html">streak-reward</a>; <a href="../../mocks/pages/shelf/push-offer.html">pages/shelf/push-offer</a>; the Settings card in <a href="../../mocks/pages/settings/notifications-on.html">notifications-on</a>, <a href="../../mocks/pages/settings/notifications-events-off.html">notifications-events-off</a>, <a href="../../mocks/pages/settings/notifications-blocked.html">notifications-blocked</a> and <a href="../../mocks/pages/settings/notifications-unsupported.html">notifications-unsupported</a></li>
       </ul>
       <p>Drift fixed during extraction:</p>
       <ul>
