@@ -1,4 +1,5 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-142, L2-145
+// Traces to: L2-026, L2-137, L2-138, L2-139, L2-140, L2-142, L2-145
+import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../support/test';
 import { signInAsNia, signInAsZoe } from '../support/signed-in';
 import { addHelperReward, addZoe } from '../support/database';
@@ -111,6 +112,8 @@ test('Given a phone, then Read together and the Together card stay within the sc
   await together.open();
   await expect(together.partner('Zoe')).toBeVisible();
   expect(await together.scrollsSideways()).toBe(false);
+  const scan = await new AxeBuilder({ page }).analyze();
+  expect(scan.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
 
   await together.done();
   await together.backToShelf();
