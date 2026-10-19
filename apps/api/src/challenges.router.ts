@@ -5,6 +5,7 @@ import { requireRole } from './authz.ts';
 import { challengesOf, closeExpired, createChallenge, endChallenge, removeChallenge, rewardChallenge } from './challenges.service.ts';
 import { giveRewardSchema } from './review.router.ts';
 import { Problem } from './problem.ts';
+import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { validationProblem } from './validation.ts';
 
@@ -30,25 +31,35 @@ async function replying(res: Response, run: () => Promise<unknown>, status = 200
   }
 }
 
-export function challengesRouter(db: Pool) {
+export function challengesRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
   const householdOf = (res: Response) => (res.locals['session'] as RequestSession).householdId;
 
+  /** Ends the challenges whose last day has passed and tells the parents, once each (ADR-0018). */
+  const closeExpiredAndNotify = async (householdId: string) => {
+    for (const id of await closeExpired(db, householdId)) await notifier.challengeEnded(householdId, id);
+  };
+
   router.get('/', async (_req, res) => {
-    await closeExpired(db, householdOf(res));
+    await closeExpiredAndNotify(householdOf(res));
     await replying(res, () => challengesOf(db, householdOf(res)));
   });
 
   router.post('/', requireRole('parent'), async (req, res) => {
     const body = challengeSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
-    await closeExpired(db, householdOf(res));
+    await closeExpiredAndNotify(householdOf(res));
     await replying(res, () => createChallenge(db, householdOf(res), body.data), 201);
   });
 
   router.post('/:id/end', requireRole('parent'), async (req, res) => {
-    await replying(res, () => endChallenge(db, householdOf(res), String(req.params['id'])));
+    const id = String(req.params['id']);
+    await replying(res, async () => {
+      const ended = await endChallenge(db, householdOf(res), id);
+      await notifier.challengeEnded(householdOf(res), id);
+      return ended;
+    });
   });
 
   router.post('/:id/reward', requireRole('parent'), async (req, res) => {

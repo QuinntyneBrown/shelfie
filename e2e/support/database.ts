@@ -196,3 +196,11 @@ export async function forgetSeededLogs() {
     "UPDATE chapter_log SET read_on = '2000-01-01', logged_at = '2000-01-01T12:00:00.000Z' WHERE book_id IN (SELECT id FROM book WHERE household_id = 'h1')",
   );
 }
+
+/** Stores a browser subscription for a person, as turning on "Notify this device" does. */
+export async function addPushDevice(username: string, endpoint: string) {
+  await db.query(
+    "INSERT INTO push_subscription (id, profile_id, endpoint, p256dh, auth, created_at) SELECT $1, id, $2, 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM', 'tBHItJI5svbpez7KI4CCXg', $3 FROM profile WHERE username = $4",
+    [`ps-${username}`, endpoint, new Date().toISOString(), username],
+  );
+}

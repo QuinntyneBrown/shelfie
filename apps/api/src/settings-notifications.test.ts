@@ -1,4 +1,4 @@
-// Traces to: L2-124
+// Traces to: L2-124, L2-145
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -7,7 +7,7 @@ import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
 const APP = { 'X-Requested-With': 'Shelfie' };
-const ALL_ON = { chapterLogged: true, feedback: true, bookReward: true, streakReward: true };
+const ALL_ON = { chapterLogged: true, feedback: true, bookReward: true, streakReward: true, challengeLead: true, challengeEnd: true };
 let db: Awaited<ReturnType<typeof createTestDatabase>>;
 let server: Server;
 let url: string;
@@ -48,7 +48,7 @@ const patch = (cookie: string, notifications?: unknown) =>
   });
 const choices = async (cookie: string) => ((await (await settings(cookie)).json()) as { notifications: unknown }).notifications;
 
-test('Given a household that never changed them, when a parent reads the settings, then all four choices are on', async () => {
+test('Given a household that never changed them, when a parent reads the settings, then all six choices are on', async () => {
   assert.deepEqual(await choices(await dad()), ALL_ON);
 });
 
@@ -78,6 +78,7 @@ test('Given a choice that is not true or false, or one that does not exist, then
     [{ ...ALL_ON, feedback: 'yes' }, 'notifications.feedback'],
     [{ ...ALL_ON, chapterLogged: null }, 'notifications.chapterLogged'],
     [{ ...ALL_ON, streakReward: 0 }, 'notifications.streakReward'],
+    [{ ...ALL_ON, challengeEnd: 'no' }, 'notifications.challengeEnd'],
     [{ ...ALL_ON, sparkles: true }, 'notifications'],
     [{ feedback: false }, 'notifications.chapterLogged'],
     ['off', 'notifications'],

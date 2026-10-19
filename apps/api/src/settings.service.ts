@@ -27,12 +27,14 @@ export interface ReaderView {
   photo: string | null;
 }
 
-/** Which events send a push notification, for the whole household (L2-124). */
+/** Which events send a push notification, for the whole household (L2-124, L2-145). */
 export interface NotificationChoices {
   chapterLogged: boolean;
   feedback: boolean;
   bookReward: boolean;
   streakReward: boolean;
+  challengeLead: boolean;
+  challengeEnd: boolean;
 }
 
 export interface SettingsView {
@@ -68,7 +70,8 @@ export async function getSettings(db: Db, householdId: string, profileId: string
   const account = (await get<SettingsView['account']>(db, 'SELECT name, username, email FROM profile WHERE id = $1', [profileId]))!;
   const { theme, ...notifications } = (await get<{ theme: string } & NotificationChoices>(
     db,
-    `SELECT theme, notify_chapter_logged AS "chapterLogged", notify_feedback AS "feedback", notify_book_reward AS "bookReward", notify_streak_reward AS "streakReward"
+    `SELECT theme, notify_chapter_logged AS "chapterLogged", notify_feedback AS "feedback", notify_book_reward AS "bookReward", notify_streak_reward AS "streakReward",
+            notify_challenge_lead AS "challengeLead", notify_challenge_end AS "challengeEnd"
        FROM household WHERE id = $1`,
     [householdId],
   ))!;
@@ -107,13 +110,12 @@ export async function updateSettings(pool: Pool, householdId: string, profileId:
     await run(db, 'UPDATE household SET theme = $1 WHERE id = $2', [patch.theme, householdId]);
     if (patch.notifications) {
       const n = patch.notifications;
-      await run(db, 'UPDATE household SET notify_chapter_logged = $1, notify_feedback = $2, notify_book_reward = $3, notify_streak_reward = $4 WHERE id = $5', [
-        n.chapterLogged,
-        n.feedback,
-        n.bookReward,
-        n.streakReward,
-        householdId,
-      ]);
+      await run(
+        db,
+        `UPDATE household SET notify_chapter_logged = $1, notify_feedback = $2, notify_book_reward = $3, notify_streak_reward = $4,
+                notify_challenge_lead = $5, notify_challenge_end = $6 WHERE id = $7`,
+        [n.chapterLogged, n.feedback, n.bookReward, n.streakReward, n.challengeLead, n.challengeEnd, householdId],
+      );
     }
   });
   return getSettings(pool, householdId, profileId);

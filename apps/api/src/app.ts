@@ -74,7 +74,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/readers', readersRouter(db));
   app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/streak-rewards', streakRewardsRouter(db, notifier));
-  app.use('/api/challenges', challengesRouter(db));
+  app.use('/api/challenges', challengesRouter(db, notifier));
   app.use('/api/feedback', feedbackRouter(db));
   app.use('/api/push', pushRouter(db, push));
   app.use('/api/invites', invitesRouter(db, options.mail));

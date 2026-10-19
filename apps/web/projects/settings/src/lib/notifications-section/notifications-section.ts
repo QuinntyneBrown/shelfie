@@ -3,7 +3,7 @@ import { Banner, Switch } from 'components';
 import { PushService, ToastService } from 'core';
 import { NotificationChoices } from '../settings-api';
 
-/** The Notifications card: this device's switch, which acts at once, and the household's four choices, which save with the form. */
+/** The Notifications card: this device's switch, which acts at once, and the household's six choices, which save with the form. */
 @Component({
   selector: 'sh-notifications-section',
   imports: [Banner, Switch],

@@ -260,6 +260,11 @@ async function rowOf(db: Db, householdId: string, id: string): Promise<Challenge
   return row;
 }
 
+/** One challenge of the household as the API reports it. */
+export async function challengeById(db: Db, householdId: string, id: string, now = new Date()) {
+  return viewOf(db, householdId, id, now);
+}
+
 async function viewOf(db: Db, householdId: string, id: string, now: Date) {
   const timeZone = await timeZoneOf(db, householdId);
   return challengeOf(db, householdId, timeZone, todayIn(timeZone, now), await rowOf(db, householdId, id));
@@ -292,4 +297,28 @@ export async function rewardChallenge(db: Db, householdId: string, id: string, t
 export async function removeChallenge(db: Db, householdId: string, id: string): Promise<void> {
   const removed = await all(db, 'DELETE FROM challenge WHERE id = $1 AND household_id = $2 RETURNING id', [id, householdId]);
   if (!removed.length) throw new Problem(404, 'not-found');
+}
+
+export interface LeadChange {
+  challengeId: string;
+  name: string;
+  measure: Measure;
+  leader: Standing;
+  runnerUp: Standing | null;
+}
+
+/**
+ * When one reader now leads the running challenge alone and was not the last one announced, records her as the leader
+ * and reports the change; otherwise null, so a lead is announced once (L2-145).
+ */
+export async function takeLead(db: Db, householdId: string, now = new Date()): Promise<LeadChange | null> {
+  const row = await get<ChallengeRow>(db, `SELECT ${CHALLENGE_COLUMNS} FROM challenge WHERE household_id = $1 AND ended_at IS NULL`, [householdId]);
+  if (!row) return null;
+  const challenge = await viewOf(db, householdId, row.id, now);
+  const leaders = challenge.standings.filter((s) => s.leading);
+  if (leaders.length !== 1) return null;
+  const leader = leaders[0]!;
+  const changed = await all(db, 'UPDATE challenge SET leader_id = $1 WHERE id = $2 AND leader_id IS DISTINCT FROM $1 RETURNING id', [leader.readerId, row.id]);
+  if (!changed.length) return null;
+  return { challengeId: row.id, name: row.name, measure: row.measure, leader, runnerUp: challenge.standings[1] ?? null };
 }
