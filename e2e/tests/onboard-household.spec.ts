@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { inviteLinkFor } from '../support/mailbox';
@@ -211,4 +211,83 @@ test('Given a request in flight, when Next is pressed again, then only one reade
 
   await expect(page).toHaveURL(/\/onboarding\/reward$/);
   expect(onboarding.readerRequestCount()).toBe(1);
+});
+
+/** Priya signs up, adds Zara and reaches the reward step. */
+async function reachRewardStep(page: Parameters<typeof signInAsDad>[0]) {
+  const onboarding = await startWizard(page);
+  await onboarding.nameField().fill(ZARA.name);
+  await onboarding.next();
+  await onboarding.passwordField().fill(ZARA.password);
+  await onboarding.next();
+  await page.waitForURL(/\/onboarding\/reward$/);
+  return onboarding;
+}
+
+test('Given the reward step, when an example is tapped and Add another pressed, then the reward is listed and the fields clear; Next with empty fields goes on without sending more', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+  await expect(onboarding.backLink()).toHaveCount(0);
+
+  await onboarding.tapExample('Trip to the zoo');
+  await expect(onboarding.rewardField()).toHaveValue('Trip to the zoo');
+  await onboarding.booksField().fill('3');
+  await onboarding.addAnother();
+
+  await expect(onboarding.rewardsAdded()).toHaveCount(1);
+  await expect(onboarding.rewardsAdded().first()).toContainText('Trip to the zoo');
+  await expect(onboarding.rewardsAdded().first()).toContainText('3 books');
+  await expect(onboarding.rewardField()).toHaveValue('');
+  await expect(onboarding.booksField()).toHaveValue('');
+  await expect(page).toHaveURL(/\/onboarding\/reward$/);
+
+  await onboarding.next();
+  await expect(page).toHaveURL(/\/onboarding\/done$/);
+  expect(onboarding.rewardRequestCount()).toBe(1);
+
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await expect(settings.galleryReward('Trip to the zoo')).toBeVisible();
+});
+
+test('Given a reward typed on the step, when Next is pressed, then it is saved and All set opens', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+
+  await onboarding.rewardField().fill('Movie night');
+  await onboarding.booksField().fill('2');
+  await onboarding.next();
+
+  await expect(page).toHaveURL(/\/onboarding\/done$/);
+  expect(onboarding.rewardRequestCount()).toBe(1);
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await expect(settings.galleryReward('Movie night')).toContainText('2 books');
+});
+
+test('Given no reward yet and an empty name with too many books, when Next or Add another is pressed, then each field says what to fix and nothing is sent', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+
+  await onboarding.booksField().fill('25');
+  await onboarding.next();
+
+  await expect(onboarding.problemSummary()).toContainText('Fix 2 things');
+  await expect(onboarding.rewardField()).toHaveAccessibleDescription(/Name the reward/);
+  await expect(onboarding.booksField()).toHaveAccessibleDescription(/1 to 20/);
+  await onboarding.addAnother();
+  await expect(page).toHaveURL(/\/onboarding\/reward$/);
+  expect(onboarding.rewardRequestCount()).toBe(0);
+});
+
+test('Given the server cannot be reached, when a reward is saved, then the step says it wasn’t added and Try again saves it', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+  await onboarding.rewardField().fill('New book');
+  await onboarding.booksField().fill('1');
+  await onboarding.breakRewards();
+
+  await onboarding.addAnother();
+
+  await expect(onboarding.failure()).toContainText('New book wasn’t added');
+  await expect(onboarding.rewardField()).toHaveValue('New book');
+  await onboarding.repairRewards();
+  await onboarding.tryAgain();
+  await expect(onboarding.rewardsAdded()).toHaveCount(1);
 });

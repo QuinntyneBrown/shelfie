@@ -3,15 +3,21 @@ import type { Page } from '@playwright/test';
 /** The one-time set-up wizard a parent sees after signing up: five full-screen steps under the auth layout. */
 export class OnboardingPage {
   private readerRequests = 0;
+  private rewardRequests = 0;
 
   constructor(private readonly page: Page) {
     page.on('request', (request) => {
       if (request.url().endsWith('/api/readers') && request.method() === 'POST') this.readerRequests++;
+      if (request.url().endsWith('/api/gallery-rewards') && request.method() === 'POST') this.rewardRequests++;
     });
   }
 
   readerRequestCount() {
     return this.readerRequests;
+  }
+
+  rewardRequestCount() {
+    return this.rewardRequests;
   }
 
   async open(step?: 'child' | 'sign-in' | 'reward' | 'done') {
@@ -90,6 +96,39 @@ export class OnboardingPage {
       await new Promise((resolve) => setTimeout(resolve, ms));
       await route.continue();
     });
+  }
+
+  rewardField() {
+    return this.page.getByLabel('The reward');
+  }
+
+  booksField() {
+    return this.page.getByLabel('Books to finish');
+  }
+
+  async tapExample(name: string) {
+    await this.page.getByRole('group', { name: 'Examples' }).getByRole('button', { name }).click();
+  }
+
+  async addAnother() {
+    await this.page.getByRole('button', { name: 'Add another' }).click();
+  }
+
+  /** The rewards already added on the reward step. */
+  rewardsAdded() {
+    return this.page.getByRole('list', { name: 'Rewards added' }).getByRole('listitem');
+  }
+
+  backLink() {
+    return this.page.getByRole('link', { name: 'Back' });
+  }
+
+  async breakRewards() {
+    await this.page.route('**/api/gallery-rewards', (route) => (route.request().method() === 'POST' ? route.abort() : route.continue()));
+  }
+
+  async repairRewards() {
+    await this.page.unroute('**/api/gallery-rewards');
   }
 
   /** The shell's primary navigation, which the wizard never shows. */

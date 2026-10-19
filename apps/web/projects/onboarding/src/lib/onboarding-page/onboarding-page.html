@@ -96,6 +96,96 @@
       <div class="card stack wizard">
         <img class="wizard__art" src="/onboarding/reward.svg" alt="" width="240" height="180" />
         <h1>What will {{ readerName() }} read toward?</h1>
+        @if (rewards().length) {
+          <p class="text-muted">Added to her reward gallery. Add another, or press Next.</p>
+          <ul class="wizard__added" aria-label="Rewards added">
+            @for (reward of rewards(); track reward.id) {
+              <li>
+                <sh-sticker emoji="🎁" />
+                <span class="list__title">{{ reward.name }}</span>
+                <span class="list__meta"
+                  >{{ reward.target }} {{ reward.target === 1 ? 'book' : 'books' }}</span
+                >
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted">
+            Finish a few books, earn a reward. Pictures and a description can wait for Settings.
+          </p>
+        }
+        <form class="stack" (submit)="$event.preventDefault(); addReward(false)" novalidate>
+          @if (problems().length) {
+            <sh-banner
+              #summary
+              severity="danger"
+              [summary]="true"
+              [title]="
+                'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
+              "
+            >
+              <ul class="summary-list">
+                @for (problem of problems(); track problem) {
+                  <li>{{ problem }}</li>
+                }
+              </ul>
+            </sh-banner>
+          }
+          @if (failed()) {
+            <sh-banner
+              severity="danger"
+              [title]="(rewardName().trim() || 'The reward') + ' wasn’t added'"
+              message="Nothing changed. Check your connection."
+            >
+              <div class="alert__actions">
+                <button class="btn btn--sm" type="button" (click)="addReward(true)">
+                  Try again
+                </button>
+              </div>
+            </sh-banner>
+          }
+          <div class="cluster wizard__examples" role="group" aria-label="Examples">
+            @for (example of examples; track example) {
+              <button
+                class="chip"
+                type="button"
+                [disabled]="busy()"
+                (click)="rewardName.set(example)"
+              >
+                {{ example }}
+              </button>
+            }
+          </div>
+          <sh-text-field
+            label="The reward"
+            autocomplete="off"
+            [maxlength]="100"
+            [autofocus]="true"
+            [readonly]="busy()"
+            [error]="rewardError()"
+            [(value)]="rewardName"
+          />
+          <sh-text-field
+            label="Books to finish"
+            type="number"
+            inputmode="numeric"
+            help="A whole number from 1 to 20."
+            [readonly]="busy()"
+            [error]="targetError()"
+            [(value)]="target"
+          />
+          <div class="wizard__actions">
+            <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
+            <button
+              class="btn btn--block"
+              type="button"
+              [disabled]="busy()"
+              (click)="addReward(true)"
+            >
+              Add another
+            </button>
+          </div>
+        </form>
       </div>
     }
     @default {

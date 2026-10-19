@@ -9,14 +9,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthLayout, Banner, Button, StepIndicator, TextField } from 'components';
+import { AuthLayout, Banner, Button, StepIndicator, Sticker, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
-import { OnboardingApi, ReaderView } from '../onboarding-api';
+import { GalleryReward, OnboardingApi, ReaderView } from '../onboarding-api';
 
 export type Step = 'welcome' | 'child' | 'sign-in' | 'reward' | 'done';
 const STEPS: Step[] = ['welcome', 'child', 'sign-in', 'reward', 'done'];
 const COLORS = ['rose', 'sky', 'sun', 'mint', 'lilac'];
 const USERNAME_RULE = /^[A-Za-z0-9._]{3,20}$/;
+const EXAMPLES = ['Trip to the zoo', 'Movie night', 'New book'];
 
 /** A username from the child's name: lower case, letters, digits, "." and "_" only, at most 20; empty under 3. */
 export function usernameFrom(name: string): string {
@@ -30,7 +31,7 @@ export function usernameFrom(name: string): string {
 /** The one-time set-up wizard after sign-up: five full-screen steps under the auth layout, one per URL. */
 @Component({
   selector: 'sh-onboarding-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, StepIndicator, TextField],
+  imports: [AuthLayout, Banner, Button, RouterLink, StepIndicator, Sticker, TextField],
   templateUrl: './onboarding-page.html',
   styleUrl: './onboarding-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +61,13 @@ export class OnboardingPage {
   /** The reader once she is created. */
   protected readonly reader = signal<ReaderView | null>(null);
   protected readonly readerName = computed(() => this.reader()?.name ?? this.childName().trim());
+  // The reward step: what is already in the gallery, and the one being typed.
+  protected readonly examples = EXAMPLES;
+  protected readonly rewards = signal<GalleryReward[]>([]);
+  protected readonly rewardName = signal('');
+  protected readonly target = signal('');
+  protected readonly rewardError = signal<string | null>(null);
+  protected readonly targetError = signal<string | null>(null);
   private readonly nameField = viewChild('nameField', { read: ElementRef });
   private readonly summary = viewChild<Banner>('summary');
 
@@ -130,6 +138,44 @@ export class OnboardingPage {
     await this.router.navigateByUrl('/onboarding/reward');
   }
 
+  /**
+   * The reward step (L2-141): Add another saves and stays; Next saves what is typed and goes on, or only goes on
+   * when the fields are empty and a reward is already listed.
+   */
+  protected async addReward(stay: boolean) {
+    if (this.busy()) return;
+    this.failed.set(false);
+    const name = this.rewardName().trim();
+    const target = Number(this.target());
+    if (!stay && !name && !this.target() && this.rewards().length) {
+      await this.router.navigateByUrl('/onboarding/done');
+      return;
+    }
+    this.rewardError.set(
+      !name ? 'Name the reward.' : name.length > 100 ? 'Use 100 characters or fewer.' : null,
+    );
+    this.targetError.set(
+      Number.isInteger(target) && target >= 1 && target <= 20 ? null : 'Use 1 to 20 books.',
+    );
+    this.summarise({ reward: 'Name the reward', target: 'Use 1 to 20 books' });
+    if (this.problems().length) return;
+
+    this.busy.set(true);
+    try {
+      const reward = await this.api.addReward({ name, description: '', target });
+      this.rewards.update((list) => [...list, reward]);
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.failed.set(true);
+      return;
+    } finally {
+      this.busy.set(false);
+    }
+    this.rewardName.set('');
+    this.target.set('');
+    if (!stay) await this.router.navigateByUrl('/onboarding/done');
+  }
+
   /** Skip for now marks the wizard done and opens Review; anything already created stays (L2-138). */
   protected async skip(event: Event) {
     event.preventDefault();
@@ -143,8 +189,13 @@ export class OnboardingPage {
   }
 
   /** Lists one line per field in error, in form order, and puts focus on the list. */
-  private summarise(lines: Partial<Record<'username' | 'password', string>>) {
-    const errors = { username: this.usernameError(), password: this.passwordError() };
+  private summarise(lines: Partial<Record<'username' | 'password' | 'reward' | 'target', string>>) {
+    const errors = {
+      username: this.usernameError(),
+      password: this.passwordError(),
+      reward: this.rewardError(),
+      target: this.targetError(),
+    };
     this.problems.set(
       (Object.keys(lines) as (keyof typeof lines)[]).filter((f) => errors[f]).map((f) => lines[f]!),
     );
