@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Signing up now opens a one-time set-up wizard instead of Review: welcome, the child's name, how she signs in (which creates the reader), a reward to read toward (with Add another), and All set with her sign-in details shown once. Every step has a step indicator and Skip for now; each step has its own URL, so a reload or another device resumes where the parent was. Whether the wizard is done is kept on the household (`household.onboarded`, migration `011-onboarding.sql`, carried by `GET /api/session` and set by `POST /api/settings/onboarded`), so it runs once per household on any device; households from before, and parents who join by invite, never see it. The reader and rewards go through the unchanged `POST /api/readers` and `POST /api/gallery-rewards`. Requirements L1-029 and L2-137 to L2-143, design `sign-in/onboard-household`, ADR-0018, new `onboarding` library, `sh-step-indicator`, and `sh-auth-layout` moved into the `components` library.
 - The app and its API move to `https://app.shelfie.kids`; `shelfie.kids` redirects its home page to www and every other path to the app. Everyone signs in once more. `shelfie-admin` defaults to `https://app.shelfie.kids`.
 
 ### Fixed
