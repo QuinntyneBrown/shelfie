@@ -88,6 +88,10 @@ export function partnersOf(db: Db, householdId: string, profileId: string): Prom
   );
 }
 
+export async function readerOf(db: Db, id: string): Promise<Reader | null> {
+  return (await get<Reader>(db, `SELECT p.id, p.name, p.color, ${PHOTO_COLUMN} FROM profile p LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE p.id = $1`, [id])) ?? null;
+}
+
 /** The newest sessions the profile is part of, removed ones left out. */
 export async function sessionsOf(db: Db, householdId: string, profileId: string, limit = 5): Promise<Session[]> {
   const rows = await all<Row>(

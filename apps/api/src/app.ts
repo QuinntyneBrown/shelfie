@@ -17,6 +17,7 @@ import { coversRouter } from './covers.router.ts';
 import { galleryRouter } from './gallery.router.ts';
 import { streakRewardsRouter } from './streak-rewards.router.ts';
 import { togetherRouter } from './together.router.ts';
+import { helperRewardRouter } from './helper-reward.router.ts';
 import { feedbackRouter } from './feedback.router.ts';
 import { createPush, inProcess, type Push, type Schedule } from './push.ts';
 import { createNotifier } from './push.service.ts';
@@ -75,6 +76,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/streak-rewards', streakRewardsRouter(db, notifier));
   app.use('/api/together', togetherRouter(db));
+  app.use('/api/helper-reward', helperRewardRouter(db));
   app.use('/api/feedback', feedbackRouter(db));
   app.use('/api/push', pushRouter(db, push));
   app.use('/api/invites', invitesRouter(db, options.mail));

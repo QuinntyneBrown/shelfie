@@ -257,4 +257,21 @@ export class SettingsPage {
   async turnOffThisDevice() {
     await this.deviceSwitch().click();
   }
+
+  /** The "Helper reward" section; only in a household with two or more readers. */
+  helperReward() {
+    return this.page.getByRole('region', { name: 'Helper reward', exact: true });
+  }
+
+  helperRewardRow() {
+    return this.helperReward().getByRole('listitem');
+  }
+
+  async setHelperReward() {
+    await this.helperReward().getByRole('button', { name: 'Set a reward' }).click();
+  }
+
+  async editHelperReward(name: string) {
+    await this.helperReward().getByRole('button', { name: `Edit ${name}` }).click();
+  }
 }

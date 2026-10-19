@@ -216,6 +216,60 @@
           }
         </ul>
       </section>
+      @if (view.readers.length > 1) {
+        <section class="card card--flush people" aria-labelledby="helper-reward-title">
+          <div class="cluster cluster--between people__header">
+            <h2 id="helper-reward-title" class="section-title">Helper reward</h2>
+          </div>
+          <p class="text-muted rewards__intro">
+            Earned by reading to a sister or helping her read. The minutes start again after you give it.
+          </p>
+          <ul class="list">
+            <li class="list__item">
+              <span class="sticker" aria-hidden="true">🤝</span>
+              <div class="list__body">
+                @if (helperReward(); as reward) {
+                  <div class="list__title">{{ reward.name }} · {{ reward.targetMinutes }} minutes</div>
+                  <div class="list__meta">
+                    @if (reward.givenOn) {
+                      Given {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }} · counting again
+                    } @else {
+                      {{ readerNames() }} earn it by reading together
+                    }
+                  </div>
+                } @else {
+                  <div class="list__title">No helper reward set</div>
+                  <div class="list__meta">Pick a reward and how many minutes it takes</div>
+                }
+              </div>
+              @if (helperReward(); as reward) {
+                <button
+                  class="btn btn--ghost btn--icon"
+                  type="button"
+                  [attr.aria-label]="'Edit ' + reward.name"
+                  (click)="helperDialogOpen.set(true)"
+                >
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4" />
+                  </svg>
+                </button>
+              } @else {
+                <button class="btn btn--sm" type="button" (click)="helperDialogOpen.set(true)">
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                  Set a reward
+                </button>
+              }
+            </li>
+          </ul>
+        </section>
+        <sh-helper-reward-dialog
+          [open]="helperDialogOpen()"
+          [editing]="helperReward()"
+          [readerNames]="readerNames()"
+          (saved)="helperRewardSaved($event)"
+          (closed)="helperDialogOpen.set(false)"
+        />
+      }
       <sh-notifications-section [readerNames]="readerNames()" [(choices)]="notifications" />
       <sh-streak-reward-dialog
         [open]="streakDialogOpen()"
