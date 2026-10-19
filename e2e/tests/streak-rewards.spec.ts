@@ -1,8 +1,10 @@
 // Traces to: L2-100, L2-101, L2-102, L2-103, L2-104
+import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { addStreakReward, giveStreakRewardInDatabase, setReadingDays } from '../support/database';
 import { SettingsPage } from '../pages/settings.page';
+import { ReviewPage } from '../pages/review.page';
 import { ShelfPage } from '../pages/shelf.page';
 import { StreakRewardDialog } from '../pages/streak-reward-dialog.page';
 
@@ -171,4 +173,59 @@ test('Given a phone, then the Streak rewards section stays within the screen', a
 
   await expect(shelf.streakRewards()).toBeVisible();
   expect(await shelf.scrollsSideways()).toBe(false);
+  const scan = await new AxeBuilder({ page }).analyze();
+  expect(scan.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+});
+
+test('Given the 7-day reward is earned, when Dad opens Review, then a card names it and Give it gives it', async ({ page }) => {
+  await setReadingDays([0, 1, 2, 3, 4, 5, 6]);
+  await addStreakReward(7, 'Ice cream');
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+
+  await expect(review.streakRewardCard(7)).toContainText('Her reward: Ice cream');
+  await expect(review.summary()).toHaveText('2 chapters to read · 2 rewards to give');
+
+  await review.giveStreakReward(7);
+  await expect(review.toast('Ice cream given')).toBeVisible();
+  await expect(review.streakRewardCard(7)).toHaveCount(0);
+  await expect(review.summary()).toHaveText('2 chapters to read · 1 reward to give');
+  const given = (await (await page.request.get('/api/streak-rewards')).json()) as { rewards: { milestone: number; givenOn: string | null }[] };
+  expect(given.rewards[0]!.givenOn).not.toBeNull();
+});
+
+test('Given a streak reward that is set but not earned, when Dad opens Review, then there is no card for it', async ({ page }) => {
+  await setReadingDays([0, 1, 2]);
+  await addStreakReward(7, 'Ice cream');
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+
+  await expect(review.summary()).toHaveText('2 chapters to read · 1 reward to give');
+  await expect(review.streakRewardCard(7)).toHaveCount(0);
+});
+
+test('Given the connection drops, when Dad chooses Give it, then a toast says the reward wasn’t given and the card stays; trying again works', async ({ page }) => {
+  await setReadingDays([0, 1, 2, 3, 4, 5, 6]);
+  await addStreakReward(7, 'Ice cream');
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.breakGiving();
+
+  await review.giveStreakReward(7);
+  await expect(review.toast('The reward wasn’t given')).toBeVisible();
+  await expect(review.streakRewardCard(7)).toBeVisible();
+
+  await review.repairGiving();
+  await review.giveStreakReward(7);
+  await expect(review.toast('Ice cream given')).toBeVisible();
+  await expect(review.streakRewardCard(7)).toHaveCount(0);
+});
+
+test('Given a reader session, when it sends the request to give a streak reward, then the API answers 403 and nothing is given', async ({ page }) => {
+  await setReadingDays([0, 1, 2, 3, 4, 5, 6]);
+  await addStreakReward(7, 'Ice cream');
+  await signInAsNia(page);
+
+  const response = await page.request.post('/api/streak-rewards/7/give', { headers: { 'X-Requested-With': 'Shelfie' } });
+  expect(response.status()).toBe(403);
 });

@@ -117,4 +117,25 @@ export class ReviewPage {
   async scrollsSideways() {
     return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   }
+
+  /** The card for an earned streak reward that has not been given yet. */
+  streakRewardCard(days: number) {
+    return this.page.getByRole('region', { name: `Nia reached a ${days}-day streak` });
+  }
+
+  async giveStreakReward(days: number) {
+    await this.streakRewardCard(days).getByRole('button', { name: 'Give it' }).click();
+  }
+
+  toast(text: string) {
+    return this.page.getByRole('status').getByText(text);
+  }
+
+  async breakGiving() {
+    await this.page.route('**/api/streak-rewards/*/give', (route) => route.abort());
+  }
+
+  async repairGiving() {
+    await this.page.unroute('**/api/streak-rewards/*/give');
+  }
 }

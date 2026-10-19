@@ -106,6 +106,31 @@
       </section>
     }
 
+    @for (reward of earnedStreakRewards(); track reward.milestone) {
+      <section class="card stack reward-card" [attr.aria-labelledby]="'streak-reward-' + reward.milestone">
+        <div class="book-card">
+          <span class="sticker" aria-hidden="true">🎁</span>
+          <div class="book-card__body">
+            <h2 [id]="'streak-reward-' + reward.milestone" class="section-title">
+              {{ overview.readerName }} reached a {{ reward.milestone }}-day streak
+            </h2>
+            <span class="book-card__author">Her reward: {{ reward.name }}</span>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn--primary"
+            type="button"
+            [disabled]="givingStreak() !== null"
+            [attr.aria-busy]="givingStreak() === reward.milestone ? true : null"
+            (click)="giveStreakReward(reward)"
+          >
+            Give it
+          </button>
+        </div>
+      </section>
+    }
+
     <section class="card stack" aria-labelledby="activity-title">
       <h2 id="activity-title" class="section-title">Recent activity</h2>
       <ul class="activity">

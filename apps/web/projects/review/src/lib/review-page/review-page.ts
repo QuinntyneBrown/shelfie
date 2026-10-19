@@ -2,9 +2,9 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
-import { ShellStatusService, ToastService } from 'core';
+import { ApiError, ShellStatusService, ToastService } from 'core';
 import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
-import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview } from '../review-api';
+import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview, StreakReward } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -27,18 +27,25 @@ export class ReviewPage {
   private readonly toasts = inject(ToastService);
   protected readonly overview = signal<ReviewOverview | null>(null);
   protected readonly rewarding = signal<FinishedBook | null>(null);
+  private readonly reviewApi = inject(ReviewApi);
+  /** The streak milestone being given, so its button cannot be pressed twice. */
+  protected readonly givingStreak = signal<number | null>(null);
+  /** Streak rewards the reader has earned and the parent has not given yet. */
+  protected readonly earnedStreakRewards = computed(() =>
+    (this.overview()?.streakRewards ?? []).filter((r) => r.name && r.earnedOn && !r.givenOn),
+  );
   protected readonly summary = computed(() => {
     const overview = this.overview();
     if (!overview) return '';
     const chapters = overview.queue.length;
-    const rewards = overview.finishedUnrewarded.length;
+    const rewards = overview.finishedUnrewarded.length + this.earnedStreakRewards().length;
     const line = `${chapters} ${chapters === 1 ? 'chapter' : 'chapters'} to read · ${rewards} ${rewards === 1 ? 'reward' : 'rewards'} to give`;
     return chapters >= LONG_QUEUE ? `${line} · back from a week away?` : line;
   });
 
   constructor() {
     const status = inject(ShellStatusService);
-    inject(ReviewApi)
+    this.reviewApi
       .load()
       .then((overview) => {
         this.overview.set(overview);
@@ -50,6 +57,23 @@ export class ReviewPage {
   protected goalNameOf(overview: ReviewOverview, book: FinishedBook | null) {
     const goal = overview.goal;
     return goal?.reached && goal.bookId === book?.bookId ? goal.name : null;
+  }
+
+  protected async giveStreakReward(reward: StreakReward) {
+    if (this.givingStreak() !== null) return;
+    this.givingStreak.set(reward.milestone);
+    try {
+      const given = await this.reviewApi.giveStreakReward(reward.milestone);
+      this.overview.update(
+        (o) => o && { ...o, streakRewards: o.streakRewards.map((r) => (r.milestone === given.milestone ? given : r)) },
+      );
+      this.toasts.show({ title: `${reward.name} given` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: 'The reward wasn’t given', severity: 'danger' });
+    } finally {
+      this.givingStreak.set(null);
+    }
   }
 
   protected rewarded(book: FinishedBook) {
