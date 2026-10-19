@@ -114,6 +114,14 @@ export class ReviewPage {
     return this.badges().getByRole('listitem').filter({ hasText: name });
   }
 
+  /** How the badges are laid out: whether the list shows bullets, and how many tiles share the first row. */
+  async badgeLayout() {
+    const items = this.badges().getByRole('listitem');
+    const bullets = await items.first().evaluate((li) => getComputedStyle(li).listStyleType !== 'none');
+    const tops = await items.evaluateAll((lis) => lis.map((li) => Math.round(li.getBoundingClientRect().top)));
+    return { bullets, perRow: tops.filter((top) => top === tops[0]).length };
+  }
+
   async scrollsSideways() {
     return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   }
