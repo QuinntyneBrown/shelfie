@@ -42,6 +42,8 @@ export interface BookMatch {
 export const catalogueCoverUrl = (coverId: string) => `/api/books/search/covers/${coverId}`;
 
 export interface NewBook {
+  /** Whose shelf it goes on; a parent names a reader when there is more than one (L2-139). */
+  readerId?: string;
   title: string;
   author: string;
   chapterCount: number;
@@ -159,6 +161,11 @@ export class ShelfApi {
       if (cached) return cached;
       throw e;
     }
+  }
+
+  /** The household's readers and the one the parent's pages are about; `query` is `?reader=…` or empty. */
+  readers(query = '') {
+    return this.api.get<{ readerId: string | null; readers: { id: string; name: string }[] }>(`/books${query}`);
   }
 
   addBook(book: NewBook) {

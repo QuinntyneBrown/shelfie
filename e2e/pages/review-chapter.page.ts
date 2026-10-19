@@ -146,4 +146,9 @@ export class ReviewChapterPage {
     const crumb = await this.page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('listitem').first().boundingBox();
     return crumb!.y - (bar!.y + bar!.height);
   }
+
+  /** The chapter's reader beside the title, "Theo’s chapter", shown when the household has two or more readers. */
+  readerLabel() {
+    return this.page.locator('.book-card__body').getByText(/’s chapter$/);
+  }
 }

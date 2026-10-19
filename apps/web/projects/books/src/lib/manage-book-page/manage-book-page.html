@@ -13,6 +13,12 @@
           @if (book.author) {
             <span class="book-card__author">{{ book.author }}</span>
           }
+          @if (book.reader && book.readerCount > 1) {
+            <span class="cluster reader-label">
+              <sh-avatar [name]="book.reader.name" [color]="book.reader.color" [photo]="book.reader.photo" size="sm" />
+              <span class="text-muted">{{ book.reader.name }}’s book</span>
+            </span>
+          }
           <sh-progress
             [value]="book.loggedCount"
             [max]="book.chapterCount"

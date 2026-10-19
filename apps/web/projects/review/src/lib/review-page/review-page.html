@@ -17,6 +17,14 @@
     </sh-empty-state>
   }
   @if (overview(); as overview) {
+    @if (readerOptions().length) {
+      <sh-segmented
+        label="Reader"
+        [options]="readerOptions()"
+        [value]="overview.readerId ?? ''"
+        (valueChange)="pickReader($event)"
+      />
+    }
     <section class="card stack" aria-labelledby="this-week">
       <h2 id="this-week" class="section-title">This week</h2>
       <div class="cluster stats">

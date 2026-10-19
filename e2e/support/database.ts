@@ -1,3 +1,4 @@
+import { addSecondReader } from '../../apps/api/src/seed.ts';
 import type { Pool } from 'pg';
 
 let db: Pool;
@@ -139,3 +140,18 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
   return found.map((r) => r.endpoint);
 }
 
+
+/** Adds Theo to Nia and Dad's household, with Dinosaurs Before Dark: 4 chapters logged today, the 4th waiting for Dad. */
+export async function addTheo() {
+  await addSecondReader(db);
+}
+
+/** Gives the seeded household a reading goal running between two days, as Dad would have set it. */
+export async function setReadingGoal(target: number, startsOn: string, endsOn: string) {
+  await db.query("INSERT INTO reading_goal (id, household_id, target, starts_on, ends_on, created_at) VALUES ('goal-h1', 'h1', $1, $2, $3, $4)", [
+    target,
+    startsOn,
+    endsOn,
+    new Date().toISOString(),
+  ]);
+}

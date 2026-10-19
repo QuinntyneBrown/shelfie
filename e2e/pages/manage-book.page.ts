@@ -271,4 +271,9 @@ export class ManageBookPage {
   patchViaApi(bookId: string, data: unknown) {
     return this.page.request.patch(`/api/books/${bookId}`, { ...SAME_SITE, data });
   }
+
+  /** The book's reader beside the title, "Theo’s book", shown when the household has two or more readers. */
+  readerLabel() {
+    return this.page.locator('.page-header').getByText(/’s book$/);
+  }
 }

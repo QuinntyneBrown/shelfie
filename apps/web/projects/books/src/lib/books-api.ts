@@ -38,6 +38,9 @@ export interface BookDetail {
   finishedAt: string | null;
   finishedOn: string | null;
   readerName: string;
+  /** The book's reader, shown beside the title when the household has more than one (L2-142). */
+  reader: ReaderLabel | null;
+  readerCount: number;
   reward: { text: string; givenOn: string } | null;
   defaultQuestions: string[];
   questions: CustomQuestion[];
@@ -56,8 +59,19 @@ export interface BookPatch {
   chapterCount: number;
 }
 
+/** A reader as parent pages label her. */
+export interface ReaderLabel {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+}
+
 export interface BookList {
+  /** The reader the list is about; null in a household with no reader. */
+  readerId: string | null;
   readerName: string;
+  readers: ReaderLabel[];
   books: BookListItem[];
 }
 
@@ -102,7 +116,8 @@ export class BooksApi {
     return this.api.delete(`/books/${id}/cover`);
   }
 
-  list() {
-    return this.api.get<BookList>('/books');
+  /** One reader's books; `query` is `?reader=…` or empty for the first reader. */
+  list(query = '') {
+    return this.api.get<BookList>(`/books${query}`);
   }
 }

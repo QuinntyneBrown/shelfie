@@ -46,6 +46,8 @@ export interface ChapterLog {
   readOn: string;
   today: string;
   readerName: string;
+  reader: { id: string; name: string; color: string; photo: string | null } | null;
+  readerCount: number;
   answers: { position: number; questionText: string; text: string }[];
   review: {
     sticker: string;
@@ -83,9 +85,21 @@ export interface StreakReward {
   givenOn: string | null;
 }
 
+/** A reader in Review's picker, with how many of her chapters wait for feedback. */
+export interface ReaderSummary {
+  id: string;
+  name: string;
+  color: string;
+  photo: string | null;
+  waiting: number;
+}
+
 export interface ReviewOverview {
   activity: ActivityItem[];
+  /** The reader the page is about; null in a household with no reader. */
+  readerId: string | null;
   readerName: string;
+  readers: ReaderSummary[];
   today: string;
   queue: QueueItem[];
   finishedUnrewarded: FinishedBook[];
@@ -112,15 +126,21 @@ export class ReviewApi {
     return this.api.post<Advice>(`/chapter-logs/${id}/assist`, {});
   }
 
-  giveStreakReward(milestone: number) {
-    return this.api.post<StreakReward>(`/streak-rewards/${milestone}/give`, {});
+  /** Gives the reader her earned streak reward; with no reader named, the household's first reader. */
+  giveStreakReward(milestone: number, readerId: string | null = null) {
+    return this.api.post<StreakReward>(`/streak-rewards/${milestone}/give`, readerId ? { readerId } : {});
   }
 
   giveReward(bookId: string, body: { text: string; note: string }) {
     return this.api.post<{ bookId: string; text: string }>(`/books/${bookId}/reward`, body);
   }
 
-  load() {
-    return this.api.get<ReviewOverview>('/review');
+  /** Review about one reader; `query` is `?reader=…` or empty for the first reader. */
+  load(query = '') {
+    return this.api.get<ReviewOverview>(`/review${query}`);
   }
 }
+
+/** Every chapter waiting in the household, for the Review badge, whichever reader the page is about. */
+export const waitingInHousehold = (overview: ReviewOverview) =>
+  overview.readers.length ? overview.readers.reduce((sum, r) => sum + r.waiting, 0) : overview.queue.length;

@@ -171,4 +171,22 @@ export class ReviewPage {
   async repairGiving() {
     await this.page.unroute('**/api/streak-rewards/*/give');
   }
+
+  /** The "Reader" picker, shown only when the household has two or more readers. */
+  readerPicker() {
+    return this.page.getByRole('group', { name: 'Reader' });
+  }
+
+  readerChoice(name: string) {
+    return this.readerPicker().getByRole('button', { name: new RegExp(`^${name}\\b`) });
+  }
+
+  async pickReader(name: string) {
+    await this.readerChoice(name).click();
+  }
+
+  /** A reader's read-only badges card, "Theo’s badges". */
+  readersBadges(name: string) {
+    return this.page.getByRole('region', { name: new RegExp(`^${name}’s badges`) });
+  }
 }

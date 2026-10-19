@@ -25,6 +25,17 @@
           </ul>
         </sh-banner>
       }
+      @if (readerOptions().length) {
+        <div class="card stack">
+          <h2 class="section-title">Who is reading it?</h2>
+          <sh-segmented
+            label="Who is reading it?"
+            [options]="readerOptions()"
+            [value]="readerId() ?? ''"
+            (valueChange)="pickReader($event)"
+          />
+        </div>
+      }
       <div class="card stack">
         <sh-combobox
           label="Title"
@@ -63,7 +74,7 @@
       </div>
       <div class="form-actions">
         <a class="btn btn--ghost" routerLink="/shelf">Cancel</a>
-        <sh-button [large]="true" [busy]="saving()">Add to my shelf</sh-button>
+        <sh-button [large]="true" [busy]="saving()">{{ submitLabel() }}</sh-button>
       </div>
     </form>
     <aside class="card stack preview" aria-label="Cover preview">

@@ -47,3 +47,7 @@
     top: calc(var(--layout-topbar-height) + var(--space-4));
   }
 }
+/* The book's reader beside its title, when the household has more than one (L2-142). */
+.reader-label {
+  gap: var(--space-2);
+}

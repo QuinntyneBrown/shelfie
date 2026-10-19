@@ -1,10 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
-import { ApiError, ShellStatusService, ToastService } from 'core';
+import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS, Segmented } from 'components';
+import { ApiError, ReaderChoiceService, ShellStatusService, ToastService } from 'core';
 import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
-import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview, StreakReward } from '../review-api';
+import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview, StreakReward, waitingInHousehold } from '../review-api';
 
 const addDays = (isoDay: string, days: number) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
@@ -17,7 +17,7 @@ const LONG_QUEUE = 10;
 
 @Component({
   selector: 'sh-review-page',
-  imports: [AchievementBadge, ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink],
+  imports: [AchievementBadge, ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink, Segmented],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,19 +46,40 @@ export class ReviewPage {
   protected readonly failed = signal(false);
   private readonly status = inject(ShellStatusService);
 
+  private readonly status = inject(ShellStatusService);
+  private readonly readerChoice = inject(ReaderChoiceService);
+  /** The picker's chips, one per reader with her waiting chapters; none with a single reader (L2-138). */
+  protected readonly readerOptions = computed(() => {
+    const readers = this.overview()?.readers ?? [];
+    return readers.length > 1 ? readers.map((r) => ({ value: r.id, label: `${r.name} · ${r.waiting}` })) : [];
+  });
+
   constructor() {
     this.load();
   }
 
-  protected load() {
+  protected async load() {
     this.failed.set(false);
-    this.reviewApi
-      .load()
-      .then((overview) => {
-        this.overview.set(overview);
-        this.status.queueCount.set(overview.queue.length);
-      })
-      .catch(() => this.failed.set(true));
+    let overview: ReviewOverview;
+    try {
+      overview = await this.reviewApi.load(this.readerChoice.query()).catch((e) => {
+        // A remembered reader who is no longer in the household: forget her and show the first reader.
+        if (!(e instanceof ApiError && e.status === 404 && this.readerChoice.selected())) throw e;
+        this.readerChoice.choose(null);
+        return this.reviewApi.load();
+      });
+    } catch {
+      this.failed.set(true);
+      return;
+    }
+    this.overview.set(overview);
+    this.status.queueCount.set(waitingInHousehold(overview));
+  }
+
+  protected pickReader(readerId: string) {
+    if (readerId === this.overview()?.readerId) return;
+    this.readerChoice.choose(readerId);
+    this.load();
   }
 
   /** The goal's name when this finished book is the one that reached the reader's goal. */
@@ -71,7 +92,7 @@ export class ReviewPage {
     if (this.givingStreak() !== null) return;
     this.givingStreak.set(reward.milestone);
     try {
-      const given = await this.reviewApi.giveStreakReward(reward.milestone);
+      const given = await this.reviewApi.giveStreakReward(reward.milestone, this.overview()?.readerId ?? null);
       this.overview.update(
         (o) => o && { ...o, streakRewards: o.streakRewards.map((r) => (r.milestone === given.milestone ? given : r)) },
       );
