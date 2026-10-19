@@ -1,4 +1,4 @@
-// Traces to: L2-114
+// Traces to: L2-120
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { BookPage } from '../pages/book.page';

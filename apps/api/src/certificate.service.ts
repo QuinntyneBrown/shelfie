@@ -22,7 +22,7 @@ const GOLD = '#fbe7b2';
 
 const A4_LANDSCAPE = { width: 841.89, height: 595.28 };
 
-/** Draws the one-page finish certificate of a finished book, or throws 404 not-found / 409 not-finished (L2-114). */
+/** Draws the one-page finish certificate of a finished book, or throws 404 not-found / 409 not-finished (L2-120). */
 export async function renderCertificate(db: Db, householdId: string, bookId: string): Promise<Buffer> {
   const book = await getBook(db, householdId, bookId);
   if (!book.finishedAt) throw new Problem(409, 'not-finished');

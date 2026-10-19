@@ -9,7 +9,7 @@ import { requireSession, type RequestSession } from './session.ts';
 export function certificateRouter(db: Pool) {
   const router = Router();
 
-  // Same access as GET /books/:id: the reader and her parents can all print it (L2-114).
+  // Same access as GET /books/:id: the reader and her parents can all print it (L2-120).
   router.get('/:id/certificate.pdf', requireSession(db), requireRole('reader'), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     const bookId = String(req.params['id']);
