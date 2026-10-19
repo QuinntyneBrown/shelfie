@@ -4,11 +4,11 @@ import { DAD } from '../support/accounts';
 import { SignUpPage } from '../pages/sign-up.page';
 import { SignInPage } from '../pages/sign-in.page';
 import { ShellPage } from '../pages/shell.page';
-import { ReviewPage } from '../pages/review.page';
+import { OnboardingPage } from '../pages/onboarding.page';
 
 const PRIYA = { name: 'Priya', email: 'priya@example.com', username: 'priya', password: 'bookworm-2026' };
 
-test('Given a new parent, when she creates an account, then a household of her own starts and she lands on Review signed in', async ({ page }) => {
+test('Given a new parent, when she creates an account, then a household of her own starts and she lands, signed in, on the set-up wizard', async ({ page }) => {
   const signIn = new SignInPage(page);
   await signIn.open();
   await signIn.chooseCreateAccount();
@@ -17,13 +17,8 @@ test('Given a new parent, when she creates an account, then a household of her o
   await signUp.fill(PRIYA);
   await signUp.submit();
 
-  await expect(page).toHaveURL(/\/review$/);
-  const review = new ReviewPage(page);
-  await expect(review.heading()).toHaveText('Review');
-  await expect(review.caughtUp()).toBeVisible();
-  const shell = new ShellPage(page);
-  await shell.openAccountMenu('Priya');
-  await expect(shell.menu()).toContainText('@priya · parent');
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(new OnboardingPage(page).heading()).toHaveText('Let’s set up Shelfie for your family');
 });
 
 test('Given a username that is too short or has other characters, when submitted, then the field says so and nothing is sent', async ({ page }) => {
@@ -84,7 +79,7 @@ test('Given the server cannot be reached, when submitted, then an error with Try
   await signUp.repairSignUp();
   await signUp.tryAgain();
 
-  await expect(page).toHaveURL(/\/review$/);
+  await expect(page).toHaveURL(/\/onboarding$/);
 });
 
 test('Given a window tall enough for the whole form, when sign-up shows, then the page does not scroll', async ({ page }) => {

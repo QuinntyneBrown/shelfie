@@ -1,0 +1,81 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Onboard a household
+
+class OnboardingPage {
+  +step: InputSignal<'welcome' | 'child' | 'sign-in' | 'reward' | 'done'>
+  +childName: WritableSignal<string>
+  +username: WritableSignal<string>
+  +password: WritableSignal<string>
+  +reader: WritableSignal<ReaderView | null>
+  +rewards: WritableSignal<GalleryReward[]>
+  +rewardName: WritableSignal<string>
+  +target: WritableSignal<string>
+  +busy: WritableSignal<boolean>
+  +failed: WritableSignal<boolean>
+  +loadFailed: WritableSignal<boolean>
+  +load(): Promise<void>
+  +next(): Promise<void>
+  +addReader(): Promise<void>
+  +addReward(stay: boolean): Promise<void>
+  +skip(): Promise<void>
+  +finish(): Promise<void>
+}
+class OnboardingApi {
+  +readers(): Promise<ReaderView[]>
+  +rewards(): Promise<GalleryReward[]>
+  +addReader(input: ReaderInput): Promise<ReaderView>
+  +addReward(input: GalleryRewardInput): Promise<GalleryReward>
+  +finish(): Promise<void>
+}
+class StepIndicator {
+  +current: InputSignal<number>
+  +total: InputSignal<number>
+}
+class AuthLayout
+class Session {
+  +profileId: string
+  +role: 'reader' | 'parent'
+  +onboarded: boolean
+}
+class SessionService {
+  +current: WritableSignal<Session | null>
+  +update(changes): void
+}
+class Household {
+  +id: string
+  +onboarded: boolean
+}
+class Profile {
+  +id: string
+  +householdId: string
+  +role: parent | reader
+  +name: string
+  +color: string
+  +username: string
+}
+class GalleryReward {
+  +id: string
+  +householdId: string
+  +name: string
+  +target: number
+}
+
+OnboardingPage ..> OnboardingApi : calls
+OnboardingPage ..> SessionService : reads onboarded, sets it
+OnboardingPage --> StepIndicator : shows
+OnboardingPage --> AuthLayout : sits in
+SessionService --> Session : holds
+Session ..> Household : onboarded comes from
+Household "1" *-- "1..*" Profile : members
+Household "1" *-- "*" GalleryReward : gallery
+@enduml

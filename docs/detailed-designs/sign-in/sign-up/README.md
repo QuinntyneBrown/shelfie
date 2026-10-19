@@ -6,7 +6,7 @@ Shelfie is a web application that helps children read books by logging each chap
 
 Only parents hold accounts. A person who has no account and no invite creates one on the **Create a parent account** page, reached from the Sign in page. Signing up starts a new household with that parent as its only member. The parent enters a display name, an e-mail address, a **username** and a password typed twice. The username is the name used at every sign-in; it is unique across all parents and readers, ignoring case. The e-mail address is used for password recovery and for invites.
 
-On success the household and parent are created, the parent is signed in on this device and Review opens. A username or e-mail that is already in use is reported inline on its field, and the values entered stay in the form.
+On success the household and parent are created, the parent is signed in on this device and the one-time set-up wizard opens (sign-in/onboard-household, `L2-137`); Review opens once the wizard is finished or skipped. A username or e-mail that is already in use is reported inline on its field, and the values entered stay in the form.
 
 The feature sits in the `sign-in` subsystem beside password sign-in, accept-invite, session management and password reset. A person who instead holds an invite link joins an existing household through accept-invite.
 
@@ -19,6 +19,7 @@ The slice runs from one page in the sign-in library to the `household`, `profile
 - **`auth.router.ts`** — `POST /api/auth/sign-up` validates with `signUpSchema` (`displayName`, `email`, `username` matching `^[A-Za-z0-9._]{3,20}$`, `password` of at least 8 characters, `confirm` equal to `password`) and answers `201 {session}` with `Set-Cookie shelfie_session` and, when the device cookie is absent, `Set-Cookie shelfie_device`. It requires no session.
 - **`auth.service.ts`** — `signUp(input, deviceId)`: checks that the lower-cased username is unused by any parent or reader and that the e-mail is unregistered, failing with one `taken` problem (HTTP `409`) whose `fields` lists `username`, `email` or both; hashes the password with argon2id (`L2-027`); then, in one transaction, inserts the `household`, inserts the `profile` with role `parent`, inserts the session and ensures the device row.
 - **`auth.repo.ts`** — `usernameExists`, `emailExists`, `createHousehold`, `createParent`, `createSession`, `createDevice`. All SQL is parameterised.
+- **Landing** — the household is inserted with `onboarded = FALSE` (migration `011-onboarding.sql`) and the session carries `onboarded: false`, so `SignUpPage` navigates to `/onboarding` rather than `/review`. An invited parent joins a household that is already done and still lands on Review.
 - **Remember me** — the sign-up page offers no "Remember me" control in the mock; the session created here is remembered (30-day idle timeout), as the sign-in page's switch defaults to on.
 
 Data changes this feature relies on, shared with accept-invite and password sign-in:

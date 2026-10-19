@@ -12,11 +12,18 @@ export interface Session {
   theme: 'device' | 'light' | 'dark';
   /** The URL of the person's own photo, or null when they have none. */
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard; false only for a household just signed up. */
+  onboarded: boolean;
 }
 
-/** Where a person starts: Review for a parent, the shelf for a reader, My profile for an author or volunteer (ADR-0024). */
-export function homeOf(role: Session['role']): string {
-  return role === 'parent' ? '/review' : role === 'reader' ? '/shelf' : '/me';
+/**
+ * Where a person lands after signing in: a reader on her shelf, an author or volunteer on My profile (ADR-0024),
+ * a parent on Review, or on the set-up wizard while it is pending.
+ */
+export function homeOf(session: Pick<Session, 'role' | 'onboarded'>): string {
+  if (session.role === 'reader') return '/shelf';
+  if (session.role !== 'parent') return '/me';
+  return session.onboarded ? '/review' : '/onboarding';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,7 +35,7 @@ export class SessionService {
   readonly expired = signal(false);
 
   /** Shows changed details straight away, without another sign-in. */
-  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color' | 'photo'>>) {
+  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color' | 'photo' | 'onboarded'>>) {
     this.current.update((session) => (session ? { ...session, ...changes } : session));
   }
 

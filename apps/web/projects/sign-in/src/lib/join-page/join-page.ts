@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
+import { AuthLayout, Banner, Button, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 import { usernameProblem } from '../sign-up-page/sign-up-page';
 
 type Field = 'name' | 'email' | 'username' | 'password' | 'confirm';

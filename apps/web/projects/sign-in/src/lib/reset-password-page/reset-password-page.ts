@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
+import { AuthLayout, Banner, Button, TextField } from 'components';
 import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-reset-password-page',
@@ -22,8 +21,8 @@ export class ResetPasswordPage {
 
   /** Where the reset person goes next: Review for a parent, My profile for an author or volunteer. */
   protected readonly home = computed(() => {
-    const role = this.session.current()?.role;
-    return role ? homeOf(role) : '/review';
+    const current = this.session.current();
+    return current ? homeOf(current) : '/review';
   });
   protected readonly password = signal('');
   protected readonly confirm = signal('');

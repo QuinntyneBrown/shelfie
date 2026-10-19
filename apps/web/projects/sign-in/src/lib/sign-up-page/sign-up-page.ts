@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { AuthLayout, Banner, Button, TextField } from 'components';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 
 export const USERNAME_RULE = /^[A-Za-z0-9._]{3,20}$/;
 
@@ -83,7 +82,7 @@ export class SignUpPage {
       this.submitting.set(false);
     }
     this.session.current.set(session);
-    await this.router.navigateByUrl('/review');
+    await this.router.navigateByUrl(homeOf(session));
   }
 
   /** Lists one line per field in error, in form order, and puts focus on the list. */

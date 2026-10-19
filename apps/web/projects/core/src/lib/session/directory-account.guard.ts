@@ -11,5 +11,5 @@ export const directoryAccountGuard: CanActivateFn = () => {
     return inject(Router).createUrlTree(['/sign-in'], {
       queryParams: session.expired() ? { reason: 'expired' } : {},
     });
-  return inject(Router).createUrlTree([homeOf(role)]);
+  return inject(Router).createUrlTree([homeOf(session.current()!)]);
 };

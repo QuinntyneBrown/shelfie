@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" role="img" aria-label="A padlock with a star keyhole and a key">
+<path d="M78 80V60a30 30 0 0 1 60 0v20" fill="none" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/>
+<rect x="56" y="78" width="104" height="80" rx="16" fill="#e3d9fb" stroke="#7c3aed" stroke-width="4"/>
+<path d="M108 100l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#fbe7b2" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="192" cy="60" r="18" fill="#fbe7b2" stroke="#7c3aed" stroke-width="4"/>
+<circle cx="192" cy="60" r="5" fill="#7c3aed"/>
+<path d="M192 78v60M192 118h12M192 132h16" fill="none" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/>
+<path d="M186 78v60" stroke="#fbe7b2" stroke-width="2"/>
+</svg>

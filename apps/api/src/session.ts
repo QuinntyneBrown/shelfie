@@ -18,6 +18,8 @@ export interface RequestSession {
   role: 'reader' | 'parent';
   /** The URL of the person's own photo, or null when they have none. */
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard (L2-137). */
+  onboarded: boolean;
 }
 
 /** A session of any role; an author's or volunteer's has no household (ADR-0019). */
@@ -41,7 +43,7 @@ function loadSession(db: Db, admit: (session: AnySession, res: Response, next: N
     const row = id
       ? await get<Omit<AnySession, 'photo'> & { expiresAt: string; photoEtag: string | null }>(
           db,
-          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, COALESCE(h.theme, 'device') AS theme, p.household_id AS "householdId", p.role,
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, COALESCE(h.theme, 'device') AS theme, p.household_id AS "householdId", p.role, COALESCE(h.onboarded, true) AS onboarded,
                   s.expires_at AS "expiresAt", pp.etag AS "photoEtag"
              FROM session s JOIN profile p ON p.id = s.profile_id LEFT JOIN household h ON h.id = p.household_id
              LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,

@@ -5,7 +5,7 @@ import { ErrorPage } from '../pages/error.page';
 import { MyProfilePage } from '../pages/my-profile.page';
 import { ReviewPage } from '../pages/review.page';
 
-const HOUSEHOLD_PAGES = ['/shelf', '/book/b-lion', '/add-book', '/books/b-lion/chapters/12/log', '/chapter-logs/b-lion-c1', '/review', '/review/chapters/b-lion-c11', '/books', '/manage-book/b-lion', '/settings'];
+const HOUSEHOLD_PAGES = ['/shelf', '/book/b-lion', '/add-book', '/books/b-lion/chapters/12/log', '/chapter-logs/b-lion-c1', '/review', '/review/chapters/b-lion-c11', '/books', '/manage-book/b-lion', '/settings', '/onboarding'];
 
 test('Given Rosa, an author, when she opens any family page by URL, then she is told it is for families and can go back to her profile', async ({ page }) => {
   await joinAsRosa(page);

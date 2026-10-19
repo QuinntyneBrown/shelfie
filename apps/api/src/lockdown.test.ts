@@ -52,6 +52,7 @@ const HOUSEHOLD_ROUTES: [string, string][] = [
   ['POST', '/api/books/b-lion/reward'],
   ['GET', '/api/settings'],
   ['PATCH', '/api/settings'],
+  ['POST', '/api/settings/onboarded'],
   ['POST', '/api/readers'],
   ['PATCH', `/api/readers/${SEED.readerId}`],
   ['GET', '/api/gallery-rewards'],

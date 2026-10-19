@@ -47,6 +47,16 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('sign-in').then((m) => m.ResetPasswordPage),
   },
+  {
+    path: 'onboarding',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('onboarding').then((m) => m.OnboardingPage),
+  },
+  {
+    path: 'onboarding/:step',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('onboarding').then((m) => m.OnboardingPage),
+  },
   { path: 'offline', loadComponent: () => import('sign-in').then((m) => m.OfflinePage) },
   { path: 'error', loadComponent: () => import('sign-in').then((m) => m.ServerErrorPage) },
   {

@@ -1,11 +1,11 @@
 # Estimates
 
-- Overall effort: 138 days
+- Overall effort: 142 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [sign-in](sign-in.md) | 14 days | 100% |
+| [sign-in](sign-in.md) | 18 days | 100% |
 | [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 15 days | 89% |
 | [shell](shell.md) | 13 days | 98% |
@@ -20,7 +20,7 @@
 
 1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
 2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts; for the directory, paid profiles and any payment provider (ADR-0020), selling or linking to books, reading an author's book in Shelfie, messaging, booking or scheduling between parents and volunteers or authors, background or identity checks, ratings, reviews, search filters beyond Authors and Volunteers, featured listings, statistics for authors and self-service deletion for authors and volunteers
+3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the set-up wizard, more than one child, streak rewards, reward pictures and descriptions, the first book, re-running it from Settings and inviting the other parent; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts; for the directory, paid profiles and any payment provider (ADR-0020), selling or linking to books, reading an author's book in Shelfie, messaging, booking or scheduling between parents and volunteers or authors, background or identity checks, ratings, reviews, search filters beyond Authors and Volunteers, featured listings, statistics for authors and self-service deletion for authors and volunteers
 
 ## Risks and dependencies
 

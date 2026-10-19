@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" role="img" aria-label="A smiling child holding a book">
+<circle cx="120" cy="78" r="46" fill="#cdf1ec" stroke="#7c3aed" stroke-width="4"/>
+<path d="M82 60c6-22 24-34 38-34s32 12 38 34c-10-8-24-12-38-12s-28 4-38 12z" fill="#7c3aed"/>
+<circle cx="104" cy="80" r="4" fill="#7c3aed"/><circle cx="136" cy="80" r="4" fill="#7c3aed"/>
+<path d="M104 98c8 8 24 8 32 0" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+<circle cx="92" cy="94" r="6" fill="#f9d5e0"/><circle cx="148" cy="94" r="6" fill="#f9d5e0"/>
+<path d="M74 170c4-24 22-40 46-40s42 16 46 40z" fill="#cfe6fb" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+<path d="M98 148h44v20H98z" fill="#f9d5e0" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+<path d="M120 148v20" stroke="#7c3aed" stroke-width="4"/>
+</svg>

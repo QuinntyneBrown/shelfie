@@ -15,7 +15,7 @@ test('Given an empty database, when the API migrates, then every migration is ap
   try {
     await migrate(db.pool);
 
-    assert.deepEqual((await applied(db.pool)).map((m) => m.name), ['001-initial.sql', '002-profile-photo.sql', '003-book-cover.sql', '004-admin.sql', '005-reward-gallery.sql', '006-streak-reward.sql', '007-reward-pictures.sql', '008-streak-reward-amount.sql', '009-feedback.sql', '010-push.sql', '012-directory.sql']);
+    assert.deepEqual((await applied(db.pool)).map((m) => m.name), ['001-initial.sql', '002-profile-photo.sql', '003-book-cover.sql', '004-admin.sql', '005-reward-gallery.sql', '006-streak-reward.sql', '007-reward-pictures.sql', '008-streak-reward-amount.sql', '009-feedback.sql', '010-push.sql', '011-onboarding.sql', '012-directory.sql']);
     await db.pool.query("INSERT INTO household (id) VALUES ('h1')");
     const row = await get<{ theme: string; count: number }>(db.pool, "SELECT theme, (SELECT COUNT(*) FROM household) AS count FROM household WHERE id = 'h1'");
     assert.deepEqual(row, { theme: 'device', count: 1 });
@@ -31,7 +31,7 @@ test('Given a migrated database, when the API migrates again, then nothing runs 
 
     await migrate(db.pool);
 
-    assert.equal((await applied(db.pool)).length, 11);
+    assert.equal((await applied(db.pool)).length, 12);
     assert.equal((await get<{ id: string }>(db.pool, 'SELECT id FROM household'))?.id, 'h1');
   } finally {
     await db.drop();
@@ -59,7 +59,7 @@ test('Given two API processes starting together, when both migrate, then each mi
   try {
     await Promise.all([migrate(db.pool), migrate(db.pool), migrate(db.pool)]);
 
-    assert.deepEqual((await applied(db.pool)).map((m) => m.name), ['001-initial.sql', '002-profile-photo.sql', '003-book-cover.sql', '004-admin.sql', '005-reward-gallery.sql', '006-streak-reward.sql', '007-reward-pictures.sql', '008-streak-reward-amount.sql', '009-feedback.sql', '010-push.sql', '012-directory.sql']);
+    assert.deepEqual((await applied(db.pool)).map((m) => m.name), ['001-initial.sql', '002-profile-photo.sql', '003-book-cover.sql', '004-admin.sql', '005-reward-gallery.sql', '006-streak-reward.sql', '007-reward-pictures.sql', '008-streak-reward-amount.sql', '009-feedback.sql', '010-push.sql', '011-onboarding.sql', '012-directory.sql']);
   } finally {
     await db.drop();
   }
