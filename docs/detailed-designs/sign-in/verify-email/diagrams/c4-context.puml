@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Verify a parent's e-mail
+
+Person(parent, "Parent", "Signs up; opens the confirm link from their inbox")
+System(shelfie, "Shelfie", "Mails a single-use link at sign-up and marks the address verified when it is opened")
+System_Ext(acs, "Azure Communication Services Email", "Production mail, from hello@shelfie.kids")
+System_Ext(smtp, "Mailpit (SMTP)", "Local development mail")
+System_Ext(inbox, "Parent's mailbox", "Any mail client")
+Rel(parent, shelfie, "Signs up; opens /verify-email; presses Send it again", "HTTPS")
+Rel(shelfie, acs, "Sends HTML + plain text with the VM's managed identity", "HTTPS")
+Rel(shelfie, smtp, "Sends when ACS_EMAIL_ENDPOINT is unset", "SMTP")
+Rel(acs, inbox, "Delivers", "SMTP, SPF/DKIM signed")
+Rel(parent, inbox, "Reads the mail")
+@enduml

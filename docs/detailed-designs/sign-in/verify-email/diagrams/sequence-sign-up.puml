@@ -1,0 +1,41 @@
+@startuml
+title UML sequence behaviour — Sign-up sends the confirm mail
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web" #E0F2FE
+  participant "SignUpPage" as page
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "auth.router.ts" as router
+  participant "auth.service.ts" as auth
+  participant "verify-email.service.ts" as verify
+  participant "mail-template.ts" as template
+  participant "mail.ts" as mail
+end box
+box "Infrastructure" #FFF4E5
+  database "PostgreSQL" as db
+  participant "ACS Email or SMTP" as provider
+end box
+parent -> page : Create my account
+page -> router : POST /api/auth/sign-up
+router -> auth : signUp(input)
+auth -> db : INSERT household, profile (email_verified_at NULL), session
+auth --> router : session (emailVerified: false)
+router -> verify : sendVerification(db, parent, mail)
+verify -> db : DELETE unused email_verification of the parent;\nINSERT (SHA-256(token), profile_id, expires_at = now + 24 h)
+verify -> template : renderMail(heading, paragraph, button /verify-email?token=…, footer)
+template --> verify : { html, text }
+verify -> mail : sendMail(to, "Confirm your e-mail for Shelfie", text, html)
+note right of verify : Not awaited by the router:\nsign-up does not wait for the provider
+mail -> provider : send from Shelfie <hello@shelfie.kids>
+alt send fails
+  mail --> router : rejection
+  router -> router : log { level: error, event: verify-mail-failed } (no token, no address) (L2-144, L2-152)
+end
+router --> page : 201 session summary + Set-Cookie
+page --> parent : Set-up wizard opens (L2-137); no banner in the wizard
+@enduml

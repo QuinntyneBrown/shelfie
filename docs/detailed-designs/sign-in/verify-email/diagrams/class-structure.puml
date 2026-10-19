@@ -1,0 +1,86 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Verify a parent's e-mail
+
+package "web: sign-in library" {
+  class VerifyEmailPage {
+    +state: WritableSignal<'verifying' | 'success' | 'error'>
+    +signedIn: Signal<boolean>
+    +home: Signal<string>
+    +sending: WritableSignal<boolean>
+    +sendNewLink(): Promise<void>
+  }
+  class AuthApi {
+    +verifyEmail(token: string): Promise<void>
+  }
+}
+package "web: core library" {
+  class Session {
+    +role: 'reader' | 'parent'
+    +email: string | null
+    +emailVerified: boolean
+  }
+  class SessionService {
+    +current: WritableSignal<Session | null>
+    +update(changes): void
+    +restore(): Promise<void>
+  }
+  class EmailVerificationService {
+    +resend(): Promise<void>
+  }
+  class BannerMessage {
+    +severity, title, message
+    +action?: { label: string; run(): void }
+  }
+}
+package "api" {
+  class "verify-email.service.ts" as VerifyService {
+    +VERIFY_HOURS = 24
+    +sendVerification(db, parent, mail): Promise<void>
+    +verifyEmail(db, token): Promise<boolean>
+  }
+  class "mail-template.ts" as Template {
+    +renderMail(content: MailContent): { html: string; text: string }
+  }
+  class MailContent {
+    +heading: string
+    +paragraphs: string[]
+    +button: { label: string; url: string }
+    +footer: string
+  }
+  class "mail.ts" as MailTs {
+    +sendMail(to, subject, text, html): Promise<void>
+    +sendWithAcs(client: AcsClient, sender, message): Promise<void>
+  }
+  class EmailVerificationRow <<table email_verification>> {
+    +token_hash: TEXT PK
+    +profile_id: TEXT FK profile ON DELETE CASCADE
+    +created_at: TEXT
+    +expires_at: TEXT
+    +used_at: TEXT NULL
+  }
+  class Profile <<table profile>> {
+    +email_verified_at: TEXT NULL
+  }
+}
+VerifyEmailPage --> AuthApi
+VerifyEmailPage --> EmailVerificationService
+VerifyEmailPage --> SessionService
+EmailVerificationService --> SessionService
+SessionService --> Session
+VerifyService --> Template
+VerifyService --> MailTs
+Template ..> MailContent
+VerifyService --> EmailVerificationRow
+VerifyService --> Profile
+EmailVerificationRow --> Profile
+@enduml

@@ -799,7 +799,8 @@
         "persistent",
         "verify-email",
         "verify-email-sent",
-        "verify-email-limited"
+        "verify-email-limited",
+        "verify-email-failed"
       ],
       "not_applicable": {}
     },

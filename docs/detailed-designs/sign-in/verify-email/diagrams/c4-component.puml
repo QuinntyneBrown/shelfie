@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Verify a parent's e-mail
+
+Container_Boundary(web, "Shelfie web") {
+  Component(app, "App (shelfie application)", "Angular", "Shows the Confirm your e-mail banner while session.emailVerified is false, outside the wizard and /verify-email")
+  Component(page, "VerifyEmailPage", "sign-in library", "verifying, success, error; Send a new link or Sign in")
+  Component(authapi, "AuthApi", "sign-in library", "verifyEmail(token)")
+  Component(resend, "EmailVerificationService", "core library", "resend(): posts and shows the toast")
+  Component(services, "SessionService, BannerService, ToastService", "core library", "Session.emailVerified; banner with an action; toasts")
+}
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "POST /verify-email, POST /verify-email/resend (session, parent, 3 per 10 min), sign-up sends the mail")
+  Component(verify, "verify-email.service.ts", "TypeScript", "sendVerification(), verifyEmail()")
+  Component(template, "mail-template.ts", "TypeScript", "renderMail(): branded HTML + plain text")
+  Component(mail, "mail.ts", "TypeScript", "sendMail(): ACS when ACS_EMAIL_ENDPOINT is set, else SMTP")
+  Component(other, "auth.service.ts, invites.service.ts", "TypeScript", "Reset and invite mails through renderMail; acceptInvite sets email_verified_at")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "migration 012-verify-email.sql")
+}
+Rel(app, resend, "Send it again")
+Rel(page, authapi, "Calls")
+Rel(page, resend, "Send a new link")
+Rel(app, services, "Reads session; shows banner")
+Rel(authapi, router, "POST /api/auth/verify-email", "JSON/HTTPS")
+Rel(resend, router, "POST /api/auth/verify-email/resend", "JSON/HTTPS")
+Rel(router, verify, "Calls")
+Rel(verify, template, "Renders")
+Rel(other, template, "Renders")
+Rel(verify, mail, "Sends")
+Rel(other, mail, "Sends")
+Rel(verify, db, "SQL")
+@enduml

@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (39 screens, 248 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (39 screens, 249 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0017). It uses a copy of the design tokens.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
@@ -72,7 +72,7 @@ Composition rules that hold on every screen:
 | Banner slot | `sh-banner` per `BannerService.banners()`; a banner with an `action` (the parent's "Confirm your e-mail", L2-148) gets a projected `div.alert__actions` holding `button.btn.btn--sm` with the action's label ("Send it again"), as the shelf's push offer projects its buttons | the projected action button |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
 | Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password, verify-email, onboarding) | `sh-auth-layout` | — |
-| Confirm your e-mail banner (parent, `notifications/banner`: verify-email, verify-email-sent, verify-email-limited) | `BannerService.show()` `info` "Confirm your e-mail", "We sent a link to {e-mail}. Open it to confirm the address is yours.", action "Send it again", while the session says `emailVerified: false`; cleared when it turns true. Not shown in the set-up wizard or on `/verify-email`. Send it again → `ToastService` `success` "Sent. Check your inbox." or, when the API answers 429, `warning` "That’s a few links already" | — |
+| Confirm your e-mail banner (parent, `notifications/banner`: verify-email, verify-email-sent, verify-email-limited, verify-email-failed) | `BannerService.show()` `info` "Confirm your e-mail", "We sent a link to {e-mail}. Open it to confirm the address is yours.", action "Send it again", while the session says `emailVerified: false`; cleared when it turns true. Not shown in the set-up wizard or on `/verify-email`. Send it again → `ToastService` `success` "Sent. Check your inbox." or, when the API answers 429, `warning` "That’s a few links already", or `danger` "The link wasn’t sent" when nothing could be sent | — |
 
 ## Shared local components
 
@@ -112,7 +112,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 - **Local:** auth layout; inviting-household header (`sh-avatar` lg with the inviter's initial and never a photo, because the page is signed out and photos are served only inside the household; "Join the Bells", "Marcus invited you."); `error` replaces the form with a sticker, "This invite has expired" (also shown for a used link) and a "Back to sign in" link button. The mock shows `error` as a message, not as `sh-error-state` (inferred below).
 
 #### Confirm your e-mail — `/verify-email` (`pages/verify-email`: verifying, success, error, error-signed-out)
-- **Library:** `sh-auth-layout`; `sh-skeleton` in place of the button (verifying); `sh-button` primary lg block "Send a new link" (error, signed in; `busy` while sending), followed by `ToastService` `success` "Sent. Check your inbox." or `warning` "That’s a few links already" as the banner's Send it again.
+- **Library:** `sh-auth-layout`; `sh-skeleton` in place of the button (verifying); `sh-button` primary lg block "Send a new link" (error, signed in; `busy` while sending), followed by the same toasts as the banner’s Send it again.
 - **Local:** the message card as on Reset password's success and error (large sticker, `h1`, one muted line, a link button): "Confirming your e-mail…" (verifying), "Your e-mail is confirmed" with the address and "Go to Shelfie" to the person's home or to sign-in (success), "This link has expired" with "Sign in" as a link button when signed out (error-signed-out).
 
 #### Forgot password — `/forgot-password` (`pages/forgot-password`: default, invalid, submitting, success, error)

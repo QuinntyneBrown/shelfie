@@ -169,11 +169,11 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 
 ### Notifications
 
-| Screen | info | success | warning | danger | with-action | stacked | persistent | verify-email | verify-email-sent | verify-email-limited | chapter-logged | feedback | book-reward | streak-reward | reset-password | invite | Requirements |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Toast (`toast`) | [✅](notifications/toast/info.html) | [✅](notifications/toast/success.html) | [✅](notifications/toast/warning.html) | [✅](notifications/toast/danger.html) | [✅](notifications/toast/with-action.html) | [✅](notifications/toast/stacked.html) |  |  |  |  |  |  |  |  |  |  |  |
-| Banner (`banner`) | [✅](notifications/banner/info.html) | [✅](notifications/banner/success.html) | [✅](notifications/banner/warning.html) | [✅](notifications/banner/danger.html) |  |  | [✅](notifications/banner/persistent.html) | [✅](notifications/banner/verify-email.html) | [✅](notifications/banner/verify-email-sent.html) | [✅](notifications/banner/verify-email-limited.html) |  |  |  |  |  |  |  |
-| Push notification (`push`) | ➖ | ➖ | ➖ | ➖ |  |  |  |  |  |  | [✅](notifications/push/chapter-logged.html) | [✅](notifications/push/feedback.html) | [✅](notifications/push/book-reward.html) | [✅](notifications/push/streak-reward.html) |  |  | `L2-125`, `L2-126`, `L2-127` |
-| E-mail (`email`) | ➖ | ➖ | ➖ | ➖ |  |  |  | [✅](notifications/email/verify-email.html) |  |  |  |  |  |  | [✅](notifications/email/reset-password.html) | [✅](notifications/email/invite.html) | `L2-004`, `L2-034`, `L2-144`, `L2-145`, `L2-151` |
+| Screen | info | success | warning | danger | with-action | stacked | persistent | verify-email | verify-email-sent | verify-email-limited | verify-email-failed | chapter-logged | feedback | book-reward | streak-reward | reset-password | invite | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Toast (`toast`) | [✅](notifications/toast/info.html) | [✅](notifications/toast/success.html) | [✅](notifications/toast/warning.html) | [✅](notifications/toast/danger.html) | [✅](notifications/toast/with-action.html) | [✅](notifications/toast/stacked.html) |  |  |  |  |  |  |  |  |  |  |  |  |
+| Banner (`banner`) | [✅](notifications/banner/info.html) | [✅](notifications/banner/success.html) | [✅](notifications/banner/warning.html) | [✅](notifications/banner/danger.html) |  |  | [✅](notifications/banner/persistent.html) | [✅](notifications/banner/verify-email.html) | [✅](notifications/banner/verify-email-sent.html) | [✅](notifications/banner/verify-email-limited.html) | [✅](notifications/banner/verify-email-failed.html) |  |  |  |  |  |  |  |
+| Push notification (`push`) | ➖ | ➖ | ➖ | ➖ |  |  |  |  |  |  |  | [✅](notifications/push/chapter-logged.html) | [✅](notifications/push/feedback.html) | [✅](notifications/push/book-reward.html) | [✅](notifications/push/streak-reward.html) |  |  | `L2-125`, `L2-126`, `L2-127` |
+| E-mail (`email`) | ➖ | ➖ | ➖ | ➖ |  |  |  | [✅](notifications/email/verify-email.html) |  |  |  |  |  |  |  | [✅](notifications/email/reset-password.html) | [✅](notifications/email/invite.html) | `L2-004`, `L2-034`, `L2-144`, `L2-145`, `L2-151` |
 
 <!-- coverage:end -->

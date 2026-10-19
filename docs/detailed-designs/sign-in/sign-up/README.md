@@ -6,7 +6,7 @@ Shelfie is a web application that helps children read books by logging each chap
 
 Only parents hold accounts. A person who has no account and no invite creates one on the **Create a parent account** page, reached from the Sign in page. Signing up starts a new household with that parent as its only member. The parent enters a display name, an e-mail address, a **username** and a password typed twice. The username is the name used at every sign-in; it is unique across all parents and readers, ignoring case. The e-mail address is used for password recovery and for invites.
 
-On success the household and parent are created, the parent is signed in on this device and the one-time set-up wizard opens (sign-in/onboard-household, `L2-137`); Review opens once the wizard is finished or skipped. A username or e-mail that is already in use is reported inline on its field, and the values entered stay in the form.
+On success the household and parent are created, the parent is signed in on this device and the one-time set-up wizard opens (sign-in/onboard-household, `L2-137`); Review opens once the wizard is finished or skipped. Sign-up also mails a confirm-your-e-mail link without waiting for it; until the parent opens it the shell shows the "Confirm your e-mail" banner (sign-in/verify-email, `L2-144`). A username or e-mail that is already in use is reported inline on its field, and the values entered stay in the form.
 
 The feature sits in the `sign-in` subsystem beside password sign-in, accept-invite, session management and password reset. A person who instead holds an invite link joins an existing household through accept-invite.
 

@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Open the confirm link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web (sign-in library)" #E0F2FE
+  participant "VerifyEmailPage" as page
+  participant "AuthApi" as client
+  participant "SessionService" as session
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "auth.router.ts" as router
+  participant "verify-email.service.ts" as verify
+end box
+database "PostgreSQL" as db
+parent -> page : Open /verify-email?token=…
+page --> parent : "Confirming your e-mail…" (verifying)
+page -> client : verifyEmail(token)
+client -> router : POST /api/auth/verify-email { token }
+router -> verify : verifyEmail(db, token)
+verify -> db : UPDATE email_verification SET used_at = now\nWHERE token_hash = SHA-256(token) AND used_at IS NULL AND expires_at > now\nRETURNING profile_id
+alt row updated
+  verify -> db : UPDATE profile SET email_verified_at = COALESCE(email_verified_at, now)
+  router --> client : 204 (no cookie set or cleared — L2-146)
+  opt this browser is signed in
+    page -> session : restore()
+    session --> page : emailVerified: true; the shell banner clears (L2-148)
+  end
+  page --> parent : "Your e-mail is confirmed", Go to Shelfie
+else no live row (expired, used, replaced, unknown)
+  router --> client : 400 { type: verify-token-invalid }
+  page --> parent : "This link has expired" with Send a new link (signed in) or Sign in (L2-147)
+end
+@enduml

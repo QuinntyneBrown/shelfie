@@ -6,7 +6,7 @@ Shelfie is a web application that helps a child read books by logging each chapt
 
 An **invite** is a single-use, time-limited link that lets another person create a parent account inside an existing household. This feature is the sending half: a parent opens the Invite a parent dialog from the Parents list in Settings, enters the e-mail address of the person to invite and sends. Shelfie e-mails a link to that address and shows a confirmation. The receiving half, where the invited person opens the link and creates the account, is the accept-invite feature in the `sign-in` subsystem.
 
-The link is valid for 7 days and can be used once. Shelfie stores only a **token hash**, the SHA-256 digest of the random link token, so a copy of the database cannot be used to build a working link. The mail is sent through the same mailer that sends password-reset links. Locally that mailer delivers to Mailpit; the production e-mail provider is deferred work and is not part of this design.
+The link is valid for 7 days and can be used once. Shelfie stores only a **token hash**, the SHA-256 digest of the random link token, so a copy of the database cannot be used to build a working link. The mail is sent through the same mailer that sends password-reset links. It sends the branded HTML mail with a plain-text part (`L2-151`): through Azure Communication Services from `hello@shelfie.kids` in production, to Mailpit locally (sign-in/verify-email, ADR-0019).
 
 ## Description
 
@@ -22,7 +22,7 @@ The slice runs from the Settings page to the `invites` table and the mailer.
 - **`invites.router.ts`** — Express router under `requireRole('parent')`. `POST /api/invites` validates the body with `inviteSchema` through `validate()` (`email` format) and calls the service.
 - **`invites.service.ts`** — `createInvite(householdId, invitedBy, email, mail)`. It generates a 32-byte random token, computes its SHA-256 hash, inserts the invite row, builds the link `{APP_URL}/accept-invite?token={token}` and calls the shared `sendMail` function. The mail states that the link works once for 7 days. If `sendMail` throws, the service deletes the row and rethrows, so a failed send leaves no pending invite. The plain token appears only in the mail.
 - **`invites.repo.ts`** — parameterised SQL over `invites`: `insertInvite`, `deleteInvite`, `listPendingInvites`.
-- **`mail.ts`** — the existing `sendMail(to, subject, text)` function that the reset-password feature uses. It sends through the SMTP server named by `SMTP_URL`; locally that is Mailpit.
+- **`mail.ts`** — the shared `sendMail(to, subject, text, html)`; `createInvite` passes it `renderMail` output with heading "Join {name} on Shelfie", the unchanged sentence and the button "Create my account". It sends through ACS when `ACS_EMAIL_ENDPOINT` is set and over `SMTP_URL` (Mailpit) otherwise (sign-in/verify-email).
 - **`invites`** table — `token_hash` (primary key), `email`, `household_id`, `invited_by`, `expires_at`, `used_at`. `expires_at` is the creation time plus 7 days. `used_at` is set by accept-invite and is NULL while the invite is unused. The table is created by `schema.sql` on start-up like every other.
 
 The "Send again" action shown in the Parents list mock re-sends a pending invite. It posts the same address again: the API replaces the household's unused invite to that address with a fresh token and mails the new link, and the page shows a toast. An address that already belongs to a user is refused with 409 problem type `email-in-use`, shown on the field as "That e-mail already has an account.".
