@@ -98,10 +98,13 @@
             }
           </div>
         </div>
-        <div>
+        <div class="cluster">
           <button class="btn btn--primary" type="button" (click)="rewarding.set(book)">
             Give a reward
           </button>
+          <a class="btn btn--ghost" [attr.href]="'/api/books/' + book.bookId + '/certificate.pdf'" download>
+            Print certificate
+          </a>
         </div>
       </section>
     }

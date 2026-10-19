@@ -56,6 +56,17 @@ export class BookPage {
     return this.page.getByRole('region', { name: 'Reward' });
   }
 
+  certificateLink() {
+    return this.page.getByRole('link', { name: 'Print my certificate' });
+  }
+
+  /** Presses Print my certificate and returns the download it starts. */
+  async printCertificate() {
+    const download = this.page.waitForEvent('download');
+    await this.certificateLink().click();
+    return download;
+  }
+
   async backToShelf() {
     await this.page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'My shelf' }).click();
   }

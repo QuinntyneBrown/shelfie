@@ -172,6 +172,13 @@ export class ManageBookPage {
     await this.page.getByRole('button', { name: 'Suggest questions' }).click();
   }
 
+  /** Presses Print certificate and returns the download it starts. */
+  async printCertificate() {
+    const download = this.page.waitForEvent('download');
+    await this.page.getByRole('link', { name: 'Print certificate' }).click();
+    return download;
+  }
+
   async openAddQuestion() {
     await this.page.getByRole('button', { name: 'Add a question' }).click();
   }
