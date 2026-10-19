@@ -18,7 +18,7 @@ const shots = [
 const covers = {
   'b-lion': '9780064404990',
   'b-robot': '9780316381994',
-  'b-bfg': '9780142410387',
+  'b-bfg': '9780141365428',
   'b-winn': '9780763644321',
   'b-matilda': '9780142410370',
   'b-web': '9780064400558',
@@ -42,6 +42,8 @@ for (const [screen, file] of shots) {
   test(`capture ${file}`, async ({ page }) => {
     await screens.find((s) => s.name === screen)!.open(page);
     await page.evaluate(() => document.fonts.ready);
+    // Covers come from the API after the page renders; until one arrives its sticker shows instead.
+    await page.waitForFunction(() => [...document.images].every((img) => img.complete && img.naturalWidth > 0));
     await page.screenshot({ path: join(OUT, `${file}.png`), animations: 'disabled' });
   });
 }
