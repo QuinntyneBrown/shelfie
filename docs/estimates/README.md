@@ -1,13 +1,13 @@
 # Estimates
 
-- Overall effort: 129 days
-- Complete: 98%
+- Overall effort: 133 days
+- Complete: 95%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [sign-in](sign-in.md) | 18 days | 100% |
+| [sign-in](sign-in.md) | 21 days | 86% |
 | [settings](settings.md) | 17 days | 100% |
-| [platform](platform.md) | 15 days | 89% |
+| [platform](platform.md) | 16 days | 83% |
 | [shell](shell.md) | 13 days | 98% |
 | [review](review.md) | 22 days | 99% |
 | [admin-api](admin-api.md) | 6 days | 100% |
@@ -17,12 +17,14 @@
 
 ## Roadmap
 
-1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
-2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the set-up wizard, more than one child, streak rewards, reward pictures and descriptions, the first book, re-running it from Settings and inviting the other parent; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+1. sign-in, platform: verify a parent's e-mail and the ACS production mail provider (L2-144 to L2-153)
+2. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
+3. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
+4. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, re-verifying an e-mail changed in Settings, dark-mode mail, bounce and complaint handling, self-service household deletion and export; for the set-up wizard, more than one child, streak rewards, reward pictures and descriptions, the first book, re-running it from Settings and inviting the other parent; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
 
 ## Risks and dependencies
 
+- **Mail needs the operator's DNS steps.** ACS sends from `hello@shelfie.kids` only after the Bicep is deployed, the domain-verification, SPF, DKIM and DMARC records exist at Namecheap, Azure reports the domain verified and a second deployment links it (`docs/runbook.md`, ADR-0019). Until then production sends no mail.
 - **DNS and APP_URL before the host move.** `CNAME app` must exist at Namecheap and `/etc/shelfie/env` must say `APP_URL=https://app.shelfie.kids` before the serve-marketing-site release reaches production (`docs/runbook.md`).
 
 - **Production deployment.** The admin API ships with the next merge to `main`; the `admin_token` and `admin_audit` tables arrive as a versioned migration. No Caddy or Bicep change is needed (ADR-0005).
