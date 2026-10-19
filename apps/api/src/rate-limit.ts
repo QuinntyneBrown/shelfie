@@ -47,3 +47,7 @@ export const feedbackLimiter = (db: Db) =>
 /** At most twenty subscription requests per person in ten minutes. Use after `requireSession`. */
 export const pushLimiter = (db: Db) =>
   rateLimiter(db, 20, (_req, res) => `push:${(res.locals['session'] as RequestSession).profileId}`);
+
+/** At most ten tries at a community join code per household in ten minutes, right or wrong (L2-150). Use after `requireSession`. */
+export const joinLimiter = (db: Db) =>
+  rateLimiter(db, 10, (_req, res) => `join:${(res.locals['session'] as RequestSession).householdId}`);
