@@ -2,7 +2,7 @@ import { Router, type Response } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
-import { challengesOf, closeExpired, createChallenge, endChallenge, rewardChallenge } from './challenges.service.ts';
+import { challengesOf, closeExpired, createChallenge, endChallenge, removeChallenge, rewardChallenge } from './challenges.service.ts';
 import { giveRewardSchema } from './review.router.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
@@ -55,6 +55,10 @@ export function challengesRouter(db: Pool) {
     const body = giveRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     await replying(res, () => rewardChallenge(db, householdOf(res), String(req.params['id']), body.data.text, body.data.note), 201);
+  });
+
+  router.delete('/:id', requireRole('parent'), async (req, res) => {
+    await replying(res, () => removeChallenge(db, householdOf(res), String(req.params['id'])));
   });
 
   return router;

@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-143
 import { test, expect } from '../support/test';
 import { signInAsDad } from '../support/signed-in';
 import { addTheo, forgetSeededLogs, householdDay, logChaptersAs, startChallengeInDatabase } from '../support/database';
@@ -176,4 +176,51 @@ test('Given an ended race where nobody logged anything, then there is no winner 
 
   await expect(review.challengeCard('Half-term reading race is over')).toContainText('No winner this time.');
   await expect(page.getByRole('button', { name: 'Give a reward' })).toHaveCount(0);
+});
+
+test('Given challenges that ended before the current one, then they are listed with their results, and Dad can remove one', async ({ page }) => {
+  const day = (offset: number) => householdDay(offset);
+  await startChallengeInDatabase({ name: 'Summer reading race', startsOn: day(-60), endsOn: day(-47), createdAt: `${day(-60)}T09:00:00.000Z`, endedAt: `${day(-46)}T09:00:00.000Z` });
+  await logChaptersAs('p-nia', 2, `${day(-50)}T12:00:00.000Z`);
+  await startChallengeInDatabase({ name: 'September sprint', measure: 'books', startsOn: day(-40), endsOn: day(-11), createdAt: `${day(-40)}T09:00:00.000Z`, endedAt: `${day(-10)}T09:00:00.000Z` });
+  await startChallengeInDatabase();
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+
+  await expect(review.pastChallenges()).toHaveText([/September sprint.*Books finished.*No winner/s, /Summer reading race.*Chapters logged.*Nia won with 2 chapters/s]);
+
+  await review.removePastChallenge('Summer reading race');
+
+  await expect(review.toast('Challenge removed')).toBeVisible();
+  await expect(review.pastChallenges()).toHaveText([/September sprint/]);
+});
+
+test('Given the newest challenge has ended, when Dad removes it, then the one before becomes the card', async ({ page }) => {
+  await startChallengeInDatabase({ name: 'Summer reading race', startsOn: householdDay(-60), endsOn: householdDay(-47), createdAt: `${householdDay(-60)}T09:00:00.000Z`, endedAt: `${householdDay(-46)}T09:00:00.000Z` });
+  await startChallengeInDatabase({ name: 'October week race', startsOn: householdDay(-7), endsOn: householdDay(-1) });
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.openChallenges();
+
+  await review.removeChallenge('October week race is over');
+
+  await expect(review.challengeCard('Summer reading race is over')).toBeVisible();
+  await expect(review.pastChallenges()).toHaveCount(0);
+});
+
+test('Given the challenges fail to load, then the tab says so and Try again brings them back, and To review still works', async ({ page }) => {
+  await startChallengeInDatabase();
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.breakChallenges();
+  await review.showTab('Challenges');
+
+  await expect(review.challengesFailed()).toBeVisible();
+  await review.repairChallenges();
+  await review.tryAgain();
+  await expect(review.leaderboard()).toHaveCount(2);
+
+  await review.showTab('To review');
+  await expect(review.queue()).toHaveCount(2);
 });

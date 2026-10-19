@@ -287,3 +287,9 @@ export async function rewardChallenge(db: Db, householdId: string, id: string, t
   if (!changed.length) throw new Problem(409, 'reward-exists');
   return { ...challenge, reward: { text, note } };
 }
+
+/** Removes a challenge, its readers and its reward; chapters and books are untouched (L2-142, L2-143). */
+export async function removeChallenge(db: Db, householdId: string, id: string): Promise<void> {
+  const removed = await all(db, 'DELETE FROM challenge WHERE id = $1 AND household_id = $2 RETURNING id', [id, householdId]);
+  if (!removed.length) throw new Problem(404, 'not-found');
+}

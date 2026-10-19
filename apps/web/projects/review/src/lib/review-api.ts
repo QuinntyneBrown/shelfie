@@ -171,6 +171,10 @@ export class ReviewApi {
     return this.api.post<Challenge>(`/challenges/${id}/reward`, body);
   }
 
+  removeChallenge(id: string) {
+    return this.api.delete<void>(`/challenges/${id}`);
+  }
+
   startChallenge(body: { name: string; measure: string; goal: number; length: string; readerIds: string[] }) {
     return this.api.post<Challenge>('/challenges', body);
   }

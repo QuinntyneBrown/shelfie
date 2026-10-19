@@ -56,8 +56,29 @@
           } @else if (challenge.winners.length) {
             <button class="btn btn--primary" type="button" (click)="rewarding.set(challenge)">Give a reward</button>
           }
+          <button class="btn btn--ghost" type="button" (click)="remove(challenge)">Remove</button>
         </div>
       }
+    </section>
+  }
+  @if (view.past.length) {
+    <section class="card card--flush" aria-labelledby="past-title">
+      <h2 id="past-title" class="section-title past-title">Past challenges</h2>
+      <ul class="list">
+        @for (past of view.past; track past.id) {
+          <li class="list__item">
+            <span class="sticker" aria-hidden="true">🏆</span>
+            <div class="list__body">
+              <div class="list__title">{{ past.name }}</div>
+              <div class="list__meta">
+                {{ measureLabel(past) }} · {{ past.startsOn | date: 'EEE d MMM' : 'UTC' }} to
+                {{ past.endsOn | date: 'EEE d MMM' : 'UTC' }} · {{ pastResult(past) }}
+              </div>
+            </div>
+            <button class="btn btn--sm btn--ghost" type="button" (click)="remove(past)">Remove</button>
+          </li>
+        }
+      </ul>
     </section>
   }
   <sh-give-reward-dialog

@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-146
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-143, L2-146
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -488,4 +488,32 @@ test('Given a reader or another household, then ending and rewarding are refused
     assert.equal(other.status, 404, path);
   }
   assert.equal((await view(cookie)).current?.ended, false);
+});
+
+test('Given past challenges, when Dad removes one, then it and its readers go and every chapter stays', async () => {
+  const cookie = await dad();
+  const first = await start(cookie, { ...RACE, name: 'First' });
+  await logged('p-nia', now());
+  await call(cookie, 'POST', `/challenges/${first.id}/end`);
+  const second = await start(cookie, { ...RACE, name: 'Second' });
+  const chapters = async () => (await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM chapter_log'))?.n;
+  const before = await chapters();
+
+  const reader = await call(await nia(), 'DELETE', `/challenges/${first.id}`);
+  assert.equal(reader.status, 403);
+  assert.equal((await call(await zedsDad(), 'DELETE', `/challenges/${first.id}`)).status, 404);
+
+  assert.equal((await call(cookie, 'DELETE', `/challenges/${first.id}`)).status, 204);
+  const read = await view(cookie);
+  assert.equal(read.current?.id, second.id);
+  assert.deepEqual(read.past, []);
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM challenge_reader WHERE challenge_id = $1', [first.id]))?.n, 0);
+  assert.equal(await chapters(), before);
+  assert.equal((await call(cookie, 'DELETE', `/challenges/${first.id}`)).status, 404);
+});
+
+test('Given a household is erased, then its challenges go with it', async () => {
+  await start(await dad());
+  await db.pool.query('DELETE FROM household WHERE id = $1', [SEED.householdId]);
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM challenge'))?.n, 0);
 });

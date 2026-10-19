@@ -226,4 +226,32 @@ export class ReviewPage {
   async giveRewardIn(dialog: ReturnType<ReviewPage['rewardDialog']>) {
     await dialog.getByRole('button', { name: 'Give the reward' }).click();
   }
+
+  pastChallenges() {
+    return this.page.getByRole('region', { name: 'Past challenges' }).getByRole('listitem');
+  }
+
+  async removePastChallenge(name: string) {
+    await this.pastChallenges().filter({ hasText: name }).getByRole('button', { name: 'Remove' }).click();
+  }
+
+  async removeChallenge(name: string) {
+    await this.challengeCard(name).getByRole('button', { name: 'Remove' }).click();
+  }
+
+  challengesFailed() {
+    return this.page.getByRole('heading', { name: 'The challenges didn’t load' });
+  }
+
+  async tryAgain() {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  async breakChallenges() {
+    await this.page.route('**/api/challenges', (route) => route.abort());
+  }
+
+  async repairChallenges() {
+    await this.page.unroute('**/api/challenges');
+  }
 }

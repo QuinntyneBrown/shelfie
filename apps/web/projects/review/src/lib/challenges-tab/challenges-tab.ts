@@ -85,6 +85,17 @@ export class ChallengesTab {
     this.toasts.show({ title: 'Reward given!' });
   }
 
+  protected async remove(challenge: Challenge) {
+    try {
+      await this.api.removeChallenge(challenge.id);
+      this.toasts.show({ title: 'Challenge removed' });
+      await this.load();
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ severity: 'danger', title: 'The challenge wasn’t removed', text: 'Check your connection and try again.' });
+    }
+  }
+
   private replace(challenge: Challenge) {
     this.view.update((view) => view && { ...view, current: view.current?.id === challenge.id ? challenge : view.current });
   }
@@ -97,12 +108,21 @@ export class ChallengesTab {
       .join(' and ');
   }
 
-  /** "🏆 Nia won with 8 chapters!", or "No winner this time." (L2-142). */
-  protected resultLine(challenge: Challenge) {
+  /** "Nia won with 8 chapters", or null when nobody won (L2-142). */
+  private result(challenge: Challenge) {
     const winner = challenge.standings.find((s) => challenge.winners.includes(s.readerId));
-    if (!winner) return 'No winner this time.';
+    if (!winner) return null;
     const unit = challenge.measure === 'chapters' ? 'chapter' : 'book';
-    return `🏆 ${this.winnerNames(challenge)} won with ${winner.count} ${unit}${winner.count === 1 ? '' : 's'}!`;
+    return `${this.winnerNames(challenge)} won with ${winner.count} ${unit}${winner.count === 1 ? '' : 's'}`;
+  }
+
+  protected resultLine(challenge: Challenge) {
+    const result = this.result(challenge);
+    return result ? `🏆 ${result}!` : 'No winner this time.';
+  }
+
+  protected pastResult(challenge: Challenge) {
+    return this.result(challenge) ?? 'No winner';
   }
 
   protected measureLabel(challenge: Challenge) {
