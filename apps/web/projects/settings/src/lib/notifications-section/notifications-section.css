@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.section-title {
+  font: var(--text-h4);
+}
+
+.divider {
+  border: 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+  margin: var(--space-2) 0;
+}
+
+.choices {
+  gap: var(--space-1);
+}

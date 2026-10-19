@@ -106,9 +106,10 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use a switch for one setting that is either on or off and that is saved with the form it sits in. On the sign-in page, "Keep me signed in" is the only switch: it is read when she presses Sign in.</p>
+      <p>Use a switch for one setting that is either on or off and that is saved with the form it sits in. On the sign-in page, "Keep me signed in" is read when she presses Sign in. In Settings, the four household notification choices ("Tell Nia when I send a sticker or note") are read when Dad presses Save settings.</p>
       <ul>
         <li><b>Switch</b> (<code>label.switch</code>): a native checkbox followed by a short label.</li>
+        <li><b>Acts at once</b>: one exception. "Notify this device" is the state of this browser, not of the household, so it takes effect when flipped, shows a toast and is outside the form's Save. It is disabled when the browser has blocked notifications.</li>
       </ul>
       <p>For a choice between several options use a <a href="radio-group.html">radio group</a>. For a setting that needs its own Save button, use a form field instead.</p>
     </section>
@@ -205,7 +206,7 @@
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
         <li>The label is a short statement about what happens when it is on: "Keep me signed in".</li>
-        <li>A switch is on by default only where the page says so. Sign-in does; nothing else does yet.</li>
+        <li>A switch is on by default only where the page says so. Sign-in and the four household notification choices are; nothing else is.</li>
         <li>No explanatory line under the label. The mocks dropped it as too wordy.</li>
       </ul>
     </section>
@@ -256,6 +257,7 @@
       <ul>
         <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (switch on)</li>
         <li><a href="../../mocks/pages/sign-in/submitting.html">pages/sign-in/submitting</a> (switch disabled)</li>
+        <li><a href="../../mocks/pages/settings/notifications-on.html">pages/settings/notifications-on</a>, <a href="../../mocks/pages/settings/notifications-events-off.html">notifications-events-off</a> and <a href="../../mocks/pages/settings/notifications-blocked.html">notifications-blocked</a> (five switches in one card, one disabled)</li>
       </ul>
     </section>
 

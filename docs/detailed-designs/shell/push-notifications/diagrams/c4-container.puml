@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Feedback notifications
+
+Person(parent, "Parent", "Reviews chapters")
+Person(reader, "Reader", "Logs chapters")
+System_Ext(pushservice, "Browser push service", "Delivers push messages")
+System_Boundary(shelfie, "Shelfie") {
+  Container(spa, "Web application", "Angular", "Settings card, shelf offer and PushService")
+  Container(sw, "Push service worker", "sw.js", "Shows the notification and opens the page on click")
+  Container(api, "Shelfie API", "Node.js, Express", "Subscriptions, event switches and sending")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "push_subscription and the household's event switches")
+}
+Rel(parent, spa, "Uses", "HTTPS")
+Rel(reader, spa, "Uses", "HTTPS")
+Rel(spa, sw, "Registers and subscribes through", "Push API")
+Rel(spa, api, "Stores subscriptions and switches with", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+Rel(api, pushservice, "Sends push messages to", "Web Push, VAPID")
+Rel(pushservice, sw, "Delivers push events to", "Push API")
+@enduml

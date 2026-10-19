@@ -26,13 +26,23 @@ export interface ReaderView {
   photo: string | null;
 }
 
+/** Which events send a push notification, for the whole household. */
+export interface NotificationChoices {
+  chapterLogged: boolean;
+  feedback: boolean;
+  bookReward: boolean;
+  streakReward: boolean;
+}
+
 export interface SettingsPatch {
   theme: Theme;
+  notifications: NotificationChoices;
   account: { name: string; email: string; newPassword?: string; currentPassword?: string };
 }
 
 export interface SettingsView {
   theme: Theme;
+  notifications: NotificationChoices;
   account: { name: string; username: string; email: string };
   parents: ParentView[];
   invites: InviteView[];

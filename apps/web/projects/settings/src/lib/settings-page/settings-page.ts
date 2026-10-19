@@ -11,7 +11,8 @@ import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog
 import { InvitesApi } from '../invites-api';
 import { StreakRewardDialog } from '../streak-reward-dialog/streak-reward-dialog';
 import { StreakReward, StreakRewardsApi } from '../streak-rewards-api';
-import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
+import { NotificationsSection } from '../notifications-section/notifications-section';
+import { InviteView, NotificationChoices, ParentView, ReaderView, SettingsApi, SettingsView, Theme } from '../settings-api';
 
 @Component({
   selector: 'sh-settings-page',
@@ -25,6 +26,7 @@ import { InviteView, ParentView, ReaderView, SettingsApi, SettingsView, Theme } 
     GalleryRewardDialog,
     ErrorState,
     InviteParentDialog,
+    NotificationsSection,
     ProfilePhotoDialog,
     Skeleton,
     Sticker,
@@ -84,6 +86,8 @@ export class SettingsPage {
   protected readonly readerDialogOpen = signal(false);
   protected readonly editingReader = signal<ReaderView | null>(null);
   protected readonly theme = signal<Theme>('device');
+  /** The household's four notification choices; they save with the form. */
+  protected readonly notifications = signal<NotificationChoices>({ chapterLogged: true, feedback: true, bookReward: true, streakReward: true });
   protected readonly name = signal('');
   protected readonly email = signal('');
   protected readonly newPassword = signal('');
@@ -106,6 +110,7 @@ export class SettingsPage {
       this.rewards.set(rewards);
       this.streakRewards.set(streakRewards);
       this.theme.set(view.theme);
+      this.notifications.set(view.notifications);
       this.name.set(view.account.name);
       this.email.set(view.account.email);
       this.view.set(view);
@@ -256,6 +261,7 @@ export class SettingsPage {
     try {
       const view = await this.api.save({
         theme: this.theme(),
+        notifications: this.notifications(),
         account: {
           name,
           email: this.email().trim(),

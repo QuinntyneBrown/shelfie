@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — A parent hears that a chapter is waiting
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Reader" as reader
+actor "Parent device" as parentdev
+box "Frontend — Shelfie web application" #E0F2FE
+  participant "LogChapterPage" as page
+end box
+box "Backend — Shelfie API application" #D1FADF
+  participant "chaptersRouter" as router
+end box
+box "Backend — Shelfie Application and Domain" #ECFDF3
+  participant "chapters.service" as chapters
+  participant "push.service" as push
+  participant "Push (web-push)" as sender
+end box
+box "Backend — Shelfie Infrastructure" #FFF4E5
+  database "Shelfie database" as db
+end box
+reader -> page : Log Chapter 9
+page -> router : POST /api/books/:id/chapters/:n
+router -> chapters : logChapter(householdId, bookId, n, request)
+chapters -> db : Insert chapter_log and answers in one transaction
+db --> chapters : Logged, undoUntil
+chapters --> router : Result
+router --> page : 201 with undoUntil
+router -> router : Schedule notify after the undo window (UNDO_SECONDS) — L2-125
+... undo window passes ...
+router -> push : notifyChapterLogged(logId, readerName)
+push -> db : Chapter log still exists and is not reviewed?
+alt undone or already reviewed
+  db --> push : No
+  push --> router : Nothing sent — L2-125 criteria 2 and 3
+else waiting
+  db --> push : Yes, with book title and chapter number
+  push -> db : Household switch chapterLogged and parent subscriptions
+  db --> push : Switch and targets
+  opt switch on and at least one target
+    loop each parent subscription
+      push -> sender : send(target, "Nia read Chapter 9 of Matilda", tag chapter-id)
+      sender -> parentdev : Web Push message
+      alt 404 or 410
+        sender --> push : gone
+        push -> db : Delete the subscription — L2-128
+      else other failure
+        sender --> push : error
+        push -> push : Log without the endpoint — L2-125 criterion 5
+      end
+    end
+  end
+end
+@enduml

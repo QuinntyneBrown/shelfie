@@ -9,6 +9,7 @@ import { useDatabase } from './database';
 import { fakeAssistant, resetAssistant } from './assistant';
 import { fakeAi, fakeCatalogue, fakeCoverFetch, fakeWorkCovers } from './lookup';
 import { clearMailbox, deliver } from './mailbox';
+import { clearPushed, fakePush } from './push';
 import { suggest, suggestIdeas } from './suggestions';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
@@ -25,12 +26,12 @@ interface Stack {
 // Each worker runs its own copy of the API over a database of its own on the PostgreSQL server at
 // DATABASE_URL and serves the built web app from the same port, so tests never share state. The static
 // marketing site is served under /marketing/.
-export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { stack: Stack }>({
+export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 'on' | 'off'; pushSwitch: void }, { stack: Stack }>({
   stack: [
     async ({}, use) => {
       const db = await createTestDatabase();
       const app = express();
-      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work() }));
       app.use('/marketing', (_req, res, next) => (res.set('Content-Security-Policy', MARKETING_CSP), next()), express.static(MARKETING));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
@@ -48,11 +49,21 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty' }, { st
   ],
   baseURL: async ({ stack }, use) => use(stack.url),
   shelf: ['books', { option: true }],
+  // Push is configured on the API of every worker; a test sees it off unless it asks for `on`, as on a server with no keys.
+  push: ['off', { option: true }],
+  pushSwitch: [
+    async ({ context, push }, use) => {
+      if (push === 'off') await context.route('**/api/push/key', (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{"type":"push-off"}' }));
+      await use();
+    },
+    { auto: true },
+  ],
   // Every test starts from the seeded household: no sessions, no mail, a working assistant.
   seeded: [
     async ({ stack, shelf }, use) => {
       await seed(stack.db.pool, { books: shelf !== 'empty' });
       clearMailbox();
+      clearPushed();
       resetAssistant();
       suggestIdeas();
       await use();

@@ -8,6 +8,7 @@ import { FEEDBACK_STICKERS, overview, sendFeedback } from './review.service.ts';
 import { giveReward } from './rewards.service.ts';
 import { getChapter } from './chapters.service.ts';
 import { askAssistant, type ReviewAssistant } from './review-assistant.ts';
+import type { Notifier } from './push.service.ts';
 import { assistLimiter } from './rate-limit.ts';
 
 export const giveRewardSchema = z.object({
@@ -31,7 +32,7 @@ const feedbackSchema = z.object({
 });
 import { requireSession, type RequestSession } from './session.ts';
 
-export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
+export function reviewRouter(db: Pool, assistant: ReviewAssistant, notifier: Notifier) {
   const router = Router();
 
   router.get('/review', requireSession(db), requireRole('parent'), async (_req, res) => {
@@ -40,11 +41,13 @@ export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
   });
 
   router.post('/chapter-logs/:id/feedback', requireSession(db), requireRole('parent'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const { householdId, name } = res.locals['session'] as RequestSession;
     const body = feedbackSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      res.json(await sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note));
+      const sent = await sendFeedback(db, householdId, String(req.params['id']), body.data.sticker, body.data.note);
+      await notifier.feedback(householdId, name, String(req.params['id']), body.data.sticker);
+      res.json(sent);
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });
@@ -71,11 +74,13 @@ export function reviewRouter(db: Pool, assistant: ReviewAssistant) {
   });
 
   router.post('/books/:id/reward', requireSession(db), requireRole('parent'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
+    const { householdId, name } = res.locals['session'] as RequestSession;
     const body = giveRewardSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
-      res.status(201).json(await giveReward(db, householdId, String(req.params['id']), body.data.text, body.data.note));
+      const reward = await giveReward(db, householdId, String(req.params['id']), body.data.text, body.data.note);
+      await notifier.bookReward(householdId, name, String(req.params['id']));
+      res.status(201).json(reward);
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type });

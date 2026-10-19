@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Feedback notifications
+
+Person(parent, "Parent", "Reviews chapters, gives stickers and rewards")
+Person(reader, "Reader", "Logs chapters and reads her feedback")
+System(shelfie, "Shelfie", "Reading log, review and rewards for one household")
+System_Ext(pushservice, "Browser push service", "Run by the browser vendor; delivers a message to a subscribed browser")
+
+Rel(reader, shelfie, "Logs chapters and turns notifications on in")
+Rel(parent, shelfie, "Reviews chapters and chooses notifications in")
+Rel(shelfie, pushservice, "Sends an encrypted push message to", "Web Push over HTTPS")
+Rel(pushservice, parent, "Shows 'a chapter is waiting' on the device of")
+Rel(pushservice, reader, "Shows 'a sticker or reward arrived' on the device of")
+@enduml
