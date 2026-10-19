@@ -157,6 +157,16 @@
                   <div class="list__title">{{ row.text }}</div>
                   <div class="list__meta">{{ row.note }}</div>
                 </div>
+                @if (row.confirmable) {
+                  <button
+                    class="btn btn--sm"
+                    type="button"
+                    [attr.aria-label]="'That’s right: ' + row.text"
+                    (click)="confirm(row.session)"
+                  >
+                    That’s right
+                  </button>
+                }
               </li>
             }
           </ul>

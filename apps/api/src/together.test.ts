@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-145, L2-146
+// Traces to: L2-137, L2-138, L2-139, L2-145, L2-146
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -184,4 +184,27 @@ test('Given Nia’s sessions, then a reader of another household never sees them
 
 test('Given no session cookie, then the API answers 401', async () => {
   assert.equal((await fetch(`${url}/api/together`, { headers: APP })).status, 401);
+});
+
+test('Given Nia logged a session with Zoe, when Zoe says it is right, then it is confirmed for both and no second session is made', async () => {
+  const session = (await (await log(await nia(), {})).json()) as Session;
+  const zoeCookie = await zoe();
+
+  assert.equal((await call(zoeCookie, 'POST', `/sessions/${session.id}/confirm`)).status, 204);
+  assert.equal((await call(zoeCookie, 'POST', `/sessions/${session.id}/confirm`)).status, 204);
+
+  const forZoe = (await together(zoeCookie)).sessions;
+  assert.equal(forZoe.length, 1);
+  assert.equal(forZoe[0]!.confirmed, true);
+  assert.equal((await together(await nia())).sessions[0]!.confirmed, true);
+});
+
+test('Given a session, when the reader who logged it, a parent or a reader of another household confirms it, then the API answers 404 and nothing changes', async () => {
+  const session = (await (await log(await nia(), {})).json()) as Session;
+
+  for (const cookie of [await nia(), await dad(), await zed()]) {
+    assert.equal((await call(cookie, 'POST', `/sessions/${session.id}/confirm`)).status, 404);
+  }
+  assert.equal((await call(await zoe(), 'POST', '/sessions/nothing/confirm')).status, 404);
+  assert.equal((await together(await nia())).sessions[0]!.confirmed, false);
 });

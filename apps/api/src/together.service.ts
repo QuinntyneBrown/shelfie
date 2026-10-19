@@ -124,3 +124,14 @@ export async function logSession(db: Db, householdId: string, profileId: string,
   );
   return sessionById(db, id);
 }
+
+/** The other reader says a session is right; it never adds a session or minutes (L2-139). */
+export async function confirmSession(db: Db, householdId: string, profileId: string, id: string) {
+  const session = await get(db, 'SELECT id FROM reading_session WHERE id = $1 AND household_id = $2 AND partner_id = $3 AND removed_at IS NULL', [
+    id,
+    householdId,
+    profileId,
+  ]);
+  if (!session) throw new Problem(404, 'not-found');
+  await run(db, 'UPDATE reading_session SET confirmed_at = $1 WHERE id = $2 AND confirmed_at IS NULL', [new Date().toISOString(), id]);
+}

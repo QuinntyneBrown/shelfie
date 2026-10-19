@@ -337,4 +337,17 @@ export class ShelfPage {
   togetherSessions() {
     return this.together().getByRole('listitem');
   }
+
+  /** Says a session the other reader logged is right. */
+  async confirmSession(text: string) {
+    await this.togetherSession(text).getByRole('button', { name: /^That’s right/ }).click();
+  }
+
+  confirmButton(text: string) {
+    return this.togetherSession(text).getByRole('button', { name: /^That’s right/ });
+  }
+
+  async breakConfirming() {
+    await this.page.route('**/api/together/sessions/*/confirm', (route) => route.abort());
+  }
 }

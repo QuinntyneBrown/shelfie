@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
-import { KINDS, logSession, partnersOf, sessionsOf, today } from './together.service.ts';
+import { confirmSession, KINDS, logSession, partnersOf, sessionsOf, today } from './together.service.ts';
 import { validationProblem } from './validation.ts';
 
 const sessionSchema = z.object({
@@ -33,6 +33,14 @@ export function togetherRouter(db: Pool) {
     const body = sessionSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     await answer(res, async () => res.status(201).json(await logSession(db, householdId, profileId, body.data)));
+  });
+
+  router.post('/sessions/:id/confirm', async (req, res) => {
+    const { householdId, profileId } = res.locals['session'] as RequestSession;
+    await answer(res, async () => {
+      await confirmSession(db, householdId, profileId, String(req.params['id']));
+      res.status(204).end();
+    });
   });
 
   return router;

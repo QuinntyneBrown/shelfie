@@ -121,7 +121,8 @@ export class ShelfPage {
       const what = mine
         ? s.action === 'helped' ? `You helped ${partner.name} read` : `You read to ${partner.name}`
         : s.action === 'helped' ? `${partner.name} helped you read` : `${partner.name} read to you`;
-      return { session: s, partner, text: `${what} · ${s.minutes} minutes`, note: this.sessionNoteOf(s, partner.name, view.today) };
+      const confirmable = !s.confirmed && s.loggedById !== me;
+      return { session: s, partner, confirmable, text: `${what} · ${s.minutes} minutes`, note: this.sessionNoteOf(s, partner.name, view.today) };
     });
   });
 
@@ -136,6 +137,18 @@ export class ShelfPage {
       this.together.set(await this.api.together());
     } catch {
       this.together.set(null);
+    }
+  }
+
+  protected async confirm(session: TogetherSession) {
+    try {
+      await this.api.confirmSession(session.id);
+      this.together.update(
+        (view) => view && { ...view, sessions: view.sessions.map((s) => (s.id === session.id ? { ...s, confirmed: true } : s)) },
+      );
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ severity: 'danger', title: 'That wasn’t saved', text: 'Check your connection and try again.' });
     }
   }
 

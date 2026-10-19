@@ -1,6 +1,6 @@
-// Traces to: L2-137, L2-138, L2-140, L2-145
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-145
 import { test, expect } from '../support/test';
-import { signInAsNia } from '../support/signed-in';
+import { signInAsNia, signInAsZoe } from '../support/signed-in';
 import { addZoe } from '../support/database';
 import { ShelfPage } from '../pages/shelf.page';
 import { LogTogetherPage } from '../pages/log-together.page';
@@ -117,4 +117,64 @@ test('Given a phone, then Read together and the Together card stay within the sc
   const shelf = new ShelfPage(page);
   await expect(shelf.together()).toBeVisible();
   expect(await shelf.scrollsSideways()).toBe(false);
+});
+
+/** Logs a session for whoever is signed in on the page, straight through the API. */
+async function logViaApi(page: import('@playwright/test').Page, partnerId: string, kind: string, minutes: number) {
+  const response = await page.request.post('/api/together/sessions', {
+    headers: { 'X-Requested-With': 'Shelfie' },
+    data: { partnerId, kind, minutes, readOn: new Date().toISOString().slice(0, 10) },
+  });
+  expect(response.status()).toBe(201);
+}
+
+test('Given Nia logged that she read to Zoe, when Zoe opens her shelf, then she sees it from her side and That’s right confirms it for both', async ({ page, browser }) => {
+  await addZoe();
+  await signInAsNia(page);
+  await logViaApi(page, 'p-zoe', 'read-to', 20);
+
+  const zoePage = await browser.newPage();
+  await signInAsZoe(zoePage);
+  const zoeShelf = new ShelfPage(zoePage);
+  await expect(zoeShelf.togetherSession('Nia read to you · 20 minutes')).toContainText('Today · Nia logged it');
+
+  await zoeShelf.confirmSession('Nia read to you · 20 minutes');
+  await expect(zoeShelf.confirmButton('Nia read to you · 20 minutes')).toHaveCount(0);
+  await expect(zoeShelf.togetherSession('Nia read to you · 20 minutes')).toContainText('you said that’s right');
+  await expect(zoeShelf.togetherSessions()).toHaveCount(1);
+
+  await page.reload();
+  await expect(new ShelfPage(page).togetherSession('You read to Zoe · 20 minutes')).toContainText('Zoe says that’s right');
+  await zoePage.close();
+});
+
+test('Given Zoe logged that Nia read to her, then Nia sees it with That’s right, and her own sessions have none', async ({ page, browser }) => {
+  await addZoe();
+  const zoePage = await browser.newPage();
+  await signInAsZoe(zoePage);
+  await logViaApi(zoePage, 'p-nia', 'read-to-me', 15);
+  await zoePage.close();
+  await signInAsNia(page);
+  await logViaApi(page, 'p-zoe', 'helped', 10);
+  await page.reload();
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.togetherSession('You read to Zoe · 15 minutes')).toContainText('Zoe logged it');
+  await expect(shelf.confirmButton('You read to Zoe · 15 minutes')).toBeVisible();
+  await expect(shelf.confirmButton('You helped Zoe read · 10 minutes')).toHaveCount(0);
+});
+
+test('Given the connection drops, when Zoe says That’s right, then a toast says it wasn’t saved and the button stays', async ({ page, browser }) => {
+  await addZoe();
+  await signInAsNia(page);
+  await logViaApi(page, 'p-zoe', 'read-to', 20);
+  const zoePage = await browser.newPage();
+  await signInAsZoe(zoePage);
+  const zoeShelf = new ShelfPage(zoePage);
+  await zoeShelf.breakConfirming();
+
+  await zoeShelf.confirmSession('Nia read to you · 20 minutes');
+  await expect(zoeShelf.toast('That wasn’t saved')).toBeVisible();
+  await expect(zoeShelf.confirmButton('Nia read to you · 20 minutes')).toBeVisible();
+  await zoePage.close();
 });

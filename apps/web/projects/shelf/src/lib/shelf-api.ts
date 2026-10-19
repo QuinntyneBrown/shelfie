@@ -232,6 +232,11 @@ export class ShelfApi {
     return this.api.get<TogetherView>('/together');
   }
 
+  /** Says a session the other reader logged is right. */
+  confirmSession(id: string) {
+    return this.api.post<void>(`/together/sessions/${id}/confirm`, {});
+  }
+
   async shelf(): Promise<ShelfResponse> {
     try {
       const shelf = await this.api.get<ShelfResponse>('/shelf');
