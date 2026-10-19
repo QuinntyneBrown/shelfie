@@ -252,3 +252,28 @@ test('Given more than ten starts and callbacks from one browser in ten minutes, 
   await expect(signIn.providerBanner()).toContainText('Too many tries');
   await expect(signIn.providerBanner()).toContainText('Wait 10 minutes and try again.');
 });
+
+test('Given nobody has priya@example.com, when Priya continues with Facebook from sign-in, then a household of her own starts the same way', async ({ page }) => {
+  providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: true });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Facebook');
+
+  await expect(page).toHaveURL(/\/review$/);
+  await expect(new ReviewPage(page).caughtUp()).toBeVisible();
+  const shell = new ShellPage(page);
+  await shell.openAccountMenu('Priya Bell');
+  await expect(shell.menu()).toContainText('@priya · parent');
+});
+
+test('Given Facebook has no verified e-mail for the account, when a parent continues with Facebook, then she is back with "Facebook didn’t share an e-mail"', async ({ page }) => {
+  providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: false });
+  const signIn = new SignInPage(page);
+  await signIn.open();
+
+  await signIn.continueWith('Facebook');
+
+  await expect(page).toHaveURL(/\/sign-in\?reason=no-email&provider=facebook$/);
+  await expect(signIn.providerBanner()).toContainText('Facebook didn’t share an e-mail');
+});

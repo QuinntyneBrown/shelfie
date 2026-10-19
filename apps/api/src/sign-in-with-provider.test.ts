@@ -283,3 +283,22 @@ test('Given ten start or callback requests from one source in ten minutes, when 
     await site.close();
   }
 });
+
+test('Given Facebook, then the start asks for email and public_profile, the identity comes from /me and its id is the linked subject', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ subject: 'fb-1001', email: 'priya@example.com', name: 'Priya Bell', verified: true });
+
+    const { start, callback } = await site.roundTrip('facebook');
+
+    assert.equal(new URL(start.headers.get('location')!).searchParams.get('scope'), 'email public_profile');
+    assert.equal(callback.headers.get('location'), '/review');
+    const link = await get<{ profile_id: string }>(db, "SELECT profile_id FROM profile_provider WHERE provider = 'facebook' AND subject = 'fb-1001'");
+    const parent = await get<{ id: string; name: string }>(db, "SELECT id, name FROM profile WHERE email = 'priya@example.com'");
+    assert.equal(link?.profile_id, parent?.id);
+    assert.equal(parent?.name, 'Priya Bell');
+  } finally {
+    await site.close();
+  }
+});
