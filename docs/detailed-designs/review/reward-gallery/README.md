@@ -94,6 +94,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 | `L2-108` | `L1-021` | The featured picture and the description shall show on the Settings row and the reader's card, with the 🎁 when there is no picture or it fails to load. |
 | `L2-109` | `L1-021` | Reward pictures shall be validated, re-encoded and stripped as cover pictures are, changed by parents only, isolated by household and kept out of the log. |
 | `L2-110` | `L1-021` | An upload in flight shall be shown and block a second one; a failed one shall offer Try again and keep everything else. |
+| `L2-111` | `L1-021` | The parent shall choose one of Shelfie's ten own pictures instead of uploading one, and it shall be stored as an uploaded picture is. |
 
 `L2-017`, `L2-018` and `L2-061` are used unchanged. `L2-044`, `L2-045` and `L2-048` are applied to reward pictures through `L2-109`.
 
@@ -104,6 +105,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 - **The settings page loads the gallery with the settings.** The mocks have no separate failure state for the Rewards card, so one load and one error state cover both. The shelf loads its gallery separately because the mocks give it its own failure state.
 - **Pictures upload one at a time, apart from saving the reward, and the featured mark lives on the picture row.** Recorded in [ADR-0013](../../../adr/0013-reward-pictures-upload-apart-and-one-featured.md).
 - **One image pipeline.** Reward pictures reuse `processImage`, `readImage` and the cover route's headers, so the rules of `L2-044`, `L2-045` and `L2-048` hold with no second implementation.
+- **Shelfie's own pictures are uploaded like any other.** `sh-picture-list` holds the ten SVGs (served at `/reward-pictures/`), draws the chosen one onto a 480 × 480 canvas and emits it as a WebP `File` through `picked`. The API, the table and the upload, retry and featured rules are unchanged, so a chosen picture is just a stored picture.
 - **Prefill, not a new flow.** The only change to Give a reward is its initial text, so `L2-017`'s rules hold for gallery rewards exactly as for typed ones.
 
 ## Diagrams
