@@ -131,6 +131,7 @@ See [AGENTS.md](AGENTS.md) for the full working agreement, including the scope r
 | `docs/specs/` | Requirements and acceptance criteria |
 | `docs/mocks/` | HTML mocks for every screen and state |
 | `docs/design-system/` | Design tokens and component library |
+| [docs/stickers/](docs/stickers/README.md) | Promotional die-cut stickers and their renderer |
 | `docs/detailed-designs/` | Architecture and feature designs |
 | `docs/estimates/` | Effort, progress and roadmap |
 | [docs/runbook.md](docs/runbook.md) | Running Shelfie in production |
