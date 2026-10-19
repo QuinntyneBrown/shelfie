@@ -3,7 +3,7 @@
 - Overall effort: 115 days
 - Complete: 98%
 - Overall effort: 116 days
-- Complete: 95%
+- Complete: 98%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -12,6 +12,7 @@
 | [platform](platform.md) | 12 days | 86% |
 | [shell](shell.md) | 7 days | 97% |
 | [platform](platform.md) | 15 days | 69% |
+| [platform](platform.md) | 15 days | 89% |
 | [shell](shell.md) | 5 days | 96% |
 | [review](review.md) | 22 days | 99% |
 | [admin-api](admin-api.md) | 6 days | 100% |
@@ -21,11 +22,14 @@
 
 ## Roadmap
 
-1. platform: the marketing site at www.shelfie.kids and the app's move to app.shelfie.kids (serve-marketing-site); Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
+1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
 2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
 3. Deferred: uptime monitoring, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, notifications, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, notifications, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures
 
 ## Risks and dependencies
+
+- **DNS and APP_URL before the host move.** `CNAME app` must exist at Namecheap and `/etc/shelfie/env` must say `APP_URL=https://app.shelfie.kids` before the serve-marketing-site release reaches production (`docs/runbook.md`).
 
 - **Production deployment.** The admin API ships with the next merge to `main`; the `admin_token` and `admin_audit` tables arrive as a versioned migration. No Caddy or Bicep change is needed (ADR-0005).
 - **Token provisioning.** The first token needs SSH to the VM (`docs/runbook.md`, "Admin CLI"). Until then the CLI cannot reach production.
