@@ -11,6 +11,7 @@ import { fakeAssistant, resetAssistant } from './assistant';
 import { fakeAi, fakeCatalogue, fakeCoverFetch, fakeWorkCovers } from './lookup';
 import { clearMailbox, deliver } from './mailbox';
 import { clearPushed, fakePush } from './push';
+import { resetProvider, startProvider } from './provider';
 import { suggest, suggestIdeas } from './suggestions';
 
 const WEB = join(import.meta.dirname, '../../apps/web/dist/shelfie/browser');
@@ -31,8 +32,9 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 
   stack: [
     async ({}, use) => {
       const db = await createTestDatabase();
+      const provider = await startProvider();
       const app = express();
-      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work(), providers: configuredProviders({ GOOGLE_CLIENT_ID: 'google-test', GOOGLE_CLIENT_SECRET: 'google-secret', FACEBOOK_CLIENT_ID: 'facebook-test', FACEBOOK_CLIENT_SECRET: 'facebook-secret' }) }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work(), providers: configuredProviders({ GOOGLE_CLIENT_ID: 'google-test', GOOGLE_CLIENT_SECRET: 'google-secret', FACEBOOK_CLIENT_ID: 'facebook-test', FACEBOOK_CLIENT_SECRET: 'facebook-secret' }, { google: provider.endpoints, facebook: provider.endpoints }) }));
       app.use('/marketing', (_req, res, next) => (res.set('Content-Security-Policy', MARKETING_CSP), next()), express.static(MARKETING));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
@@ -44,6 +46,7 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 
       await use({ db, url });
       server.closeAllConnections();
       server.close();
+      await provider.close();
       await db.drop();
     },
     { scope: 'worker' },
@@ -79,6 +82,7 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 
       clearPushed();
       resetAssistant();
       suggestIdeas();
+      resetProvider();
       await use();
     },
     { auto: true },

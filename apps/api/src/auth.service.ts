@@ -6,6 +6,7 @@ import { Problem } from './problem.ts';
 import { photoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 import { SESSION_DAYS } from './session.ts';
+import type { ProviderIdentity, ProviderName } from './oauth.ts';
 
 export interface Session {
   id: string;
@@ -115,6 +116,20 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
     ]);
     return createSession(db, parent);
   });
+}
+
+/**
+ * Signs a parent in from what a provider vouches for (ADR-0018): a parent whose e-mail is the provider's verified
+ * e-mail. A reader's e-mail, and a missing or unverified e-mail, are refused with a Problem the callback turns into
+ * a reason for the page the parent started from.
+ */
+export async function signInWithProvider(pool: Pool, provider: ProviderName, identity: ProviderIdentity, remember: boolean): Promise<Session> {
+  if (!identity.email || !identity.verified) throw new Problem(400, 'no-email');
+  const email = identity.email.trim().toLowerCase();
+  const profile = await get<ProfileRow>(pool, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE email = $1`, [email]);
+  if (profile?.role === 'reader') throw new Problem(403, 'reader');
+  if (profile) return createSession(pool, profile, remember);
+  throw new Problem(400, 'failed');
 }
 
 const RESET_HOURS = 1;

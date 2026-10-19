@@ -88,7 +88,7 @@ export class SignUpPage {
   }
 
   async continueWith(provider: 'Google' | 'Facebook') {
-    await this.continueWithButton(provider).click();
+    await this.continueWithButton(provider).click({ noWaitAfter: true });
   }
 
   /** The banner above the card after coming back from a provider. */
