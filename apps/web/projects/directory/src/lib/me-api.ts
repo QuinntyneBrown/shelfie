@@ -13,6 +13,21 @@ export interface MyProfile {
   photo: string | null;
 }
 
+/** A book in the author's own catalogue. */
+export interface CatalogueBook {
+  id: string;
+  title: string;
+  chapterCount: number;
+  description: string;
+  coverImage: string | null;
+}
+
+export interface CatalogueBookInput {
+  title: string;
+  chapterCount: number;
+  description: string;
+}
+
 export interface MyProfileInput {
   name: string;
   bio: string;
@@ -40,5 +55,32 @@ export class MeApi {
 
   removePhoto() {
     return this.api.delete('/me/photo');
+  }
+
+  catalogue() {
+    return this.api.get<CatalogueBook[]>('/catalogue-books');
+  }
+
+  addBook(input: CatalogueBookInput) {
+    return this.api.post<CatalogueBook>('/catalogue-books', input);
+  }
+
+  updateBook(id: string, input: CatalogueBookInput) {
+    return this.api.patch<CatalogueBook>(`/catalogue-books/${encodeURIComponent(id)}`, input);
+  }
+
+  removeBook(id: string) {
+    return this.api.delete(`/catalogue-books/${encodeURIComponent(id)}`);
+  }
+
+  uploadCover(id: string, file: File) {
+    return this.api.put<{ coverImage: string }>(
+      `/catalogue-books/${encodeURIComponent(id)}/cover`,
+      file,
+    );
+  }
+
+  removeCover(id: string) {
+    return this.api.delete(`/catalogue-books/${encodeURIComponent(id)}/cover`);
   }
 }

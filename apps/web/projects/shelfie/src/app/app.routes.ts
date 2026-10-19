@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, directoryAccountGuard, grownUpGuard, signedOutGuard } from 'core';
+import { authGuard, authorGuard, directoryAccountGuard, grownUpGuard, signedOutGuard } from 'core';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
@@ -14,6 +14,11 @@ export const routes: Routes = [
     path: 'me',
     canActivate: [directoryAccountGuard],
     loadComponent: () => import('directory').then((m) => m.MyProfilePage),
+  },
+  {
+    path: 'catalogue',
+    canActivate: [authorGuard],
+    loadComponent: () => import('directory').then((m) => m.MyCataloguePage),
   },
   {
     path: 'accept-invite',

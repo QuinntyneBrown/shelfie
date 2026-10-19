@@ -12,6 +12,7 @@ import type { Provider, WorkCoversProvider } from './book-search.service.ts';
 import { configuredAi } from './ai.ts';
 import { openLibrary, openLibraryWorkCovers } from './catalogue.ts';
 import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
+import { catalogueBooksRouter } from './catalogue-books.router.ts';
 import { certificateRouter } from './certificate.router.ts';
 import { coversRouter } from './covers.router.ts';
 import { galleryRouter } from './gallery.router.ts';
@@ -79,6 +80,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/invites', invitesRouter(db, options.mail));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use('/api/me', meRouter(db));
+  app.use('/api/catalogue-books', catalogueBooksRouter(db));
   app.use('/api', photosRouter(db));
   app.use(problemDetailsHandler);
   return app;

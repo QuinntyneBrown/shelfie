@@ -1,5 +1,21 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
-import { Banner, Button, ErrorState, PHOTO_ERRORS, PhotoPicker, Skeleton, TextField, Textarea } from 'components';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {
+  Banner,
+  Button,
+  ErrorState,
+  PHOTO_ERRORS,
+  PhotoPicker,
+  Skeleton,
+  TextField,
+  Textarea,
+} from 'components';
 import { ApiError, SessionService, ToastService } from 'core';
 import { MeApi, MyProfile } from '../me-api';
 
@@ -9,13 +25,19 @@ const STATUS_BANNERS = {
   pending: {
     severity: 'info',
     title: 'Waiting for approval',
-    message: 'Parents can’t see your profile yet. Shelfie checks every new profile before it is listed; you can keep editing in the meantime.',
+    message:
+      'Parents can’t see your profile yet. Shelfie checks every new profile before it is listed; you can keep editing in the meantime.',
   },
-  approved: { severity: 'success', title: 'Parents can see your profile', message: 'It is listed in Shelfie’s directory for parents.' },
+  approved: {
+    severity: 'success',
+    title: 'Parents can see your profile',
+    message: 'It is listed in Shelfie’s directory for parents.',
+  },
   hidden: {
     severity: 'warning',
     title: 'Hidden by Shelfie',
-    message: 'Parents can’t see your profile right now. If you think this is a mistake, write to hello@shelfie.kids.',
+    message:
+      'Parents can’t see your profile right now. If you think this is a mistake, write to hello@shelfie.kids.',
   },
 } as const;
 
@@ -84,7 +106,8 @@ export class MyProfilePage {
     if (!name) errors.name = 'Enter your name as parents will see it.';
     if (!bio) errors.bio = 'Tell parents a little about yourself.';
     if (this.author()) {
-      if (website && !/^https?:\/\/\S+$/.test(website)) errors.website = 'Enter a full web address starting with https://';
+      if (website && !/^https?:\/\/\S+$/.test(website))
+        errors.website = 'Enter a full web address starting with https://';
     } else {
       if (!this.ages().trim()) errors.ages = 'Say which ages you help with.';
       if (!this.contact().trim()) errors.contact = 'Say how parents can reach you.';
@@ -97,7 +120,9 @@ export class MyProfilePage {
       ages: 'Add the ages you help with',
       contact: 'Add how parents can reach you',
     };
-    this.problems.set((Object.keys(lines) as Field[]).filter((f) => errors[f]).map((f) => lines[f]));
+    this.problems.set(
+      (Object.keys(lines) as Field[]).filter((f) => errors[f]).map((f) => lines[f]),
+    );
     if (this.problems().length) {
       setTimeout(() => this.summary()?.focus());
       return;
@@ -112,7 +137,10 @@ export class MyProfilePage {
       );
       this.profile.set(saved);
       this.session.update({ name: saved.name });
-      this.toasts.show({ title: 'Profile saved', text: 'Parents see the change next time they open it.' });
+      this.toasts.show({
+        title: 'Profile saved',
+        text: 'Parents see the change next time they open it.',
+      });
     } catch (e) {
       if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
       this.saveFailed.set(true);
@@ -144,7 +172,8 @@ export class MyProfilePage {
       this.session.update({ photo });
     } catch (e) {
       if (e instanceof ApiError && e.type === 'photo-type') this.photoError.set(PHOTO_ERRORS.type);
-      else if (e instanceof ApiError && e.type === 'photo-too-large') this.photoError.set(PHOTO_ERRORS.size);
+      else if (e instanceof ApiError && e.type === 'photo-too-large')
+        this.photoError.set(PHOTO_ERRORS.size);
       else if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
       else this.photoFailed.set(true);
     } finally {

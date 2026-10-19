@@ -6,7 +6,11 @@
     </div>
   </div>
   @if (loadFailed()) {
-    <sh-error-state sticker="🛠️" title="Your profile didn’t load" text="Shelfie couldn’t reach the server. Try again in a moment.">
+    <sh-error-state
+      sticker="🛠️"
+      title="Your profile didn’t load"
+      text="Shelfie couldn’t reach the server. Try again in a moment."
+    >
       <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
     </sh-error-state>
   } @else if (profile(); as profile) {
@@ -17,7 +21,11 @@
       <section class="card stack" aria-labelledby="photo-title">
         <h2 id="photo-title" class="section-title">Your photo</h2>
         @if (photoFailed()) {
-          <sh-banner severity="danger" title="Your photo didn’t change" message="Nothing changed. Check your connection and try again." />
+          <sh-banner
+            severity="danger"
+            title="Your photo didn’t change"
+            message="Nothing changed. Check your connection and try again."
+          />
         }
         <sh-photo-picker
           [name]="profile.name"
@@ -29,7 +37,12 @@
           (removed)="removePhoto()"
         />
       </section>
-      <form class="card stack" novalidate aria-labelledby="details-title" (submit)="$event.preventDefault(); save()">
+      <form
+        class="card stack"
+        novalidate
+        aria-labelledby="details-title"
+        (submit)="$event.preventDefault(); save()"
+      >
         <h2 id="details-title" class="section-title">About you</h2>
         @if (problems().length) {
           <sh-banner
@@ -46,7 +59,11 @@
           </sh-banner>
         }
         @if (saveFailed()) {
-          <sh-banner severity="danger" title="Your changes weren’t saved" message="Shelfie couldn’t reach the server. Your changes are still here.">
+          <sh-banner
+            severity="danger"
+            title="Your changes weren’t saved"
+            message="Shelfie couldn’t reach the server. Your changes are still here."
+          >
             <div class="alert__actions">
               <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
             </div>
@@ -55,14 +72,22 @@
         <sh-text-field
           label="Your name"
           autocomplete="name"
-          [help]="author() ? 'Parents see this on your profile and on your books.' : 'Parents see this on your profile.'"
+          [help]="
+            author()
+              ? 'Parents see this on your profile and on your books.'
+              : 'Parents see this on your profile.'
+          "
           [maxlength]="40"
           [error]="errors().name ?? null"
           [(value)]="name"
         />
         <sh-textarea
           label="About you"
-          [help]="author() ? 'What you write and who it’s for. Up to 500 characters.' : 'Who you are and how you help. Up to 500 characters.'"
+          [help]="
+            author()
+              ? 'What you write and who it’s for. Up to 500 characters.'
+              : 'Who you are and how you help. Up to 500 characters.'
+          "
           [rows]="4"
           [maxlength]="500"
           [error]="errors().bio ?? null"
