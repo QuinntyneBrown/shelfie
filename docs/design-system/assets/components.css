@@ -446,6 +446,15 @@ a.chapter:hover, a.chapter[data-state="hover"] { background: var(--color-bg-subt
 .trophy--goal { border-color: var(--color-accent); box-shadow: 0 0 0 var(--border-width-hairline) var(--color-accent); }
 .trophy__progress { margin-top: var(--space-2); }
 .trophy__actions { flex: none; margin-left: auto; }
+/* Achievement badges: what she has earned (name and day) and what is still to earn (name and how). */
+.achievements { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+.achievement { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); min-width: 0; }
+.achievement__icon { flex: none; display: grid; place-items: center; width: var(--control-height-md); height: var(--control-height-md); border-radius: var(--radius-full); background: var(--color-accent-subtle); font-size: var(--font-size-xl); line-height: 1; }
+.achievement__body { flex: 1; min-width: 0; }
+.achievement__name { font: var(--text-label); }
+.achievement__note { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.achievement--locked { background: var(--color-bg-surface-sunken); border-style: dashed; }
+.achievement--locked .achievement__icon { background: var(--color-bg-subtle); filter: grayscale(1); opacity: 0.6; }
 
 /* ---------- Animations ------------------------------------------------------------------ */
 @keyframes spin { to { rotate: 360deg; } }

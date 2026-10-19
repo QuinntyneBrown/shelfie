@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
+  AchievementBadge,
   Banner,
   BookCard,
   Celebration,
@@ -15,12 +16,13 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
 
 @Component({
   selector: 'sh-shelf-page',
-  imports: [Banner, BookCard, Celebration, DatePipe, EmptyState, RewardCard, RouterLink, Skeleton],
+  imports: [AchievementBadge, Banner, BookCard, Celebration, DatePipe, EmptyState, RewardCard, RouterLink, Skeleton],
   templateUrl: './shelf-page.html',
   styleUrl: './shelf-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShelfPage {
+  protected earnedBadges = (shelf: ShelfResponse) => shelf.badges.filter((badge) => badge.earned).length;
   protected readonly session = inject(SessionService);
   protected readonly shelf = signal<ShelfResponse | null>(null);
   protected readonly failed = signal(false);

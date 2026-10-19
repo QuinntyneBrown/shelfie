@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Earn achievement badges
+
+Person(reader, "Reader", "Opens her shelf")
+Person(grownUp, "Parent", "Opens Review")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Badges section on the shelf, Nia's badges card on Review; sh-achievement-badge")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Derives the four badges from read dates and finished books inside the shelf and review responses")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "household.time_zone, chapter_log.read_on, book.finished_at; nothing stores a badge")
+}
+Rel(reader, web, "Reads her badges", "HTTPS")
+Rel(grownUp, web, "Reads her badges", "HTTPS")
+Rel(web, api, "GET /api/shelf, GET /api/review", "JSON/HTTPS")
+Rel(api, db, "SELECT read_on and finished_at for the household", "SQL")
+@enduml

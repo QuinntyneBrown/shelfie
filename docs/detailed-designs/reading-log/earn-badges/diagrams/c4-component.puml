@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Earn achievement badges
+
+Container(web, "Shelfie web", "Angular", "ShelfPage and ReviewPage; sh-achievement-badge")
+Container_Boundary(api, "Shelfie API") {
+  Component(shelfRouter, "shelf.router.ts", "Express Router", "GET /shelf (unchanged)")
+  Component(reviewRouter, "review.router.ts", "Express Router", "GET /review (unchanged)")
+  Component(shelfService, "shelf.service.ts", "Service", "Assembles the shelf response; adds badges")
+  Component(reviewService, "review.service.ts", "Service", "Assembles the review response; adds badges")
+  Component(badges, "badges.ts", "Service", "computeBadges(readOnDays, finishedDays); badgesFor(db, householdId)")
+  Component(streak, "streak.ts", "Service", "Day arithmetic and todayIn(timeZone, now)")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household, chapter_log, book")
+}
+Rel(web, shelfRouter, "GET /api/shelf", "JSON/HTTPS")
+Rel(web, reviewRouter, "GET /api/review", "JSON/HTTPS")
+Rel(shelfRouter, shelfService, "getShelf")
+Rel(reviewRouter, reviewService, "overview")
+Rel(shelfService, badges, "badgesFor")
+Rel(reviewService, badges, "badgesFor")
+Rel(badges, streak, "Reuses day helpers")
+Rel(badges, db, "Reads", "SQL")
+@enduml

@@ -25,6 +25,7 @@ Which `components` library parts build each page, dialog, notification and shell
 | `sh-reward-card` | `RewardCard` | no | books/view-shelf |
 | `sh-chapter-row` | `ChapterRow` | no | books/view-book |
 | `sh-streak-badge` | `StreakBadge` | no | reading-log/track-streak |
+| `sh-achievement-badge` | `AchievementBadge` | no | reading-log/earn-badges |
 | `sh-activity-item` | `ActivityItem` | no | review/review-queue |
 | `sh-celebration` | `Celebration` | no | reading-log/celebrate-finished-book |
 | `sh-skeleton` | `Skeleton` | no | books/view-shelf |
@@ -106,8 +107,8 @@ These are local UI that more than one screen needs. Build once in the feature li
 - **Library:** `sh-text-field` `password` with help; `sh-button` primary block; `sh-banner` `danger` (invalid summary).
 - **Local:** auth layout; success and error (expired link) replace the form with text and a link button.
 
-#### My shelf — `/shelf` (`pages/shelf`: default, loading, empty, error, long, goal-empty, goal-none, goal-progress, goal-reached, goal-error)
-- **Library:** shell reader top bar; `sh-book-card` (reading and up-next grids, with `sh-cover` and `sh-progress`); `sh-reward-card` (trophy shelf); `sh-button`; `sh-skeleton` (loading); `sh-empty-state` (empty); `sh-error-state` (error). `long` adds rows only. "Reading toward": `sh-reward-card` with `target` per gallery reward, `progress` on her goal, and a projected `button.btn.btn--sm` "Pick this" while no goal is reached (goal-none, goal-progress); `sh-celebration` `book` above the list (goal-reached); `sh-empty-state` (goal-empty: "No rewards to pick yet"; goal-error: `tone="error"` with "Try again").
+#### My shelf — `/shelf` (`pages/shelf`: default, badges-none, badges-all, loading, empty, error, long, goal-empty, goal-none, goal-progress, goal-reached, goal-error)
+- **Library:** shell reader top bar; `sh-achievement-badge` in a "Badges" section after Finished (default: two earned; badges-none: all locked; badges-all: all earned); `sh-book-card` (reading and up-next grids, with `sh-cover` and `sh-progress`); `sh-reward-card` (trophy shelf); `sh-button`; `sh-skeleton` (loading); `sh-empty-state` (empty); `sh-error-state` (error). `long` adds rows only. "Reading toward": `sh-reward-card` with `target` per gallery reward, `progress` on her goal, and a projected `button.btn.btn--sm` "Pick this" while no goal is reached (goal-none, goal-progress); `sh-celebration` `book` above the list (goal-reached); `sh-empty-state` (goal-empty: "No rewards to pick yet"; goal-error: `tone="error"` with "Try again").
 - **Local:** greeting and summary line; keep-reading **hero** (`hero`: eyebrow, title, `sh-cover` lg, `sh-progress`, primary action); section headings with status badge; the "Reading toward" heading and intro line, and the reached message inside `sh-celebration`.
 
 #### Book — `/books/:id` (`pages/book`: default, loading, error, finished, edge, picture)
@@ -129,7 +130,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 ### Parent
 
 #### Review — `/review` (`pages/review`: default, loading, empty, error, long, goal-reached)
-- **Library:** shell parent top bar + `sh-tab-bar`; `sh-cover` sm; `sh-button` sm; `sh-activity-item` (recent activity feed); `sh-skeleton`; `sh-empty-state`; `sh-error-state`. `long` drops the side panel and adds rows.
+- **Library:** shell parent top bar + `sh-tab-bar`; `sh-achievement-badge` in a read-only "Nia’s badges" card under This week; `sh-cover` sm; `sh-button` sm; `sh-activity-item` (recent activity feed); `sh-skeleton`; `sh-empty-state`; `sh-error-state`. `long` drops the side panel and adds rows.
 - **Local:** queue list rows; "Matilda is finished!" reward card (`sh-cover` + text + "Give a reward" button); on the book that reached her goal (goal-reached) the card adds the line "🎯 Nia reached her goal: Trip to the zoo" and its button opens Give a reward with the goal's name typed in; stats panel.
 
 #### Review a chapter — `/review/chapters/:id` (`pages/review-chapter`: default, loading, error, invalid, submitting, success, reviewed, assist-busy, assist-flagged, assist-clear, assist-drafted, assist-failed, assist-unavailable)

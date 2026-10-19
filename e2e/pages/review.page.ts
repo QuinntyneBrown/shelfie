@@ -104,4 +104,17 @@ export class ReviewPage {
   getViaApi() {
     return this.page.request.get('/api/review');
   }
+
+  /** The read-only "Nia’s badges" card. */
+  badges() {
+    return this.page.getByRole('region', { name: /^Nia’s badges/ });
+  }
+
+  badge(name: string) {
+    return this.badges().getByRole('listitem').filter({ hasText: name });
+  }
+
+  async scrollsSideways() {
+    return this.page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  }
 }

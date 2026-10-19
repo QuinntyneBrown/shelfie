@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — Badges during a shelf load
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+box "Frontend — Shelfie web (shelf library)" #E0F2FE
+  participant "ShelfPage" as page
+  participant "sh-achievement-badge" as badge
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "shelf.router.ts" as router
+  participant "shelf.service.ts" as shelf
+  participant "badges.ts" as badges
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+reader -> page : Open the shelf
+page -> client : shelf()
+client -> router : GET /api/shelf
+router -> shelf : getShelf(householdId)
+shelf -> badges : badgesFor(db, householdId)
+badges -> db : SELECT time_zone FROM household WHERE id = ?
+db --> badges : time_zone
+badges -> db : SELECT read_on FROM chapter_log JOIN book\nWHERE book.household_id = ?
+db --> badges : read days (one per chapter)
+badges -> db : SELECT finished_at FROM book\nWHERE household_id = ? AND finished_at IS NOT NULL
+db --> badges : finished moments
+badges -> badges : finished days = day of each moment in time_zone
+badges -> badges : computeBadges(readOnDays, finishedDays) (L2-096)
+badges --> shelf : four badges
+shelf --> router : ShelfResponse {..., badges}
+router --> client : 200 ShelfResponse
+client --> page : ShelfResponse
+loop each of the four badges
+  page -> badge : icon, name, hint, earnedOn
+  badge --> reader : Earned with the day, or Not yet and the hint (L2-097)
+end
+@enduml
