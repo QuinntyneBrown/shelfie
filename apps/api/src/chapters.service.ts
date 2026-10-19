@@ -5,7 +5,7 @@ import { all, get, run, transaction, type Db } from './db.ts';
 import { Problem } from './problem.ts';
 import { questionsForBook } from './questions.service.ts';
 
-const UNDO_SECONDS = 10;
+export const UNDO_SECONDS = 10;
 const UNIQUE_VIOLATION = '23505';
 
 const dayIn = (timeZone: string, date: Date) => new Intl.DateTimeFormat('en-CA', { timeZone }).format(date);

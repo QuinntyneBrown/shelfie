@@ -39,3 +39,10 @@ export function createPush(env: NodeJS.ProcessEnv = process.env): Push | null {
     },
   };
 }
+
+/** Runs `work` after `delayMs`. The API keeps no queue: a pending call is lost if the process restarts (ADR-0015). Tests pass their own. */
+export type Schedule = (work: () => Promise<void>, delayMs: number) => void;
+
+export const inProcess: Schedule = (work, delayMs) => {
+  setTimeout(() => void work(), delayMs).unref();
+};

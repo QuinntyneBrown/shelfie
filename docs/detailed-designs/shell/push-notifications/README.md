@@ -40,7 +40,7 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
   | Event | Title | Body | `url` | `tag` |
   |---|---|---|---|---|
   | `chapterLogged` | "Nia read Chapter 9 of Matilda" | "Ready for your feedback." | `/review/chapters/<logId>` | `chapter-<logId>` |
-  | `feedback` | "Dad read Chapter 9 and gave you a Star 🌟" | "See what he said." | `/chapter-logs/<logId>` | `feedback-<logId>` |
+  | `feedback` | "Dad read Chapter 9 and gave you a Star 🌟" | "Come and see what they said." | `/chapter-logs/<logId>` | `feedback-<logId>` |
   | `bookReward` | "🏆 Dad gave you a reward for Matilda" | "Come and see what it is." | `/shelf` | `reward-<bookId>` |
   | `streakReward` | "🔥 7 days in a row! Dad gave you a reward" | "Come and see what it is." | `/shelf` | `streak-<milestone>` |
 

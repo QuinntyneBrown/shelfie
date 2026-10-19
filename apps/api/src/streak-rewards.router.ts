@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
 import { Problem } from './problem.ts';
+import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { clearStreakReward, giveStreakReward, MILESTONES, setStreakReward, streakRewardsOf } from './streak-rewards.service.ts';
 import { validationProblem } from './validation.ts';
@@ -13,7 +14,7 @@ const streakRewardSchema = z.object({
 });
 
 /** The household's streak rewards: both roles read them, only parents change or give them (L2-104). */
-export function streakRewardsRouter(db: Pool) {
+export function streakRewardsRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
 
@@ -38,8 +39,13 @@ export function streakRewardsRouter(db: Pool) {
   });
 
   router.post('/:milestone/give', requireRole('parent'), async (req, res) => {
-    const { householdId } = res.locals['session'] as RequestSession;
-    await answer(res, async () => res.json(await giveStreakReward(db, householdId, milestoneOf(req.params['milestone']))));
+    const { householdId, name } = res.locals['session'] as RequestSession;
+    await answer(res, async () => {
+      const milestone = milestoneOf(req.params['milestone']);
+      const given = await giveStreakReward(db, householdId, milestone);
+      await notifier.streakReward(householdId, name, milestone);
+      res.json(given);
+    });
   });
 
   return router;

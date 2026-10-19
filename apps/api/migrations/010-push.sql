@@ -10,3 +10,10 @@ CREATE TABLE push_subscription (
   created_at TEXT NOT NULL
 );
 CREATE INDEX push_subscription_profile ON push_subscription (profile_id);
+
+-- Which events send a notification, for the whole household; all start on (L2-123).
+ALTER TABLE household
+  ADD COLUMN notify_chapter_logged BOOLEAN NOT NULL DEFAULT TRUE,
+  ADD COLUMN notify_feedback BOOLEAN NOT NULL DEFAULT TRUE,
+  ADD COLUMN notify_book_reward BOOLEAN NOT NULL DEFAULT TRUE,
+  ADD COLUMN notify_streak_reward BOOLEAN NOT NULL DEFAULT TRUE;

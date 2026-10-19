@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { getChapter, getForm, logChapter, markFeedbackSeen, undoLog } from './chapters.service.ts';
 import { Problem } from './problem.ts';
+import type { Notifier } from './push.service.ts';
 import { requireSession, type RequestSession } from './session.ts';
 
 const params = z.object({ id: z.string(), n: z.coerce.number().int().min(1) });
@@ -48,7 +49,7 @@ export function chapterLogsRouter(db: Pool) {
   return router;
 }
 
-export function chaptersRouter(db: Pool) {
+export function chaptersRouter(db: Pool, notifier: Notifier) {
   const router = Router();
   router.use(requireSession(db));
 
@@ -67,7 +68,15 @@ export function chaptersRouter(db: Pool) {
     if (!body.success) {
       return res.status(400).json(validationProblem(body.error));
     }
-    await replying(res, () => logChapter(db, householdOf(res), p.data.id, p.data.n, body.data), 201);
+    await replying(
+      res,
+      async () => {
+        const logged = await logChapter(db, householdOf(res), p.data.id, p.data.n, body.data);
+        notifier.chapterLogged(householdOf(res), (res.locals['session'] as RequestSession).name, logged.chapterLogId);
+        return logged;
+      },
+      201,
+    );
   });
 
   return router;
