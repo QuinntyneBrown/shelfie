@@ -29,6 +29,8 @@ One narrated video per journey in [user-journeys.md](../user-journeys.md), built
 | 23 | Secure the API | [23-secure-the-api.mp4](23-secure-the-api/23-secure-the-api.mp4) | [script](23-secure-the-api/script.md) |
 | 24 | Operate the service | [24-operate-the-service.mp4](24-operate-the-service/24-operate-the-service.mp4) | [script](24-operate-the-service/script.md) |
 
+Also [25-meet-shelfie](25-meet-shelfie/README.md): the one-minute brand video on www.shelfie.kids, with slides built from the design system (`assets/brand.css`).
+
 ## Building
 
 Needs Node 24, Chrome (Playwright), `ffmpeg-full` (libass, for captions) and a Python 3.12 venv in `.cache/venv` with `kokoro` and `soundfile` (voice: Kokoro-82M `af_heart` from Hugging Face, run offline).

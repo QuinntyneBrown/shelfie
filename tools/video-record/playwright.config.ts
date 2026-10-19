@@ -5,8 +5,9 @@ import base from '../../e2e/playwright.config';
 export default defineConfig({
   ...base,
   testDir: '../../docs/videos',
+  globalSetup: '../../e2e/support/global-setup',
   testMatch: '**/clips/clips.spec.ts',
-  outputDir: '../../.cache/clips',
+  outputDir: '../../.cache/recordings',
   timeout: 120_000,
   use: {
     ...base.use,
@@ -16,5 +17,4 @@ export default defineConfig({
     launchOptions: { slowMo: 350 },
   },
   projects: [{ name: 'chromium', use: { viewport: { width: 1408, height: 792 } } }],
-  webServer: (base.webServer as Array<{ cwd?: string }>).map((server) => ({ cwd: '../../e2e', ...server })),
 });
