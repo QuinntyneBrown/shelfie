@@ -83,6 +83,11 @@ export interface GalleryReward {
   id: string;
   name: string;
   target: number;
+  /** Empty when Dad wrote none. */
+  description: string;
+  /** Oldest first. */
+  pictures: { id: string; url: string }[];
+  featuredPicture: string | null;
 }
 
 /** The reward she is reading toward; `finished` counts the books since she picked it. */

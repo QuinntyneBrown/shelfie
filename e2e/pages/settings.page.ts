@@ -180,6 +180,11 @@ export class SettingsPage {
     return this.rewards().getByRole('listitem').filter({ hasText: name });
   }
 
+  /** The featured picture on a reward's row, when it has one. */
+  galleryRewardPicture(name: string) {
+    return this.galleryReward(name).locator('img');
+  }
+
   noRewardsMessage() {
     return this.rewards().getByText('No rewards yet. Add one and Nia can pick it to read toward.');
   }

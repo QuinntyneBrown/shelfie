@@ -6,5 +6,5 @@
 | give-reward | 2 days | 100% |
 | review-chapter | 2 days | 100% |
 | review-queue | 2 days | 90% |
-| reward-gallery | 4 days | 100% |
+| reward-gallery | 7 days | 100% |
 | streak-rewards | 5 days | 100% |

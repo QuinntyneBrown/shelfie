@@ -37,6 +37,12 @@
       [error]="nameError()"
       [(value)]="name"
     />
+    <sh-textarea
+      label="Description (optional)"
+      help="What makes it special. Up to 500 characters."
+      [error]="descriptionError()"
+      [(value)]="description"
+    />
     <sh-text-field
       class="target"
       label="Books to finish"
@@ -45,6 +51,16 @@
       help="A whole number from 1 to 20."
       [error]="targetError()"
       [(value)]="target"
+    />
+    <sh-picture-list
+      [pictures]="pictures()"
+      [help]="pictureHelp()"
+      [error]="pictureError()"
+      [disabled]="busy()"
+      (picked)="addPicture($event)"
+      (removed)="removePicture($event)"
+      (featured)="featurePicture($event)"
+      (retried)="retryPicture($event)"
     />
   </form>
   <div dialog-actions class="cluster">
@@ -56,7 +72,7 @@
       [disabled]="busy()"
       [attr.aria-busy]="busy() ? true : null"
     >
-      {{ editing() ? 'Save changes' : 'Add reward' }}
+      {{ current() ? 'Save changes' : 'Add reward' }}
     </button>
   </div>
 </sh-dialog>

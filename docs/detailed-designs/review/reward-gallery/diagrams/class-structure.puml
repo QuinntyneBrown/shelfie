@@ -18,6 +18,7 @@ class SettingsPage {
   +editingReward: WritableSignal<GalleryReward | null>
   +removingReward: WritableSignal<GalleryReward | null>
   +rewardSaved(reward: GalleryReward): void
+  +rewardChanged(reward: GalleryReward): void
   +removeReward(): Promise<void>
 }
 
@@ -26,10 +27,34 @@ class GalleryRewardDialog {
   +editing: GalleryReward | null
   +readerName: string
   +name: WritableSignal<string>
+  +description: WritableSignal<string>
   +target: WritableSignal<string>
+  +pictures: WritableSignal<DialogPicture[]>
   +saved: OutputEmitter<GalleryReward>
+  +changed: OutputEmitter<GalleryReward>
   +closed: OutputEmitter<void>
   +save(): Promise<void>
+  +addPicture(file: File): Promise<void>
+  +removePicture(index: number): Promise<void>
+  +featurePicture(index: number): Promise<void>
+  +retryPicture(index: number): Promise<void>
+}
+
+class "sh-picture-list" as PictureList {
+  +pictures: PictureItem[]
+  +max: number
+  +help: string
+  +disabled: boolean
+  +picked: OutputEmitter<File>
+  +removed: OutputEmitter<number>
+  +featured: OutputEmitter<number>
+  +retried: OutputEmitter<number>
+}
+
+class "sh-sticker" as Sticker {
+  +emoji: string
+  +image: string | null
+  +size: 'md' | 'lg'
 }
 
 class GalleryRewardsApi {
@@ -37,6 +62,9 @@ class GalleryRewardsApi {
   +add(input: GalleryRewardInput): Promise<GalleryReward>
   +update(id: string, input: GalleryRewardInput): Promise<GalleryReward>
   +remove(id: string): Promise<void>
+  +addPicture(id: string, file: File): Promise<GalleryReward>
+  +removePicture(id: string, pictureId: string): Promise<GalleryReward>
+  +featurePicture(id: string, pictureId: string): Promise<GalleryReward>
 }
 
 class ShelfPage {
@@ -72,6 +100,8 @@ class "sh-reward-card" as RewardCard {
   +coverImage: string | null
   +target: number | null
   +progress: number | null
+  +picture: string | null
+  +description: string | null
 }
 
 class GalleryView {
@@ -83,6 +113,14 @@ class GalleryReward {
   +id: string
   +name: string
   +target: number
+  +description: string
+  +pictures: RewardPicture[]
+  +featuredPicture: string | null
+}
+
+class RewardPicture {
+  +id: string
+  +url: string
 }
 
 class Goal {
@@ -106,6 +144,15 @@ class "gallery.service.ts" as Service {
   +updateGalleryReward(db, householdId, id, input): Promise<GalleryReward>
   +removeGalleryReward(db, householdId, id): Promise<void>
   +pickGoal(pool, householdId, id): Promise<GalleryView>
+  +processRewardPicture(bytes): Promise<Buffer>
+  +addRewardPicture(pool, householdId, id, image): Promise<GalleryReward>
+  +removeRewardPicture(pool, householdId, id, pictureId): Promise<GalleryReward>
+  +featureRewardPicture(pool, householdId, id, pictureId): Promise<GalleryReward>
+  +readRewardPicture(db, householdId, id, pictureId): Promise<RewardImage | undefined>
+}
+
+class "photos.service.ts" as Photos {
+  +processImage(bytes, width, height): Promise<Buffer>
 }
 
 class "review.service.ts" as ReviewService {
@@ -121,6 +168,11 @@ ReviewPage *-- GiveRewardDialog : suggested = goal name
 GalleryView *-- GalleryReward
 GalleryView o-- Goal
 Router ..> Service
+Service ..> Photos : processImage 480 × 480
+GalleryRewardDialog *-- PictureList : pictures
+SettingsPage *-- Sticker : featured picture per row
+RewardCard *-- Sticker : featured picture
+GalleryReward *-- RewardPicture
 ReviewService ..> Service : goalOf
 Service ..> GalleryView : returns
 @enduml

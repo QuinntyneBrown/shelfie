@@ -123,7 +123,7 @@
           <ul class="list">
             @for (reward of rewards(); track reward.id) {
               <li class="list__item">
-                <span class="sticker" aria-hidden="true">🎁</span>
+                <sh-sticker emoji="🎁" [image]="reward.featuredPicture" />
                 <div class="list__body">
                   <div class="list__title">{{ reward.name }}</div>
                   <div class="list__meta">
@@ -228,6 +228,7 @@
         [editing]="editingReward()"
         [readerName]="readerNames()"
         (saved)="rewardSaved($event)"
+        (changed)="rewardChanged($event)"
         (closed)="rewardDialogOpen.set(false)"
       />
       <sh-dialog

@@ -1,4 +1,4 @@
-// Traces to: L2-081, L2-082, L2-083, L2-084, L2-085, L2-087, L2-088, L2-089
+// Traces to: L2-081, L2-082, L2-083, L2-084, L2-085, L2-087, L2-088, L2-089, L2-108
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -47,8 +47,17 @@ function call(cookie: string | null, method: string, path: string, body?: unknow
   });
 }
 
+interface Reward {
+  id: string;
+  name: string;
+  target: number;
+  description: string;
+  pictures: { id: string; url: string }[];
+  featuredPicture: string | null;
+}
+
 interface Gallery {
-  rewards: { id: string; name: string; target: number }[];
+  rewards: Reward[];
   goal: { rewardId: string; name: string; target: number; finished: number; reached: boolean; bookId: string | null } | null;
 }
 
@@ -61,7 +70,7 @@ async function gallery(cookie: string): Promise<Gallery> {
 async function add(cookie: string, name: string, target: number) {
   const response = await call(cookie, 'POST', '', { name, target });
   assert.equal(response.status, 201);
-  return (await response.json()) as { id: string; name: string; target: number };
+  return (await response.json()) as Reward;
 }
 
 test('Given Dad, when he adds a reward to the gallery, then it is created and listed for him and for Nia', async () => {
@@ -70,8 +79,11 @@ test('Given Dad, when he adds a reward to the gallery, then it is created and li
   const response = await call(cookie, 'POST', '', { name: '  Trip to the zoo ', target: 3 });
 
   assert.equal(response.status, 201);
-  const created = (await response.json()) as { id: string; name: string; target: number };
-  assert.deepEqual({ name: created.name, target: created.target }, { name: 'Trip to the zoo', target: 3 });
+  const created = (await response.json()) as Reward;
+  assert.deepEqual(
+    { ...created, id: undefined },
+    { id: undefined, name: 'Trip to the zoo', target: 3, description: '', pictures: [], featuredPicture: null },
+  );
   assert.deepEqual((await gallery(cookie)).rewards, [created]);
   assert.deepEqual(await gallery(await nia()), { rewards: [created], goal: null });
 });
@@ -141,10 +153,10 @@ test('Given a gallery reward, when Dad edits it, then the gallery shows the new 
   const response = await call(cookie, 'PATCH', `/${id}`, { name: 'Trip to the aquarium', target: 4 });
 
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { id, name: 'Trip to the aquarium', target: 4 });
+  assert.deepEqual(await response.json(), { id, name: 'Trip to the aquarium', target: 4, description: '', pictures: [], featuredPicture: null });
   assert.equal((await call(cookie, 'PATCH', `/${id}`, { name: '', target: 4 })).status, 400);
   assert.equal((await call(cookie, 'PATCH', `/${id}`, { name: 'Zoo', target: 21 })).status, 400);
-  assert.deepEqual((await gallery(cookie)).rewards, [{ id, name: 'Trip to the aquarium', target: 4 }]);
+  assert.deepEqual((await gallery(cookie)).rewards, [{ id, name: 'Trip to the aquarium', target: 4, description: '', pictures: [], featuredPicture: null }]);
 });
 
 test('Given a gallery reward, when Dad removes it, then it leaves the gallery', async () => {
@@ -177,6 +189,51 @@ test('Given a gallery reward of another household, or an unknown id, when it is 
   assert.equal((await call(cookie, 'DELETE', `/${reward.id}`)).status, 404);
   assert.equal((await call(await dad(), 'DELETE', '/no-such-reward')).status, 404);
   assert.deepEqual((await gallery(await dad())).rewards, [reward]);
+});
+
+test('Given Dad, when he adds a reward with a description, then it is trimmed, kept and shown to Nia; editing changes or clears it', async () => {
+  const cookie = await dad();
+
+  const response = await call(cookie, 'POST', '', { name: 'Trip to the zoo', description: "  We'll see the penguins\nand have ice cream after. ", target: 3 });
+
+  assert.equal(response.status, 201);
+  const { id, description } = (await response.json()) as Reward;
+  assert.equal(description, "We'll see the penguins\nand have ice cream after.");
+  assert.equal((await gallery(await nia())).rewards[0]?.description, description);
+
+  const changed = await call(cookie, 'PATCH', `/${id}`, { name: 'Trip to the zoo', description: 'Penguins first.', target: 3 });
+  assert.equal(((await changed.json()) as Reward).description, 'Penguins first.');
+  const cleared = await call(cookie, 'PATCH', `/${id}`, { name: 'Trip to the zoo', description: '   ', target: 3 });
+  assert.equal(((await cleared.json()) as Reward).description, '');
+  assert.equal((await gallery(cookie)).rewards[0]?.description, '');
+});
+
+test('Given a description over 500 characters after trimming, or not text, then the API answers 400 and nothing changes', async () => {
+  const cookie = await dad();
+  const reward = await add(cookie, 'Trip to the zoo', 3);
+
+  for (const description of ['x'.repeat(501), 42]) {
+    const added = await call(cookie, 'POST', '', { name: 'Kite', description, target: 2 });
+    const edited = await call(cookie, 'PATCH', `/${reward.id}`, { name: 'Trip to the zoo', description, target: 3 });
+    assert.deepEqual([added.status, edited.status], [400, 400], String(description).slice(0, 10));
+    assert.equal(((await edited.json()) as { type: string }).type, 'validation');
+  }
+  assert.equal((await call(cookie, 'POST', '', { name: 'Kite', description: ` ${'x'.repeat(500)} `, target: 2 })).status, 201);
+  assert.deepEqual(
+    (await gallery(cookie)).rewards.map((r) => [r.name, r.description.length]),
+    [['Trip to the zoo', 0], ['Kite', 500]],
+  );
+});
+
+test('Given gallery requests with a description, then the log never holds it', async () => {
+  const cookie = await dad();
+  logged.length = 0;
+
+  await call(cookie, 'POST', '', { name: 'Zoo', description: 'Secret penguin plan', target: 2 });
+  await gallery(cookie);
+
+  assert.ok(logged.length >= 2);
+  assert.ok(logged.every((line) => !line.includes('Secret penguin plan')));
 });
 
 let finishes = 0;

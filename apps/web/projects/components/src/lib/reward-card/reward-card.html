@@ -1,6 +1,6 @@
 @if (target(); as target) {
   <div class="trophy trophy--gallery" [class.trophy--goal]="progress() !== null">
-    <span class="sticker" aria-hidden="true">🎁</span>
+    <sh-sticker emoji="🎁" size="lg" [image]="picture()" />
     <div class="trophy__body">
       <div class="trophy__title">
         {{ title() }}
@@ -11,6 +11,9 @@
         }
       </div>
       <div class="trophy__reward">{{ note() }}</div>
+      @if (description()) {
+        <p class="trophy__description">{{ description() }}</p>
+      }
       @if (progress() !== null) {
         <sh-progress
           class="trophy__progress"

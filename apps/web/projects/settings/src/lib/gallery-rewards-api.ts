@@ -5,10 +5,16 @@ export interface GalleryReward {
   id: string;
   name: string;
   target: number;
+  /** Empty when Dad wrote none. */
+  description: string;
+  /** Oldest first. */
+  pictures: { id: string; url: string }[];
+  featuredPicture: string | null;
 }
 
 export interface GalleryRewardInput {
   name: string;
+  description: string;
   target: number;
 }
 
@@ -31,5 +37,20 @@ export class GalleryRewardsApi {
 
   remove(id: string) {
     return this.api.delete(`/gallery-rewards/${id}`);
+  }
+
+  /** Uploads one picture after the reward's others and answers the reward as it now is. */
+  addPicture(id: string, file: File) {
+    return this.api.post<GalleryReward>(`/gallery-rewards/${id}/pictures`, file);
+  }
+
+  /** Removes one picture and answers the reward as it now is, with its new featured picture. */
+  removePicture(id: string, pictureId: string) {
+    return this.api.delete<GalleryReward>(`/gallery-rewards/${id}/pictures/${pictureId}`);
+  }
+
+  /** Makes one picture the featured one and answers the reward as it now is. */
+  featurePicture(id: string, pictureId: string) {
+    return this.api.post<GalleryReward>(`/gallery-rewards/${id}/pictures/${pictureId}/feature`, {});
   }
 }

@@ -42,8 +42,8 @@ export class ApiClient {
     return this.send(this.http.patch<T>(`/api${path}`, body, { headers: HEADERS }));
   }
 
-  delete(path: string): Promise<void> {
-    return this.send(this.http.delete<void>(`/api${path}`, { headers: HEADERS }));
+  delete<T = void>(path: string): Promise<T> {
+    return this.send(this.http.delete<T>(`/api${path}`, { headers: HEADERS }));
   }
 
   private async send<T>(request: Observable<unknown>, signal?: AbortSignal): Promise<T> {

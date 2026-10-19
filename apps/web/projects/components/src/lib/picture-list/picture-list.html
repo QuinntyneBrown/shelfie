@@ -1,0 +1,87 @@
+<div class="field picture-list" role="group" [attr.aria-labelledby]="labelId">
+  <span class="field__label" [id]="labelId"
+    >{{ label() }} <span class="optional">(optional)</span></span
+  >
+  @if (pictures().length) {
+    <ul class="picture-list__grid" aria-label="Pictures">
+      @for (picture of pictures(); track $index; let i = $index) {
+        <li
+          class="picture-list__item"
+          [class.picture-list__item--featured]="picture.featured"
+          [class.picture-list__item--failed]="picture.state === 'failed'"
+        >
+          <div class="picture-list__thumb" [attr.aria-busy]="picture.state === 'uploading' || null">
+            <img [src]="picture.url" [alt]="'Picture ' + (i + 1) + ' of ' + pictures().length" />
+            @if (picture.featured) {
+              <span class="badge badge--success">Featured</span>
+            }
+            @if (picture.state !== 'uploading') {
+              <button
+                class="btn btn--sm btn--icon picture-list__remove"
+                type="button"
+                [disabled]="disabled()"
+                [attr.aria-label]="'Remove picture ' + (i + 1)"
+                (click)="remove(i)"
+              >
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+                </svg>
+              </button>
+            }
+          </div>
+          <div class="picture-list__actions">
+            @if (picture.state === 'uploading') {
+              <span class="picture-list__note">Uploading…</span>
+            } @else if (picture.state === 'failed') {
+              <span class="picture-list__note">Didn’t upload.</span>
+              <button
+                class="btn btn--sm"
+                type="button"
+                [disabled]="disabled() || uploading()"
+                [attr.aria-label]="'Try picture ' + (i + 1) + ' again'"
+                (click)="retried.emit(i)"
+              >
+                Try again
+              </button>
+            } @else if (picture.featured) {
+              <span class="picture-list__note">Shows on her shelf</span>
+            } @else {
+              <button
+                class="btn btn--sm"
+                type="button"
+                [disabled]="disabled()"
+                [attr.aria-label]="'Make picture ' + (i + 1) + ' featured'"
+                (click)="featured.emit(i)"
+              >
+                Make featured
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  <div class="picture-list__add">
+    <label class="btn btn--sm" [attr.aria-disabled]="full() || uploading() || disabled() || null">
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+        <circle cx="12" cy="13" r="3.5" />
+      </svg>
+      Add a picture
+      <input
+        #file
+        class="visually-hidden"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        [disabled]="full() || uploading() || disabled()"
+        [attr.aria-invalid]="shownError() ? true : null"
+        [attr.aria-describedby]="shownError() ? helpId + ' ' + errorId : helpId"
+        (change)="choose($event)"
+      />
+    </label>
+  </div>
+  <p class="field__help" role="status" [id]="helpId">{{ shownHelp() }}</p>
+  @if (shownError(); as message) {
+    <p class="field__error" role="alert" [id]="errorId">{{ message }}</p>
+  }
+</div>
