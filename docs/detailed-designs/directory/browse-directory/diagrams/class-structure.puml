@@ -1,0 +1,100 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Browse the directory
+
+class DirectoryPage {
+  +view: Signal<'authors' | 'volunteers'>
+  +list: Signal<DirectoryList | null>
+  +status: Signal<'loading' | 'ready' | 'failed'>
+  +load(): Promise<void>
+}
+class AuthorProfilePage {
+  +author: Signal<AuthorView | null>
+  +status: Signal<'loading' | 'ready' | 'not-found' | 'failed'>
+}
+class VolunteerProfilePage {
+  +volunteer: Signal<VolunteerView | null>
+  +status: Signal<'loading' | 'ready' | 'not-found' | 'failed'>
+}
+class DirectoryApi {
+  +list(): Promise<DirectoryList>
+  +author(id: string): Promise<AuthorView>
+  +volunteer(id: string): Promise<VolunteerView>
+}
+class DirectoryList {
+  +authors: AuthorRow[]
+  +volunteers: VolunteerRow[]
+}
+class AuthorRow {
+  +id: string
+  +name: string
+  +color: string
+  +photo: string | null
+  +bio: string
+  +bookCount: number
+}
+class VolunteerRow {
+  +id: string
+  +name: string
+  +color: string
+  +photo: string | null
+  +bio: string
+  +ages: string
+}
+class AuthorView {
+  +id, name, color, photo, bio: string
+  +website: string | null
+  +books: DirectoryBook[]
+}
+class VolunteerView {
+  +id, name, color, photo, bio: string
+  +ages: string
+  +contact: string
+}
+class DirectoryBook {
+  +id: string
+  +title: string
+  +chapterCount: number
+  +description: string
+  +coverImage: string | null
+}
+class AddBookPage {
+  +fillFromCatalogue(id: string): Promise<void>
+  +submit(): Promise<void>
+}
+class ShelfApi {
+  +catalogueBook(id: string): Promise<CatalogueBookView>
+  +addBook(book: NewBook): Promise<{id}>
+  +addCover(id: string, picture: File): Promise<void>
+}
+class "directory.service.ts" as Service {
+  +listDirectory(db): DirectoryList
+  +getAuthor(db, id): AuthorView
+  +getVolunteer(db, id): VolunteerView
+  +readDirectoryPhoto(db, id): Picture
+  +getCatalogueBook(db, id): CatalogueBookView
+  +readCatalogueCover(db, id): Picture
+}
+
+DirectoryPage --> DirectoryApi
+AuthorProfilePage --> DirectoryApi
+VolunteerProfilePage --> DirectoryApi
+DirectoryApi ..> DirectoryList
+DirectoryApi ..> AuthorView
+DirectoryApi ..> VolunteerView
+DirectoryList *-- AuthorRow
+DirectoryList *-- VolunteerRow
+AuthorView *-- DirectoryBook
+AddBookPage --> ShelfApi
+DirectoryApi ..> Service : HTTP /api/directory
+ShelfApi ..> Service : HTTP /api/directory/books/:id
+@enduml

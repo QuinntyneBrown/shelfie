@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Author profile
+
+Person(author, "Author", "Signed in outside any household")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "JoinPage (sign-in library); MyProfilePage, MyCataloguePage, CatalogueBookDialog, RemoveCatalogueBookDialog (directory library)")
+  Container(api, "Shelfie API", "Node.js, Express", "/api/auth/join, /api/me, /api/catalogue-books")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, catalogue_book, catalogue_cover, profile_photo, session")
+}
+Rel(author, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON and image bytes over HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml

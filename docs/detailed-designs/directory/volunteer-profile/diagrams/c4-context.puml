@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Volunteer profile
+
+Person(volunteer, "Reading volunteer", "Offers to help children read; holds an account outside any household")
+Person(operator, "Operator", "Approves or hides profiles with shelfie-admin")
+Person(parent, "Parent", "Reads approved volunteers' profiles and contact lines")
+System(shelfie, "Shelfie", "Reading log, directory of authors and volunteers")
+
+Rel(volunteer, shelfie, "Joins and writes a profile using", "HTTPS")
+Rel(operator, shelfie, "Approves and hides profiles using", "Admin API")
+Rel(parent, shelfie, "Reads approved profiles using", "HTTPS")
+Rel(parent, volunteer, "Contacts outside Shelfie", "E-mail or website the volunteer wrote")
+@enduml

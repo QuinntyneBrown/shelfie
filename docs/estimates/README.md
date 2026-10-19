@@ -1,7 +1,7 @@
 # Estimates
 
-- Overall effort: 125 days
-- Complete: 98%
+- Overall effort: 138 days
+- Complete: 89%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -11,18 +11,21 @@
 | [shell](shell.md) | 13 days | 98% |
 | [review](review.md) | 22 days | 99% |
 | [admin-api](admin-api.md) | 6 days | 100% |
-| [admin-cli](admin-cli.md) | 7 days | 100% |
+| [admin-cli](admin-cli.md) | 9 days | 78% |
 | [books](books.md) | 21 days | 100% |
 | [reading-log](reading-log.md) | 10 days | 100% |
+| [directory](directory.md) | 11 days | 0% |
 
 ## Roadmap
 
-1. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
-2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+1. directory, admin-cli: author and volunteer accounts, profiles and catalogues, the parent's directory with Add to shelf, the household lock-down for the new roles, and `shelfie-admin profiles` approval
+2. platform: Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
+3. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
+4. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, production e-mail provider, self-service household deletion and export; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts; for the directory, paid profiles and any payment provider (ADR-0019), selling or linking to books, reading an author's book in Shelfie, messaging, booking or scheduling between parents and volunteers or authors, background or identity checks, ratings, reviews, search filters beyond Authors and Volunteers, featured listings, statistics for authors and self-service deletion for authors and volunteers
 
 ## Risks and dependencies
 
+- **Approving directory profiles.** Nothing tells the operator that an author or volunteer joined; until someone runs `shelfie-admin profiles list`, new profiles stay hidden from parents (ADR-0020).
 - **DNS and APP_URL before the host move.** `CNAME app` must exist at Namecheap and `/etc/shelfie/env` must say `APP_URL=https://app.shelfie.kids` before the serve-marketing-site release reaches production (`docs/runbook.md`).
 
 - **Production deployment.** The admin API ships with the next merge to `main`; the `admin_token` and `admin_audit` tables arrive as a versioned migration. No Caddy or Bicep change is needed (ADR-0005).

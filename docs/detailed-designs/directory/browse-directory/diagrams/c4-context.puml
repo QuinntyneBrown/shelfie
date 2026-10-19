@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse the directory
+
+Person(parent, "Parent", "Browses approved authors and volunteers; adds an author's book to the shelf")
+Person(reader, "Reader", "Sees an added book on her shelf like any other; never sees the directory")
+Person(author, "Author or volunteer", "Keeps a profile; never sees who browsed it or added a book")
+System(shelfie, "Shelfie", "Reading log, review and the parents' directory")
+System_Ext(outside, "Outside Shelfie", "E-mail or website the volunteer wrote as their contact line")
+
+Rel(parent, shelfie, "Browses the directory, adds a catalogue book using", "HTTPS")
+Rel(reader, shelfie, "Reads her shelf using", "HTTPS")
+Rel(author, shelfie, "Writes a profile and catalogue using", "HTTPS")
+Rel(parent, outside, "Contacts a volunteer through", "not Shelfie")
+@enduml

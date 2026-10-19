@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Author profile
+
+Container(web, "Shelfie web", "Angular", "JoinPage, MyProfilePage, MyCataloguePage, catalogue dialogs; MeApi, AuthApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(auth, "auth.router.ts + auth.service.ts", "Express Router, Service", "POST /api/auth/join: join() creates profile + directory_profile (pending) and a session")
+  Component(guard, "requireDirectorySession(db, roles)", "Middleware (session.ts)", "401 without a session; 403 directory-only for a parent or reader; 403 authors-only for a volunteer")
+  Component(me, "me.router.ts + me.service.ts", "Express Router, Service", "GET/PUT /api/me; PUT/DELETE/GET /api/me/photo")
+  Component(cat, "catalogue-books.router.ts + catalogue-books.service.ts", "Express Router, Service", "CRUD /api/catalogue-books, /:id/cover; scoped to the author's own profile_id")
+  Component(images, "photos.service.ts, covers.service.ts", "Service", "processPhoto (256x256 WebP), processCover (320x480 WebP), readImage (5 MB)")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, catalogue_book, catalogue_cover, profile_photo")
+}
+Rel(web, auth, "POST /api/auth/join", "JSON/HTTPS")
+Rel(web, me, "/api/me", "JSON/HTTPS")
+Rel(web, cat, "/api/catalogue-books", "JSON/HTTPS")
+Rel(me, guard, "Applies (author, volunteer)")
+Rel(cat, guard, "Applies (author)")
+Rel(me, images, "processPhoto, savePhoto")
+Rel(cat, images, "processCover")
+Rel(auth, db, "INSERT profile, directory_profile, session", "SQL")
+Rel(me, db, "Reads and writes", "SQL")
+Rel(cat, db, "Reads and writes", "SQL")
+@enduml

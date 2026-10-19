@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse the directory
+
+Container(web, "Shelfie web", "Angular", "DirectoryPage, AuthorProfilePage, VolunteerProfilePage with DirectoryApi; AddBookPage with ShelfApi.catalogueBook")
+Container_Boundary(api, "Shelfie API") {
+  Component(session, "requireSession(db)", "Middleware", "401 without a session; 403 household-only for an author or volunteer")
+  Component(role, "requireRole('parent')", "Middleware", "403 grown-ups-only for a reader")
+  Component(router, "directory.router.ts", "Express Router", "GET /, /authors/:id, /volunteers/:id, /photos/:profileId, /books/:id, /books/:id/cover")
+  Component(service, "directory.service.ts", "Service", "listDirectory, getAuthor, getVolunteer, readDirectoryPhoto, getCatalogueBook, readCatalogueCover; approved only")
+  Component(books, "books.router.ts, covers.router.ts", "Express Routers", "Unchanged POST /api/books and PUT /api/books/:id/cover")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "directory_profile, catalogue_book, catalogue_cover, profile_photo, book, book_cover")
+}
+Rel(web, router, "Reads the directory", "JSON/HTTPS")
+Rel(web, books, "Adds the copied book and picture", "JSON, image/HTTPS")
+Rel(router, session, "Applies")
+Rel(router, role, "Applies")
+Rel(router, service, "Calls")
+Rel(service, db, "SELECT ... WHERE status = 'approved'", "SQL")
+Rel(books, db, "INSERT book, book_cover", "SQL")
+@enduml

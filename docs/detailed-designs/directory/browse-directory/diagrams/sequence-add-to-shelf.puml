@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — Add a catalogue book to the shelf
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web (shelf library)" #E0F2FE
+  participant "AddBookPage" as page
+  participant "ShelfApi" as client
+end box
+box "Backend — Shelfie API (Express routers)" #D1FADF
+  participant "directory.router.ts" as directory
+  participant "books.router.ts\n+ covers.router.ts" as books
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> page : Tap Add to shelf → /add-book?catalogueBook=:id
+page -> client : catalogueBook(id)
+client -> directory : GET /api/directory/books/:id
+directory -> db : SELECT catalogue_book JOIN approved author
+alt author not approved, or book removed
+  directory --> client : 404 not-found
+  page --> parent : Empty form; "That book isn’t available any more" (L2-150)
+else available
+  directory --> client : {title, author, chapterCount, coverImage}
+  page -> client : fetch coverImage as a File
+  client -> directory : GET /api/directory/books/:id/cover
+  directory --> client : image/webp
+  page --> parent : Title, author, chapters and picture filled in; all editable (L2-150)
+  parent -> page : Pick colour and sticker; tap Add to Nia’s shelf
+  page -> client : addBook({title, author, chapterCount, coverColor, sticker})
+  client -> books : POST /api/books
+  books -> db : INSERT book (household_id = session's household; no catalogue id stored)
+  books --> client : 201 {id}
+  page -> client : addCover(id, picture bytes)
+  client -> books : PUT /api/books/:id/cover
+  books -> db : INSERT book_cover (a copy of the picture)
+  books --> client : {coverImage}
+  page --> parent : Toast "… is on Nia’s shelf"; the author is told nothing (L2-154)
+end
+@enduml

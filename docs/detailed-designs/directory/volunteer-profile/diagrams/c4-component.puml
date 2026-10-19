@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Volunteer profile
+
+Container(web, "Shelfie web", "Angular", "JoinPage, MyProfilePage (ages and contact fields); MeApi")
+Container_Boundary(api, "Shelfie API") {
+  Component(auth, "auth.router.ts + auth.service.ts", "Express Router, Service", "POST /api/auth/join {kind: volunteer}: profile + directory_profile (pending) + session")
+  Component(guard, "requireDirectorySession(db, roles)", "Middleware (session.ts)", "Admits authors and volunteers; 403 authors-only on catalogue routes")
+  Component(me, "me.router.ts + me.service.ts", "Express Router, Service", "GET/PUT /api/me validated by role; /api/me/photo")
+  Component(cat, "catalogue-books.router.ts", "Express Router", "Authors only: answers a volunteer 403 authors-only")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, profile_photo")
+}
+Rel(web, auth, "POST /api/auth/join", "JSON/HTTPS")
+Rel(web, me, "/api/me", "JSON/HTTPS")
+Rel(me, guard, "Applies (author, volunteer)")
+Rel(cat, guard, "Applies (author)")
+Rel(auth, db, "INSERT profile, directory_profile, session", "SQL")
+Rel(me, db, "Reads and writes", "SQL")
+@enduml

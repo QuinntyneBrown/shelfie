@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Approve profiles
+
+Person(operator, "Operator", "Runs production; reads new profiles and approves or hides them")
+Person(author, "Author or volunteer", "Writes a profile that starts pending")
+Person(parent, "Parent", "Sees only approved profiles in the directory")
+System(cli, "shelfie-admin", ".NET global tool on the operator's machine")
+System(shelfie, "Shelfie", "Web app, API and admin API")
+
+Rel(operator, cli, "Runs profiles list, approve, hide")
+Rel(cli, shelfie, "Calls the admin API with a bearer token", "HTTPS")
+Rel(author, shelfie, "Writes a profile using", "HTTPS")
+Rel(parent, shelfie, "Browses approved profiles using", "HTTPS")
+@enduml

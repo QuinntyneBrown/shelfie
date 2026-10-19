@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Open an author's profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web (directory library)" #E0F2FE
+  participant "DirectoryPage /\nAuthorProfilePage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend — Shelfie API (Express routers and middleware)" #D1FADF
+  participant "directory.router.ts\n+ requireSession + requireRole('parent')" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "directory.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> page : Tap Directory
+page -> client : list()
+client -> router : GET /api/directory
+alt reader session
+  router --> client : 403 grown-ups-only (L2-151)
+else author or volunteer session
+  router --> client : 403 household-only (L2-152)
+else parent
+  router -> service : listDirectory()
+  service -> db : SELECT approved authors with book counts, approved volunteers
+  db --> service : rows
+  service --> router : DirectoryList
+  router --> client : 200 {authors, volunteers}
+  client --> page : DirectoryList
+  page --> parent : Authors list; Volunteers shows the no-vetting notice (L2-146)
+end
+parent -> page : Tap View on Rosa Delgado
+page -> client : author(id)
+client -> router : GET /api/directory/authors/:id
+router -> service : getAuthor(id)
+service -> db : SELECT profile + directory_profile WHERE role = 'author' AND status = 'approved'
+alt pending, hidden, erased or unknown
+  db --> service : none
+  service --> router : not found
+  router --> client : 404 not-found
+  page --> parent : "This profile isn’t available" with Back to the directory (L2-147)
+else approved
+  db --> service : profile
+  service -> db : SELECT catalogue_book LEFT JOIN catalogue_cover ORDER BY created_at
+  db --> service : books
+  service --> router : AuthorView (photo and cover URLs under /api/directory)
+  router --> client : 200 AuthorView
+  page --> parent : Photo, name, about, website, books with Add to shelf (L2-147, L2-149)
+end
+@enduml

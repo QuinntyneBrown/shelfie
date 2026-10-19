@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Navigate the shell
 
 Person(reader, "Reader", "Sees brand, streak badge and avatar; one place to be")
-Person(grownUp, "Parent", "Moves between Review, Books and Settings")
+Person(grownUp, "Parent", "Moves between Review, Books, Directory and Settings")
 System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
 
 Rel(reader, shelfie, "Opens her shelf and the account menu", "HTTPS")

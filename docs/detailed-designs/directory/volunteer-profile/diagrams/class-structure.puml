@@ -1,0 +1,59 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Volunteer profile
+
+class JoinPage {
+  +kind: Signal<'author' | 'volunteer'>
+  +submit(): Promise<void>
+}
+class MyProfilePage {
+  +profile: Signal<MyProfile | null>
+  +isVolunteer: Signal<boolean>
+  +save(): Promise<void>
+}
+class MeApi {
+  +profile(): Promise<MyProfile>
+  +save(input: ProfileInput): Promise<MyProfile>
+  +setPhoto(file: File): Promise<string>
+  +removePhoto(): Promise<void>
+}
+class VolunteerProfileInput {
+  +name: string
+  +bio: string
+  +ages: string
+  +contact: string
+}
+class MyProfile {
+  +role: 'author' | 'volunteer'
+  +name: string
+  +status: 'pending' | 'approved' | 'hidden'
+  +bio: string
+  +ages: string | null
+  +contact: string | null
+  +photo: string | null
+}
+class "me.service.ts" as MeService {
+  +getMyProfile(db, profileId): MyProfile
+  +updateMyProfile(db, session, input): MyProfile
+}
+class "me.router.ts" as MeRouter {
+  -authorSchema: name, bio, website
+  -volunteerSchema: name, bio, ages 1-40, contact 1-120
+}
+
+JoinPage ..> MeApi : navigates to /me
+MyProfilePage --> MeApi
+MeApi ..> VolunteerProfileInput
+MeApi ..> MyProfile
+MeRouter --> MeService
+MeService ..> MyProfile
+@enduml

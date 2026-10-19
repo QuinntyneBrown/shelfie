@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Volunteer profile
+
+Person(volunteer, "Reading volunteer", "Signed in outside any household")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "JoinPage (sign-in library); MyProfilePage (directory library)")
+  Container(api, "Shelfie API", "Node.js, Express", "/api/auth/join, /api/me")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, profile_photo, session")
+}
+Rel(volunteer, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON and image bytes over HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml

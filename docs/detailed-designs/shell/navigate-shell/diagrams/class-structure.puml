@@ -36,7 +36,7 @@ class Session {
 class NavLink {
   +label: string
   +route: string
-  +icon: 'review' | 'books' | 'settings'
+  +icon: 'review' | 'books' | 'directory' | 'settings' | 'profile' | 'catalogue'
 }
 
 class MenuItem {

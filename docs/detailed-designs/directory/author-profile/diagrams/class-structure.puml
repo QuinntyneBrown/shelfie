@@ -1,0 +1,104 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Author profile
+
+class JoinPage {
+  +kind: Signal<'author' | 'volunteer'>
+  +submitting: Signal<boolean>
+  +submit(): Promise<void>
+}
+class MyProfilePage {
+  +profile: Signal<MyProfile | null>
+  +saving: Signal<boolean>
+  +save(): Promise<void>
+  +choosePhoto(file: File): Promise<void>
+  +removePhoto(): Promise<void>
+}
+class MyCataloguePage {
+  +books: Signal<CatalogueBook[] | null>
+  +openAdd(): void
+  +openEdit(book: CatalogueBook): void
+  +openRemove(book: CatalogueBook): void
+}
+class CatalogueBookDialog {
+  +book: input<CatalogueBook | null>
+  +picture: File | null
+  +save(): Promise<void>
+}
+class RemoveCatalogueBookDialog {
+  +book: input<CatalogueBook>
+  +remove(): Promise<void>
+}
+class MeApi {
+  +profile(): Promise<MyProfile>
+  +save(input: ProfileInput): Promise<MyProfile>
+  +setPhoto(file: File): Promise<string>
+  +removePhoto(): Promise<void>
+  +books(): Promise<CatalogueBook[]>
+  +addBook(input: CatalogueBookInput): Promise<CatalogueBook>
+  +updateBook(id: string, input: CatalogueBookInput): Promise<CatalogueBook>
+  +removeBook(id: string): Promise<void>
+  +setCover(id: string, file: File): Promise<string>
+  +removeCover(id: string): Promise<void>
+}
+class MyProfile {
+  +role: 'author' | 'volunteer'
+  +name: string
+  +status: 'pending' | 'approved' | 'hidden'
+  +bio: string
+  +website: string | null
+  +ages: string | null
+  +contact: string | null
+  +photo: string | null
+}
+class CatalogueBook {
+  +id: string
+  +title: string
+  +chapterCount: number
+  +description: string
+  +coverImage: string | null
+}
+class DirectorySession {
+  +profileId: string
+  +name: string
+  +username: string
+  +color: string
+  +email: string | null
+  +role: 'author' | 'volunteer'
+  +photo: string | null
+}
+class "me.service.ts" as MeService {
+  +getMyProfile(db, profileId): MyProfile
+  +updateMyProfile(db, session, input): MyProfile
+}
+class "catalogue-books.service.ts" as CatalogueService {
+  +listBooks(db, profileId): CatalogueBook[]
+  +addBook(db, profileId, input): CatalogueBook
+  +updateBook(db, profileId, id, input): CatalogueBook
+  +removeBook(db, profileId, id): void
+  +saveCatalogueCover(db, profileId, id, image): string
+  +removeCatalogueCover(db, profileId, id): void
+  +readCatalogueCover(db, profileId, id): BookCover
+}
+
+MyProfilePage --> MeApi
+MyCataloguePage --> MeApi
+MyCataloguePage *-- CatalogueBookDialog
+MyCataloguePage *-- RemoveCatalogueBookDialog
+CatalogueBookDialog --> MeApi
+RemoveCatalogueBookDialog --> MeApi
+MeApi ..> MyProfile
+MeApi ..> CatalogueBook
+MeService ..> MyProfile
+MeService ..> DirectorySession
+CatalogueService ..> CatalogueBook
+@enduml
