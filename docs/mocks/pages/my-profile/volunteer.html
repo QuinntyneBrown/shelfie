@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My profile · volunteer — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="my-profile">
+<meta name="mock:state" content="volunteer">
+<meta name="mock:requirements" content="L2-138, L2-139, L2-140, L2-141">
+<meta name="description" content="Volunteer: about, ages, contact line; no catalogue.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div>
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/my-profile/volunteer.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--mint" type="button" aria-label="Account menu for Sam" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">S</button>
+</header>
+
+<main id="main" class="container">
+<div class="page-header"><div><h1>My profile</h1><p class="subtitle">How parents see you in Shelfie’s directory.</p></div></div>
+<div class="stack" style="gap: var(--space-6);">
+  <div class="alert alert--info" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div class="alert__body"><div class="alert__title">Waiting for approval</div><div>Parents can’t see your profile yet. Shelfie checks every new profile before it is listed; you can keep editing in the meantime.</div></div></div>
+  <section class="card stack" aria-labelledby="photo-title">
+    <h2 id="photo-title" style="font: var(--text-h4);">Your photo</h2>
+    <div class="photo-picker">
+  <span class="avatar avatar--xl avatar--mint" role="img" aria-label="Your photo">S</span>
+  <div class="photo-picker__body">
+    <div class="photo-picker__actions"><label class="btn btn--primary"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Add a photo<input class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-help"></label></div>
+    <p class="field__help" id="photo-help" role="status">Optional. A JPEG, PNG or WebP photo, up to 5 MB. It uploads as soon as you choose it.</p>
+  </div>
+</div>
+  </section>
+  <form class="card stack" action="../../notifications/toast/profile-saved.html" method="get" novalidate aria-labelledby="details-title">
+    <h2 id="details-title" style="font: var(--text-h4);">About you</h2>
+    
+      <div class="field"><label class="field__label" for="name">Your name</label><div class="field__help" id="name-help">Parents see this on your profile.</div><input class="input" id="name" name="name" type="text" required aria-describedby="name-help" maxlength="40" value="Sam Okafor"></div>
+      <div class="field"><label class="field__label" for="bio">About you</label><div class="field__help" id="bio-help">Who you are and how you help. Up to 500 characters.</div><textarea class="textarea" id="bio" name="bio" rows="4" required aria-describedby="bio-help" maxlength="500">Retired Year 3 teacher. I love helping children find the fun in reading aloud, and I am patient with tricky words.</textarea></div>
+      <div class="field"><label class="field__label" for="ages">Ages you help with</label><div class="field__help" id="ages-help">For example “Ages 6 to 10”.</div><input class="input" id="ages" name="ages" type="text" required aria-describedby="ages-help" maxlength="40" value="Ages 6 to 10"></div>
+      <div class="field"><label class="field__label" for="contact">How parents can reach you</label><div class="field__help" id="contact-help">An e-mail address or a website. Parents contact you outside Shelfie; Shelfie sends nothing for you.</div><input class="input" id="contact" name="contact" type="text" required aria-describedby="contact-help" maxlength="120" value="sam.okafor@example.com · weekday afternoons"></div>
+    <div class="form-actions"><button class="btn btn--primary" type="submit">Save profile</button></div>
+  </form>
+</div>
+</main>
+</div>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">A volunteer has no catalogue, so there is no navigation beyond the account menu (Sign out).</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">My profile</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="pending.html">pending</a></li><li><a href="hidden.html">hidden</a></li><li><a href="volunteer.html" aria-current="page">volunteer</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="saving.html">saving</a></li><li><a href="failed.html">failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

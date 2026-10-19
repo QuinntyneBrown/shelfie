@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join as an author or volunteer · volunteer — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="join">
+<meta name="mock:state" content="volunteer">
+<meta name="mock:requirements" content="L2-137">
+<meta name="description" content="The volunteer choice selected.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<canvas class="aurora" aria-hidden="true"></canvas>
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="logo-mark sticker--bob"><img src="../../assets/logo.png" alt="" width="64" height="64"></span></div>
+<div class="card stack">
+  <h1 style="text-align: center;">Join Shelfie</h1>
+  <p class="text-muted" style="text-align: center; margin-inline: auto;">For children’s authors and reading volunteers. Parents find you in Shelfie’s directory once we’ve checked your profile.</p>
+  <form class="stack" action="../../pages/my-profile/pending.html" method="get" novalidate>
+    
+    <fieldset class="field" style="border: 0; padding: 0; margin: 0;"><legend class="field__label">I’m joining as</legend><div class="stack" style="gap: var(--space-2);"><label class="choice"><input type="radio" name="kind" value="author"><span class="choice__text"><strong>I’m an author</strong><small>Share a profile and a catalogue of your books with parents.</small></span></label><label class="choice"><input type="radio" name="kind" value="volunteer" checked autofocus><span class="choice__text"><strong>I volunteer</strong><small>Offer to help children with reading. Parents contact you outside Shelfie.</small></span></label></div></fieldset>
+    <div class="field"><label class="field__label" for="name">Your name</label><div class="field__help" id="name-help">Parents see this on your profile.</div><input class="input" id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-help" maxlength="40" value=""></div>
+    <div class="field"><label class="field__label" for="email">E-mail address</label><div class="field__help" id="email-help">Only for signing in and password resets. Parents never see it.</div><input class="input" id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-help" value=""></div>
+    <div class="field"><label class="field__label" for="username">Username</label><div class="field__help" id="username-help">3–20 letters, numbers, . or _</div><input class="input" id="username" name="username" type="text" autocomplete="username" required aria-describedby="username-help" value="" autocapitalize="none" spellcheck="false"></div>
+    <div class="grid grid--auto" style="gap: var(--space-4);"><div class="field"><label class="field__label" for="password">Password</label><div class="field__help" id="password-help">At least 8 characters</div><div class="input-group"><input class="input" id="password" name="password" type="password" autocomplete="new-password" required aria-describedby="password-help" value=""><button class="btn btn--ghost btn--icon input-group__btn" type="button" aria-label="Show password" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="field"><label class="field__label" for="confirm">Type it again</label><div class="input-group"><input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required value=""><button class="btn btn--ghost btn--icon input-group__btn" type="button" aria-label="Show type it again" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div></div>
+    <button class="btn btn--primary btn--lg btn--block" type="submit">Create my account</button>
+  </form>
+</div>
+<p class="text-caption" style="text-align: center;">Already have an account? <a href="../../pages/sign-in/default.html">Sign in</a></p>
+<p class="text-caption" style="text-align: center;">A parent? <a href="../../pages/sign-up/default.html">Create a parent account</a></p>
+  </div>
+</main>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">The same form; only the choice differs. The volunteer lands on My profile, waiting for approval.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Join as an author or volunteer</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="volunteer.html" aria-current="page">volunteer</a></li><li><a href="invalid.html">invalid</a></li><li><a href="taken.html">taken</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+<script src="../../assets/aurora.js"></script></body>
+</html>
