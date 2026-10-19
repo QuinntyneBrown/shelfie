@@ -313,11 +313,11 @@ em {
 .hero {
   padding-block: var(--space-16) var(--space-12);
   background:
-    radial-gradient(circle at 8% 18%, color-mix(in srgb, var(--color-cover-rose) 70%, transparent) 7px, transparent 8px),
-    radial-gradient(circle at 22% 80%, color-mix(in srgb, var(--color-cover-sun) 70%, transparent) 5px, transparent 6px),
-    radial-gradient(circle at 58% 8%, color-mix(in srgb, var(--color-cover-sky) 70%, transparent) 9px, transparent 10px),
-    radial-gradient(circle at 93% 72%, color-mix(in srgb, var(--color-cover-mint) 70%, transparent) 6px, transparent 7px),
-    radial-gradient(circle at 46% 92%, color-mix(in srgb, var(--color-cover-lilac) 70%, transparent) 4px, transparent 5px),
+    radial-gradient(circle at 8px 18%, color-mix(in srgb, var(--color-cover-rose) 70%, transparent) 7px, transparent 8px),
+    radial-gradient(circle at 8px 80%, color-mix(in srgb, var(--color-cover-sun) 70%, transparent) 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 10px) 8%, color-mix(in srgb, var(--color-cover-sky) 70%, transparent) 9px, transparent 10px),
+    radial-gradient(circle at calc(100% - 8px) 72%, color-mix(in srgb, var(--color-cover-mint) 70%, transparent) 6px, transparent 7px),
+    radial-gradient(circle at calc(100% - 8px) 45%, color-mix(in srgb, var(--color-cover-lilac) 70%, transparent) 4px, transparent 5px),
     radial-gradient(circle at 85% 10%, var(--color-accent-subtle), transparent 50%),
     radial-gradient(circle at 5% 95%, var(--color-accent-subtle), transparent 35%);
 }
