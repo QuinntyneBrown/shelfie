@@ -108,7 +108,7 @@
     </header>
 
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Shelfie's structure is deliberately shallow. The reader's world is the shelf and the pages under one book; the grown-up's world is Review, Books and Settings. There are no tabs, no sidebar and no sub-navigation.</p>
+      <p>Shelfie's structure is deliberately shallow. The reader's world is the shelf and the pages under one book; the grown-up's world is Review, Books, Community and Settings. There are no tabs, no sidebar and no sub-navigation.</p>
       <ul>
         <li><b>Sign-in shell</b>: no top bar. A centred card (<code>.auth-layout</code> + <code>.auth-card</code>) under the Shelfie sticker. Sign in, sign up, accept invite, forgot password, reset password.</li>
         <li><b>Reader shell</b>: <a href="../components/top-bar.html">top bar</a> with the brand (links to the shelf), the <a href="../components/streak.html">streak</a> and Nia's <a href="../components/avatar.html">avatar</a>, which opens the account <a href="../components/menu.html">menu</a>. Nothing else.</li>
@@ -126,7 +126,7 @@
           <tr><td>My shelf</td><td>Reader</td><td>None (top level)</td><td>Add a book</td></tr>
           <tr><td>Book, add a book</td><td>Reader</td><td>My shelf / [book]</td><td>I read Chapter 12</td></tr>
           <tr><td>Log a chapter, chapter answers</td><td>Reader</td><td>My shelf / [book] / Chapter 12</td><td>None; the form ends with its own actions</td></tr>
-          <tr><td>Review, Books, Settings</td><td>Grown-up</td><td>None (top level)</td><td>Books: Add a book</td></tr>
+          <tr><td>Review, Books, Community, Settings</td><td>Grown-up</td><td>None (top level)</td><td>Books: Add a book</td></tr>
           <tr><td>Review a chapter</td><td>Grown-up</td><td>Review / Chapter 11 · [book]</td><td>None</td></tr>
           <tr><td>Manage a book</td><td>Grown-up</td><td>Books / [book]</td><td>None</td></tr>
           <tr><td>Error pages</td><td>The shell of whoever is signed in</td><td>None</td><td>None</td></tr>
@@ -296,7 +296,7 @@
 
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li><b>Area names are one word</b>: Review, Books, Settings. Nia's home is "My shelf" in breadcrumbs.</li>
+        <li><b>Area names are one word</b>: Review, Books, Community, Settings. Nia's home is "My shelf" in breadcrumbs.</li>
         <li><b>Page titles greet or name</b>: "Hi Nia 👋" on the shelf; the book's title on a book page; "Chapter 12" on the log form; "Review", "Books", "Settings" for Dad.</li>
         <li><b>Subtitles summarise state</b> with middots: "🔥 5-day streak · 2 books on the go · 1 reward waiting"; "5 books · 2 on the go · 2 finished · 1 up next".</li>
         <li><b>Crumbs use the page's title</b>, so the last crumb matches the <code>&lt;h1&gt;</code>: "Chapter 12", "Chapter 11 · The Lion, the Witch and the Wardrobe".</li>

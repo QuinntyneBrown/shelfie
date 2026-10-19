@@ -239,6 +239,10 @@
 .input[aria-invalid="true"] { --field-border: var(--color-danger-solid); }</code></pre>
     </section>
 
+    <section class="ds-section" id="date"><h2><a href="#date">Date</a></h2>
+      <p><code>sh-text-field</code> takes <code>type="date"</code> for the browser's own date input, labelled like any field; the reading-goal dialog uses it for "Finish by" (<a href="../../mocks/dialogs/reading-goal/default.html">dialogs/reading-goal</a>). The server checks the range and the field shows its error like any other.</p>
+    </section>
+
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
       <p>Native <code>&lt;input&gt;</code> with the right <code>type</code>; the browser provides the textbox, spinbutton or date field role. Labelled by a <code>&lt;label for&gt;</code> in a <a href="form-field.html">form field</a>, or <code>aria-label</code> when the visible label is the surrounding chip ("Pick the day").</p>
