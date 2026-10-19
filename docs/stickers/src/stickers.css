@@ -15,6 +15,7 @@
   --violet-50: #f5f3ff;   /* --palette-violet-50   */
   --violet-300: #c4b5fd;  /* --palette-violet-300  */
   --violet-600: #7c3aed;  /* --palette-violet-600, the logo tile, --color-accent */
+  --violet-700: #6d28d9;  /* --palette-violet-700 = --color-fg-accent */
   --violet-800: #5b21b6;  /* --palette-violet-800, the logo's shelf shadow */
   --cover-sage: #cfe8d5;
   --cover-rose: #f9d5e0;
@@ -25,6 +26,9 @@
   --cover-peach: #fddcc8;
   --amber-300: #f7c15c;   /* --palette-amber-300   */
   --amber-500: #b26f00;   /* --palette-amber-500   */
+  --green-300: #7ed69a;   /* --palette-green-300, Olive's feathers */
+  --green-500: #2a8f52;   /* --palette-green-500, Olive's outline and tufts */
+  --green-700: #1b6b3c;   /* --palette-green-700 = --color-success-solid, the earned check */
   --ink: #1a1e26;         /* --palette-gray-900 = --color-fg-on-cover */
   --paper: #f6f7f9;       /* --palette-gray-50 = --color-bg-canvas */
 }
@@ -88,15 +92,17 @@ body.preview .sticker {
 /* Width = the shape's own art stroke + --cut-extra, half of which shows as
    white beyond the artwork edge: 65 canvas px (0.217in at 300 DPI).
 
-   --cut-extra is in ART-SPACE units. All three Shelfie stickers are drawn
-   1:1 on the 900px canvas, so the shared 130px is right for each; a sticker
-   that ever scales its art must override it with 130px / its own scale. */
+   --cut-extra is in ART-SPACE units. All four Shelfie stickers are drawn
+   1:1 on the 900px canvas (Olive's shapes are pre-multiplied by 8 rather
+   than wrapped in a scale transform), so the shared 130px is right for
+   each; a sticker that ever scales its art must override it with
+   130px / its own scale. */
 :root { --cut-extra: 130px; }
 .cut-flat { stroke-width: var(--cut-extra); }                /* no art stroke */
-.cut-band { stroke-width: calc(8px + var(--cut-extra)); }    /* banner, chip  */
 .cut-book { stroke-width: calc(6px + var(--cut-extra)); }    /* book covers   */
 .cut-star { stroke-width: calc(16px + var(--cut-extra)); }   /* the gold star */
-.cut-badge { stroke-width: calc(10px + var(--cut-extra)); }  /* round badge   */
+.cut-disc { stroke-width: calc(14px + var(--cut-extra)); }   /* earned check  */
+.cut-olive { stroke-width: calc(16px + var(--cut-extra)); }  /* Olive's body  */
 
 text {
   paint-order: stroke;

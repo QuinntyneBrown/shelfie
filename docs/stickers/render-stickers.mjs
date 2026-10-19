@@ -27,7 +27,8 @@ const { chromium } = require('@playwright/test')
 const STICKERS = [
   { slug: 'sticker-1-app-icon', title: 'Shelfie app icon' },
   { slug: 'sticker-2-book-stack', title: 'Wordmark book stack' },
-  { slug: 'sticker-3-gold-star', title: 'Gold star reward' },
+  { slug: 'sticker-3-gold-star', title: 'Gold star badge' },
+  { slug: 'sticker-4-olive', title: 'Olive the reading buddy' },
 ]
 
 /** PNG chunk reader — enough to assert dimensions and pixel format. */
@@ -253,8 +254,8 @@ try {
     )
   }
 
-  // Contact sheet, handy for reviewing all three at sticker size at once.
-  const context = await browser.newContext({ viewport: { width: 1500, height: 620 } })
+  // Contact sheet, handy for reviewing all four at sticker size at once.
+  const context = await browser.newContext({ viewport: { width: 1920, height: 620 } })
   const page = await context.newPage()
   // Inlined as data URIs — a setContent page has an opaque origin and cannot
   // load file:// images.
