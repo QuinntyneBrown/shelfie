@@ -221,7 +221,7 @@
 
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <pre><code>&lt;!-- Angular (components library) --&gt;
-&lt;sh-picture-list [pictures]="pictures" [max]="6" [disabled]="busy" [help]="help"
+&lt;sh-picture-list [pictures]="pictures" [max]="6" [disabled]="busy" [help]="help" [error]="error"
                  (picked)="add($event)" (removed)="remove($event)"
                  (featured)="feature($event)" (retried)="retry($event)" /&gt;
 
@@ -232,7 +232,7 @@
         <tr><td><code>.picture-list__item--featured</code>, <code>--failed</code></td><td>Accent ring; danger border and dimmed picture.</td></tr>
         <tr><td><code>.picture-list__thumb[aria-busy]</code></td><td>Spinner over a dimmed picture while it uploads.</td></tr>
         <tr><td><code>.picture-list__remove</code></td><td>The Remove icon button on the thumbnail’s corner.</td></tr>
-        <tr><td><code>pictures</code>, <code>max</code>, <code>disabled</code>, <code>help</code></td><td>The items; the most allowed (Add is disabled at it); everything disabled while the owner saves; the help line when no upload is running.</td></tr>
+        <tr><td><code>pictures</code>, <code>max</code>, <code>disabled</code>, <code>help</code>, <code>error</code></td><td>The items; the most allowed (Add is disabled at it); everything disabled while the owner saves; the help line when no upload is running; an error from the owner, such as the server refusing the file.</td></tr>
         <tr><td><code>picked</code></td><td>Emits a chosen <code>File</code> once it passes the type and size checks; otherwise the list shows the error itself.</td></tr>
         <tr><td><code>removed</code>, <code>featured</code>, <code>retried</code></td><td>Emit the index of the picture whose button was pressed.</td></tr>
       </tbody></table>
