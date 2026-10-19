@@ -1,0 +1,27 @@
+<article
+  class="goal-card"
+  [class.goal-card--reached]="state() === 'reached'"
+  [class.goal-card--ended]="state() === 'ended'"
+>
+  <span class="goal-card__icon" aria-hidden="true">{{ shownIcon() }}</span>
+  <div class="goal-card__body">
+    <h3 class="goal-card__title">
+      {{ title() }}
+      @if (state() === 'reached') {
+        <span class="badge badge--success">Reached</span>
+      } @else if (state() === 'ended') {
+        <span class="badge">Ended</span>
+      }
+    </h3>
+    <p class="goal-card__note">{{ note() }}</p>
+    @if (target(); as target) {
+      <sh-progress
+        class="goal-card__progress"
+        [value]="finished()"
+        [max]="target"
+        [label]="finished() + ' of ' + target + ' books finished'"
+      />
+    }
+  </div>
+  <div class="goal-card__actions"><ng-content /></div>
+</article>

@@ -1,0 +1,53 @@
+<sh-dialog heading="Join with a code" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="join-community-form" class="stack" (submit)="$event.preventDefault(); join()" novalidate>
+    @if (problems().length) {
+      <sh-banner severity="danger" [summary]="true" [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')">
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed() === 'too-many') {
+      <sh-banner severity="danger" title="Too many tries" message="Wait 10 minutes, then try the code again." />
+    } @else if (failed() === 'network') {
+      <sh-banner severity="danger" title="You didn’t join" message="Shelfie couldn’t reach the server. Try again in a moment.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="join()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <sh-text-field
+      label="Join code"
+      help="Eight letters and numbers. Capitals and dashes don’t matter."
+      autocomplete="off"
+      [autofocus]="true"
+      [error]="codeError()"
+      [(value)]="code"
+    />
+    <sh-text-field
+      label="Your family’s name in this community"
+      help="The only thing other families see of you, beside your book count."
+      [maxlength]="maxName"
+      [error]="familyError()"
+      [(value)]="familyName"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    @if (already(); as community) {
+      <button class="btn btn--primary" type="button" (click)="opened.emit(community)">Open {{ community.name }}</button>
+    } @else {
+      <button
+        class="btn btn--primary"
+        type="submit"
+        form="join-community-form"
+        [disabled]="busy()"
+        [attr.aria-busy]="busy() ? true : null"
+      >
+        Join
+      </button>
+    }
+  </div>
+</sh-dialog>

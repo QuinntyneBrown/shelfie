@@ -1,0 +1,48 @@
+<sh-dialog heading="Start a community" [open]="open()" (closed)="busy() || closed.emit()">
+  <form id="start-community-form" class="stack" (submit)="$event.preventDefault(); start()" novalidate>
+    @if (problems().length) {
+      <sh-banner severity="danger" [summary]="true" [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')">
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner severity="danger" title="The community wasn’t started" message="Shelfie couldn’t reach the server. Nothing was saved; try again.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="start()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <sh-text-field
+      label="Community name"
+      help="Up to 40 characters. Every family in it sees this name."
+      [maxlength]="maxName"
+      [autofocus]="true"
+      [error]="nameError()"
+      [(value)]="name"
+    />
+    <sh-text-field
+      label="Your family’s name in this community"
+      help="The only thing other families see of you, beside your book count."
+      [maxlength]="maxName"
+      [error]="familyError()"
+      [(value)]="familyName"
+    />
+    <p class="text-caption">You’ll get a join code to give to other parents.</p>
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" [disabled]="busy()" (click)="closed.emit()">Cancel</button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="start-community-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      Start community
+    </button>
+  </div>
+</sh-dialog>

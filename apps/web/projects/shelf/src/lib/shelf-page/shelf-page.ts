@@ -10,6 +10,7 @@ import {
   EmptyState,
   FEEDBACK_STICKERS,
   Progress,
+  GoalCard,
   RewardCard,
   Skeleton,
   StreakRewardBadge,
@@ -18,7 +19,13 @@ import {
 } from 'components';
 import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
 import { PushOffer } from '../push-offer/push-offer';
-import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
+import { GalleryReward, GalleryView, ReadingGoal, ReadingGoals, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
+
+const day = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+
+/** "10 books by Thu 31 Dec". */
+const goalLine = (goal: ReadingGoal) =>
+  `${goal.target} ${goal.target === 1 ? 'book' : 'books'} by ${day.format(new Date(`${goal.endsOn}T00:00:00Z`)).replace(',', '')}`;
 
 @Component({
   selector: 'sh-shelf-page',
@@ -30,6 +37,7 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
     Cover,
     DatePipe,
     EmptyState,
+    GoalCard,
     PushOffer,
     Progress,
     RewardCard,
@@ -91,9 +99,48 @@ export class ShelfPage {
     );
   });
 
+  /** The household's and its communities' reading goals; a failure only hides the section (L2-158). */
+  protected readonly readingGoals = signal<ReadingGoals | null>(null);
+  protected readonly hasReadingGoals = computed(() => {
+    const goals = this.readingGoals();
+    return !!goals && (goals.household !== null || goals.communities.length > 0);
+  });
+  protected readonly goalLine = goalLine;
+
   constructor() {
     this.load();
     this.loadGallery();
+    this.loadReadingGoals();
+  }
+
+  private async loadReadingGoals() {
+    try {
+      const goals = await this.api.readingGoals();
+      this.readingGoals.set(goals);
+      this.celebrateReached(goals);
+    } catch {
+      // The rest of the shelf works without them.
+    }
+  }
+
+  /** "Reading goal reached!" once per goal on this device. */
+  private celebrateReached(goals: ReadingGoals) {
+    const reached = [
+      ...(goals.household?.state === 'reached' ? [{ key: `household-${goals.household.startsOn}-${goals.household.target}`, text: `Your family finished ${goals.household.target} books.` }] : []),
+      ...goals.communities
+        .filter((c) => c.goal.state === 'reached')
+        .map((c) => ({ key: `${c.id}-${c.goal.startsOn}-${c.goal.target}`, text: `${c.name} finished ${c.goal.target} books.` })),
+    ];
+    for (const goal of reached) {
+      const key = `shelfie.goal-reached.${goal.key}`;
+      try {
+        if (localStorage.getItem(key)) continue;
+        localStorage.setItem(key, '1');
+      } catch {
+        continue;
+      }
+      this.toasts.show({ title: 'Reading goal reached!', text: goal.text });
+    }
   }
 
   protected async loadGallery() {

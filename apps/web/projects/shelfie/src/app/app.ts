@@ -30,6 +30,7 @@ export class App {
             badge: this.queueBadge(),
           },
           { label: 'Books', route: '/books', icon: 'books' },
+          { label: 'Community', route: '/communities', icon: 'community' },
           { label: 'Settings', route: '/settings', icon: 'settings' },
         ]
       : [],

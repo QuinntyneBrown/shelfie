@@ -10,7 +10,7 @@ let nextId = 0;
 })
 export class TextField {
   readonly label = input.required<string>();
-  readonly type = input<'text' | 'email' | 'password' | 'number'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'number' | 'date'>('text');
   readonly autocomplete = input<string | null>(null);
   readonly help = input<string | null>(null);
   readonly error = input<string | null>(null);

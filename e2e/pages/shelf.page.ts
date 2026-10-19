@@ -315,4 +315,22 @@ export class ShelfPage {
   streakCelebration() {
     return this.streakRewards().getByRole('heading', { name: /You did it!/ });
   }
+
+  /** Every book title on the shelf, in any group. */
+  bookTitles() {
+    return this.page.locator('.book-card__title, .trophy__title').allTextContents();
+  }
+
+  /** The "Reading goals" section, absent when the household and its communities have none. */
+  readingGoals() {
+    return this.page.getByRole('region', { name: 'Reading goals' });
+  }
+
+  readingGoal(title: string) {
+    return this.readingGoals().locator('.goal-card').filter({ hasText: title });
+  }
+
+  readingGoalCelebration() {
+    return this.readingGoals().getByText('You did it, together!');
+  }
 }

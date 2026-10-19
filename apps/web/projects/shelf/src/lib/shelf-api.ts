@@ -133,6 +133,21 @@ export interface WeekDay {
   today: boolean;
 }
 
+/** A reading goal and where it stands (ADR-0021); not the reward gallery's goal. */
+export interface ReadingGoal {
+  target: number;
+  startsOn: string;
+  endsOn: string;
+  finished: number;
+  state: 'in-progress' | 'reached' | 'ended';
+}
+
+/** The household's reading goal and those of its communities, as its readers see them (L2-158, L2-160). */
+export interface ReadingGoals {
+  household: ReadingGoal | null;
+  communities: { id: string; name: string; goal: ReadingGoal }[];
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
@@ -196,6 +211,10 @@ export class ShelfApi {
   /** Uploads a book's cover picture and returns its URL. */
   addCover(bookId: string, file: File) {
     return this.api.put<{ coverImage: string }>(`/books/${bookId}/cover`, file);
+  }
+
+  readingGoals() {
+    return this.api.get<ReadingGoals>('/goals');
   }
 
   gallery() {

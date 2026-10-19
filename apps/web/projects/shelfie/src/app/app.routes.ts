@@ -29,6 +29,16 @@ export const routes: Routes = [
     loadComponent: () => import('settings').then((m) => m.SettingsPage),
   },
   {
+    path: 'communities',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('community').then((m) => m.CommunitiesPage),
+  },
+  {
+    path: 'communities/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('community').then((m) => m.CommunityPage),
+  },
+  {
     path: 'books',
     canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('books').then((m) => m.BooksPage),

@@ -1,0 +1,6 @@
+.page {
+  gap: var(--space-6);
+}
+.section-title {
+  font: var(--text-h3);
+}
