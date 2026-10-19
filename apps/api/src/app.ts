@@ -17,6 +17,8 @@ import { coversRouter } from './covers.router.ts';
 import { galleryRouter } from './gallery.router.ts';
 import { streakRewardsRouter } from './streak-rewards.router.ts';
 import { feedbackRouter } from './feedback.router.ts';
+import { createPush, type Push } from './push.ts';
+import { pushRouter } from './push.router.ts';
 import { questionsRouter } from './questions.router.ts';
 import { invitesRouter } from './invites.router.ts';
 import { readersRouter } from './readers.router.ts';
@@ -27,7 +29,7 @@ import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 import type { SuggestQuestions } from './suggestions.ts';
 
-export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch; workCovers?: WorkCoversProvider } = {}) {
+export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch; workCovers?: WorkCoversProvider; push?: Push | null } = {}) {
   const app = express();
   app.use(requestLogging(options.log ?? stdoutLog));
   app.use(express.json({ limit: '16kb' }));
@@ -67,6 +69,8 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/streak-rewards', streakRewardsRouter(db));
   app.use('/api/feedback', feedbackRouter(db));
+  // Push needs VAPID keys; with none set it is off, and tests pass a fake (ADR-0015).
+  app.use('/api/push', pushRouter(db, options.push === undefined ? createPush() : options.push));
   app.use('/api/invites', invitesRouter(db, options.mail));
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use('/api', photosRouter(db));
