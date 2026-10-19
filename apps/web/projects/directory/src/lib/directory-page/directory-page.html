@@ -1,0 +1,99 @@
+<div class="container stack page">
+  <div class="page-header">
+    <div>
+      <h1>Directory</h1>
+      <p class="subtitle">
+        Independent children’s authors and reading volunteers, checked by Shelfie before they’re
+        listed. Only grown-ups see this page.
+      </p>
+    </div>
+  </div>
+  @if (loadFailed()) {
+    <sh-error-state
+      sticker="🛠️"
+      title="The directory didn’t load"
+      text="Shelfie couldn’t reach the server. Try again in a moment."
+    >
+      <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+    </sh-error-state>
+  } @else {
+    <sh-segmented label="Show" [options]="kinds" [(value)]="kind" />
+    @if (list(); as list) {
+      @if (kind() === 'authors') {
+        @if (list.authors.length) {
+          <ul class="list card card--flush">
+            @for (author of list.authors; track author.id) {
+              <li class="list__item">
+                <sh-avatar [name]="author.name" [color]="author.color" [photo]="author.photo" />
+                <div class="list__body">
+                  <div class="list__title">{{ author.name }}</div>
+                  <div class="list__meta">
+                    {{ author.bookCount }} {{ author.bookCount === 1 ? 'book' : 'books' }} ·
+                    {{ short(author.bio) }}
+                  </div>
+                </div>
+                <a
+                  class="btn btn--sm"
+                  [routerLink]="['/directory/authors', author.id]"
+                  [attr.aria-label]="'View ' + author.name"
+                  >View</a
+                >
+              </li>
+            }
+          </ul>
+        } @else {
+          <sh-empty-state
+            title="No authors yet"
+            text="Shelfie hasn’t listed any authors yet. Check back soon."
+          />
+        }
+      } @else {
+        <sh-banner
+          severity="warning"
+          title="Shelfie doesn’t vet volunteers"
+          message="We check that a profile is suitable to list, but we don’t run background or identity checks. Meet in public or online, and stay with your child."
+        />
+        @if (list.volunteers.length) {
+          <ul class="list card card--flush">
+            @for (volunteer of list.volunteers; track volunteer.id) {
+              <li class="list__item">
+                <sh-avatar
+                  [name]="volunteer.name"
+                  [color]="volunteer.color"
+                  [photo]="volunteer.photo"
+                />
+                <div class="list__body">
+                  <div class="list__title">{{ volunteer.name }}</div>
+                  <div class="list__meta">{{ volunteer.ages }} · {{ short(volunteer.bio) }}</div>
+                </div>
+                <a
+                  class="btn btn--sm"
+                  [routerLink]="['/directory/volunteers', volunteer.id]"
+                  [attr.aria-label]="'View ' + volunteer.name"
+                  >View</a
+                >
+              </li>
+            }
+          </ul>
+        } @else {
+          <sh-empty-state
+            title="No volunteers yet"
+            text="Shelfie hasn’t listed any volunteers yet. Check back soon."
+          />
+        }
+      }
+    } @else {
+      <div class="card card--flush" aria-busy="true" aria-label="Loading the directory">
+        @for (row of [1, 2, 3]; track row) {
+          <div class="list__item">
+            <sh-skeleton />
+            <div class="list__body">
+              <sh-skeleton variant="title" />
+              <sh-skeleton />
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

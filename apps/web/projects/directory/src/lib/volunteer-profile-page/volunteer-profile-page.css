@@ -1,0 +1,16 @@
+.page {
+  gap: var(--space-4);
+}
+.header {
+  gap: var(--space-4);
+}
+.name {
+  gap: var(--space-1);
+  align-items: flex-start;
+}
+.section-title {
+  font: var(--text-h4);
+}
+.about {
+  white-space: pre-line;
+}

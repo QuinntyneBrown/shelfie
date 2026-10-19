@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { adminRouter } from './admin.router.ts';
 import { authRouter } from './auth.router.ts';
 import { csrfGuard } from './csrf.ts';
+import { directoryRouter } from './directory.router.ts';
 import { problemDetailsHandler } from './errors.ts';
 import { requestLogging, stdoutLog, type Log } from './logging.ts';
 import type { Mail } from './mail.ts';
@@ -81,6 +82,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/chapter-logs', chapterLogsRouter(db));
   app.use('/api/me', meRouter(db));
   app.use('/api/catalogue-books', catalogueBooksRouter(db));
+  app.use('/api/directory', directoryRouter(db));
   app.use('/api', photosRouter(db));
   app.use(problemDetailsHandler);
   return app;

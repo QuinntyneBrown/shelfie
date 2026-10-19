@@ -31,6 +31,7 @@ export class App {
           badge: this.queueBadge(),
         },
         { label: 'Books', route: '/books', icon: 'books' },
+        { label: 'Directory', route: '/directory', icon: 'directory' },
         { label: 'Settings', route: '/settings', icon: 'settings' },
       ];
     // An author's own pages; a volunteer has only My profile, so no tabs (ADR-0023).

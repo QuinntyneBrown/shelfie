@@ -16,6 +16,21 @@ export const routes: Routes = [
     loadComponent: () => import('directory').then((m) => m.MyProfilePage),
   },
   {
+    path: 'directory',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.DirectoryPage),
+  },
+  {
+    path: 'directory/authors/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.AuthorProfilePage),
+  },
+  {
+    path: 'directory/volunteers/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.VolunteerProfilePage),
+  },
+  {
     path: 'catalogue',
     canActivate: [authorGuard],
     loadComponent: () => import('directory').then((m) => m.MyCataloguePage),

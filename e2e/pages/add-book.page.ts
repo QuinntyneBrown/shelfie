@@ -318,4 +318,13 @@ export class AddBookPage {
     const boxes = await this.matches().evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect().height));
     return Math.min(...boxes);
   }
+
+  /** Opens Add a book filled in from a directory catalogue book, as an author's Add to shelf does. */
+  async openFromCatalogue(catalogueBookId: string) {
+    await this.page.goto(`/add-book?catalogueBook=${catalogueBookId}`);
+  }
+
+  unavailableNote() {
+    return this.page.getByText('That book isn’t available any more.');
+  }
 }

@@ -1,0 +1,67 @@
+<div class="container stack page">
+  @switch (state()) {
+    @case ('not-found') {
+      <sh-error-state
+        sticker="🔍"
+        title="This profile isn’t available"
+        text="The volunteer may have been removed, or Shelfie has hidden their profile."
+      >
+        <a class="btn btn--primary" routerLink="/directory">Back to the directory</a>
+      </sh-error-state>
+    }
+    @case ('failed') {
+      <sh-error-state
+        sticker="🛠️"
+        title="This profile didn’t load"
+        text="Shelfie couldn’t reach the server. Try again in a moment."
+      >
+        <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+      </sh-error-state>
+    }
+    @case ('ready') {
+      @if (volunteer(); as volunteer) {
+        <nav aria-label="Breadcrumb">
+          <ol class="breadcrumb">
+            <li><a routerLink="/directory">Directory</a></li>
+            <li aria-current="page">{{ volunteer.name }}</li>
+          </ol>
+        </nav>
+        <section class="card stack" aria-labelledby="volunteer-name">
+          <div class="cluster header">
+            <sh-avatar
+              size="xl"
+              [name]="volunteer.name"
+              [color]="volunteer.color"
+              [photo]="volunteer.photo"
+            />
+            <div class="stack name">
+              <span class="overline">Reading volunteer</span>
+              <h1 id="volunteer-name">{{ volunteer.name }}</h1>
+              <span class="badge badge--info">{{ volunteer.ages }}</span>
+            </div>
+          </div>
+          <p class="about">{{ volunteer.bio }}</p>
+        </section>
+        <section class="card stack" aria-labelledby="contact-title">
+          <h2 id="contact-title" class="section-title">How to reach {{ firstName() }}</h2>
+          <p>
+            <strong>{{ volunteer.contact }}</strong>
+          </p>
+          <sh-banner
+            severity="warning"
+            title="Shelfie doesn’t vet volunteers"
+            message="We check that a profile is suitable to list, but we don’t run background or identity checks. Arrange everything outside Shelfie, meet in public or online, and stay with your child."
+          />
+        </section>
+      }
+    }
+    @default {
+      <h1 class="visually-hidden">Volunteer</h1>
+      <div class="card stack" aria-busy="true" aria-label="Loading the profile">
+        <sh-skeleton variant="title" />
+        <sh-skeleton />
+        <sh-skeleton />
+      </div>
+    }
+  }
+</div>

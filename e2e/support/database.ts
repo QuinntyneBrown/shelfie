@@ -1,4 +1,6 @@
+import { readFileSync } from 'node:fs';
 import type { Pool } from 'pg';
+import { processCover } from '../../apps/api/src/covers.service.ts';
 
 let db: Pool;
 
@@ -143,4 +145,61 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
 /** Sets an author's or volunteer's listing status, as the operator's `shelfie-admin profiles approve` or `hide` does. */
 export async function setProfileStatus(username: string, status: 'pending' | 'approved' | 'hidden') {
   await db.query('UPDATE directory_profile SET status = $1 WHERE profile_id = (SELECT id FROM profile WHERE username = $2)', [status, username]);
+}
+
+/** An author or volunteer as they joined and wrote their profile, with the operator's status and an author's books; returns their id. */
+export async function addDirectoryProfile(profile: {
+  kind: 'author' | 'volunteer';
+  name: string;
+  status?: 'pending' | 'approved' | 'hidden';
+  bio: string;
+  website?: string;
+  ages?: string;
+  contact?: string;
+  books?: { title: string; chapters: number; description?: string }[];
+}): Promise<string> {
+  const username = profile.name.toLowerCase().replace(/\W/g, '');
+  const id = `p-${username}`;
+  const now = new Date().toISOString();
+  await db.query("INSERT INTO profile (id, household_id, role, name, color, username, email) VALUES ($1, NULL, $2, $3, $4, $5, $6)", [
+    id,
+    profile.kind,
+    profile.name,
+    profile.kind === 'author' ? 'peach' : 'mint',
+    username,
+    `${username}@example.com`,
+  ]);
+  await db.query('INSERT INTO directory_profile (profile_id, status, bio, website, ages, contact, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)', [
+    id,
+    profile.status ?? 'approved',
+    profile.bio,
+    profile.website ?? null,
+    profile.ages ?? null,
+    profile.contact ?? null,
+    now,
+  ]);
+  for (const [i, book] of (profile.books ?? []).entries()) {
+    await db.query('INSERT INTO catalogue_book (id, profile_id, title, chapter_count, description, created_at) VALUES ($1, $2, $3, $4, $5, $6)', [
+      `cb-${username}-${i + 1}`,
+      id,
+      book.title,
+      book.chapters,
+      book.description ?? '',
+      new Date(Date.now() + i).toISOString(),
+    ]);
+  }
+  return id;
+}
+
+/** Gives a catalogue book a cover picture, re-encoded as the author's upload would be. */
+export async function addCatalogueCover(bookId: string, file: string) {
+  await db.query("INSERT INTO catalogue_cover (book_id, image, etag, updated_at) VALUES ($1, $2, 'e1', $3)", [bookId, await processCover(readFileSync(file)), new Date().toISOString()]);
+}
+
+/** Every household book with this title, as stored: whose it is and what it says. */
+export function householdBooksTitled(title: string) {
+  return rows<{ household_id: string; title: string; author: string | null; chapter_count: number }>(
+    'SELECT household_id, title, author, chapter_count FROM book WHERE title = $1',
+    [title],
+  );
 }
