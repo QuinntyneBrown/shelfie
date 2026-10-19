@@ -85,6 +85,12 @@ a:hover, a[data-state="hover"] { color: var(--color-fg-link-hover); text-decorat
 main:has(.auth-layout) { padding-bottom: 0; }
 .auth-card { width: 100%; max-width: 26rem; }
 .auth-card .logo { display: flex; justify-content: center; margin-bottom: var(--space-6); }
+/* The "or" line between a form and the other ways in; its text ("or", "Parents can also") is read, so it is not a separator role. */
+.divider { display: flex; align-items: center; gap: var(--space-3); margin: 0; color: var(--color-fg-muted); font: var(--text-body-sm); text-align: center; }
+.divider::before, .divider::after { content: ""; flex: 1; border-top: var(--border-width-hairline) solid var(--color-border-default); }
+/* Brand marks (Google, Facebook) are the only filled icons; their paths carry the brands' own colours. */
+.icon--brand { stroke: none; }
+.btn[aria-busy="true"] .icon--brand { visibility: hidden; }
 
 /* ---------- Icon ----------------------------------------------------------- */
 .icon { width: var(--size-icon-md); height: var(--size-icon-md); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
