@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
+// Traces to: L2-144, L2-145, L2-146, L2-147, L2-148, L2-149
 import { test, expect } from '../support/test';
 import { DAD } from '../support/accounts';
 import { providerAnswers, providerCancels, providerFails } from '../support/provider';
@@ -6,6 +6,7 @@ import { giveNiaAnEmail } from '../support/database';
 import { SignInPage } from '../pages/sign-in.page';
 import { SignUpPage } from '../pages/sign-up.page';
 import { ReviewPage } from '../pages/review.page';
+import { OnboardingPage } from '../pages/onboarding.page';
 import { ShellPage } from '../pages/shell.page';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
@@ -93,17 +94,18 @@ test('Given Continue with Google is pressed, when the browser is still leaving, 
   expect(signIn.providerStartCount()).toBe(1);
 });
 
-test('Given nobody has priya@example.com, when Priya continues with Google from sign-up, then a household of her own starts and she lands on Review signed in', async ({ page }) => {
+test('Given nobody has priya@example.com, when Priya continues with Google from sign-up, then a household of her own starts and she lands, signed in, on the set-up wizard', async ({ page }) => {
   providerAnswers({ email: PRIYA.email, name: PRIYA.name, verified: true });
   const signUp = new SignUpPage(page);
   await signUp.open();
 
   await signUp.continueWith('Google');
 
+  await expect(page).toHaveURL(/\/onboarding$/);
+  const onboarding = new OnboardingPage(page);
+  await expect(onboarding.heading()).toHaveText('Let’s set up Shelfie for your family');
+  await onboarding.skipForNow();
   await expect(page).toHaveURL(/\/review$/);
-  const review = new ReviewPage(page);
-  await expect(review.heading()).toHaveText('Review');
-  await expect(review.caughtUp()).toBeVisible();
   const shell = new ShellPage(page);
   await shell.openAccountMenu('Priya Bell');
   await expect(shell.menu()).toContainText('@priya · parent');
@@ -114,6 +116,8 @@ test('Given Priya’s account came from Google, when she tries her generated use
   const signUp = new SignUpPage(page);
   await signUp.open();
   await signUp.continueWith('Google');
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await new OnboardingPage(page).skipForNow();
   await expect(page).toHaveURL(/\/review$/);
   const shell = new ShellPage(page);
   await shell.openAccountMenu('Priya Bell');
@@ -260,11 +264,8 @@ test('Given nobody has priya@example.com, when Priya continues with Facebook fro
 
   await signIn.continueWith('Facebook');
 
-  await expect(page).toHaveURL(/\/review$/);
-  await expect(new ReviewPage(page).caughtUp()).toBeVisible();
-  const shell = new ShellPage(page);
-  await shell.openAccountMenu('Priya Bell');
-  await expect(shell.menu()).toContainText('@priya · parent');
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(new OnboardingPage(page).heading()).toHaveText('Let’s set up Shelfie for your family');
 });
 
 test('Given Facebook has no verified e-mail for the account, when a parent continues with Facebook, then she is back with "Facebook didn’t share an e-mail"', async ({ page }) => {

@@ -36,4 +36,6 @@ export * from './lib/picture-list/picture-list';
 export * from './lib/switch/switch';
 export * from './lib/week-strip/week-strip';
 export * from './lib/chat-bubble/chat-bubble';
+export * from './lib/auth-layout/auth-layout';
+export * from './lib/step-indicator/step-indicator';
 export * from './lib/provider-icon/provider-icon';

@@ -18,7 +18,7 @@ const sha256 = (text: string) => createHash('sha256').update(text).digest('base6
 const base64url = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
 
 /**
- * An in-process stand-in for Google and Facebook (ADR-0018), so no test reaches either: `/authorize` sends the browser
+ * An in-process stand-in for Google and Facebook (ADR-0019), so no test reaches either: `/authorize` sends the browser
  * straight back with a code (or an error), `/token` checks the PKCE verifier and answers an unsigned ID token and an
  * access token for the chosen account, and `/me` answers Facebook's shape. Tell it what to do before each sign-in.
  */

@@ -25,20 +25,20 @@ participant "Google or Facebook" as provider #FDF2FA
 
 page -> client : providers()
 client -> router : GET /api/auth/providers
-router --> client : {providers: [google, facebook]} (names only — L2-142)
+router --> client : {providers: [google, facebook]} (names only — L2-149)
 client --> page : configured providers
-page --> person : Divider and one button per provider; none when empty (L2-137)
+page --> person : Divider and one button per provider; none when empty (L2-144)
 person -> page : Press Continue with Google (Keep me signed in as set)
-page -> button : busy = true; second press sends nothing (L2-137)
-page -> router : location.assign /api/auth/google/start?remember=1&from=sign-in (L2-141)
-router -> router : state and verifier from randomBytes(32); S256 challenge (L2-142)
+page -> button : busy = true; second press sends nothing (L2-144)
+page -> router : location.assign /api/auth/google/start?remember=1&from=sign-in (L2-148)
+router -> router : state and verifier from randomBytes(32); S256 challenge (L2-149)
 router -> router : Set-Cookie shelfie_oauth {provider, state, verifier, remember, from}\nHttpOnly, Secure, Lax, 10 min
 router -> oauth : authorizeUrl(google, redirect_uri, state, challenge)
 router --> person : 302 to the provider's consent screen
 person -> provider : Consent (name and verified e-mail only)
 provider --> person : 302 /api/auth/google/callback?code=…&state=…
 person -> router : GET /api/auth/google/callback (cookie shelfie_oauth sent, Lax)
-router -> router : Clear shelfie_oauth; state must equal the cookie's (L2-142)
+router -> router : Clear shelfie_oauth; state must equal the cookie's (L2-149)
 router -> oauth : exchangeCode(google, code, verifier, redirect_uri)
 oauth -> provider : POST token endpoint {code, code_verifier, client_id, client_secret}
 provider --> oauth : {id_token, access_token}
@@ -47,17 +47,17 @@ oauth --> router : ProviderIdentity {subject, email, verified, name}
 router -> service : signInWithProvider(google, identity, remember)
 service -> db : SELECT profile_provider WHERE provider, subject
 alt link exists
-  db --> service : profile (L2-138)
+  db --> service : profile (L2-145)
 else no link, verified parent e-mail
   service -> db : SELECT profile WHERE email = lower(email) AND role = parent
-  service -> db : INSERT profile_provider (L2-138)
+  service -> db : INSERT profile_provider (L2-145)
 else no link, no profile
-  service -> db : INSERT household, profile (name, e-mail, generated username, no password), profile_provider (L2-139)
+  service -> db : INSERT household (onboarded = FALSE), profile (name, e-mail, generated username, no password), profile_provider (L2-146)
 end
 service -> db : INSERT session (remember)
 service --> router : Session
 router -> db : DELETE the browser's previous session
-router --> person : 302 /review + Set-Cookie shelfie_session (remembered or not — L2-141)
-person -> page : /review loads; SessionService.restore()
-page --> person : Review
+router --> person : 302 / + Set-Cookie shelfie_session (remembered or not — L2-148)
+person -> page : / loads; SessionService.restore(); homeOf(session)
+page --> person : Review, or the set-up wizard for a household started just now (L2-137)
 @enduml

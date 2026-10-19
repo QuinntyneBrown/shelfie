@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" role="img" aria-label="A trophy with confetti">
+<path d="M84 40h72v40a36 36 0 0 1-72 0z" fill="#fbe7b2" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+<path d="M84 52H66a0 0 0 0 0 0 0c0 22 10 34 24 38M156 52h18c0 22-10 34-24 38" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+<path d="M112 116h16v18h-16z" fill="#fbe7b2" stroke="#7c3aed" stroke-width="4"/>
+<rect x="88" y="134" width="64" height="18" rx="6" fill="#cfe8d5" stroke="#7c3aed" stroke-width="4"/>
+<path d="M120 56l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#7c3aed"/>
+<circle cx="40" cy="40" r="6" fill="#f9d5e0"/><circle cx="200" cy="30" r="6" fill="#cdf1ec"/><circle cx="212" cy="88" r="5" fill="#f9d5e0"/><circle cx="28" cy="96" r="5" fill="#cfe6fb"/>
+<rect x="56" y="18" width="10" height="16" rx="3" transform="rotate(25 61 26)" fill="#e3d9fb"/><rect x="176" y="60" width="10" height="16" rx="3" transform="rotate(-30 181 68)" fill="#fbe7b2"/><rect x="36" y="128" width="10" height="16" rx="3" transform="rotate(40 41 136)" fill="#cdf1ec"/>
+</svg>

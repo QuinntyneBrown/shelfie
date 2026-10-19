@@ -8,10 +8,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { AuthLayout, Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 import { providerBanner } from '../provider-banner';
 
 @Component({
@@ -22,7 +21,7 @@ import { providerBanner } from '../provider-banner';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
-  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-140). */
+  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-147). */
   readonly reason = input<string>();
   /** Query parameter: the provider a sign-in came back from. */
   readonly provider = input<string>();
@@ -102,6 +101,6 @@ export class SignInPage {
       this.submitting.set(false);
     }
     this.session.current.set(session);
-    await this.router.navigateByUrl(session.role === 'parent' ? '/review' : '/shelf');
+    await this.router.navigateByUrl(homeOf(session));
   }
 }

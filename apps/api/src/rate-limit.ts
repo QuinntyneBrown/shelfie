@@ -35,7 +35,7 @@ function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response)
 /** At most ten password sign-ins from one source in ten minutes. */
 export const passwordSignInLimiter = (db: Db) => rateLimiter(db, 10, (req) => req.ip ?? 'unknown');
 
-/** At most ten provider sign-in starts and callbacks from one source in ten minutes; a navigating browser is sent back rather than shown JSON (L2-142). */
+/** At most ten provider sign-in starts and callbacks from one source in ten minutes; a navigating browser is sent back rather than shown JSON (L2-149). */
 export const providerSignInLimiter = (db: Db, limited: Limited) => rateLimiter(db, 10, (req) => `provider:${req.ip ?? 'unknown'}`, limited);
 
 /** At most five review-assistant requests per parent in ten minutes. Use after `requireSession`. */

@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 /**
- * The sign-in providers (ADR-0018): plain OAuth 2.0 authorization-code flow with PKCE, run with fetch and
+ * The sign-in providers (ADR-0019): plain OAuth 2.0 authorization-code flow with PKCE, run with fetch and
  * node:crypto. A provider is on when its client id and secret are both set; its endpoints default to the
  * real service and can be pointed at a stand-in, so no test ever reaches Google or Facebook.
  */
@@ -64,7 +64,7 @@ export function pkce() {
   return { verifier, challenge: createHash('sha256').update(verifier).digest('base64url') };
 }
 
-/** Where the browser is sent to consent (L2-142). */
+/** Where the browser is sent to consent (L2-149). */
 export function authorizeUrl(provider: OAuthProvider, redirectUri: string, state: string, challenge: string): string {
   const url = new URL(provider.authorizeUrl);
   url.search = new URLSearchParams({
@@ -95,7 +95,7 @@ export async function exchangeCode(provider: OAuthProvider, code: string, verifi
   return fromUserInfo(provider, tokens.access_token);
 }
 
-/** Google: the ID token came straight from the token endpoint over TLS, so its payload is read without a signature check (ADR-0018); `aud` is still checked. */
+/** Google: the ID token came straight from the token endpoint over TLS, so its payload is read without a signature check (ADR-0019); `aud` is still checked. */
 function fromIdToken(provider: OAuthProvider, idToken: string | undefined): ProviderIdentity {
   const payload = idToken?.split('.')[1];
   if (!payload) throw new Error(`${provider.name} returned no ID token`);

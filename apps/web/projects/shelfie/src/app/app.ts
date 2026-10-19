@@ -20,8 +20,10 @@ export class App {
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
   protected readonly session = this.sessionService.current;
+  /** The set-up wizard is a full-screen page: no top bar, no tab bar (L2-138). */
+  protected readonly inWizard = signal(false);
   protected readonly navLinks = computed<NavLink[]>(() =>
-    this.session()?.role === 'parent'
+    this.session()?.role === 'parent' && !this.inWizard()
       ? [
           {
             label: 'Review',
@@ -39,7 +41,9 @@ export class App {
     return { count, label: `${count} ${count === 1 ? 'chapter' : 'chapters'} to review` };
   });
   protected readonly menuItems = computed<MenuItem[]>(() => [
-    this.session()?.role === 'parent' ? { id: 'settings', label: 'Settings' } : { id: 'photo', label: 'My photo' },
+    this.session()?.role === 'parent'
+      ? { id: 'settings', label: 'Settings' }
+      : { id: 'photo', label: 'My photo' },
     { id: 'feedback', label: 'Send feedback' },
     { id: 'sign-out', label: 'Sign out' },
   ]);
@@ -87,6 +91,12 @@ export class App {
         takeUntilDestroyed(),
       )
       .subscribe(() => this.main().nativeElement.focus());
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => this.inWizard.set(event.urlAfterRedirects.startsWith('/onboarding')));
   }
 
   /** Sign out ends the session and returns to the sign-in page. */

@@ -24,7 +24,7 @@ const signUpSchema = z.object({ name: z.string().trim().min(1).max(40), email: z
 const acceptInviteSchema = z.object({ token: z.string().min(1), name: z.string().trim().min(1).max(40), username, password });
 
 const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const };
-// The provider round trip's state and PKCE verifier (ADR-0018): Lax, because the provider's redirect back is cross-site.
+// The provider round trip's state and PKCE verifier (ADR-0019): Lax, because the provider's redirect back is cross-site.
 const OAUTH_COOKIE = { httpOnly: true, secure: true, sameSite: 'lax' as const, path: '/api/auth', maxAge: 10 * 60 * 1000 };
 
 interface OAuthStart {
@@ -57,7 +57,7 @@ export function sessionSummary({ id, remember, ...summary }: Session) {
 export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = []) {
   const router = Router();
 
-  /** Which providers a parent can continue with; names only, never the ids or secrets (L2-142). */
+  /** Which providers a parent can continue with; names only, never the ids or secrets (L2-149). */
   router.get('/providers', (_req, res) => {
     res.json({ providers: providers.map((provider) => provider.name) });
   });
@@ -69,8 +69,8 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, username, role, color, email, theme, photo });
+    const { profileId, name, username, role, color, email, theme, photo, onboarded } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded });
   });
 
   router.post('/sign-out', async (req, res) => {
@@ -145,7 +145,7 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     res.redirect(`/${from}?reason=too-many&provider=${req.params['provider']}`);
   });
 
-  /** Sends the browser to the provider's consent screen, keeping what the callback needs in the start cookie (L2-137, L2-142). */
+  /** Sends the browser to the provider's consent screen, keeping what the callback needs in the start cookie (L2-144, L2-149). */
   router.get('/:provider/start', providerLimiter, (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });
@@ -161,7 +161,7 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     res.redirect(authorizeUrl(provider, redirectUri(provider), start.state, challenge));
   });
 
-  /** Back from the provider: checks the state, trades the code for the identity, and signs the parent in or returns them with a reason (L2-138 to L2-142). */
+  /** Back from the provider: checks the state, trades the code for the identity, and signs the parent in or returns them with a reason (L2-145 to L2-149). */
   router.get('/:provider/callback', providerLimiter, async (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });
@@ -182,7 +182,8 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
       const session = await signInWithProvider(db, provider.name, identity, start.remember);
       await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
-      res.redirect('/review');
+      // The app sends a signed-in parent home from here: Review, or the set-up wizard for a household started just now.
+      res.redirect('/');
     } catch (e) {
       if (!(e instanceof Problem)) throw e;
       back(e.type);

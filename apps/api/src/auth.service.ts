@@ -19,6 +19,8 @@ export interface Session {
   email: string | null;
   theme: string;
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard (L2-144). */
+  onboarded: boolean;
 }
 
 interface ProfileRow {
@@ -52,7 +54,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     expires.toISOString(),
     remember ? 1 : 0,
   ]);
-  const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [profile.household_id]))!;
+  const { theme, onboarded } = (await get<{ theme: string; onboarded: boolean }>(db, 'SELECT theme, onboarded FROM household WHERE id = $1', [profile.household_id]))!;
   const photo = await get<{ etag: string }>(db, 'SELECT etag FROM profile_photo WHERE profile_id = $1', [profile.id]);
   return {
     id,
@@ -65,6 +67,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     email: profile.email,
     theme,
     photo: photo ? photoUrl(profile.id, photo.etag) : null,
+    onboarded,
   };
 }
 
@@ -103,7 +106,8 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
   const householdId = randomUUID();
   const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
   return transaction(pool, async (db) => {
-    await run(db, 'INSERT INTO household (id) VALUES ($1)', [householdId]);
+    // A household started here goes through the set-up wizard once; every other household is already done (ADR-0019).
+    await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
     await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
       parent.id,
       householdId,
@@ -119,12 +123,12 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
 }
 
 /**
- * Signs a parent in from what a provider vouches for (ADR-0018): a parent whose e-mail is the provider's verified
+ * Signs a parent in from what a provider vouches for (ADR-0019): a parent whose e-mail is the provider's verified
  * e-mail. A reader's e-mail, and a missing or unverified e-mail, are refused with a Problem the callback turns into
  * a reason for the page the parent started from.
  */
 export async function signInWithProvider(pool: Pool, provider: ProviderName, identity: ProviderIdentity, remember: boolean): Promise<Session> {
-  // The link comes first: it survives an e-mail change at the provider (L2-138).
+  // The link comes first: it survives an e-mail change at the provider (L2-145).
   const linked = await get<ProfileRow>(
     pool,
     `SELECT ${PROFILE_COLUMNS.split(', ').map((column) => `p.${column}`).join(', ')} FROM profile_provider l JOIN profile p ON p.id = l.profile_id WHERE l.provider = $1 AND l.subject = $2`,
@@ -145,7 +149,7 @@ export async function signInWithProvider(pool: Pool, provider: ProviderName, ide
     });
   }
 
-  // Nobody has the e-mail: start a household, as sign-up does, with no password and a username the parent never types (L2-139).
+  // Nobody has the e-mail: start a household, as sign-up does, with no password and a username the parent never types (L2-146).
   const localPart = identity.email.trim().split('@')[0];
   const householdId = randomUUID();
   const parent = {
@@ -158,7 +162,8 @@ export async function signInWithProvider(pool: Pool, provider: ProviderName, ide
     household_id: householdId,
   };
   return transaction(pool, async (db) => {
-    await run(db, 'INSERT INTO household (id) VALUES ($1)', [householdId]);
+    // Like a household from sign-up, one started here goes through the set-up wizard once (ADR-0018).
+    await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
     await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, NULL)', [
       parent.id,
       householdId,

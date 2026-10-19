@@ -479,6 +479,31 @@ label.bubble__text { cursor: pointer; }
 .trophy__progress { margin-top: var(--space-2); }
 .trophy__actions { flex: none; margin-left: auto; }
 
+/* ---------- Shelfie: onboarding wizard --------------------------------------------------- */
+/* Step indicator: a row of dots and "Step N of M"; the dots are decorative, the text is the information. */
+.steps { display: flex; align-items: center; justify-content: center; gap: var(--space-3); margin: 0; font: var(--text-caption); color: var(--color-fg-muted); }
+.steps__dots { display: inline-flex; align-items: center; gap: var(--space-2); }
+.steps__dot { display: block; width: var(--space-2); height: var(--space-2); border-radius: var(--radius-full); background: var(--color-border-strong); transition: width var(--duration-base) var(--ease-standard), background-color var(--duration-base) var(--ease-standard); }
+.steps__dot--done { background: var(--color-accent); opacity: 0.5; }
+.steps__dot--current { width: var(--space-5); background: var(--color-accent); }
+/* Wizard step: one illustration, one question, at most two fields and one primary action, centred in the auth card. */
+.wizard { align-items: center; text-align: center; }
+.wizard__art { display: block; width: min(100%, 13rem); height: auto; margin-inline: auto; }
+.wizard h1 { font: var(--text-h2); text-wrap: balance; }
+.wizard > p { max-width: 34ch; text-wrap: pretty; margin-inline: auto; }
+.wizard form, .wizard .field, .wizard .alert { width: 100%; text-align: left; }
+.wizard__examples { justify-content: center; }
+.wizard__actions { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; }
+.wizard__actions .btn--ghost { align-self: center; }
+/* The reader's sign-in details on the last step, shown once. */
+.wizard__details { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); width: 100%; margin: 0; padding: var(--space-4); text-align: left; background: var(--color-bg-subtle); border-radius: var(--radius-md); }
+.wizard__details dt { font: var(--text-label); color: var(--color-fg-muted); }
+.wizard__details dd { margin: 0; font: var(--text-h3); font-family: var(--font-family-mono); overflow-wrap: anywhere; }
+/* Rewards already added on the reward step. */
+.wizard__added { width: 100%; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); text-align: left; }
+.wizard__added li { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-bg-subtle); border-radius: var(--radius-md); }
+.wizard__added .list__meta { margin-left: auto; }
+
 /* ---------- Shelfie: achievement badges --------------------------------------------------- */
 .achievements { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
 .achievement { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); min-width: 0; }

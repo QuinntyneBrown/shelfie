@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { AuthLayout, Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 import { providerBanner } from '../provider-banner';
 
 export const USERNAME_RULE = /^[A-Za-z0-9._]{3,20}$/;
@@ -22,7 +21,7 @@ export function usernameProblem(username: string): string | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpPage {
-  /** Query parameters: why a provider sign-in came back, and from which provider (L2-140). */
+  /** Query parameters: why a provider sign-in came back, and from which provider (L2-147). */
   readonly reason = input<string>();
   readonly provider = input<string>();
   private readonly api = inject(AuthApi);
@@ -103,7 +102,7 @@ export class SignUpPage {
       this.submitting.set(false);
     }
     this.session.current.set(session);
-    await this.router.navigateByUrl('/review');
+    await this.router.navigateByUrl(homeOf(session));
   }
 
   /** Lists one line per field in error, in form order, and puts focus on the list. */

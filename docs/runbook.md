@@ -50,7 +50,7 @@ The release that adds the marketing site moves the app from `shelfie.kids` to `a
 
 ### Letting parents sign in with Google or Facebook (once)
 
-Parents can create an account, or sign in to an existing one, with a Google or a Facebook account (`docs/detailed-designs/sign-in/sign-in-with-google-or-facebook`, ADR-0018). Each provider's button shows only once its two values are set; until then the pages look as before. Readers are unaffected.
+Parents can create an account, or sign in to an existing one, with a Google or a Facebook account (`docs/detailed-designs/sign-in/sign-in-with-google-or-facebook`, ADR-0019). Each provider's button shows only once its two values are set; until then the pages look as before. Readers are unaffected.
 
 1. **Google.** In the Google Cloud console create a project (or use an existing one), configure the OAuth consent screen as an external app named Shelfie with the scopes `openid`, `email` and `profile`, publish it, then create an OAuth client of type Web application with the authorised redirect URI `https://app.shelfie.kids/api/auth/google/callback`. Note the client ID and client secret.
 2. **Facebook.** In Meta for Developers create an app of type Consumer, add the Facebook Login product, set Valid OAuth Redirect URIs to `https://app.shelfie.kids/api/auth/facebook/callback`, request the `email` and `public_profile` permissions, and switch the app to Live mode. Note the App ID and App Secret from Settings, Basic.

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" role="img" aria-label="A wrapped present with a bow and sparkles">
+<rect x="56" y="80" width="128" height="78" rx="10" fill="#cfe6fb" stroke="#7c3aed" stroke-width="4"/>
+<rect x="48" y="60" width="144" height="30" rx="8" fill="#cfe6fb" stroke="#7c3aed" stroke-width="4"/>
+<path d="M108 60v98M132 60v98" stroke="#f9d5e0" stroke-width="14"/>
+<path d="M108 60v98M132 60v98" stroke="#7c3aed" stroke-width="3"/>
+<path d="M120 60c-6-18-24-26-32-18s2 20 32 18zM120 60c6-18 24-26 32-18s-2 20-32 18z" fill="#f9d5e0" stroke="#7c3aed" stroke-width="4" stroke-linejoin="round"/>
+<path d="M36 36l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM204 28l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM214 120l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fbe7b2" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round"/>
+</svg>

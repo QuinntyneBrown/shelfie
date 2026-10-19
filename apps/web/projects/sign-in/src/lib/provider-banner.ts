@@ -6,7 +6,7 @@ export interface ProviderBanner {
   message: string;
 }
 
-/** The banner for the `reason` a provider sign-in came back with, naming the provider; null for no or an unknown reason (L2-140). */
+/** The banner for the `reason` a provider sign-in came back with, naming the provider; null for no or an unknown reason (L2-147). */
 export function providerBanner(reason: string | undefined, provider: string | undefined): ProviderBanner | null {
   const name = PROVIDER_NAMES[provider as ProviderName] ?? 'The provider';
   switch (reason) {

@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
+// Traces to: L2-144, L2-145, L2-146, L2-147, L2-148, L2-149
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
@@ -89,7 +89,7 @@ test('Given a start request, then it redirects to the provider with state and an
   }
 });
 
-test('Given Dad’s e-mail is what Google vouches for, when the round trip completes, then the callback sets the session cookie, opens Review and the session is Dad’s', async () => {
+test('Given Dad’s e-mail is what Google vouches for, when the round trip completes, then the callback sets the session cookie, opens the app and the session is Dad’s', async () => {
   const site = await serve(await seededDb());
   try {
     provider.answer({ email: 'dad@example.com', name: 'Dad', verified: true });
@@ -97,7 +97,7 @@ test('Given Dad’s e-mail is what Google vouches for, when the round trip compl
     const { callback } = await site.roundTrip('google');
 
     assert.equal(callback.status, 302);
-    assert.equal(callback.headers.get('location'), '/review');
+    assert.equal(callback.headers.get('location'), '/');
     const session = site.cookieValue(callback, 'shelfie_session');
     assert.ok(session, 'a session cookie is set');
     assert.match(site.setCookie(callback, 'shelfie_oauth')!, /Expires=Thu, 01 Jan 1970/, 'the start cookie is cleared');
@@ -144,10 +144,11 @@ test('Given an e-mail nobody has, when the round trip completes, then a househol
 
     const { callback } = await site.roundTrip('google', 'from=sign-up');
 
-    assert.equal(callback.headers.get('location'), '/review');
+    assert.equal(callback.headers.get('location'), '/');
     const parent = (await get<{ name: string; username: string; email: string; role: string; password_hash: string | null; household_id: string }>(db, "SELECT name, username, email, role, password_hash, household_id FROM profile WHERE email = 'priya.bell@example.com'"))!;
     assert.deepEqual([parent.name, parent.username, parent.role, parent.password_hash], ['Priya Bell', 'priya.bell', 'parent', null]);
     assert.notEqual(parent.household_id, 'h1');
+    assert.equal((await get<{ onboarded: boolean }>(db, 'SELECT onboarded FROM household WHERE id = $1', [parent.household_id]))!.onboarded, false, 'the new household goes through the set-up wizard');
     assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile WHERE household_id = $1', [parent.household_id]))!.n, 1);
     const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
     assert.equal((await me.json()).name, 'Priya Bell');
@@ -168,7 +169,7 @@ test('Given the provider sends no name and a local part that is taken, too short
     ]) {
       provider.answer({ email, name: null, verified: true });
       const { callback } = await site.roundTrip('google');
-      assert.equal(callback.headers.get('location'), '/review', email);
+      assert.equal(callback.headers.get('location'), '/', email);
       const row = (await get<{ username: string; name: string }>(db, 'SELECT username, name FROM profile WHERE email = $1', [email.toLowerCase()]))!;
       assert.deepEqual([row.username, row.name], [username, name], email);
     }
@@ -183,14 +184,14 @@ test('Given Dad signed in with Google once, when Google later reports another e-
   try {
     provider.answer({ subject: 'google-dad', email: 'dad@example.com', name: 'Dad', verified: true });
     const first = await site.roundTrip('google');
-    assert.equal(first.callback.headers.get('location'), '/review');
+    assert.equal(first.callback.headers.get('location'), '/');
     const link = await get<{ profile_id: string }>(db, "SELECT profile_id FROM profile_provider WHERE provider = 'google' AND subject = 'google-dad'");
     assert.equal(link?.profile_id, 'p-dad', 'the first sign-in by e-mail links the account');
 
     provider.answer({ subject: 'google-dad', email: 'dad.new@example.com', name: 'Dad', verified: true });
     const second = await site.roundTrip('google');
 
-    assert.equal(second.callback.headers.get('location'), '/review');
+    assert.equal(second.callback.headers.get('location'), '/');
     const me = await site.get('/api/auth/session', site.cookieValue(second.callback, 'shelfie_session'));
     assert.equal((await me.json()).username, 'dad');
     assert.equal(await get(db, "SELECT 1 FROM profile WHERE email = 'dad.new@example.com'"), undefined, 'no second account is created');
@@ -209,7 +210,7 @@ test('Given Dad is linked to Google, when he continues with Facebook with the sa
 
     const { callback } = await site.roundTrip('facebook');
 
-    assert.equal(callback.headers.get('location'), '/review');
+    assert.equal(callback.headers.get('location'), '/');
     const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
     assert.equal((await me.json()).username, 'dad');
     const links = await get<{ n: number }>(db, "SELECT COUNT(*) AS n FROM profile_provider WHERE profile_id = 'p-dad'");
@@ -293,7 +294,7 @@ test('Given Facebook, then the start asks for email and public_profile, the iden
     const { start, callback } = await site.roundTrip('facebook');
 
     assert.equal(new URL(start.headers.get('location')!).searchParams.get('scope'), 'email public_profile');
-    assert.equal(callback.headers.get('location'), '/review');
+    assert.equal(callback.headers.get('location'), '/');
     const link = await get<{ profile_id: string }>(db, "SELECT profile_id FROM profile_provider WHERE provider = 'facebook' AND subject = 'fb-1001'");
     const parent = await get<{ id: string; name: string }>(db, "SELECT id, name FROM profile WHERE email = 'priya@example.com'");
     assert.equal(link?.profile_id, parent?.id);

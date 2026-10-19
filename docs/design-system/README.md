@@ -40,6 +40,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Tab bar](components/tab-bar.html) | Navigation | grown-up phone nav, with count | default, hover, focus, current | review, books, manage-book, settings |
 | [Breadcrumb](components/breadcrumb.html) | Navigation | two and three levels | link hover, focus, current | add-book, book, chapter, log-chapter |
 | [Skip link](components/skip-link.html) | Navigation | — | hidden, focused | shelf, review, sign-in |
+| [Step indicator](components/step-indicator.html) | Navigation | dots + "Step N of M" | to come, current, done | onboarding |
 | [Layout primitives](components/layout.html) | Containers and overlays | container, stack, cluster, grid, spans, page header, auth layout | — | review, review-chapter, add-book, shelf |
 | [Card](components/card.html) | Containers and overlays | default, flush, cover tint (automatic), success, warning | — | review, review-chapter, manage-book, book |
 | [Hero](components/hero.html) | Containers and overlays | keep reading, washed in its cover colour | — | shelf |
@@ -93,6 +94,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 | [Notifications](patterns/notifications.html) | Toast vs banner vs push, priority, auto-dismiss, stacking |
 | [Content and tone](patterns/content-and-tone.html) | Warm for Nia, plain for Dad; microcopy library |
 | [Marketing page](patterns/marketing-page.html) | Two-tone hero with pastel dots, short titles, tinted step and feature cards, wavy section edges |
+| [Wizard step](patterns/wizard-step.html) | One purpose per step: step indicator, illustration, one question, one or two fields, one action, Back and Skip; the set-up wizard |
 
 ## Tokens
 
@@ -153,6 +155,11 @@ From [the competitive review](../competitive-review/beanstack.md) and the rework
 
 - **Added:** the provider variant of [Button](components/button.html#variants) (secondary, block, medium height, brand mark first, busy while redirecting); `.btn--block` now wraps its label instead of overflowing on a narrow phone, the `p.divider` "or" line in the auth layout ([Layout](components/layout.html)), and the Google and Facebook brand marks on the [icon sheet](foundations/iconography.html#sheet) (`.icon--brand`: the only filled icons, in the brands' own colours).
 - **Changed:** nothing else; sign-in and sign-up sources now include the provider states.
+
+### 2026-10-19: onboarding wizard
+
+- **Added:** [Step indicator](components/step-indicator.html) (`.steps`, `.steps__dots`, `.steps__dot`, `--done`, `--current`) and the [Wizard step](patterns/wizard-step.html) pattern (`.wizard`, `.wizard__art`, `.wizard__actions`, `.wizard__examples`, `.wizard__added`, `.wizard__details`) for the one-time set-up wizard after sign-up. Five illustrations in `assets/onboarding/` (welcome, child, sign-in, reward, done), pastel fills with a violet outline so they read in both themes.
+- **Changed:** [Layout primitives](components/layout.html) gains nothing; the wizard reuses the auth card as it is.
 - **Tokens:** none added or changed.
 
 ### 2026-10-18: suggested questions

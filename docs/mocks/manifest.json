@@ -47,9 +47,9 @@
       "requirements": [
         "L2-002",
         "L2-003",
-        "L2-137",
-        "L2-140",
-        "L2-141"
+        "L2-144",
+        "L2-147",
+        "L2-148"
       ]
     },
     {
@@ -59,9 +59,9 @@
       "route": "/sign-up",
       "requirements": [
         "L2-033",
-        "L2-137",
-        "L2-139",
-        "L2-140"
+        "L2-144",
+        "L2-146",
+        "L2-147"
       ],
       "states": [
         "default",
@@ -80,7 +80,7 @@
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
         "empty": "A single form; there is no collection to be empty.",
-        "success": "Success signs the parent in and opens Review (pages/review/empty.html)."
+        "success": "Success signs the parent in and opens the set-up wizard (pages/onboarding/welcome.html)."
       }
     },
     {
@@ -102,6 +102,43 @@
         "loading": "The token is checked when the page opens; a bad token shows the error state directly.",
         "empty": "A single form; there is no collection to be empty.",
         "success": "Success signs the parent in and opens Review."
+      }
+    },
+    {
+      "id": "onboarding",
+      "kind": "page",
+      "title": "Set up your family",
+      "route": "/onboarding (steps: /onboarding/child, /onboarding/sign-in, /onboarding/reward, /onboarding/done)",
+      "requirements": [
+        "L2-137",
+        "L2-138",
+        "L2-139",
+        "L2-140",
+        "L2-141",
+        "L2-142",
+        "L2-143"
+      ],
+      "states": [
+        "welcome",
+        "child-name",
+        "child-name-invalid",
+        "child-sign-in",
+        "child-sign-in-invalid",
+        "child-sign-in-taken",
+        "child-sign-in-submitting",
+        "failed",
+        "reward",
+        "reward-added",
+        "reward-invalid",
+        "reward-submitting",
+        "done",
+        "resumed",
+        "error"
+      ],
+      "not_applicable": {
+        "default": "The wizard opens on its first step, welcome.",
+        "loading": "The first step needs no data. A reload reads the household once before its step shows; that read takes one round trip and shows nothing in between.",
+        "empty": "A wizard has no collection to be empty."
       }
     },
     {

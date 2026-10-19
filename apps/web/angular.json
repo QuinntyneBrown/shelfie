@@ -57,6 +57,11 @@
                 "glob": "*.svg",
                 "input": "projects/components/src/assets/mascot",
                 "output": "mascot"
+              },
+              {
+                "glob": "*.svg",
+                "input": "projects/components/src/assets/onboarding",
+                "output": "onboarding"
               }
             ],
             "styles": [
@@ -310,6 +315,32 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/books/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "onboarding": {
+      "projectType": "library",
+      "root": "projects/onboarding",
+      "sourceRoot": "projects/onboarding/src",
+      "prefix": "sh",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/onboarding/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/onboarding/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/onboarding/tsconfig.spec.json"
           }
         }
       }

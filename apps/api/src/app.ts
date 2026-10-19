@@ -60,7 +60,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   // Bearer-token only, no cookies: browsers never send the credential on their own, so no CSRF guard (ADR-0005).
   app.use('/api/admin/v1', adminRouter(db));
   app.use('/api', csrfGuard);
-  // Google and Facebook sign-in are on when their client ids and secrets are set; tests pass providers aimed at a stand-in (ADR-0018).
+  // Google and Facebook sign-in are on when their client ids and secrets are set; tests pass providers aimed at a stand-in (ADR-0019).
   app.use('/api/auth', authRouter(db, options.mail, options.providers ?? configuredProviders()));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db, options.suggest));

@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { requireRole } from './authz.ts';
+import { run } from './db.ts';
 import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
 import { getSettings, updateSettings } from './settings.service.ts';
@@ -37,6 +38,13 @@ export function settingsRouter(db: Pool) {
       if (!(e instanceof Problem)) throw e;
       res.status(e.status).json({ type: e.type, ...e.extra });
     }
+  });
+
+  /** The set-up wizard is finished or skipped for the caller's household; there is no way back (L2-137). */
+  router.post('/onboarded', async (_req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    await run(db, 'UPDATE household SET onboarded = TRUE WHERE id = $1', [householdId]);
+    res.status(204).end();
   });
 
   return router;

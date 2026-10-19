@@ -1,4 +1,4 @@
-// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119, L2-128, L2-138
+// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119, L2-128, L2-145
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { all, get, run } from './db.ts';
