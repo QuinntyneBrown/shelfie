@@ -8,7 +8,7 @@ This feature gives the application two ways to say so. A **toast** is a short me
 
 Both carry a **severity**, one of `info`, `success`, `warning` and `danger`, which sets the colour, the icon and how assistive technology announces the message. A toast may carry one **action**, a button such as Undo or Retry, and a toast with an action waits for the person instead of leaving on a timer. Several toasts stack, newest nearest the edge, and more than three collapse into a "+1 more" line so the stack never covers the page.
 
-The feature sits in the `shell` subsystem beside shell navigation (`navigate-shell`), which renders the toast stack and the banner slot inside `AppComponent`, and offline behaviour (`work-offline`), which is the first caller of the persistent offline banner. Every page and dialog in the application uses these services; none of them renders a toast or banner of its own.
+The feature sits in the `shell` subsystem beside shell navigation (`navigate-shell`), which renders the toast stack and the banner slot inside `AppComponent`, and offline behaviour (`work-offline`), which is the first caller of the persistent offline banner. Every page and dialog in the application uses these services; none of them renders a toast or banner of its own. A third surface, the push notification that reaches a device while Shelfie is closed, is described in [push notifications](../push-notifications/README.md); it does not use these services.
 
 ## Description
 

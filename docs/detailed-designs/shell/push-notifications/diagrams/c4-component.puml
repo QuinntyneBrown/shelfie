@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Feedback notifications
+
+Container_Boundary(web, "Web application") {
+  Component(settings, "NotificationsSection", "Angular component (settings)", "Device switch and four household switches")
+  Component(offer, "PushOffer", "Angular component (shelf)", "One-time banner with Turn on and Not now")
+  Component(pushsvc, "PushService", "Angular service (core)", "Detects support, subscribes, unsubscribes, exposes state")
+  Component(switch, "sh-switch", "Angular component (components)", "One on or off choice")
+}
+Container(sw, "Push service worker", "sw.js", "Shows the notification, opens the page on click")
+Container_Boundary(api, "Shelfie API") {
+  Component(pushrouter, "pushRouter", "Express router", "GET /api/push/key, POST and DELETE /api/push/subscriptions")
+  Component(pushservice, "push.service", "TypeScript module", "Stores subscriptions, builds messages, notify()")
+  Component(push, "Push", "TypeScript module over web-push", "Signs and sends one message; reports gone subscriptions")
+  Component(triggers, "Chapter, review and reward routers", "Express routers", "Call notify() after a chapter, sticker, book reward or streak reward")
+  Component(settingssvc, "settings.service", "TypeScript module", "Reads and saves the four event switches")
+}
+ContainerDb(db, "Shelfie database", "PostgreSQL 16", "push_subscription, household")
+System_Ext(pushsvc2, "Browser push service", "Delivers push messages")
+
+Rel(settings, switch, "Renders with")
+Rel(settings, pushsvc, "Turns the device on and off through")
+Rel(offer, pushsvc, "Turns the device on through")
+Rel(pushsvc, sw, "Registers", "Push API")
+Rel(pushsvc, pushrouter, "Calls", "JSON/HTTPS")
+Rel(settings, settingssvc, "Saves switches through", "PATCH /api/settings")
+Rel(pushrouter, pushservice, "Calls")
+Rel(triggers, pushservice, "Calls notify()")
+Rel(pushservice, push, "Sends through")
+Rel(pushservice, db, "Reads and writes", "SQL")
+Rel(settingssvc, db, "Reads and writes", "SQL")
+Rel(push, pushsvc2, "Sends to", "Web Push, VAPID")
+@enduml

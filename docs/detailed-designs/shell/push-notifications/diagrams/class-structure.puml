@@ -1,0 +1,95 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Feedback notifications
+
+enum PushEvent {
+  chapterLogged
+  feedback
+  bookReward
+  streakReward
+}
+
+enum DeviceState {
+  unsupported
+  off
+  on
+  blocked
+}
+
+class PushPayload {
+  +title: string
+  +body: string
+  +url: string
+  +tag: string
+}
+
+class PushTarget {
+  +id: string
+  +endpoint: string
+  +p256dh: string
+  +auth: string
+}
+
+interface Push {
+  +publicKey: string
+  +send(target: PushTarget, payload: PushPayload): Promise<'sent' | 'gone'>
+}
+
+class "push.service" as PushService_API {
+  +getKey(push: Push | null): string
+  +saveSubscription(db, profileId, body): Promise<void>
+  +removeSubscription(db, profileId, endpoint): Promise<void>
+  +notify(db, push, householdId, role, event, payload): Promise<void>
+}
+
+class HouseholdNotifications {
+  +chapterLogged: boolean
+  +feedback: boolean
+  +bookReward: boolean
+  +streakReward: boolean
+}
+
+class "PushService (core)" as PushService_Web {
+  +state: Signal<DeviceState>
+  +init(): Promise<void>
+  +turnOn(): Promise<void>
+  +turnOff(): Promise<void>
+  +forget(): Promise<void>
+}
+
+class NotificationsSection {
+  +device: PushService
+  +household: HouseholdNotifications
+}
+
+class PushOffer {
+  +visible: Signal<boolean>
+  +turnOn(): void
+  +notNow(): void
+}
+
+class "sh-switch" as Switch {
+  +label: string
+  +checked: Model<boolean>
+  +disabled: boolean
+}
+
+PushService_API ..> Push : sends through
+PushService_API ..> PushTarget : reads
+PushService_API ..> PushPayload : builds
+PushService_API ..> PushEvent : checks switch for
+PushService_API --> HouseholdNotifications : reads
+PushService_Web --> DeviceState : exposes
+NotificationsSection --> PushService_Web : uses
+NotificationsSection --> Switch : renders 5
+PushOffer --> PushService_Web : uses
+@enduml

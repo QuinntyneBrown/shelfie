@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Turn notifications on for this device
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent or reader" as person
+box "Frontend — Shelfie web application" #E0F2FE
+  participant "NotificationsSection / PushOffer" as ui
+  participant "PushService (core)" as svc
+  participant "Browser Notification and PushManager" as browser
+end box
+box "Backend — Shelfie API application" #D1FADF
+  participant "pushRouter" as router
+end box
+box "Backend — Shelfie Application and Domain" #ECFDF3
+  participant "push.service" as service
+end box
+box "Backend — Shelfie Infrastructure" #FFF4E5
+  database "Shelfie database" as db
+end box
+person -> ui : Turn on
+ui -> svc : turnOn()
+svc -> router : GET /api/push/key
+router -> service : getKey() — L2-120
+alt push is off
+  service --> router : Problem 404 push-off
+  router --> svc : 404 push-off
+  svc --> ui : state unsupported
+else push is on
+  service --> router : public key
+  router --> svc : 200 public key
+  svc -> browser : Notification.requestPermission() — L2-121 prompt only after the tap
+  alt permission granted
+    browser --> svc : granted
+    svc -> browser : register /sw.js, pushManager.subscribe(public key)
+    browser --> svc : subscription (endpoint, p256dh, auth)
+    svc -> router : POST /api/push/subscriptions
+    router -> router : Authenticate, CSRF, validate body, rate limit — L2-127
+    router -> service : saveSubscription(profileId, body)
+    service -> db : Upsert by endpoint for the session's profile
+    db --> service : Stored
+    service --> router : Done
+    router --> svc : 204
+    svc --> ui : state on
+    ui --> person : Success toast "Notifications are on"
+  else permission denied or dismissed
+    browser --> svc : denied or default
+    svc --> ui : state blocked or off — nothing stored
+  end
+end
+@enduml
