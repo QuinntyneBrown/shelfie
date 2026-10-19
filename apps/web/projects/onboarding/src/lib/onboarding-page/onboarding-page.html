@@ -188,6 +188,36 @@
         </form>
       </div>
     }
+    @case ('done') {
+      <sh-celebration variant="book" class="wizard">
+        <img class="wizard__art" src="/onboarding/done.svg" alt="" width="240" height="180" />
+        <h1>All set!</h1>
+        @if (password()) {
+          <p class="text-muted">
+            {{ readerName() }} can sign in on this device or any other. Write these down: the
+            password shows only here, never again.
+          </p>
+          <dl class="wizard__details">
+            <dt>Username</dt>
+            <dd>{{ reader()?.username }}</dd>
+            <dt>Password</dt>
+            <dd>{{ password() }}</dd>
+          </dl>
+        } @else {
+          <p class="text-muted">
+            {{ readerName() }} can sign in on this device or any other with the username below. Her
+            password is the one you chose; set a new one any time in Settings → Readers.
+          </p>
+          <dl class="wizard__details">
+            <dt>Username</dt>
+            <dd>{{ reader()?.username }}</dd>
+          </dl>
+        }
+        <form class="wizard__actions" (submit)="$event.preventDefault(); finish()">
+          <sh-button [large]="true" [block]="true" [busy]="busy()">Go to my shelf</sh-button>
+        </form>
+      </sh-celebration>
+    }
     @default {
       <div class="card stack wizard">
         <img class="wizard__art" src="/onboarding/welcome.svg" alt="" width="240" height="180" />
@@ -202,5 +232,7 @@
       </div>
     }
   }
-  <p class="text-caption centred"><a href="/review" (click)="skip($event)">Skip for now</a></p>
+  @if (current() !== 'done') {
+    <p class="text-caption centred"><a href="/review" (click)="skip($event)">Skip for now</a></p>
+  }
 </sh-auth-layout>

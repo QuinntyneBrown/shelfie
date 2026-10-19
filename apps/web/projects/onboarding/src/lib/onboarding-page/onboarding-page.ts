@@ -9,7 +9,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthLayout, Banner, Button, StepIndicator, Sticker, TextField } from 'components';
+import {
+  AuthLayout,
+  Banner,
+  Button,
+  Celebration,
+  StepIndicator,
+  Sticker,
+  TextField,
+} from 'components';
 import { ApiError, SessionService } from 'core';
 import { GalleryReward, OnboardingApi, ReaderView } from '../onboarding-api';
 
@@ -31,7 +39,7 @@ export function usernameFrom(name: string): string {
 /** The one-time set-up wizard after sign-up: five full-screen steps under the auth layout, one per URL. */
 @Component({
   selector: 'sh-onboarding-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, StepIndicator, Sticker, TextField],
+  imports: [AuthLayout, Banner, Button, Celebration, RouterLink, StepIndicator, Sticker, TextField],
   templateUrl: './onboarding-page.html',
   styleUrl: './onboarding-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -182,8 +190,15 @@ export class OnboardingPage {
     await this.finish();
   }
 
-  private async finish() {
-    await this.api.finish();
+  /** Go to my shelf on All set marks the wizard done and opens Review (L2-142). */
+  protected async finish() {
+    if (this.busy()) return;
+    this.busy.set(true);
+    try {
+      await this.api.finish();
+    } finally {
+      this.busy.set(false);
+    }
     this.session.update({ onboarded: true });
     await this.router.navigateByUrl('/review');
   }

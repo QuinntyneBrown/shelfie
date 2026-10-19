@@ -131,6 +131,25 @@ export class OnboardingPage {
     await this.page.unroute('**/api/gallery-rewards');
   }
 
+  /** The child's sign-in details on All set: the username and, the first time, the password. */
+  detail(label: 'Username' | 'Password') {
+    return this.page.getByRole('definition').filter({ has: this.page.locator(`xpath=preceding-sibling::dt[1][normalize-space()="${label}"]`) });
+  }
+
+  async goToMyShelf() {
+    await this.page.getByRole('button', { name: 'Go to my shelf' }).click();
+  }
+
+  /** Whether the text appears anywhere this browser stores things for the site. */
+  async storedAnywhere(text: string) {
+    const cookies = (await this.page.context().cookies()).map((c) => c.value).join(' ');
+    const inStorage = await this.page.evaluate(
+      (needle) => [localStorage, sessionStorage].some((s) => Object.keys(s).some((k) => k.includes(needle) || (s.getItem(k) ?? '').includes(needle))),
+      text,
+    );
+    return cookies.includes(text) || inStorage || this.page.url().includes(text);
+  }
+
   /** The shell's primary navigation, which the wizard never shows. */
   shellNavigation() {
     return this.page.getByRole('navigation', { name: /^Primary/ });

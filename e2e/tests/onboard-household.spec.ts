@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { inviteLinkFor } from '../support/mailbox';
@@ -290,4 +290,38 @@ test('Given the server cannot be reached, when a reward is saved, then the step 
   await onboarding.repairRewards();
   await onboarding.tryAgain();
   await expect(onboarding.rewardsAdded()).toHaveCount(1);
+});
+
+test('Given the reward added, when All set opens, then it shows Zara’s username and password once, keeps them out of storage, and Go to my shelf opens Review for good', async ({ page, browser, baseURL }) => {
+  const onboarding = await reachRewardStep(page);
+  await onboarding.tapExample('Trip to the zoo');
+  await onboarding.booksField().fill('3');
+  await onboarding.next();
+
+  await expect(page).toHaveURL(/\/onboarding\/done$/);
+  await expect(onboarding.stepLabel()).toHaveText('Step 5 of 5');
+  await expect(onboarding.heading()).toHaveText('All set!');
+  await expect(onboarding.detail('Username')).toHaveText(ZARA.username);
+  await expect(onboarding.detail('Password')).toHaveText(ZARA.password);
+  await expect(onboarding.skipLink()).toHaveCount(0);
+  await expect(onboarding.backLink()).toHaveCount(0);
+  expect(await onboarding.storedAnywhere(ZARA.password)).toBe(false);
+
+  await onboarding.goToMyShelf();
+
+  await expect(page).toHaveURL(/\/review$/);
+  await expect(new ReviewPage(page).heading()).toHaveText('Review');
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await expect(settings.reader('Zara')).toContainText('@zara');
+  await expect(settings.galleryReward('Trip to the zoo')).toContainText('3 books');
+  await onboarding.open('done');
+  await expect(page).toHaveURL(/\/review$/);
+
+  const laptop = await browser.newContext({ baseURL });
+  const other = await laptop.newPage();
+  await new SignInPage(other).open();
+  await new SignInPage(other).signInWithPassword(PRIYA.username, PRIYA.password);
+  await expect(other).toHaveURL(/\/review$/);
+  await laptop.close();
 });
