@@ -1,5 +1,5 @@
 <a class="skip-link" href="#main" (click)="skipToContent($event)">Skip to content</a>
-@if (session(); as current) {
+@if (!inWizard() && session(); as current) {
   <sh-top-bar
     [name]="current.name"
     [color]="current.color"

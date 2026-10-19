@@ -80,7 +80,7 @@ shelfie/
 │   │       ├── components/ # library: ALL reusable UI components (sh-*)
 │   │       ├── core/       # library: auth, session, API client, toasts
 │   │       ├── <feature>/  # one library per area: sign-in, shelf, books,
-│   │       │               #   log-chapter, review, settings
+│   │       │               #   log-chapter, review, settings, onboarding
 │   │       └── shelfie/    # application: shell, routing, composition only
 │   ├── api/                # Node backend (web API and admin API)
 │   ├── marketing/          # static marketing page for www.shelfie.kids (see docs/adr/0017)

@@ -106,6 +106,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 - **Pictures upload one at a time, apart from saving the reward, and the featured mark lives on the picture row.** Recorded in [ADR-0013](../../../adr/0013-reward-pictures-upload-apart-and-one-featured.md).
 - **One image pipeline.** Reward pictures reuse `processImage`, `readImage` and the cover route's headers, so the rules of `L2-044`, `L2-045` and `L2-048` hold with no second implementation.
 - **Shelfie's own pictures are uploaded like any other.** `sh-picture-list` holds the ten SVGs (served at `/reward-pictures/`), draws the chosen one onto a 480 × 480 canvas and emits it as a WebP `File` through `picked`. The API, the table and the upload, retry and featured rules are unchanged, so a chosen picture is just a stored picture.
+- **The set-up wizard adds rewards through the same route.** The one-time wizard after sign-up (sign-in/onboard-household, `L2-141`) posts to `POST /api/gallery-rewards` with the same checks as `GalleryRewardDialog` and an empty description; pictures and descriptions are added here.
 - **Prefill, not a new flow.** The only change to Give a reward is its initial text, so `L2-017`'s rules hold for gallery rewards exactly as for typed ones.
 
 ## Diagrams

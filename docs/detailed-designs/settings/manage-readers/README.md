@@ -28,6 +28,8 @@ The slice runs from the Settings page to the `users` table.
 
 Deleting a reader and changing a reader's username on the sign-in page are not in `L2-036` and are not designed here.
 
+- **Set-up wizard** — the one-time wizard after sign-up (sign-in/onboard-household, `L2-140`) creates the household's first reader through the same `POST /api/readers` and the same client checks and wording as `EditReaderDialog`; the wizard picks the avatar colour, and this dialog changes it.
+
 - **Profile photo** — `ReaderView` carries `photo: string | null`, and each Readers row draws `sh-avatar` from it. A parent cannot set or remove a reader's photo; when the reader has one, `EditReaderDialog` shows the help "Shows when {name} has no photo." under Colour. See `settings/upload-profile-photo` (`L2-043`).
 
 ## Requirements

@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Add the child
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (onboarding library)" #E0F2FE
+  participant "OnboardingPage" as page
+  participant "OnboardingApi" as client
+end box
+box "Backend — Shelfie API (Express routers)" #D1FADF
+  participant "readers.router.ts" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "readers.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+parent -> page : Type the child's name; Next (L2-139)
+page -> page : Validate 1 to 40 characters; pick a colour;\nprefill the username from the name
+page --> parent : Navigate to /onboarding/sign-in
+parent -> page : Username and password; Next (L2-140)
+page -> page : Validate username 3-20 of letters, digits, ".", "_";\npassword >= 8; "Fix N things" when not
+page -> client : addReader({name, color, username, password})
+client -> router : POST /api/readers
+router -> router : requireSession, requireRole('parent'), readerSchema
+router -> service : addReader(householdId, input)
+service -> db : SELECT username (case-insensitive)
+alt username free
+  service -> db : INSERT profile (role reader, argon2id hash)
+  db --> service : row
+  service --> router : ReaderView
+  router --> client : 201 ReaderView
+  client --> page : reader
+  page --> parent : Navigate to /onboarding/reward
+else taken (409 username-taken)
+  router --> client : 409 {type: 'username-taken'}
+  client --> page : ApiError
+  page --> parent : "That username is taken." on the field; values stay
+else network or 5xx
+  page --> parent : "Nia wasn't added", Try again; values stay
+end
+@enduml

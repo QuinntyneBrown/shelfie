@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Onboard a household
+
+Person(parent, "Parent", "Has just signed up; adds a child and a reward")
+System(shelfie, "Shelfie", "Reading log and comprehension questions")
+
+Rel(parent, shelfie, "Works through the one-time set-up wizard")
+@enduml

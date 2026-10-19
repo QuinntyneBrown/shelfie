@@ -12,6 +12,14 @@ export interface Session {
   theme: 'device' | 'light' | 'dark';
   /** The URL of the person's own photo, or null when they have none. */
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard; false only for a household just signed up. */
+  onboarded: boolean;
+}
+
+/** Where a person lands after signing in: a reader on her shelf, a parent on Review, or on the set-up wizard while it is pending. */
+export function homeOf(session: Session): string {
+  if (session.role !== 'parent') return '/shelf';
+  return session.onboarded ? '/review' : '/onboarding';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +31,7 @@ export class SessionService {
   readonly expired = signal(false);
 
   /** Shows changed details straight away, without another sign-in. */
-  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color' | 'photo'>>) {
+  update(changes: Partial<Pick<Session, 'name' | 'theme' | 'color' | 'photo' | 'onboarded'>>) {
     this.current.update((session) => (session ? { ...session, ...changes } : session));
   }
 

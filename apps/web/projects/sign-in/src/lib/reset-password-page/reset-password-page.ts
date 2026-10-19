@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
+import { AuthLayout, Banner, Button, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-reset-password-page',
