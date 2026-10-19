@@ -1,4 +1,4 @@
-// Traces to: L2-041, L2-045, L2-048, L2-109
+// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { all, get, run } from './db.ts';
@@ -6,7 +6,7 @@ import { purgeExpired } from './purge.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
-const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture'];
+const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture', 'feedback'];
 
 test('Given two households, when one is erased, then every row it owned is gone and the other household is untouched', async () => {
   const db = await createTestDatabase();
@@ -25,13 +25,14 @@ test('Given two households, when one is erased, then every row it owned is gone 
     await run(db.pool, "INSERT INTO gallery_reward (id, household_id, name, target, created_at) VALUES ('g1', $1, 'Zoo', 3, '2026-10-18'), ('g2', 'h2', 'Kite', 2, '2026-10-18')", [SEED.householdId]);
     await run(db.pool, "INSERT INTO streak_reward (household_id, milestone, name) VALUES ($1, 7, 'Ice cream'), ('h2', 7, 'Kite')", [SEED.householdId]);
     await run(db.pool, "INSERT INTO reward_picture (id, reward_id, image, etag, featured, created_at) VALUES ('rp1', 'g1', 'x', 'e1', true, '2026-10-18'), ('rp2', 'g1', 'x', 'e2', false, '2026-10-18'), ('rp3', 'g2', 'x', 'e3', true, '2026-10-18')");
+    await run(db.pool, "INSERT INTO feedback (id, household_id, profile_id, kind, score, message, created_at) VALUES ('f1', $1, $2, 'feel', 5, NULL, '2026-10-19'), ('f2', $1, $3, 'idea', NULL, 'More dragons', '2026-10-19'), ('f3', 'h2', 'p-other-dad', 'feel', 4, NULL, '2026-10-19')", [SEED.householdId, SEED.readerId, SEED.parentId]);
     const countAll = async () => Object.fromEntries(await Promise.all(OWNED.map(async (t) => [t, (await get<{ n: number }>(db.pool, `SELECT COUNT(*) AS n FROM ${t}`))!.n])));
     const before = await countAll();
 
     await run(db.pool, 'DELETE FROM household WHERE id = $1', [SEED.householdId]);
 
     const after = await countAll();
-    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1 });
+    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1, feedback: 1 });
     assert.ok(before.book > after.book && before.answer > 0, 'the erased household had books and answers');
     const remaining = await all<{ id: string }>(db.pool, 'SELECT id FROM profile ORDER BY id');
     assert.deepEqual(remaining.map((p) => p.id), ['p-other-dad', 'p-other-reader']);

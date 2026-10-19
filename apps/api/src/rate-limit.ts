@@ -39,3 +39,7 @@ export const suggestionLimiter = (db: Db) =>
 
 /** At most sixty title lookups from one source in ten minutes: a typist pauses a few times per book, not sixty. */
 export const lookupLimiter = (db: Db) => rateLimiter(db, 60, (req) => `lookup:${req.ip ?? 'unknown'}`);
+
+/** At most ten feedback notes per person in ten minutes, so nobody can flood the table. Use after `requireSession`. */
+export const feedbackLimiter = (db: Db) =>
+  rateLimiter(db, 10, (_req, res) => `feedback:${(res.locals['session'] as RequestSession).profileId}`);
