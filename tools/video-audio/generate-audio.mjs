@@ -1,5 +1,7 @@
-// Usage: node tools/video-audio/generate-audio.mjs <video-folder> [--dry-run]
-// Parses script.md, synthesizes each paragraph with Kokoro (voice af_heart), writes <folder>/<name>.mp3
+// Usage: node tools/video-audio/generate-audio.mjs <video-folder> [--dry-run] [--engine kokoro|azure]
+// Parses script.md, synthesizes each paragraph with Kokoro (voice af_heart, offline) or Azure Speech
+// (AZURE_SPEECH_KEY and AZURE_SPEECH_REGION; AZURE_VOICE, AZURE_STYLE and AZURE_RATE default to Jenny,
+// cheerful, -5%), writes <folder>/<name>.mp3
 // and a timing manifest to .cache/<name>/manifest.json that build-video.mjs syncs the slides to.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -9,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const folder = resolve(process.argv[2] ?? '');
 const dryRun = process.argv.includes('--dry-run');
+const engine = process.argv[process.argv.indexOf('--engine') + 1] || 'kokoro';
 const name = basename(folder);
 const VOICE = process.env.KOKORO_VOICE ?? 'af_heart';
 const SPEED = process.env.KOKORO_SPEED ?? '0.8';
@@ -47,9 +50,30 @@ if (dryRun) process.exit(0);
 
 const cache = join(root, '.cache', name);
 mkdirSync(cache, { recursive: true });
-const python = join(root, '.cache/venv/bin/python');
 const jobs = items.flatMap((item, i) => (item.text ? [{ out: join(cache, `p${i}.wav`), text: spoken(item.text) }] : []));
-execFileSync(python, [join(import.meta.dirname, 'kokoro_say.py'), VOICE, SPEED], { input: JSON.stringify(jobs), stdio: ['pipe', 'inherit', 'inherit'] });
+if (engine === 'azure') {
+  const { AZURE_SPEECH_KEY: key, AZURE_SPEECH_REGION: region } = process.env;
+  if (!key || !region) throw new Error('Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION (see docs/videos/README.md)');
+  const voice = process.env.AZURE_VOICE ?? 'en-US-JennyNeural';
+  const style = process.env.AZURE_STYLE ?? 'cheerful';
+  const rate = process.env.AZURE_RATE ?? '-5%';
+  const xml = (t) => t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  for (const job of jobs) {
+    const speech = `<prosody rate="${rate}">${xml(job.text)}</prosody>`;
+    const response = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: 'POST',
+      headers: { 'Ocp-Apim-Subscription-Key': key, 'Content-Type': 'application/ssml+xml', 'X-Microsoft-OutputFormat': 'riff-24khz-16bit-mono-pcm', 'User-Agent': 'shelfie-video' },
+      body:
+        `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">` +
+        `<voice name="${voice}">${style ? `<mstts:express-as style="${style}">${speech}</mstts:express-as>` : speech}</voice></speak>`,
+    });
+    if (!response.ok) throw new Error(`Azure Speech ${response.status}: ${await response.text()}`);
+    writeFileSync(job.out, Buffer.from(await response.arrayBuffer()));
+  }
+} else {
+  const python = join(root, '.cache/venv/bin/python');
+  execFileSync(python, [join(import.meta.dirname, 'kokoro_say.py'), VOICE, SPEED], { input: JSON.stringify(jobs), stdio: ['pipe', 'inherit', 'inherit'] });
+}
 
 const ffmpeg = (...args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args]);
 const duration = (file) => Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString());
