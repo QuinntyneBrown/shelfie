@@ -8,99 +8,95 @@
   <body>
     <div class="stage">
       <!--
-        Sticker 1 — the Shelfie app icon at badge scale on a rose ribbon.
-        The tile and books are docs/mocks/assets/logo.svg verbatim, in a nested
-        <svg> that maps its 64-unit viewBox onto this canvas with
-        x' = 8.5x + 178, y' = 8.5y + 130 (544px square, rx 15 -> 127.5px).
-        Colours (tokens.css): tile #7c3aed violet-600, shelf shadow #5b21b6
-        violet-800, books #cfe8d5 sage / #fbe7b2 sun / #f9d5e0 rose with the
-        logo's #78d596 and #f7bf57 bands, banner #f9d5e0 cover-rose edged
-        #c4b5fd violet-300, sparkles #f7c15c amber-300 and #c4b5fd.
-        "Shelfie" is #5b21b6 on #f9d5e0: 6.7:1, WCAG AA.
+        Sticker 1 — the Shelfie app icon floating on a rose-tinted card.
+        The Beanstack pattern (docs/competitive-review/beanstack.md, R1, R2,
+        R7): a pastel surface, the product tilted -3° on it with a soft
+        shadow, and saturated colour only on the icon and the wordmark.
+        The tile and books are docs/mocks/assets/logo.svg verbatim, in a
+        nested <svg> that maps its 64-unit viewBox onto this canvas with
+        x' = 6.25x + 250, y' = 6.25y + 145 (400px square, rx 15 -> 93.75px),
+        rotated -3° about its centre like the marketing feature screenshots.
+        Card: #f9d5e0 cover-rose, 100px corners (--radius-xl 32px at 300/96).
+        Shadow: --shadow-3 scaled (dy 24, blur 20, 14% of --shadow-color).
+        Dots: #f7c15c amber-300, #c4b5fd violet-300, #7ed69a green-300, the
+        scattered dots of the marketing hero in the sticker set's colours.
+        "Shelfie" is #5b21b6 violet-800 on #f9d5e0: 6.7:1, WCAG AA.
         Drawn 1:1 on the canvas, so --cut-extra keeps its 130px default.
       -->
       <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
-        <title>The Shelfie app icon on a ribbon reading Shelfie</title>
+        <title>The Shelfie app icon on a rose card reading Shelfie</title>
 
-        <!-- Centre the cut on the canvas: drawn as-is, the die cut's margins
-             were T35 B93. A pure translate, so the rim stays 65px. -->
-        <g transform="translate(0 29)">
+        <!-- Drawn centred: the card is 130..770 x 100..800 and the sparkles
+             straddle its sides symmetrically, so no translate is needed. -->
+        <g transform="translate(0 0)">
           <defs>
-            <!-- Arc for the edge URL, down the middle of the white rim below the
-                 ribbon. The ribbon's underlay bottom edge runs (110,738) ->
-                 control (450,713) -> (790,738), plus a 4px half-stroke; this arc
-                 parallels it so the caps sit centred in the 65px rim. -->
-            <path id="urlArc" fill="none" d="M 230 783 Q 450 759 670 783" />
+            <!-- Straight run for the edge URL, down the middle of the white
+                 rim below the card's flat bottom edge (y 800; rim to 865). -->
+            <path id="urlArc" fill="none" d="M 250 842 L 650 842" />
+            <!-- The feature-card screenshot shadow, --shadow-3 at sticker scale. -->
+            <filter id="tileShadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="24" stdDeviation="20" flood-color="#141923" flood-opacity="0.14" />
+            </filter>
           </defs>
 
           <!-- ── Die-cut silhouette ──────────────────────────────────────────
                White fill + fat white stroke with paint-order:stroke, so the
-               stroke lies wholly outside each shape. The pieces all overlap,
-               so their union is one continuous cut line. -->
+               stroke lies wholly outside each shape. The sparkles straddle
+               the card's edges, so the union is one continuous cut line. -->
           <g>
             <path
               class="keyline cut-flat"
-              d="M735 100 Q742 133 775 140 Q742 147 735 180 Q728 147 695 140 Q728 133 735 100 Z"
+              d="M770 244 Q777 273 806 280 Q777 287 770 316 Q763 287 734 280 Q763 273 770 244 Z"
             />
             <path
               class="keyline cut-flat"
-              d="M150 294 Q156 324 186 330 Q156 336 150 366 Q144 336 114 330 Q144 324 150 294 Z"
+              d="M130 506 Q136 534 164 540 Q136 546 130 574 Q124 546 96 540 Q124 534 130 506 Z"
             />
-            <rect class="keyline cut-flat" x="178" y="130" width="544" height="544" rx="127.5" />
-            <path
-              class="keyline cut-band"
-              d="M110 638 Q450 613 790 638 L745 688 L790 738 Q450 713 110 738 L155 688 Z"
-            />
+            <rect class="keyline cut-flat" x="130" y="100" width="640" height="700" rx="100" />
           </g>
 
-          <!-- ── The app icon, logo.svg verbatim ────────────────────────────── -->
-          <svg x="178" y="130" width="544" height="544" viewBox="0 0 64 64">
-            <rect width="64" height="64" rx="15" fill="#7c3aed" />
-            <rect x="10" y="51.5" width="45" height="3" rx="1.5" fill="#5b21b6" opacity=".55" />
-            <rect x="12" y="21" width="11" height="28" rx="1.6" fill="#cfe8d5" />
-            <rect x="12" y="27" width="11" height="2.2" fill="#78d596" />
-            <rect x="27" y="14" width="11" height="35" rx="1.6" fill="#fbe7b2" />
-            <rect x="27" y="21" width="11" height="3" fill="#f7bf57" />
-            <rect x="41" y="23" width="11" height="26" rx="1.6" fill="#f9d5e0" transform="rotate(11 41 49)" />
-            <rect x="9" y="49.5" width="46" height="3.4" rx="1.7" fill="#fefdfe" />
-          </svg>
+          <!-- ── The tinted card ───────────────────────────────────────────── -->
+          <rect x="130" y="100" width="640" height="700" rx="100" fill="#f9d5e0" />
 
-          <!-- ── Sparkles, straddling the tile's edge so they stay attached ── -->
+          <!-- ── Scattered dots, inside the card ───────────────────────────── -->
+          <circle cx="205" cy="180" r="18" fill="#f7c15c" />
+          <circle cx="700" cy="160" r="14" fill="#c4b5fd" />
+          <circle cx="215" cy="640" r="16" fill="#7ed69a" />
+          <circle cx="715" cy="680" r="12" fill="#f7c15c" />
+
+          <!-- ── The app icon, logo.svg verbatim, tilted on the card ───────── -->
+          <g transform="rotate(-3 450 345)" filter="url(#tileShadow)">
+            <svg x="250" y="145" width="400" height="400" viewBox="0 0 64 64">
+              <rect width="64" height="64" rx="15" fill="#7c3aed" />
+              <rect x="10" y="51.5" width="45" height="3" rx="1.5" fill="#5b21b6" opacity=".55" />
+              <rect x="12" y="21" width="11" height="28" rx="1.6" fill="#cfe8d5" />
+              <rect x="12" y="27" width="11" height="2.2" fill="#78d596" />
+              <rect x="27" y="14" width="11" height="35" rx="1.6" fill="#fbe7b2" />
+              <rect x="27" y="21" width="11" height="3" fill="#f7bf57" />
+              <rect x="41" y="23" width="11" height="26" rx="1.6" fill="#f9d5e0" transform="rotate(11 41 49)" />
+              <rect x="9" y="49.5" width="46" height="3.4" rx="1.7" fill="#fefdfe" />
+            </svg>
+          </g>
+
+          <!-- ── Sparkles, straddling the card's edges so they stay attached ── -->
           <path
-            d="M735 100 Q742 133 775 140 Q742 147 735 180 Q728 147 695 140 Q728 133 735 100 Z"
+            d="M770 244 Q777 273 806 280 Q777 287 770 316 Q763 287 734 280 Q763 273 770 244 Z"
             fill="#f7c15c"
           />
           <path
-            d="M150 294 Q156 324 186 330 Q156 336 150 366 Q144 336 114 330 Q144 324 150 294 Z"
+            d="M130 506 Q136 534 164 540 Q136 546 130 574 Q124 546 96 540 Q124 534 130 506 Z"
             fill="#c4b5fd"
           />
 
-          <!-- ── Ribbon ────────────────────────────────────────────────────── -->
-          <!-- A violet-300 underlay 8px below the face, the chunky edge of
-               Shelfie's buttons. -->
-          <path
-            d="M110 638 Q450 613 790 638 L745 688 L790 738 Q450 713 110 738 L155 688 Z"
-            fill="#c4b5fd"
-            stroke="#c4b5fd"
-            stroke-width="8"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M110 630 Q450 605 790 630 L745 680 L790 730 Q450 705 110 730 L155 680 Z"
-            fill="#f9d5e0"
-            stroke="#c4b5fd"
-            stroke-width="8"
-            stroke-linejoin="round"
-          />
+          <!-- ── Wordmark ──────────────────────────────────────────────────── -->
           <text
             x="450"
-            y="668"
+            y="715"
             text-anchor="middle"
-            dominant-baseline="central"
             font-family="'Nunito'"
             font-weight="900"
-            font-size="78"
-            letter-spacing="-0.5"
+            font-size="112"
+            letter-spacing="-1"
             fill="#5b21b6"
           >
             Shelfie
@@ -113,7 +109,7 @@
             font-weight="800"
             font-size="28"
             letter-spacing="7"
-            fill="#000000"
+            fill="#1a1e26"
           >
             <textPath href="#urlArc" startOffset="50%">SHELFIE.KIDS</textPath>
           </text>
