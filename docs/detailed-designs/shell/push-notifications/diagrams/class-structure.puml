@@ -48,7 +48,14 @@ class "push.service" as PushService_API {
   +getKey(push: Push | null): string
   +saveSubscription(db, profileId, body): Promise<void>
   +removeSubscription(db, profileId, endpoint): Promise<void>
-  +notify(db, push, householdId, role, event, payload): Promise<void>
+  +createNotifier(db, push, log, schedule): Notifier
+}
+
+interface Notifier {
+  +chapterLogged(householdId, readerName, chapterLogId): void
+  +feedback(householdId, parentName, chapterLogId, sticker): Promise<void>
+  +bookReward(householdId, parentName, bookId): Promise<void>
+  +streakReward(householdId, parentName, milestone): Promise<void>
 }
 
 class HouseholdNotifications {
@@ -86,6 +93,7 @@ class "sh-switch" as Switch {
 PushService_API ..> Push : sends through
 PushService_API ..> PushTarget : reads
 PushService_API ..> PushPayload : builds
+PushService_API ..> Notifier : creates
 PushService_API ..> PushEvent : checks switch for
 PushService_API --> HouseholdNotifications : reads
 PushService_Web --> DeviceState : exposes

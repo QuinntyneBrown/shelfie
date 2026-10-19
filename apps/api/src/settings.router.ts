@@ -9,6 +9,7 @@ import { getSettings, updateSettings } from './settings.service.ts';
 
 const settingsPatchSchema = z.object({
   theme: z.enum(['device', 'light', 'dark']),
+  notifications: z.strictObject({ chapterLogged: z.boolean(), feedback: z.boolean(), bookReward: z.boolean(), streakReward: z.boolean() }).optional(),
   account: z.object({
     name: z.string().trim().min(1).max(40),
     email: z.email(),

@@ -34,7 +34,8 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
   - `DELETE /api/push/subscriptions` takes `{ endpoint }` and deletes the row only when it belongs to the session's profile; it answers 204 whether or not a row was deleted, so it reveals nothing about another profile's subscription (L2-127).
   - Both subscription routes sit behind `pushLimiter`, 20 requests per profile in ten minutes, defined in `rate-limit.ts` beside `feedbackLimiter` and answering 429 `too-many-attempts` with `Retry-After`.
   - A malformed body answers 400 `validation` through `Problem` (`problem.ts`). The log records method, route, status and duration only.
-- **`notify(db, push, householdId, role, event, payload)`** in `push.service.ts`. It returns at once when `push` is `null`. It reads the household's switch for `event` and returns when it is off. It then selects the subscriptions of the household's profiles with `role` and calls `push.send` for each. A `gone` result deletes that subscription. A thrown error is logged with the profile id and not the endpoint. `notify` never throws, so a route that calls it cannot fail because of it.
+- **`notify`** and **`createNotifier`** in `push.service.ts`. The private `notify(db, push, log, householdId, role, choice, payload)` returns at once when `push` is `null`, reads the household's switch for `choice` and returns when it is off, selects the subscriptions of the household's profiles with `role`, and calls `push.send` for each. A `gone` result deletes that subscription. A thrown error is logged as `push-failed` with the profile id and not the endpoint. `notify` never throws, so a route that calls it cannot fail because of it. `createNotifier(db, push, log, schedule)` returns the `Notifier` the routers call: `chapterLogged`, `feedback`, `bookReward` and `streakReward`. `createApp` builds one `Notifier` and passes it to the chapter, review and streak routers.
+- **`Schedule`** in `push.ts`, `(work, delayMs) => void`, with `inProcess` as the default (`setTimeout`, unreferenced). `createApp` accepts `schedule` in `options` so tests capture the undo-window work and run it at once.
 - **Messages** are built in `push.service.ts`: `{ title, body, url, tag }`, with copy from `docs/mocks/notifications/push/`.
 
   | Event | Title | Body | `url` | `tag` |
@@ -49,7 +50,7 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
   - `chapters.router.ts` after `logChapter`: a timer for `UNDO_SECONDS` plus 1 s, then `notifyChapterLogged`, which loads the log and sends only when it still exists and `reviewed_at IS NULL` (L2-124). The router passes `session.profileId` so the title can name the reader. The API keeps no queue; a pending timer is lost on restart (ADR-0015).
   - `review.router.ts` after `sendFeedback` succeeds: event `feedback` to role `reader`. A 409 `already-reviewed` never reaches `notify` (L2-125).
   - The reward route after `giveReward`: event `bookReward` to `reader`. The streak route after `giveStreakReward`: event `streakReward` to `reader` (L2-126).
-- **Settings.** `settings.service.ts` adds `notifications: { chapterLogged, feedback, bookReward, streakReward }` to `getSettings` for a parent and accepts it in `PATCH /api/settings` with a strict zod object of four booleans. A reader's `GET /api/settings` omits it; her `PATCH` is refused with 403 `grown-ups-only` by the existing guard (L2-123).
+- **Settings.** `settings.service.ts` adds `notifications: { chapterLogged, feedback, bookReward, streakReward }` to `getSettings` and accepts it in `PATCH /api/settings` as an optional strict zod object of four booleans; a save that leaves it out changes nothing. The whole settings router is parent-only, so a reader's `GET` and `PATCH` both answer 403 `grown-ups-only` (L2-123).
 - **Environment.** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT`, all optional, documented in `docs/runbook.md` with `npx web-push generate-vapid-keys`. `infra/host/Caddyfile` adds `Cache-Control: no-cache` for `/sw.js`, because the `*.js` immutable rule would otherwise pin the worker.
 
 ### Frontend
@@ -80,7 +81,7 @@ All routes sit behind `requireSession` and the CSRF guard (`csrf.ts`). Parent-on
 | No session | 401 | Existing sign-in redirect |
 | No CSRF header | 403 | Same toast |
 | `PATCH /api/settings` with a bad `notifications` value | 400 `validation` | Existing "Fix N things" banner |
-| Reader sends `notifications` | 403 `grown-ups-only` | Not reachable from the UI |
+| Reader calls `GET` or `PATCH /api/settings` | 403 `grown-ups-only` | Not reachable from the UI |
 | Push service answers 404 or 410 | Subscription deleted | None |
 | Push service fails otherwise | Logged without the endpoint | None |
 
