@@ -249,11 +249,12 @@ export class SettingsPage {
     return this.notificationsCard().getByRole('status').filter({ hasText: 'Notifications aren’t set up' });
   }
 
+  // A tap, not `check()`: when the browser refuses, the switch flips straight back, and the test asserts the outcome itself.
   async turnOnThisDevice() {
-    await this.deviceSwitch().check();
+    await this.deviceSwitch().click();
   }
 
   async turnOffThisDevice() {
-    await this.deviceSwitch().uncheck();
+    await this.deviceSwitch().click();
   }
 }
