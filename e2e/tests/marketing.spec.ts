@@ -42,12 +42,12 @@ test('Given the inside-the-app gallery, then every screenshot loads, is describe
   for (const shot of report) expect(shot).toEqual({ alt: expect.stringMatching(/.{20,}/), loaded: true, distorted: false });
 });
 
-test('Given the footer, then it links to the app and the open-source project and shows this year', async ({ page }) => {
+test('Given the footer, then it links to the app, shows this year and carries no project links', async ({ page }) => {
   const marketing = new MarketingPage(page);
   await marketing.open();
   await expect(marketing.footerLink('Open the app')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-in');
-  await expect(marketing.footerLink('GitHub')).toHaveAttribute('href', 'https://github.com/QuinntyneBrown/shelfie');
-  await expect(marketing.footerLink('Documentation')).toHaveAttribute('href', 'https://github.com/QuinntyneBrown/shelfie/blob/main/README.md');
-  await expect(marketing.footerLink('License')).toHaveAttribute('href', 'https://github.com/QuinntyneBrown/shelfie/blob/main/LICENSE');
+  await expect(marketing.footerLink('GitHub')).toHaveCount(0);
+  await expect(marketing.footerLink('Documentation')).toHaveCount(0);
+  await expect(marketing.footerLink('License')).toHaveCount(0);
   await expect(marketing.footerYear()).toHaveText(String(new Date().getFullYear()));
 });

@@ -575,7 +575,7 @@ em {
 
 @media (width >= 48rem) {
   .footer-grid {
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
   }
 }
 
