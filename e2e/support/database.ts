@@ -122,3 +122,10 @@ export async function giveStreakRewardInDatabase(milestone: number) {
   const now = new Date().toISOString();
   await db.query("UPDATE streak_reward SET earned_at = $1, given_at = $1 WHERE household_id = 'h1' AND milestone = $2", [now, milestone]);
 }
+
+/** Every feedback row as stored, oldest first, with the sender's household and profile. */
+export function storedFeedback() {
+  return rows<{ household_id: string; profile_id: string; kind: string; score: number | null; message: string | null }>(
+    'SELECT household_id, profile_id, kind, score, message FROM feedback ORDER BY created_at',
+  );
+}

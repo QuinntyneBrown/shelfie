@@ -1,0 +1,9 @@
+:host {
+  display: contents;
+}
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

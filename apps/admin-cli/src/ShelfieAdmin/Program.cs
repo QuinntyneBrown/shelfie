@@ -27,6 +27,7 @@ public static class Program
         root.Subcommands.Add(users);
         root.Subcommands.Add(books);
         root.Subcommands.Add(logs);
+        root.Subcommands.Add(QueryCommands.Feedback());
         return root.Parse(args).InvokeAsync();
     }
 }

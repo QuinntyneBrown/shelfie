@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ShelfieAdmin;
 
-/// <summary>users list, books list, logs list and logs show (L2-056 to L2-058).</summary>
+/// <summary>users list, books list, logs list, logs show (L2-056 to L2-058) and feedback list (L2-118).</summary>
 public static class QueryCommands
 {
     public static Command Users()
@@ -55,6 +55,16 @@ public static class QueryCommands
         }));
 
         return new Command("logs", "Logged chapters and answers") { list, show };
+    }
+
+    public static Command Feedback()
+    {
+        var list = new Command("list", "List every household's feedback, newest first");
+        list.SetAction((parse, _) => Cli.RunAsync(parse, needsToken: true, session => Print(session, "feedback",
+            new Column("DATE", r => Output.Text(r, "createdAt")), new Column("HOUSEHOLD", r => Output.Text(r, "householdId")),
+            new Column("ROLE", r => Output.Text(r, "role")), new Column("KIND", r => Output.Text(r, "kind")),
+            new Column("SCORE", r => Output.Text(r, "score")), new Column("MESSAGE", r => Output.Text(r, "message").ReplaceLineEndings(" ")))));
+        return new Command("feedback", "Feedback sent from inside Shelfie") { list };
     }
 
     static string Review(JsonElement log) =>

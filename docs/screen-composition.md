@@ -63,7 +63,7 @@ Composition rules that hold on every screen:
 | Skip link | — | `<a href="#main">Skip to content</a>` in `AppComponent` |
 | Top bar, reader | `sh-top-bar` (`variant: 'reader'`) with `sh-streak-badge` | — |
 | Top bar, parent | `sh-top-bar` (`variant: 'parent'`) with nav links and Review count badge | — |
-| Account menu | `sh-menu`, opened from the top-bar `sh-avatar` (photo or initial). The reader's menu has "My photo", which opens `ProfilePhotoDialog` | — |
+| Account menu | `sh-menu`, opened from the top-bar `sh-avatar` (photo or initial). The reader's menu has "My photo", which opens `ProfilePhotoDialog`; both menus have "Send feedback", which opens `SendFeedbackDialog` | — |
 | Tab bar (parent, phones) | `sh-tab-bar` with Review count | — |
 | Banner slot | `sh-banner` per `BannerService.banners()` | — |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
@@ -176,7 +176,8 @@ These are local UI that more than one screen needs. Build once in the feature li
 | Set / edit a streak reward (`dialogs/edit-streak-reward`: default, edit, invalid, busy, failed) | `sh-dialog`, form, over Settings | `sh-text-field` (reward name, `maxlength` 100, help), `sh-text-field` `type="number"` (amount in dollars, optional, help), `sh-button` primary "Set reward" / "Save changes" / ghost "Cancel" / icon close; `sh-banner` `danger` (failed with "Try again") | — |
 | Remove a reward (`dialogs/remove-gallery-reward`: default, busy, failed) | `sh-dialog`, destructive, over Settings | `sh-button` danger "Remove reward" / ghost "Keep it" / icon close; `sh-banner` `danger` (failed) | danger icon in the dialog header |
 | Invite a parent (`dialogs/invite-parent`: default, busy, invalid, failed, sent) | `sh-dialog`, form, over Settings | `sh-text-field` (`email`, help "The link works for 7 days."), `sh-button` primary "Send invite" / ghost "Cancel" / icon close; `sh-banner` `danger` (invalid summary; failed) | `sent` state: large sticker and "We e-mailed priya@example.com." with a "Done" button |
-| Account menu (`dialogs/account-menu`: default, parent, photo, parent-photo) | `sh-menu` popover from the `sh-top-bar` `sh-avatar`, over shelf (default, photo) or Review (parent, parent-photo) | `sh-menu` with header (name + `@username` + streak for reader; name + `@username` + role for parent) and items: My photo and Sign out (reader), Settings and Sign out (parent) | — |
+| Account menu (`dialogs/account-menu`: default, parent, photo, parent-photo) | `sh-menu` popover from the `sh-top-bar` `sh-avatar`, over shelf (default, photo) or Review (parent, parent-photo) | `sh-menu` with header (name + `@username` + streak for reader; name + `@username` + role for parent) and items: My photo, Send feedback and Sign out (reader), Settings, Send feedback and Sign out (parent) | — |
+| Send feedback (`dialogs/send-feedback`: default, filled, idea, invalid, busy, failed, success, parent) | `sh-dialog`, bottom sheet under 640 px, over shelf (reader) or Review (parent, `parent`), from the account menu's Send feedback | `sh-sticker-picker` (score, five faces "1" to "5", optional, field error "Pick a face or write a message."), `sh-segmented` (kind: How it feels / An idea), `sh-textarea` (message, optional, help with characters left, label "What would make Shelfie better?" for An idea, error on invalid), `sh-button` primary "Send" (`busy` while sending) / ghost "Cancel" (`sh-dialog` has no close icon; Escape closes); `sh-banner` `danger` (invalid "Fix N things" summary; failed with "Try again"); `ToastService` `success` "Thanks! We read every note." (success) | intro line; a `fieldset` that locks the fields while sending |
 | Your photo (`dialogs/profile-photo`: default, parent, choosing, busy, success, photo, too-large, invalid, failed) | `sh-dialog`, over shelf (reader, from My photo) or Settings (parent, from Add a photo) | `sh-photo-picker` (preview `sh-avatar` xl, Choose a photo / Choose another, Remove photo, help, inline type and size errors), `sh-button` "Done" / icon close; `sh-banner` `success` ("Looking great, Nia!") and `danger` (failed, with Try again) | intro line |
 
 ## Notifications
@@ -209,6 +210,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 19. Error-page sticker in `sh-error-state`'s icon slot.
 20. Invite-parent `sent` confirmation (sticker, text, "Done").
 21. Shelf "Reading toward" heading, intro line and reached message.
+22. Send-feedback intro line and the `fieldset` that locks its fields while sending.
 
 ## Inferred, not read from a mock
 

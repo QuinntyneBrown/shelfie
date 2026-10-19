@@ -165,6 +165,17 @@ export class ShellPage {
     await this.menuItem('My photo').click();
   }
 
+  /** Opens "Send feedback" from anyone's account menu. */
+  async openSendFeedback(name: string) {
+    await this.openAccountMenu(name);
+    await this.menuItem('Send feedback').click();
+  }
+
+  /** The account menu's items, in order. */
+  menuItemNames() {
+    return this.page.getByRole('menuitem').allTextContents().then((names) => names.map((n) => n.trim()));
+  }
+
   async focusAccountMenuButton(name: string) {
     await this.accountMenuButton(name).focus();
   }

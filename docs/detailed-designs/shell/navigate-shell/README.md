@@ -30,6 +30,7 @@ The slice is frontend-only. It spans the `shelfie` application and the `componen
 The queue badge value comes from `GET /api/review` through the `review` library's `ReviewApi`, and the streak from `GET /api/shelf` through the `shelf` library's `ShelfApi`; both features own those calls, and the shell receives the numbers as inputs. The shell refreshes them on each page load and from the responses of the mutations that change them (feedback sent, chapter logged). The mocks set the review-queue reminder banner on every parent page except Review; it is a `BannerService` call owned by `review-queue`, not by the shell.
 
 - **Profile photo** — `sh-top-bar` also takes `photo: string | null` and draws the trigger's face with `sh-avatar`, so the person's photo replaces the initial when they have one. The reader's account menu has a "My photo" item before Sign out; `AppComponent` opens `ProfilePhotoDialog` from the `settings` library for it. Both are designed in `settings/upload-profile-photo` (`L2-042`, `L2-043`).
+- **Send feedback** — both menus have "Send feedback" before Sign out; `AppComponent` opens `SendFeedbackDialog` from the `settings` library for it. Designed in `shell/send-feedback` (`L2-114`).
 
 ## Requirements
 

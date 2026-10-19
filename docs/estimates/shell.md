@@ -5,3 +5,4 @@
 | navigate-shell | 2 days | 100% |
 | notify | 1 days | 100% |
 | work-offline | 2 days | 90% |
+| send-feedback | 2 days | 100% |

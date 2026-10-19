@@ -1,0 +1,57 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Send feedback
+
+class App {
+  +menuItems: Signal<MenuItem[]>
+  +feedbackDialogOpen: Signal<boolean>
+  +chooseFromMenu(id): void
+}
+
+class SendFeedbackDialog {
+  +open: boolean
+  +closed: output
+  -score: Signal<string>
+  -kind: Signal<feel|idea>
+  -message: Signal<string>
+  -busy: Signal<boolean>
+  -failed: Signal<boolean>
+  +send(): void
+}
+
+class FeedbackApi {
+  +send(feedback): Promise<{id}>
+}
+
+class Feedback {
+  +kind: feel|idea
+  +score: number|null
+  +message: string|null
+}
+
+class "sh-sticker-picker" as StickerPicker
+class "sh-segmented" as Segmented
+class "sh-textarea" as Textarea
+class "sh-dialog" as Dialog
+class "sh-banner" as Banner
+class ToastService
+
+App --> SendFeedbackDialog : opens
+SendFeedbackDialog --> FeedbackApi
+SendFeedbackDialog --> ToastService : success
+SendFeedbackDialog ..> Dialog
+SendFeedbackDialog ..> StickerPicker : score
+SendFeedbackDialog ..> Segmented : kind
+SendFeedbackDialog ..> Textarea : message
+SendFeedbackDialog ..> Banner : invalid, failed
+FeedbackApi ..> Feedback
+@enduml

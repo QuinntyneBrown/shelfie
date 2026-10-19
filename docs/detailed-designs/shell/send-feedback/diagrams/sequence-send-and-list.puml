@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — Send feedback and list it
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Reader" as reader
+actor "Operator" as operator
+box "Frontend — Shelfie web" #E0F2FE
+  participant "App (account menu)" as app
+  participant "SendFeedbackDialog" as dialog
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "feedback.router.ts" as router
+  participant "admin.router.ts" as admin
+  participant "feedback.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+reader -> app : Account menu, Send feedback (L2-114)
+app -> dialog : open
+reader -> dialog : Pick 🤩, How it feels, type a message
+reader -> dialog : Send
+dialog -> dialog : Score or message given, message ≤ 1,000 (L2-116)
+dialog -> router : POST /api/feedback {kind, score, message}
+router -> router : requireSession, feedbackLimiter, feedbackSchema (L2-119)
+router -> service : sendFeedback(session, feedback)
+service -> db : INSERT INTO feedback (household and profile from the session)
+router --> dialog : 201 {id}
+alt failed or 429
+  dialog --> reader : "Your feedback wasn’t sent", Try again, values kept (L2-117)
+else sent
+  dialog --> reader : closes; toast "Thanks! We read every note." (L2-115)
+end
+
+operator -> admin : shelfie-admin feedback list\nGET /api/admin/v1/feedback (read scope)
+admin -> service : listFeedback()
+service -> db : SELECT … ORDER BY created_at DESC
+admin --> operator : rows newest first (L2-118)
+@enduml

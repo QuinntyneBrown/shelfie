@@ -631,7 +631,31 @@
       "requirements": [
         "L2-003",
         "L2-042",
-        "L2-043"
+        "L2-043",
+        "L2-114"
+      ]
+    },
+    {
+      "id": "send-feedback",
+      "kind": "dialog",
+      "title": "Send feedback",
+      "opens_from": "account-menu",
+      "states": [
+        "default",
+        "filled",
+        "idea",
+        "invalid",
+        "busy",
+        "failed",
+        "success",
+        "parent"
+      ],
+      "not_applicable": {},
+      "requirements": [
+        "L2-114",
+        "L2-115",
+        "L2-116",
+        "L2-117"
       ]
     },
     {

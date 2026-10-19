@@ -8,7 +8,7 @@ This feature is the command set of the `admin-cli` subsystem: four query command
 
 Terms used below:
 
-- **query command** — command that only reads: `users list`, `books list`, `logs list`, `logs show`
+- **query command** — command that only reads: `users list`, `books list`, `logs list`, `logs show`, `feedback list`
 - **write command** — command that changes data: `users reset-password`, `logs correct`, `logs delete`, `books finish`, `books reward`
 - **destructive command** — write command that removes data or access: `users reset-password` and `logs delete`
 - **preview** — dry-run call made before a destructive change, whose result is shown before the question
@@ -20,6 +20,7 @@ Terms used below:
   - `books list` — ID, HOUSEHOLD, TITLE, CHAPTERS (`logged/count`), FINISHED, REWARD (L2-057);
   - `logs list --book <id>` — ID, CHAPTER, READ ON, LOGGED, REVIEW (`waiting`, or sticker and review time) (L2-058);
   - `logs show <id>` — `Output.Fields` for book, chapter, read on, review and note, then each question with its answer (L2-058).
+  - `feedback list` — DATE, HOUSEHOLD, ROLE, KIND, SCORE, MESSAGE, newest first (L2-118, designed in `shell/send-feedback`);
 - **`WriteCommands`** — adds the write commands to the same groups, each with `--dry-run` and `--yes`. All five share `WriteAsync`:
   1. With `--dry-run`, or for a destructive command, it first sends the request with `dryRun=true` and prints "Dry run: would …" built from the response. A refusal ends the command with exit 1 and no question (L2-062).
   2. With `--dry-run` it stops there with exit 0.

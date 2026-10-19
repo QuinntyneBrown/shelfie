@@ -1,6 +1,6 @@
 // Acceptance Test
-// Traces to: L2-056, L2-057, L2-058, L2-063
-// Description: Query accounts, books, chapter logs and answers as tables or JSON.
+// Traces to: L2-056, L2-057, L2-058, L2-063, L2-118
+// Description: Query accounts, books, chapter logs, answers and feedback as tables or JSON.
 
 using System.Text.Json;
 
@@ -104,5 +104,35 @@ public class QueryTests
             Assert.Matches(@"^Not found\. \(SHF-[0-9A-F]{4}\)$", run.Stderr.Trim());
             Assert.Equal("", run.Stdout);
         }
+    }
+
+    [Fact]
+    public async Task Given_feedback_list_then_every_household_s_feedback_is_shown_newest_first()
+    {
+        await using var api = await LocalApi.StartAsync();
+        await AdminCli.LoginAsync(api, "read");
+
+        var run = await AdminCli.RunAsync(api, "feedback", "list");
+
+        Assert.Equal(0, run.ExitCode);
+        var lines = Lines(run);
+        Assert.Equal(3, lines.Length);
+        Assert.Matches(@"^DATE\s+HOUSEHOLD\s+ROLE\s+KIND\s+SCORE\s+MESSAGE$", lines[0].TrimEnd());
+        Assert.Matches(@"^2026-10-17T19:30:00.000Z\s+h2\s+parent\s+idea\s+A weekly e-mail of what Zed read would be handy\.$", lines[1]);
+        Assert.Matches(@"^2026-10-16T17:05:00.000Z\s+h1\s+reader\s+feel\s+5\s+I love the stickers!$", lines[2]);
+        Assert.Equal(lines[0].IndexOf("MESSAGE"), lines[2].IndexOf("I love"));
+    }
+
+    [Fact]
+    public async Task Given_feedback_list_with_json_then_stdout_is_exactly_the_API_JSON()
+    {
+        await using var api = await LocalApi.StartAsync();
+        await AdminCli.LoginAsync(api, "read");
+
+        var run = await AdminCli.RunAsync(api, "feedback", "list", "--json");
+
+        using var json = JsonDocument.Parse(run.Stdout);
+        Assert.Equal(new string?[] { "fb-zeds-dad", "fb-nia" }, json.RootElement.EnumerateArray().Select(f => f.GetProperty("id").GetString()).ToArray());
+        Assert.Equal(JsonValueKind.Null, json.RootElement[0].GetProperty("score").ValueKind);
     }
 }

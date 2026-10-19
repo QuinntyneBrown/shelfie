@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { adminAudit } from './admin-audit.ts';
 import { adminGuard, refuse } from './admin-auth.ts';
 import { correctLog, deleteLog, finishBook, getLog, householdOfBook, listBooks, listLogs, listUsers, resetParentPassword } from './admin.service.ts';
+import { listFeedback } from './feedback.service.ts';
 import { Problem } from './problem.ts';
 import { giveRewardSchema } from './review.router.ts';
 import { giveReward } from './rewards.service.ts';
@@ -65,6 +66,7 @@ export function adminRouter(db: Pool) {
 
   router.get('/users', ...guard('read'), (_req, res) => answer(res, () => listUsers(db)));
   router.get('/books', ...guard('read'), (_req, res) => answer(res, () => listBooks(db)));
+  router.get('/feedback', ...guard('read'), (_req, res) => answer(res, () => listFeedback(db)));
 
   router.get('/books/:id/logs', ...guard('read'), async (req, res) => {
     const id = idOf(req, res);

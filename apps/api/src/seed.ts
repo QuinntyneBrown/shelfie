@@ -46,6 +46,11 @@ export function seed(pool: Pool, { books = true } = {}) {
     await book('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'parent', '2026-10-01T09:00:00.000Z', null);
     await log('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z');
 
+    // Feedback from each family, which only the operator reads (L2-118).
+    const feedback = 'INSERT INTO feedback (id, household_id, profile_id, kind, score, message, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+    await db.query(feedback, ['fb-nia', SEED.householdId, SEED.readerId, 'feel', 5, 'I love the stickers!', '2026-10-16T17:05:00.000Z']);
+    await db.query(feedback, ['fb-zeds-dad', 'h2', 'p-other-dad', 'idea', null, 'A weekly e-mail of what Zed read would be handy.', '2026-10-17T19:30:00.000Z']);
+
     if (!books) return;
 
     const day = (n: number) => `2026-10-${String(n).padStart(2, '0')}`;

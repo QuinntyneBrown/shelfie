@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Send feedback
+
+Person(user, "Reader or parent", "Signed in")
+Person(operator, "Operator", "Holds a read admin token")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Send feedback in the account menu and its dialog")
+  Container(cli, "shelfie-admin", ".NET 10 global tool", "feedback list")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "POST /api/feedback; GET /api/admin/v1/feedback")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "feedback")
+}
+Rel(user, web, "Sends feedback", "HTTPS")
+Rel(operator, cli, "Runs")
+Rel(web, api, "POST /api/feedback", "JSON/HTTPS")
+Rel(cli, api, "GET /api/admin/v1/feedback", "JSON/HTTPS")
+Rel(api, db, "Inserts and lists feedback", "SQL")
+@enduml

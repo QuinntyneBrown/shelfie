@@ -108,6 +108,7 @@
       <p>Use the sticker picker only in the review form, where Dad gives one of the six stickers to a chapter Nia logged. Each choice is a <code>.sticker-choice</code> button with an emoji and a word; the picked one has <code>aria-pressed="true"</code>. Exactly one can be pressed at a time.</p>
       <ul>
         <li>The set is fixed: 🌟 Star, 🦉 Wise owl, 🚀 Rocket, 🐉 Dragon, 🍪 Cookie, 💡 Bright idea.</li>
+        <li>The Send feedback dialog uses the same picker for its 1 to 5 score, with five faces in order: 😞 Not fun, 🙁 A bit meh, 😐 Okay, 🙂 Good, 🤩 Love it. The values are <code>"1"</code> to <code>"5"</code>, and the score is optional there, so nothing is picked at first. It is a radio group, so the arrow keys move between faces and Tab leaves the group.</li>
         <li>For the sticker on a book cover use the <a href="swatch-picker.html">swatch picker</a> sticker grid. For reward quick picks in the Give a reward dialog use <a href="chip.html">chips</a>. To show a sticker that was already given, use the <a href="sticker.html">sticker</a>.</li>
       </ul>
     </section>
@@ -244,6 +245,7 @@
         <li>The label asks for one thing: "Pick a sticker".</li>
         <li>Sticker words are one or two plain words in sentence case: "Wise owl", "Bright idea".</li>
         <li>The error says why it matters to Nia, not what the form needs: "Pick one so Nia knows you read it."</li>
+        <li>Score faces read as a feeling, not a grade: "Not fun" to "Love it", never "1 star".</li>
         <li>The summary title is gentle when only one thing is missing: "One more thing".</li>
       </ul>
     </section>

@@ -1,4 +1,4 @@
-// Traces to: L2-041, L2-045, L2-048, L2-109
+// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { all, get, run } from './db.ts';
@@ -6,7 +6,7 @@ import { purgeExpired } from './purge.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
-const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture'];
+const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture', 'feedback'];
 
 test('Given two households, when one is erased, then every row it owned is gone and the other household is untouched', async () => {
   const db = await createTestDatabase();
@@ -31,7 +31,7 @@ test('Given two households, when one is erased, then every row it owned is gone 
     await run(db.pool, 'DELETE FROM household WHERE id = $1', [SEED.householdId]);
 
     const after = await countAll();
-    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1 });
+    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1, feedback: 1 });
     assert.ok(before.book > after.book && before.answer > 0, 'the erased household had books and answers');
     const remaining = await all<{ id: string }>(db.pool, 'SELECT id FROM profile ORDER BY id');
     assert.deepEqual(remaining.map((p) => p.id), ['p-other-dad', 'p-other-reader']);
