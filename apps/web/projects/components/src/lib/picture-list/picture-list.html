@@ -79,7 +79,28 @@
         (change)="choose($event)"
       />
     </label>
+    <button
+      class="btn btn--sm"
+      type="button"
+      [disabled]="full() || uploading() || disabled()"
+      [attr.aria-expanded]="libraryOpen()"
+      (click)="libraryOpen.set(!libraryOpen())"
+    >
+      Choose one of ours
+    </button>
   </div>
+  @if (libraryOpen()) {
+    <ul class="picture-list__library" aria-label="Shelfie’s pictures">
+      @for (picture of library; track picture.file) {
+        <li>
+          <button class="picture-list__choice" type="button" (click)="chooseFromLibrary(picture)">
+            <img [src]="'/reward-pictures/' + picture.file + '.svg'" alt="" />
+            <span>{{ picture.name }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
   <p class="field__help" role="status" [id]="helpId">{{ shownHelp() }}</p>
   @if (shownError(); as message) {
     <p class="field__error" role="alert" [id]="errorId">{{ message }}</p>

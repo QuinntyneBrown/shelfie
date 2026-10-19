@@ -22,13 +22,28 @@ export interface PictureItem {
   state?: 'uploading' | 'failed';
 }
 
+/** Shelfie's own reward pictures, served from /reward-pictures/{file}.svg. */
+export const LIBRARY_PICTURES = [
+  { file: 'gift-box', name: 'Gift box' },
+  { file: 'cash', name: 'Cash' },
+  { file: 'gift-card', name: 'Gift card' },
+  { file: 'make-up', name: 'Make-up' },
+  { file: 'jewellery', name: 'Jewellery' },
+  { file: 'theme-park', name: 'Theme park' },
+  { file: 'shopping', name: 'Shopping' },
+  { file: 'swimming-pool', name: 'Swimming pool' },
+  { file: 'park', name: 'Park' },
+  { file: 'party', name: 'Party' },
+];
+
 let nextId = 0;
 
 /**
  * Several pictures of one thing as square thumbnails, the featured one marked, each with Make
  * featured, Remove and, when its upload failed, Try again; then Add a picture. It uploads nothing
  * itself: a chosen file that is a JPEG, PNG or WebP of up to 5 MB is emitted for the owner, any
- * other is refused here with the photo picker's words.
+ * other is refused here with the photo picker's words. Choose one of ours offers Shelfie's own
+ * pictures; the one chosen is drawn as a WebP and emitted the same way.
  */
 @Component({
   selector: 'sh-picture-list',
@@ -54,6 +69,8 @@ export class PictureList {
   /** The index of the failed picture to send again. */
   readonly retried = output<number>();
 
+  protected readonly library = LIBRARY_PICTURES;
+  protected readonly libraryOpen = signal(false);
   protected readonly labelId = `sh-picture-list-${nextId++}-label`;
   protected readonly helpId = this.labelId.replace('label', 'help');
   protected readonly errorId = this.labelId.replace('label', 'error');
@@ -87,6 +104,18 @@ export class PictureList {
   protected remove(index: number) {
     this.refocus = true;
     this.removed.emit(index);
+  }
+
+  protected async chooseFromLibrary(picture: (typeof LIBRARY_PICTURES)[number]) {
+    this.libraryOpen.set(false);
+    const image = new Image();
+    image.src = `/reward-pictures/${picture.file}.svg`;
+    await image.decode();
+    const canvas = new OffscreenCanvas(480, 480);
+    canvas.getContext('2d')!.drawImage(image, 0, 0, 480, 480);
+    const blob = await canvas.convertToBlob({ type: 'image/webp' });
+    this.refused.set(null);
+    this.picked.emit(new File([blob], `${picture.file}.webp`, { type: 'image/webp' }));
   }
 
   protected choose(event: Event) {

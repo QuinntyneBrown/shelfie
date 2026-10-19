@@ -87,6 +87,25 @@ export class GalleryRewardDialog {
     await this.pictureChooser().setInputFiles(file);
   }
 
+  pictureLibraryButton() {
+    return this.pictures().getByRole('button', { name: 'Choose one of ours' });
+  }
+
+  /** Opens Shelfie's own pictures. */
+  async openPictureLibrary() {
+    await this.pictureLibraryButton().click();
+  }
+
+  /** Shelfie's own pictures, one button each, named for what it shows. */
+  libraryPictures() {
+    return this.pictures().getByRole('list', { name: 'Shelfie’s pictures' }).getByRole('button');
+  }
+
+  async chooseLibraryPicture(name: string) {
+    await this.openPictureLibrary();
+    await this.libraryPictures().getByText(name, { exact: true }).click();
+  }
+
   async chooseNotAPicture() {
     await this.pictureChooser().setInputFiles({ name: 'story.txt', mimeType: 'text/plain', buffer: Buffer.from('Once upon a time') });
   }

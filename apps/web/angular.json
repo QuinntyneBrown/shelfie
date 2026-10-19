@@ -47,6 +47,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/shelfie/public"
+              },
+              {
+                "glob": "*.svg",
+                "input": "projects/components/src/assets/reward-pictures",
+                "output": "reward-pictures"
               }
             ],
             "styles": [
