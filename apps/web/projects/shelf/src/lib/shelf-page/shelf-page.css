@@ -49,3 +49,6 @@
 .keep-reading {
   margin-bottom: var(--space-8);
 }
+.challenge-title {
+  font: var(--text-h3);
+}

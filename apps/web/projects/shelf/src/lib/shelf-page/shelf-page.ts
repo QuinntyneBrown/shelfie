@@ -10,6 +10,8 @@ import {
   EmptyState,
   FEEDBACK_STICKERS,
   Progress,
+  Leaderboard,
+  Progress,
   RewardCard,
   Skeleton,
   StreakRewardBadge,
@@ -18,7 +20,7 @@ import {
 } from 'components';
 import { ApiError, SessionService, ShellStatusService, ToastService } from 'core';
 import { PushOffer } from '../push-offer/push-offer';
-import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
+import { Challenges, GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } from '../shelf-api';
 
 @Component({
   selector: 'sh-shelf-page',
@@ -30,6 +32,8 @@ import { GalleryReward, GalleryView, ShelfApi, ShelfResponse, UnseenFeedback } f
     Cover,
     DatePipe,
     EmptyState,
+    Leaderboard,
+    Progress,
     PushOffer,
     Progress,
     RewardCard,
@@ -91,9 +95,48 @@ export class ShelfPage {
     );
   });
 
+  /** The household's challenges, loaded beside the shelf; a failure only hides the card. */
+  private readonly challenges = signal<Challenges | null>(null);
+  /** The challenge she takes part in, while it runs (L2-144). */
+  protected readonly challenge = computed(() => {
+    const challenge = this.challenges()?.current;
+    const me = this.session.current()?.profileId;
+    if (!challenge || challenge.ended || !challenge.standings.some((s) => s.readerId === me)) return null;
+    return challenge;
+  });
+  /** One encouraging line for her place on the board. */
+  protected readonly challengeLine = computed(() => {
+    const challenge = this.challenge();
+    const me = challenge?.standings.find((s) => s.readerId === this.session.current()?.profileId);
+    if (!challenge || !me) return '';
+    if (challenge.standings.length === 1) {
+      const left = challenge.goal - me.count;
+      return left > 0 ? `${left} more to reach the goal.` : 'You reached the goal!';
+    }
+    const others = challenge.standings.filter((s) => s !== me);
+    if (me.leading) {
+      const level = others.filter((s) => s.leading).map((s) => s.name);
+      return level.length ? `You’re level with ${level.join(' and ')}. One more puts you ahead!` : 'You’re in the lead. Keep going!';
+    }
+    const above = others.filter((s) => s.count > me.count).at(-1);
+    return above ? `${above.count - me.count} to catch ${above.name}. You can do it!` : 'Be the first to score!';
+  });
+
   constructor() {
     this.load();
     this.loadGallery();
+    this.api.challenges().then(
+      (challenges) => this.challenges.set(challenges),
+      () => this.challenges.set(null),
+    );
+  }
+
+  protected measureLabel(measure: string) {
+    return measure === 'chapters' ? 'Chapters logged' : 'Books finished';
+  }
+
+  protected daysLeftLabel(daysLeft: number) {
+    return daysLeft === 0 ? 'last day' : `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
   }
 
   protected async loadGallery() {
