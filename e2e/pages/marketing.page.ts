@@ -28,6 +28,16 @@ export class MarketingPage {
     return this.page.getByRole('main').getByRole('heading', { level: 2 });
   }
 
+  /** The visible text of the page's main content. */
+  mainText() {
+    return this.page.getByRole('main').innerText();
+  }
+
+  /** The "Try it free" links under the section headings. */
+  sectionTryItFree() {
+    return this.page.locator('.section-heading').getByRole('link', { name: /Try it free/ });
+  }
+
   journeySteps() {
     return this.page.locator('#how').getByRole('listitem');
   }
@@ -50,6 +60,24 @@ export class MarketingPage {
 
   screenshots() {
     return this.page.locator('#screens img');
+  }
+
+  video() {
+    return this.page.locator('#watch video');
+  }
+
+  /** How the brand video is set up, and whether its poster and file are served by the site. */
+  async videoReport() {
+    const video = this.video();
+    const setup = await video.evaluate((v) => {
+      const media = v as HTMLVideoElement;
+      return { controls: media.controls, autoplay: media.autoplay, poster: media.getAttribute('poster') ?? '', src: media.getAttribute('src') ?? '' };
+    });
+    const served = async (path: string) => {
+      const response = await this.page.request.get(`/marketing/${path.replace(/^\.\//, '')}`);
+      return { ok: response.ok(), type: response.headers()['content-type'] ?? '' };
+    };
+    return { ...setup, poster: await served(setup.poster), file: await served(setup.src) };
   }
 
   /** Brings every screenshot into view, then reports how each one loaded and is drawn. */

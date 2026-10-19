@@ -1,0 +1,39 @@
+/* Brand decks (the marketing video): the Shelfie design system on a 1920x1080 stage.
+   Everything is the design system's own tokens and components; the root font size doubles them,
+   so a slide is the app at 2x, like a retina screenshot. No header strip or progress bar. */
+@import url("../../design-system/tokens/tokens.css");
+@import url("../../design-system/assets/components.css");
+
+html { font-size: 32px; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; }
+body { background: radial-gradient(circle at 85% 10%, var(--color-accent-subtle), transparent 55%), var(--color-bg-canvas); }
+body > header, body > .progress { display: none; }
+em { font-style: normal; color: var(--color-fg-accent); }
+
+section { display: none; position: absolute; inset: 0; padding: var(--space-8) var(--space-12); }
+section.active { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-6); text-align: center; }
+
+/* Wordmark: the app icon beside the name. */
+.brand { display: inline-flex; align-items: center; gap: var(--space-3); font: var(--text-h2); }
+.brand img { width: var(--size-avatar-lg); height: var(--size-avatar-lg); border-radius: var(--radius-md); }
+.brand--big { font: var(--text-display); }
+.brand--big img { width: var(--size-avatar-xl); height: var(--size-avatar-xl); }
+.display { font: var(--text-display); letter-spacing: var(--letter-spacing-tight); }
+.lead { font: var(--text-body-lg); color: var(--color-fg-muted); max-width: 32rem; }
+.who { display: flex; gap: var(--space-6); }
+.who .cluster { gap: var(--space-2); font: var(--text-label); }
+
+/* Screen recordings: a heading, then the real app in a frame the builder fills. */
+section[data-clip] { gap: var(--space-4); }
+.clip-frame { width: 1408px; height: 792px; border-radius: var(--radius-lg); background: var(--color-bg-inverse); box-shadow: var(--shadow-4); }
+
+/* Small wins: the streak, badges and progress components, scattered like stickers. */
+.wins { display: grid; grid-template-columns: repeat(2, 19rem); align-items: start; gap: var(--space-5); text-align: left; }
+.wins .card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); box-shadow: var(--shadow-3); }
+.wins .cluster { flex-wrap: nowrap; align-self: stretch; }
+.wins .stack { flex: 1; min-width: 0; gap: var(--space-2); }
+.wins .card:nth-child(1) { transform: rotate(-2deg); }
+.wins .card:nth-child(2) { transform: rotate(1.5deg); }
+.wins .card:nth-child(3) { transform: rotate(1deg); }
+.wins .card:nth-child(4) { transform: rotate(-1.5deg); }
+.wins .achievements { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); list-style: none; margin: 0; padding: 0; }

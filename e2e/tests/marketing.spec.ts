@@ -15,17 +15,47 @@ test('Given the marketing page, then its sections tell the reading loop in order
   const marketing = new MarketingPage(page);
   await marketing.open();
   await expect(marketing.sectionHeadings()).toHaveText([
+    'Shelfie in one minute.',
     'Fun, not homework.',
     'Three steps, one finish.',
     'Real screens. Real encouragement.',
     'For the whole family.',
-    'Start her next chapter.',
+    'Start your family’s next chapter.',
   ]);
   await expect(marketing.journeySteps()).toHaveCount(3);
   await expect(marketing.journeySteps().getByRole('heading')).toHaveText(['Read and log', 'Answer Olive’s questions', 'Stickers and a reward']);
   await expect(marketing.familyCards()).toHaveText([/streak/i, /badges/i, /reward gallery/i, /speak/i]);
   await expect(marketing.finalLink('Create a parent account')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-up');
   await expect(marketing.finalLink('Sign in')).toHaveAttribute('href', 'https://app.shelfie.kids/sign-in');
+});
+
+test('Given the marketing page, then its copy speaks to a family of readers and grown-ups, not to one child', async ({ page }) => {
+  const marketing = new MarketingPage(page);
+  await marketing.open();
+  const copy = await marketing.mainText();
+  expect(copy).not.toMatch(/\b(she|her|hers)\b/i);
+  expect(copy).toMatch(/\bkids\b/i);
+  expect(copy).toMatch(/\bgrown-ups\b/i);
+});
+
+test('Given each section explains why it is worth it, when a visitor wants more detail, then "Try it free" opens sign-up', async ({ page }) => {
+  const marketing = new MarketingPage(page);
+  await marketing.open();
+  await expect(marketing.sectionTryItFree()).toHaveCount(4);
+  for (const link of await marketing.sectionTryItFree().all()) await expect(link).toHaveAttribute('href', 'https://app.shelfie.kids/sign-up');
+});
+
+test('Given the watch section, then the brand video is served by the site with a poster and controls, and does not play on its own', async ({ page }) => {
+  const marketing = new MarketingPage(page);
+  await marketing.open();
+  await expect(marketing.video()).toHaveCount(1);
+  expect(await marketing.videoReport()).toEqual({
+    controls: true,
+    autoplay: false,
+    poster: { ok: true, type: expect.stringMatching(/^image\//) },
+    file: { ok: true, type: expect.stringMatching(/^video\/mp4/) },
+    src: expect.stringMatching(/\.mp4$/),
+  });
 });
 
 test('Given the inside-the-app gallery, then every screenshot loads, is described and keeps its shape', async ({ page }) => {

@@ -404,6 +404,25 @@ em {
   border-radius: var(--radius-xl);
 }
 
+/* --- watch ---------------------------------------------------------------- */
+.video-block {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-2);
+  border-radius: calc(var(--radius-xl) + var(--space-2));
+  background: var(--color-bg-inverse);
+  box-shadow: var(--shadow-4);
+}
+
+.video-block video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-inverse);
+}
+
 /* --- why ---------------------------------------------------------------- */
 .value-grid,
 .bento {
