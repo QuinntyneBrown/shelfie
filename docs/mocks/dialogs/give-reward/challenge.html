@@ -8,7 +8,7 @@
 <meta name="mock:screen" content="give-reward">
 <meta name="mock:state" content="challenge">
 <meta name="mock:requirements" content="L2-017, L2-089, L2-142">
-<meta name="description" content="Over the Challenges tab: the same dialog, titled for the winner of the October week race.">
+<meta name="description" content="Over the Challenges tab: the same dialog, titled for the winner of a challenge.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
 <link rel="stylesheet" href="../../assets/mock.css">
@@ -83,12 +83,12 @@
   <div class="dialog__panel">
     <div class="dialog__header">
       
-      <div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Nia won the October week race! 🏆</h2><p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1);">Pick a reward and Nia will see it on her shelf.</p></div>
+      <div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Nia won! 🏆</h2><p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1);">Pick a reward and Nia will see it on the challenge card.</p></div>
       <button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="dialog__body stack">
 <div class="book-card"><span class="cover cover--rose cover--sm" aria-hidden="true">📚</span><div class="book-card__body"><span class="book-card__title" style="font: var(--text-label);">Matilda · 21 chapters in 24 days</span><span class="book-card__author">Finished Tue 13 Oct</span></div></div>
-<div class="field"><label class="field__label" for="reward">The reward</label><div class="field__help" id="reward-help">Nia sees this on her challenge card.</div><input class="input" id="reward" type="text" required value="" autofocus aria-describedby="reward-help"></div>
+<div class="field"><label class="field__label" for="reward">The reward</label><div class="field__help" id="reward-help">Nia sees this on the challenge card.</div><input class="input" id="reward" type="text" required value="" autofocus aria-describedby="reward-help"></div>
 <div class="cluster" role="group" aria-label="Quick picks"><button class="chip" type="button">Ice cream Saturday</button><button class="chip" type="button">Movie night</button><button class="chip" type="button">Stay up 30 min later</button><button class="chip" type="button">Trip to the bookshop</button></div>
 <div class="field"><label class="field__label" for="reward-note">A note for Nia <span class="optional">(optional)</span></label><textarea class="textarea" id="reward-note" rows="2"></textarea></div></div>
     <div class="dialog__footer"><button class="btn" type="button">Not now</button><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v3M8 20h8M10 17h4v3h-4z"/></svg>Give the reward</button></div>

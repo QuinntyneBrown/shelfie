@@ -27,7 +27,7 @@ reader -> log : I'm done!
 log -> chapters : POST /api/books/:id/chapters/:n
 chapters -> db : INSERT chapter_log (reader_id = session profile)
 chapters --> log : 201
-chapters -> notifier : challengeLead(householdId), after the undo window
+chapters -> notifier : chapterLogged(...); after the undo window
 notifier -> service : takeLead(householdId)
 service -> db : standings; UPDATE challenge SET leader_id\nWHERE the sole leader changed
 alt a new sole leader
