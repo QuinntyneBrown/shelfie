@@ -35,6 +35,8 @@ export interface BookDetail {
   sticker: string;
   coverImage: string | null;
   loggedCount: number;
+  finishedAt: string | null;
+  finishedOn: string | null;
   readerName: string;
   reward: { text: string; givenOn: string } | null;
   defaultQuestions: string[];
