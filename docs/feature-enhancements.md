@@ -14,7 +14,7 @@ Candidate enhancements beyond the current L1 scope, ordered by value add (highes
 | 8 | Voice answers | Dictate answers with speech-to-text so typing never slows her down; she can edit the text before sending. | S |
 | 9 | Next book recommendations | AI suggests next books from her finished books and ratings; parent adds one to the shelf in a tap. | M |
 | 10 | Book rating | On finishing, she rates the book with stars and an emoji reaction; feeds recommendations and her trophy shelf. | S |
-| 11 | Feedback notifications | Push notifications tell the parent a chapter awaits review and tell her when a sticker or reward arrives. | M |
+| 11 | Feedback notifications | **Built** (L1-027, `docs/detailed-designs/shell/push-notifications`). Push notifications tell the parent a chapter awaits review and tell her when a sticker or reward arrives. | M |
 | 12 | Reading goals | Parent sets a weekly chapter goal; a playful progress bar on the shelf shows how close she is. | S |
 | 13 | Streak freeze | One missed day per week doesn't break the streak, so a busy day isn't discouraging. | S |
 | 14 | Vocabulary log | Save new words from a chapter with a kid-friendly definition; review them later as flashcards. | M |
