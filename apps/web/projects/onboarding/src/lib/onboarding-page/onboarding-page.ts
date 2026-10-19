@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   input,
   signal,
@@ -14,6 +15,7 @@ import {
   Banner,
   Button,
   Celebration,
+  ErrorState,
   StepIndicator,
   Sticker,
   TextField,
@@ -39,7 +41,17 @@ export function usernameFrom(name: string): string {
 /** The one-time set-up wizard after sign-up: five full-screen steps under the auth layout, one per URL. */
 @Component({
   selector: 'sh-onboarding-page',
-  imports: [AuthLayout, Banner, Button, Celebration, RouterLink, StepIndicator, Sticker, TextField],
+  imports: [
+    AuthLayout,
+    Banner,
+    Button,
+    Celebration,
+    ErrorState,
+    RouterLink,
+    StepIndicator,
+    Sticker,
+    TextField,
+  ],
   templateUrl: './onboarding-page.html',
   styleUrl: './onboarding-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,9 +91,47 @@ export class OnboardingPage {
   private readonly nameField = viewChild('nameField', { read: ElementRef });
   private readonly summary = viewChild<Banner>('summary');
 
+  /** Set once the household's readers and rewards are known; the step shows only then. */
+  protected readonly loaded = signal(false);
+  protected readonly loadFailed = signal(false);
+
   constructor() {
     // A household that has finished or skipped the wizard never sees it again, on any device (L2-137).
     if (this.session.current()?.onboarded) void this.router.navigateByUrl('/review');
+    else void this.load();
+    // The URL names the step, but only a step whose needs are met shows (L2-143).
+    effect(() => {
+      if (!this.loaded()) return;
+      const allowed = this.allowed(this.current());
+      if (allowed !== this.current()) {
+        void this.router.navigateByUrl(
+          allowed === 'welcome' ? '/onboarding' : `/onboarding/${allowed}`,
+          {
+            replaceUrl: true,
+          },
+        );
+      }
+    });
+  }
+
+  /** Reads what the household already has, so a reload or another device resumes where it was (L2-143). */
+  protected async load() {
+    this.loadFailed.set(false);
+    try {
+      const [readers, rewards] = await Promise.all([this.api.readers(), this.api.rewards()]);
+      this.reader.set(readers[0] ?? null);
+      this.rewards.set(rewards);
+      this.loaded.set(true);
+    } catch {
+      this.loadFailed.set(true);
+    }
+  }
+
+  /** The step the URL may show: nothing past the name until the reader exists, nothing before the reward after. */
+  private allowed(step: Step): Step {
+    if (this.reader()) return step === 'reward' || step === 'done' ? step : 'reward';
+    if (step === 'welcome' || step === 'child') return step;
+    return step === 'sign-in' && this.childName().trim() ? 'sign-in' : 'child';
   }
 
   /** The name step: nothing is sent yet; the username is prefilled from the name (L2-139). */

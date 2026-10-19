@@ -150,6 +150,19 @@ export class OnboardingPage {
     return cookies.includes(text) || inStorage || this.page.url().includes(text);
   }
 
+  loadFailure() {
+    return this.page.getByRole('heading', { name: 'Shelfie couldn’t pick up where you left off' });
+  }
+
+  /** Makes the read of the household's readers fail, as a dropped connection on a reload would. */
+  async breakHousehold() {
+    await this.page.route('**/api/settings', (route) => (route.request().method() === 'GET' ? route.abort() : route.continue()));
+  }
+
+  async repairHousehold() {
+    await this.page.unroute('**/api/settings');
+  }
+
   /** The shell's primary navigation, which the wizard never shows. */
   shellNavigation() {
     return this.page.getByRole('navigation', { name: /^Primary/ });

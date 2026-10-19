@@ -1,238 +1,252 @@
 <sh-auth-layout>
-  <sh-step-indicator [current]="number()" [total]="total" />
-  @switch (current()) {
-    @case ('child') {
-      <div class="card stack wizard">
-        <img class="wizard__art" src="/onboarding/child.svg" alt="" width="240" height="180" />
-        <h1>What’s your child’s name?</h1>
-        <p class="text-muted">
-          Shelfie calls her by it on her shelf. Her avatar colour is picked for you; change both any
-          time in Settings.
-        </p>
-        <form class="stack" (submit)="$event.preventDefault(); nextFromName()" novalidate>
-          <sh-text-field
-            #nameField
-            label="Child’s name"
-            autocomplete="off"
-            [maxlength]="40"
-            [autofocus]="true"
-            [error]="nameError()"
-            [(value)]="childName"
-          />
-          <div class="wizard__actions">
-            <sh-button [large]="true" [block]="true">Next</sh-button>
-            <a class="btn btn--ghost" routerLink="/onboarding">Back</a>
-          </div>
-        </form>
-      </div>
-    }
-    @case ('sign-in') {
-      <div class="card stack wizard">
-        <img class="wizard__art" src="/onboarding/sign-in.svg" alt="" width="240" height="180" />
-        <h1>How will {{ readerName() }} sign in?</h1>
-        <p class="text-muted">
-          She types these on the sign-in page. You can change them later in Settings.
-        </p>
-        <form class="stack" (submit)="$event.preventDefault(); addReader()" novalidate>
-          @if (problems().length) {
-            <sh-banner
-              #summary
-              severity="danger"
-              [summary]="true"
-              [title]="
-                'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
-              "
-            >
-              <ul class="summary-list">
-                @for (problem of problems(); track problem) {
-                  <li>{{ problem }}</li>
-                }
-              </ul>
-            </sh-banner>
-          }
-          @if (failed()) {
-            <sh-banner
-              severity="danger"
-              [title]="readerName() + ' wasn’t added'"
-              message="Nothing changed. Check your connection."
-            >
-              <div class="alert__actions">
-                <button class="btn btn--sm" type="button" (click)="addReader()">Try again</button>
-              </div>
-            </sh-banner>
-          }
-          <sh-text-field
-            label="Username"
-            autocomplete="off"
-            help="3–20 letters, numbers, . or _"
-            [maxlength]="20"
-            [autofocus]="true"
-            [readonly]="busy()"
-            [error]="usernameError()"
-            [(value)]="username"
-          />
-          <sh-text-field
-            label="Password"
-            type="password"
-            autocomplete="new-password"
-            help="At least 8 characters"
-            [readonly]="busy()"
-            [error]="passwordError()"
-            [(value)]="password"
-          />
-          <div class="wizard__actions">
-            <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
-            <a
-              class="btn btn--ghost"
-              routerLink="/onboarding/child"
-              [attr.aria-disabled]="busy() || null"
-              >Back</a
-            >
-          </div>
-        </form>
-      </div>
-    }
-    @case ('reward') {
-      <div class="card stack wizard">
-        <img class="wizard__art" src="/onboarding/reward.svg" alt="" width="240" height="180" />
-        <h1>What will {{ readerName() }} read toward?</h1>
-        @if (rewards().length) {
-          <p class="text-muted">Added to her reward gallery. Add another, or press Next.</p>
-          <ul class="wizard__added" aria-label="Rewards added">
-            @for (reward of rewards(); track reward.id) {
-              <li>
-                <sh-sticker emoji="🎁" />
-                <span class="list__title">{{ reward.name }}</span>
-                <span class="list__meta"
-                  >{{ reward.target }} {{ reward.target === 1 ? 'book' : 'books' }}</span
-                >
-              </li>
-            }
-          </ul>
-        } @else {
+  @if (loadFailed()) {
+    <div class="card stack wizard">
+      <sh-error-state
+        sticker="🧭"
+        title="Shelfie couldn’t pick up where you left off"
+        text="Your account is safe. Check your connection and try again."
+      >
+        <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+      </sh-error-state>
+    </div>
+  } @else if (loaded()) {
+    <sh-step-indicator [current]="number()" [total]="total" />
+    @switch (current()) {
+      @case ('child') {
+        <div class="card stack wizard">
+          <img class="wizard__art" src="/onboarding/child.svg" alt="" width="240" height="180" />
+          <h1>What’s your child’s name?</h1>
           <p class="text-muted">
-            Finish a few books, earn a reward. Pictures and a description can wait for Settings.
+            Shelfie calls her by it on her shelf. Her avatar colour is picked for you; change both
+            any time in Settings.
           </p>
-        }
-        <form class="stack" (submit)="$event.preventDefault(); addReward(false)" novalidate>
-          @if (problems().length) {
-            <sh-banner
-              #summary
-              severity="danger"
-              [summary]="true"
-              [title]="
-                'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
-              "
-            >
-              <ul class="summary-list">
-                @for (problem of problems(); track problem) {
-                  <li>{{ problem }}</li>
-                }
-              </ul>
-            </sh-banner>
+          <form class="stack" (submit)="$event.preventDefault(); nextFromName()" novalidate>
+            <sh-text-field
+              #nameField
+              label="Child’s name"
+              autocomplete="off"
+              [maxlength]="40"
+              [autofocus]="true"
+              [error]="nameError()"
+              [(value)]="childName"
+            />
+            <div class="wizard__actions">
+              <sh-button [large]="true" [block]="true">Next</sh-button>
+              <a class="btn btn--ghost" routerLink="/onboarding">Back</a>
+            </div>
+          </form>
+        </div>
+      }
+      @case ('sign-in') {
+        <div class="card stack wizard">
+          <img class="wizard__art" src="/onboarding/sign-in.svg" alt="" width="240" height="180" />
+          <h1>How will {{ readerName() }} sign in?</h1>
+          <p class="text-muted">
+            She types these on the sign-in page. You can change them later in Settings.
+          </p>
+          <form class="stack" (submit)="$event.preventDefault(); addReader()" novalidate>
+            @if (problems().length) {
+              <sh-banner
+                #summary
+                severity="danger"
+                [summary]="true"
+                [title]="
+                  'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
+                "
+              >
+                <ul class="summary-list">
+                  @for (problem of problems(); track problem) {
+                    <li>{{ problem }}</li>
+                  }
+                </ul>
+              </sh-banner>
+            }
+            @if (failed()) {
+              <sh-banner
+                severity="danger"
+                [title]="readerName() + ' wasn’t added'"
+                message="Nothing changed. Check your connection."
+              >
+                <div class="alert__actions">
+                  <button class="btn btn--sm" type="button" (click)="addReader()">Try again</button>
+                </div>
+              </sh-banner>
+            }
+            <sh-text-field
+              label="Username"
+              autocomplete="off"
+              help="3–20 letters, numbers, . or _"
+              [maxlength]="20"
+              [autofocus]="true"
+              [readonly]="busy()"
+              [error]="usernameError()"
+              [(value)]="username"
+            />
+            <sh-text-field
+              label="Password"
+              type="password"
+              autocomplete="new-password"
+              help="At least 8 characters"
+              [readonly]="busy()"
+              [error]="passwordError()"
+              [(value)]="password"
+            />
+            <div class="wizard__actions">
+              <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
+              <a
+                class="btn btn--ghost"
+                routerLink="/onboarding/child"
+                [attr.aria-disabled]="busy() || null"
+                >Back</a
+              >
+            </div>
+          </form>
+        </div>
+      }
+      @case ('reward') {
+        <div class="card stack wizard">
+          <img class="wizard__art" src="/onboarding/reward.svg" alt="" width="240" height="180" />
+          <h1>What will {{ readerName() }} read toward?</h1>
+          @if (rewards().length) {
+            <p class="text-muted">Added to her reward gallery. Add another, or press Next.</p>
+            <ul class="wizard__added" aria-label="Rewards added">
+              @for (reward of rewards(); track reward.id) {
+                <li>
+                  <sh-sticker emoji="🎁" />
+                  <span class="list__title">{{ reward.name }}</span>
+                  <span class="list__meta"
+                    >{{ reward.target }} {{ reward.target === 1 ? 'book' : 'books' }}</span
+                  >
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="text-muted">
+              Finish a few books, earn a reward. Pictures and a description can wait for Settings.
+            </p>
           }
-          @if (failed()) {
-            <sh-banner
-              severity="danger"
-              [title]="(rewardName().trim() || 'The reward') + ' wasn’t added'"
-              message="Nothing changed. Check your connection."
-            >
-              <div class="alert__actions">
-                <button class="btn btn--sm" type="button" (click)="addReward(true)">
-                  Try again
+          <form class="stack" (submit)="$event.preventDefault(); addReward(false)" novalidate>
+            @if (problems().length) {
+              <sh-banner
+                #summary
+                severity="danger"
+                [summary]="true"
+                [title]="
+                  'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')
+                "
+              >
+                <ul class="summary-list">
+                  @for (problem of problems(); track problem) {
+                    <li>{{ problem }}</li>
+                  }
+                </ul>
+              </sh-banner>
+            }
+            @if (failed()) {
+              <sh-banner
+                severity="danger"
+                [title]="(rewardName().trim() || 'The reward') + ' wasn’t added'"
+                message="Nothing changed. Check your connection."
+              >
+                <div class="alert__actions">
+                  <button class="btn btn--sm" type="button" (click)="addReward(true)">
+                    Try again
+                  </button>
+                </div>
+              </sh-banner>
+            }
+            <div class="cluster wizard__examples" role="group" aria-label="Examples">
+              @for (example of examples; track example) {
+                <button
+                  class="chip"
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="rewardName.set(example)"
+                >
+                  {{ example }}
                 </button>
-              </div>
-            </sh-banner>
-          }
-          <div class="cluster wizard__examples" role="group" aria-label="Examples">
-            @for (example of examples; track example) {
+              }
+            </div>
+            <sh-text-field
+              label="The reward"
+              autocomplete="off"
+              [maxlength]="100"
+              [autofocus]="true"
+              [readonly]="busy()"
+              [error]="rewardError()"
+              [(value)]="rewardName"
+            />
+            <sh-text-field
+              label="Books to finish"
+              type="number"
+              inputmode="numeric"
+              help="A whole number from 1 to 20."
+              [readonly]="busy()"
+              [error]="targetError()"
+              [(value)]="target"
+            />
+            <div class="wizard__actions">
+              <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
               <button
-                class="chip"
+                class="btn btn--block"
                 type="button"
                 [disabled]="busy()"
-                (click)="rewardName.set(example)"
+                (click)="addReward(true)"
               >
-                {{ example }}
+                Add another
               </button>
-            }
-          </div>
-          <sh-text-field
-            label="The reward"
-            autocomplete="off"
-            [maxlength]="100"
-            [autofocus]="true"
-            [readonly]="busy()"
-            [error]="rewardError()"
-            [(value)]="rewardName"
-          />
-          <sh-text-field
-            label="Books to finish"
-            type="number"
-            inputmode="numeric"
-            help="A whole number from 1 to 20."
-            [readonly]="busy()"
-            [error]="targetError()"
-            [(value)]="target"
-          />
-          <div class="wizard__actions">
-            <sh-button [large]="true" [block]="true" [busy]="busy()">Next</sh-button>
-            <button
-              class="btn btn--block"
-              type="button"
-              [disabled]="busy()"
-              (click)="addReward(true)"
-            >
-              Add another
-            </button>
-          </div>
-        </form>
-      </div>
-    }
-    @case ('done') {
-      <sh-celebration variant="book" class="wizard">
-        <img class="wizard__art" src="/onboarding/done.svg" alt="" width="240" height="180" />
-        <h1>All set!</h1>
-        @if (password()) {
-          <p class="text-muted">
-            {{ readerName() }} can sign in on this device or any other. Write these down: the
-            password shows only here, never again.
-          </p>
-          <dl class="wizard__details">
-            <dt>Username</dt>
-            <dd>{{ reader()?.username }}</dd>
-            <dt>Password</dt>
-            <dd>{{ password() }}</dd>
-          </dl>
-        } @else {
-          <p class="text-muted">
-            {{ readerName() }} can sign in on this device or any other with the username below. Her
-            password is the one you chose; set a new one any time in Settings → Readers.
-          </p>
-          <dl class="wizard__details">
-            <dt>Username</dt>
-            <dd>{{ reader()?.username }}</dd>
-          </dl>
-        }
-        <form class="wizard__actions" (submit)="$event.preventDefault(); finish()">
-          <sh-button [large]="true" [block]="true" [busy]="busy()">Go to my shelf</sh-button>
-        </form>
-      </sh-celebration>
-    }
-    @default {
-      <div class="card stack wizard">
-        <img class="wizard__art" src="/onboarding/welcome.svg" alt="" width="240" height="180" />
-        <h1>Let’s set up Shelfie for your family</h1>
-        <p class="text-muted">
-          Add your child, choose how she signs in and pick a reward to read toward. About two
-          minutes.
-        </p>
-        <div class="wizard__actions">
-          <a class="btn btn--primary btn--lg btn--block" routerLink="/onboarding/child">Let’s go</a>
+            </div>
+          </form>
         </div>
-      </div>
+      }
+      @case ('done') {
+        <sh-celebration variant="book" class="wizard">
+          <img class="wizard__art" src="/onboarding/done.svg" alt="" width="240" height="180" />
+          <h1>All set!</h1>
+          @if (password()) {
+            <p class="text-muted">
+              {{ readerName() }} can sign in on this device or any other. Write these down: the
+              password shows only here, never again.
+            </p>
+            <dl class="wizard__details">
+              <dt>Username</dt>
+              <dd>{{ reader()?.username }}</dd>
+              <dt>Password</dt>
+              <dd>{{ password() }}</dd>
+            </dl>
+          } @else {
+            <p class="text-muted">
+              {{ readerName() }} can sign in on this device or any other with the username below.
+              Her password is the one you chose; set a new one any time in Settings → Readers.
+            </p>
+            <dl class="wizard__details">
+              <dt>Username</dt>
+              <dd>{{ reader()?.username }}</dd>
+            </dl>
+          }
+          <form class="wizard__actions" (submit)="$event.preventDefault(); finish()">
+            <sh-button [large]="true" [block]="true" [busy]="busy()">Go to my shelf</sh-button>
+          </form>
+        </sh-celebration>
+      }
+      @default {
+        <div class="card stack wizard">
+          <img class="wizard__art" src="/onboarding/welcome.svg" alt="" width="240" height="180" />
+          <h1>Let’s set up Shelfie for your family</h1>
+          <p class="text-muted">
+            Add your child, choose how she signs in and pick a reward to read toward. About two
+            minutes.
+          </p>
+          <div class="wizard__actions">
+            <a class="btn btn--primary btn--lg btn--block" routerLink="/onboarding/child"
+              >Let’s go</a
+            >
+          </div>
+        </div>
+      }
     }
-  }
-  @if (current() !== 'done') {
-    <p class="text-caption centred"><a href="/review" (click)="skip($event)">Skip for now</a></p>
+    @if (current() !== 'done') {
+      <p class="text-caption centred"><a href="/review" (click)="skip($event)">Skip for now</a></p>
+    }
   }
 </sh-auth-layout>

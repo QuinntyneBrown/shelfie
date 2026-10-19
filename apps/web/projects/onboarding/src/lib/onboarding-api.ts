@@ -33,6 +33,15 @@ export interface GalleryReward {
 export class OnboardingApi {
   private readonly api = inject(ApiClient);
 
+  /** The household's readers, from the settings the wizard shares with Settings. */
+  async readers() {
+    return (await this.api.get<{ readers: ReaderView[] }>('/settings')).readers;
+  }
+
+  async rewards() {
+    return (await this.api.get<{ rewards: GalleryReward[] }>('/gallery-rewards')).rewards;
+  }
+
   addReader(input: ReaderInput) {
     return this.api.post<ReaderView>('/readers', input);
   }

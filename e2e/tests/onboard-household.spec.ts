@@ -1,4 +1,4 @@
-// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142
+// Traces to: L2-137, L2-138, L2-139, L2-140, L2-141, L2-142, L2-143
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { inviteLinkFor } from '../support/mailbox';
@@ -324,4 +324,68 @@ test('Given the reward added, when All set opens, then it shows Zara’s usernam
   await new SignInPage(other).signInWithPassword(PRIYA.username, PRIYA.password);
   await expect(other).toHaveURL(/\/review$/);
   await laptop.close();
+});
+
+test('Given no reader yet, when the browser goes back or a step is reloaded, then the welcome stays the welcome, the sign-in step comes back as the name step, and later steps are not reachable', async ({ page }) => {
+  const onboarding = await startWizard(page);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await page.reload();
+  await expect(onboarding.heading()).toHaveText('Let’s set up Shelfie for your family');
+
+  await onboarding.letsGo();
+  await onboarding.nameField().fill(ZARA.name);
+  await onboarding.next();
+  await expect(page).toHaveURL(/\/onboarding\/sign-in$/);
+  await page.reload();
+  await expect(page).toHaveURL(/\/onboarding\/child$/);
+  await expect(onboarding.heading()).toHaveText('What’s your child’s name?');
+
+  await onboarding.open('reward');
+  await expect(page).toHaveURL(/\/onboarding\/child$/);
+});
+
+test('Given the reader exists, when an earlier step or the reward step is reloaded, then the reward step opens with the rewards already added', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+  await onboarding.tapExample('Movie night');
+  await onboarding.booksField().fill('2');
+  await onboarding.addAnother();
+  await expect(onboarding.rewardsAdded()).toHaveCount(1);
+
+  await page.reload();
+  await expect(page).toHaveURL(/\/onboarding\/reward$/);
+  await expect(onboarding.rewardsAdded().first()).toContainText('Movie night');
+
+  await onboarding.open('child');
+  await expect(page).toHaveURL(/\/onboarding\/reward$/);
+  await expect(onboarding.heading()).toHaveText('What will Zara read toward?');
+});
+
+test('Given All set is reloaded, then the username shows and the password is said to be the one chosen, not shown', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+  await onboarding.rewardField().fill('New book');
+  await onboarding.booksField().fill('1');
+  await onboarding.next();
+  await expect(page).toHaveURL(/\/onboarding\/done$/);
+
+  await page.reload();
+
+  await expect(onboarding.heading()).toHaveText('All set!');
+  await expect(onboarding.detail('Username')).toHaveText(ZARA.username);
+  await expect(onboarding.detail('Password')).toHaveCount(0);
+  await expect(page.getByText(/the one you chose/)).toBeVisible();
+  expect(await onboarding.storedAnywhere(ZARA.password)).toBe(false);
+});
+
+test('Given the household cannot be read on a reload, then an error with Try again shows, and Try again reads it', async ({ page }) => {
+  const onboarding = await reachRewardStep(page);
+  await onboarding.breakHousehold();
+
+  await page.reload();
+
+  await expect(onboarding.loadFailure()).toBeVisible();
+  await onboarding.repairHousehold();
+  await onboarding.tryAgain();
+  await expect(onboarding.heading()).toHaveText('What will Zara read toward?');
 });
