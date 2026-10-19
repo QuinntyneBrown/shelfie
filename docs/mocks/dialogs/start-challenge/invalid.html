@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start a challenge · invalid — Shelfie mocks</title>
+<meta name="mock:kind" content="dialog">
+<meta name="mock:screen" content="start-challenge">
+<meta name="mock:state" content="invalid">
+<meta name="mock:requirements" content="L2-137, L2-138">
+<meta name="description" content="Start pressed with no name and no readers: inline errors and a summary.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="has-tabbar" inert aria-hidden="true">
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/review/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" href="../../pages/review/default.html" aria-current="page">Review <span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+    <a class="nav-link" href="../../pages/books/default.html">Books</a>
+    <a class="nav-link" href="../../pages/settings/default.html">Settings</a>
+  </nav>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--sky" type="button" aria-label="Account menu for Dad" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">D</button>
+</header>
+
+<main id="main" class="container">
+<div class="page-header"><div><h1>Review</h1><p class="subtitle">2 chapters to read · 1 reward to give</p></div></div>
+<div class="cluster" role="group" aria-label="Show"><button class="chip" type="button" aria-pressed="false">To review</button><button class="chip" type="button" aria-pressed="true">Challenges</button></div>
+<div class="stack">
+<div><a class="btn btn--primary" href="../../dialogs/start-challenge/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Start a challenge</a></div>
+<section class="card card--flush" aria-labelledby="past-title">
+  <h2 id="past-title" style="font: var(--text-h4); padding: var(--space-4) var(--space-4) 0;">Past challenges</h2>
+  <ul class="list">
+    <li class="list__item"><span class="sticker" aria-hidden="true">🏆</span><div class="list__body"><div class="list__title">September sprint</div><div class="list__meta">Books finished · Tue 1 Sep to Wed 30 Sep · Theo won with 2 books</div></div><button class="btn btn--sm btn--ghost" type="button">Remove</button></li>
+    <li class="list__item"><span class="sticker" aria-hidden="true">🏆</span><div class="list__body"><div class="list__title">Summer reading race</div><div class="list__meta">Chapters logged · Mon 3 Aug to Sun 16 Aug · Nia won with 24 chapters</div></div><button class="btn btn--sm btn--ghost" type="button">Remove</button></li>
+  </ul>
+</section>
+</div>
+</main>
+<nav class="tabbar" aria-label="Primary, phone">
+  <a href="../../pages/review/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Review<span class="badge badge--count" aria-label="2 chapters to review">2</span></a>
+  <a href="../../pages/books/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h18M3 20h18M6 4v16M10 4v16M14 4v16l4-2V4"/></svg>Books</a>
+  <a href="../../pages/settings/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></svg>Settings</a>
+</nav>
+</div>
+<div class="backdrop"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" data-dismiss-on-escape>
+  <div class="dialog__panel">
+    <div class="dialog__header"><h2 class="dialog__title" id="dlg-title">Start a challenge</h2></div>
+    <div class="dialog__body stack">
+<div class="alert alert--danger form-summary" role="alert" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Two things to fix</div><div>Give the challenge a name, and pick at least one reader.</div></div></div>
+<div class="field"><label class="field__label" for="challenge-name">Name</label><input class="input" id="challenge-name" value="" type="text" maxlength="60" autofocus aria-invalid="true" aria-describedby="challenge-name-error"><div class="field__error" id="challenge-name-error">Give the challenge a name.</div></div>
+<div class="field"><span class="field__label" id="measure-label">What counts</span><div class="cluster" role="group" aria-labelledby="measure-label"><button class="chip" type="button" aria-pressed="true">Chapters logged</button><button class="chip" type="button" aria-pressed="false">Books finished</button></div></div>
+<div class="field"><label class="field__label" for="challenge-goal">Goal</label><div class="field__help" id="challenge-goal-help">How many chapters each reader aims for.</div><input class="input" id="challenge-goal" value="15" type="number" inputmode="numeric" min="1" max="500" aria-describedby="challenge-goal-help"></div>
+<div class="field"><span class="field__label" id="length-label">How long</span><div class="field__help">Starts today, Fri 17 Oct.</div><div class="cluster" role="group" aria-labelledby="length-label"><button class="chip" type="button" aria-pressed="false">One week</button><button class="chip" type="button" aria-pressed="true">Two weeks</button><button class="chip" type="button" aria-pressed="false">A month</button></div></div>
+<div class="field"><span class="field__label" id="readers-label">Who takes part</span><div class="stack" style="gap: var(--space-1);" role="group" aria-labelledby="readers-label"><label class="switch"><input type="checkbox" name="reader-nia"><span class="switch__text">Nia</span></label><label class="switch"><input type="checkbox" name="reader-theo"><span class="switch__text">Theo</span></label></div><div class="field__error" id="readers-error">Pick at least one reader.</div></div>
+    </div>
+    <div class="dialog__footer"><button class="btn" type="button">Not now</button><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v3M8 20h8M10 17h4v3h-4z"/></svg>Start the challenge</button></div>
+  </div>
+</div><p class="mock-note" style="top: 1rem; left: 1rem;">The summary takes focus; each error sits under its field. A goal outside 1 to 500 says “Pick a goal from 1 to 500.”</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Start a challenge</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="invalid.html" aria-current="page">invalid</a></li><li><a href="busy.html">busy</a></li><li><a href="failed.html">failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

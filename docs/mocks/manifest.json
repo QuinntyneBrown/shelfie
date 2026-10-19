@@ -140,7 +140,13 @@
         "goal-reached",
         "goal-error",
         "push-offer",
-        "push-on"
+        "push-on",
+        "challenge",
+        "challenge-leading",
+        "challenge-behind",
+        "challenge-single",
+        "challenge-won",
+        "challenge-lost"
       ],
       "not_applicable": {},
       "requirements": [
@@ -155,7 +161,8 @@
         "L2-102",
         "L2-108",
         "L2-121",
-        "L2-123"
+        "L2-123",
+        "L2-144"
       ]
     },
     {
@@ -290,7 +297,13 @@
         "error",
         "long",
         "goal-reached",
-        "streak-reached"
+        "streak-reached",
+        "challenges",
+        "challenges-empty",
+        "challenges-ended",
+        "challenges-past",
+        "challenges-loading",
+        "challenges-error"
       ],
       "not_applicable": {},
       "requirements": [
@@ -298,7 +311,14 @@
         "L2-089",
         "L2-098",
         "L2-103",
-        "L2-118"
+        "L2-118",
+        "L2-137",
+        "L2-138",
+        "L2-139",
+        "L2-140",
+        "L2-141",
+        "L2-142",
+        "L2-143"
       ]
     },
     {
@@ -415,7 +435,8 @@
         "L2-108",
         "L2-121",
         "L2-122",
-        "L2-124"
+        "L2-124",
+        "L2-145"
       ]
     },
     {
@@ -484,12 +505,31 @@
         "busy",
         "invalid",
         "failed",
-        "goal"
+        "goal",
+        "challenge"
       ],
       "not_applicable": {},
       "requirements": [
         "L2-017",
-        "L2-089"
+        "L2-089",
+        "L2-142"
+      ]
+    },
+    {
+      "id": "start-challenge",
+      "kind": "dialog",
+      "title": "Start a challenge",
+      "opens_from": "review",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {},
+      "requirements": [
+        "L2-137",
+        "L2-138"
       ]
     },
     {
@@ -774,7 +814,9 @@
         "chapter-logged",
         "feedback",
         "book-reward",
-        "streak-reward"
+        "streak-reward",
+        "challenge-lead",
+        "challenge-ended"
       ],
       "not_applicable": {
         "info": "A push is a single kind of message; its tone is carried by the copy of each event.",
@@ -785,7 +827,8 @@
       "requirements": [
         "L2-125",
         "L2-126",
-        "L2-127"
+        "L2-127",
+        "L2-145"
       ]
     }
   ]
