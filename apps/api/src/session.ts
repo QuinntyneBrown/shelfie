@@ -16,6 +16,8 @@ export interface RequestSession {
   role: 'reader' | 'parent';
   /** The URL of the person's own photo, or null when they have none. */
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard (L2-137). */
+  onboarded: boolean;
 }
 
 export function readCookie(header: string | undefined, name: string): string | null {
@@ -33,7 +35,7 @@ export function requireSession(db: Db) {
     const row = id
       ? await get<RequestSession & { expiresAt: string }>(
           db,
-          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, s.expires_at AS "expiresAt",
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, h.onboarded, s.expires_at AS "expiresAt",
                   ${PHOTO_COLUMN}
              FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id
              LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,

@@ -18,6 +18,8 @@ export interface Session {
   email: string | null;
   theme: string;
   photo: string | null;
+  /** Whether the household has finished or skipped the set-up wizard (L2-137). */
+  onboarded: boolean;
 }
 
 interface ProfileRow {
@@ -51,7 +53,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     expires.toISOString(),
     remember ? 1 : 0,
   ]);
-  const { theme } = (await get<{ theme: string }>(db, 'SELECT theme FROM household WHERE id = $1', [profile.household_id]))!;
+  const { theme, onboarded } = (await get<{ theme: string; onboarded: boolean }>(db, 'SELECT theme, onboarded FROM household WHERE id = $1', [profile.household_id]))!;
   const photo = await get<{ etag: string }>(db, 'SELECT etag FROM profile_photo WHERE profile_id = $1', [profile.id]);
   return {
     id,
@@ -64,6 +66,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     email: profile.email,
     theme,
     photo: photo ? photoUrl(profile.id, photo.etag) : null,
+    onboarded,
   };
 }
 
@@ -102,7 +105,8 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
   const householdId = randomUUID();
   const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
   return transaction(pool, async (db) => {
-    await run(db, 'INSERT INTO household (id) VALUES ($1)', [householdId]);
+    // A household started here goes through the set-up wizard once; every other household is already done (ADR-0018).
+    await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
     await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
       parent.id,
       householdId,

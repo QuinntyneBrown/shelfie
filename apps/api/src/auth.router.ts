@@ -43,8 +43,8 @@ export function authRouter(db: Pool, mail?: Mail) {
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, username, role, color, email, theme, photo });
+    const { profileId, name, username, role, color, email, theme, photo, onboarded } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded });
   });
 
   router.post('/sign-out', async (req, res) => {

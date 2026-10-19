@@ -7,10 +7,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { AuthLayout, Banner, Button, TextField } from 'components';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
-import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-sign-in-page',
@@ -82,6 +81,6 @@ export class SignInPage {
       this.submitting.set(false);
     }
     this.session.current.set(session);
-    await this.router.navigateByUrl(session.role === 'parent' ? '/review' : '/shelf');
+    await this.router.navigateByUrl(homeOf(session));
   }
 }
