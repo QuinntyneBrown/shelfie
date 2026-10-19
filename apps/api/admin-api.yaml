@@ -67,6 +67,17 @@ paths:
             application/json:
               schema: { type: array, items: { $ref: '#/components/schemas/Book' } }
         default: { $ref: '#/components/responses/Problem' }
+  /feedback:
+    get:
+      summary: Every household's feedback, newest first
+      description: Scope read. The sender's role only; never their name, username or e-mail (ADR-0014).
+      responses:
+        '200':
+          description: Feedback ordered by time sent, newest first
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Feedback' } }
+        default: { $ref: '#/components/responses/Problem' }
   /books/{id}/logs:
     get:
       summary: The logged chapters of one book
@@ -234,6 +245,17 @@ components:
         chapterCount: { type: integer }
         finishedAt: { type: [string, 'null'], format: date-time }
         reward: { type: [string, 'null'] }
+    Feedback:
+      type: object
+      required: [id, createdAt, householdId, role, kind, score, message]
+      properties:
+        id: { type: string }
+        createdAt: { type: string, format: date-time }
+        householdId: { type: string }
+        role: { type: string, enum: [reader, parent] }
+        kind: { type: string, enum: [feel, idea] }
+        score: { type: [integer, 'null'], minimum: 1, maximum: 5 }
+        message: { type: [string, 'null'], maxLength: 1000 }
     FinishedBook:
       type: object
       required: [id, title, finishedAt, dryRun]

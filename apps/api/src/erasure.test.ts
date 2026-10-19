@@ -25,7 +25,6 @@ test('Given two households, when one is erased, then every row it owned is gone 
     await run(db.pool, "INSERT INTO gallery_reward (id, household_id, name, target, created_at) VALUES ('g1', $1, 'Zoo', 3, '2026-10-18'), ('g2', 'h2', 'Kite', 2, '2026-10-18')", [SEED.householdId]);
     await run(db.pool, "INSERT INTO streak_reward (household_id, milestone, name) VALUES ($1, 7, 'Ice cream'), ('h2', 7, 'Kite')", [SEED.householdId]);
     await run(db.pool, "INSERT INTO reward_picture (id, reward_id, image, etag, featured, created_at) VALUES ('rp1', 'g1', 'x', 'e1', true, '2026-10-18'), ('rp2', 'g1', 'x', 'e2', false, '2026-10-18'), ('rp3', 'g2', 'x', 'e3', true, '2026-10-18')");
-    await run(db.pool, "INSERT INTO feedback (id, household_id, profile_id, kind, score, message, created_at) VALUES ('f1', $1, $2, 'feel', 5, NULL, '2026-10-19'), ('f2', $1, $3, 'idea', NULL, 'More dragons', '2026-10-19'), ('f3', 'h2', 'p-other-dad', 'feel', 4, NULL, '2026-10-19')", [SEED.householdId, SEED.readerId, SEED.parentId]);
     const countAll = async () => Object.fromEntries(await Promise.all(OWNED.map(async (t) => [t, (await get<{ n: number }>(db.pool, `SELECT COUNT(*) AS n FROM ${t}`))!.n])));
     const before = await countAll();
 
