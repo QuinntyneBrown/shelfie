@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Onboard a household
+
+Person(parent, "Parent", "Follows the five steps")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "OnboardingPage in the onboarding library; sh-auth-layout and sh-step-indicator in components")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Creates the reader and rewards through the existing routes; marks the household onboarded")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "household.onboarded, profile, gallery_reward")
+}
+Rel(parent, web, "Answers one question per step", "HTTPS")
+Rel(web, api, "POST /api/readers, POST /api/gallery-rewards, POST /api/settings/onboarded, GET /api/session", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "SQL")
+@enduml

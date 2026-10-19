@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Resume after a reload
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Parent" as parent
+box "Frontend — Shelfie web (core and onboarding libraries)" #E0F2FE
+  participant "SessionService" as session
+  participant "OnboardingPage" as page
+  participant "OnboardingApi" as client
+end box
+box "Backend — Shelfie API (Express routers)" #D1FADF
+  participant "auth.router.ts" as auth
+  participant "settings.router.ts" as settings
+  participant "gallery.router.ts" as gallery
+end box
+
+parent -> session : Reload /onboarding/reward
+session -> auth : GET /api/session
+auth --> session : {role: 'parent', onboarded: false}
+session -> page : Route guard: parent, not onboarded
+page -> client : readers()
+client -> settings : GET /api/settings
+settings --> client : {readers: [...]}
+page -> client : rewards()
+client -> gallery : GET /api/gallery-rewards
+gallery --> client : {rewards: [...]}
+alt reads failed
+  page --> parent : "Shelfie couldn't pick up where you left off", Try again (L2-143)
+else no reader yet
+  page --> parent : Name step (welcome stays welcome)
+else reader exists
+  page --> parent : The step the URL names, at least the reward step,\nwith the rewards already added listed (L2-143)
+end
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Onboard a household
+
+Container_Boundary(web, "Shelfie web") {
+  Component(page, "OnboardingPage", "onboarding library", "One component, five steps chosen by the URL; holds the name and password in memory only")
+  Component(api_client, "OnboardingApi", "onboarding library", "readers(), rewards(), addReader(), addReward(), finish()")
+  Component(session, "SessionService", "core library", "Session.onboarded; sign-up and sign-in route on it")
+  Component(ui, "sh-auth-layout, sh-step-indicator, sh-text-field, sh-button, sh-banner, sh-celebration, sh-error-state", "components library", "The step's UI")
+}
+Container_Boundary(api, "Shelfie API") {
+  Component(auth, "auth.router.ts", "Express Router", "GET /api/session answers onboarded")
+  Component(settings, "settings.router.ts", "Express Router", "POST /api/settings/onboarded, parent only")
+  Component(readers, "readers.router.ts", "Express Router", "POST /api/readers, unchanged")
+  Component(gallery, "gallery.router.ts", "Express Router", "POST /api/gallery-rewards, unchanged")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household.onboarded (migration 011)")
+}
+Rel(page, ui, "Composes")
+Rel(page, api_client, "Calls")
+Rel(page, session, "Reads onboarded; sets it after finish()")
+Rel(api_client, readers, "POST", "JSON/HTTPS")
+Rel(api_client, gallery, "POST", "JSON/HTTPS")
+Rel(api_client, settings, "POST onboarded", "JSON/HTTPS")
+Rel(session, auth, "GET session", "JSON/HTTPS")
+Rel(settings, db, "UPDATE household SET onboarded = TRUE", "SQL")
+Rel(auth, db, "Reads household.onboarded with the session", "SQL")
+@enduml
