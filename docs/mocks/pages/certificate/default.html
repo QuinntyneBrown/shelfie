@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certificate · default — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="certificate">
+<meta name="mock:state" content="default">
+<meta name="mock:requirements" content="L2-118">
+<meta name="description" content="The PDF the API draws when Nia finishes Matilda: A4 landscape, rose band, her name, the book, the chapters and the day.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+<style>
+  .sheet-wrap { display: grid; place-items: center; padding: var(--space-6) var(--space-4); }
+  .sheet { position: relative; width: min(100%, 1123px); aspect-ratio: 297 / 210; background: #fffdf8; color: #2b2320; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); overflow: hidden; container-type: inline-size; }
+  .sheet__band { position: absolute; inset: 0 auto 0 0; width: 9%; background: var(--color-cover-rose); }
+  .sheet__frame { position: absolute; inset: 4% 3% 4% 13%; border: 0.35cqw solid var(--color-cover-rose); border-radius: 1.2cqw; }
+  .sheet__body { position: absolute; inset: 9% 7% 8% 17%; display: flex; flex-direction: column; justify-content: space-between; text-align: center; font-family: var(--font-family-display); }
+  .sheet__brand { display: inline-flex; align-items: center; gap: 0.6cqw; justify-content: center; font-weight: var(--font-weight-bold); font-size: 2cqw; color: #7a5a4d; }
+  .sheet__brand svg { width: 2.4cqw; height: 2.4cqw; stroke: currentColor; fill: none; stroke-width: 2; }
+  .sheet__eyebrow { font-size: 1.6cqw; letter-spacing: 0.2em; text-transform: uppercase; color: #7a5a4d; }
+  .sheet__name { font-size: 7cqw; line-height: 1; font-weight: var(--font-weight-bold); margin: 0.6cqw 0; }
+  .sheet__line { font-size: 2.6cqw; line-height: 1.3; }
+  .sheet__line strong { font-weight: var(--font-weight-bold); }
+  .sheet__date { font-size: 1.9cqw; color: #7a5a4d; }
+  .sheet__cover { position: absolute; left: 2.2%; top: 50%; translate: 0 -50%; width: 4.8%; aspect-ratio: 3 / 4; border-radius: 0.6cqw; background: #fffdf8; box-shadow: var(--shadow-md); display: grid; place-items: center; font-size: 2.6cqw; }
+  .sheet__seal { position: absolute; right: 6%; bottom: 7%; width: 9cqw; height: 9cqw; border-radius: 50%; background: var(--color-cover-sun); display: grid; place-items: center; font-size: 4.5cqw; box-shadow: var(--shadow-md); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div>
+<main id="main" class="sheet-wrap">
+<figure class="sheet" role="img" aria-label="Certificate: Nia read Matilda by Roald Dahl, all 21 chapters, finished Tuesday 13 October 2026">
+  <div class="sheet__band" aria-hidden="true"></div>
+  <div class="sheet__cover" aria-hidden="true">📚</div>
+  <div class="sheet__frame" aria-hidden="true"></div>
+  <div class="sheet__body">
+    <div class="sheet__brand"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</div>
+    <div>
+      <p class="sheet__eyebrow">Certificate of achievement</p>
+      <h1 class="sheet__name">Nia</h1>
+      <p class="sheet__line">read <strong>Matilda</strong> by Roald Dahl</p>
+      <p class="sheet__line">all <strong>21 chapters</strong>, start to finish</p>
+    </div>
+    <p class="sheet__date">Finished on Tuesday 13 October 2026</p>
+  </div>
+  <div class="sheet__seal" aria-hidden="true">🏆</div>
+</figure>
+</main>
+</div>
+<p class="mock-note" style="top: 1rem; right: 1rem;">This is a picture of the PDF the API draws with pdfkit, not a screen. Band and frame use the book's cover colour; a cover picture replaces the small book when there is one. The sticker and trophy are drawn shapes in the PDF, not emoji. One page, A4 landscape, always light.</p>
+
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Certificate</span>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

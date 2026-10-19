@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Finish certificate
+
+Container(web, "Shelfie web", "Angular", "Anchor with download on BookPage, ReviewPage, ManageBookPage")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "certificate.router.ts", "Express Router", "GET /books/:id/certificate.pdf; requireSession, requireRole('reader'); attachment headers; 409 not-finished")
+  Component(service, "certificate.service.ts", "Service", "renderCertificate: getBook + readCover, then draws the page with pdfkit into a Buffer")
+  Component(books, "books.service.ts", "Service", "getBook: title, author, chapterCount, finishedAt, coverColor, readerName, time zone (existing)")
+  Component(covers, "covers.service.ts", "Service", "readCover: the cover picture bytes (existing)")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "book, book_cover, profile, household")
+}
+Rel(web, router, "GET the PDF", "HTTPS")
+Rel(router, service, "renderCertificate(householdId, bookId)")
+Rel(service, books, "getBook")
+Rel(service, covers, "readCover")
+Rel(books, db, "Reads", "SQL")
+Rel(covers, db, "Reads", "SQL")
+@enduml

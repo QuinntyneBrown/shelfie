@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Finish certificate
+
+Person(reader, "Reader", "Prints the certificate for a book she finished")
+Person(grownUp, "Parent", "Prints it from Review or Manage book for the fridge")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Downloads the certificate PDF of a finished book", "HTTPS")
+Rel(grownUp, shelfie, "Downloads the same PDF", "HTTPS")
+@enduml

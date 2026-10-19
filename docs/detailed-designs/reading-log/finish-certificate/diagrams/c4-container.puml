@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Finish certificate
+
+Person(reader, "Reader or parent", "Follows a Print certificate link")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "BookPage finished hero, ReviewPage finished card and ManageBookPage carry a plain download link")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript, pdfkit", "Draws one A4 landscape PDF from the book, its reader and its cover")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "book, book_cover, profile, household.time_zone")
+}
+Rel(reader, web, "Opens a finished book, Review or Manage book", "HTTPS")
+Rel(web, api, "GET /api/books/:id/certificate.pdf (session cookie)", "HTTPS")
+Rel(api, db, "Reads the book, the reader's name, the time zone and the cover picture", "SQL")
+@enduml

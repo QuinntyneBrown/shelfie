@@ -43,6 +43,16 @@
       <section class="card stack rewarded" aria-labelledby="rewarded-title">
         <h2 id="rewarded-title" class="section-title">🏆 Rewarded: {{ reward.text }}</h2>
         <p class="text-muted">Reward given {{ reward.givenOn | date: 'EEE d MMM' : 'UTC' }}</p>
+        <div>
+          <a class="btn" [attr.href]="'/api/books/' + book.id + '/certificate.pdf'" download>Print certificate</a>
+        </div>
+      </section>
+    } @else if (book.finishedAt) {
+      <section class="card stack" aria-labelledby="finished-title">
+        <h2 id="finished-title" class="section-title">🏆 Finished {{ book.finishedOn | date: 'EEE d MMM' : 'UTC' }}</h2>
+        <div>
+          <a class="btn" [attr.href]="'/api/books/' + book.id + '/certificate.pdf'" download>Print certificate</a>
+        </div>
       </section>
     }
 

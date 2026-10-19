@@ -22,5 +22,5 @@ Candidate enhancements beyond the current L1 scope, ordered by value add (highes
 | 16 | Read-aloud questions | Questions are read aloud with text-to-speech on tap, helping when a word is tricky. | S |
 | 17 | Reading stats | Charts of chapters, books and streaks over time for both users, plus a cheerful year-in-review. | M |
 | 18 | Barcode scan | Scan a book's barcode with the device camera to add it instantly. | S |
-| 19 | Finish certificate | Printable, personalised certificate generated when a book is finished, for the fridge. | S |
+| 19 | Finish certificate | **Built** (L2-120, `docs/detailed-designs/reading-log/finish-certificate`). Printable, personalised certificate generated when a book is finished, for the fridge. | S |
 | 20 | Weekly parent digest | Weekly e-mail summarising chapters read, answers, streak and pending reviews. Needs the deferred e-mail provider. | M |

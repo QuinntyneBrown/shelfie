@@ -172,7 +172,25 @@
       },
       "requirements": [
         "L2-008",
-        "L2-047"
+        "L2-047",
+        "L2-118"
+      ]
+    },
+    {
+      "id": "certificate",
+      "kind": "page",
+      "title": "Certificate",
+      "route": "/api/books/:id/certificate.pdf",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "A PDF the API returns whole; there is nothing to render before it arrives.",
+        "empty": "The certificate always has a reader, a book and a finish date; an unfinished book gets no certificate.",
+        "error": "Failures answer as JSON problems to the page that linked here; the PDF itself has no error state."
+      },
+      "requirements": [
+        "L2-118"
       ]
     },
     {
@@ -275,7 +293,8 @@
         "L2-017",
         "L2-089",
         "L2-098",
-        "L2-103"
+        "L2-103",
+        "L2-118"
       ]
     },
     {
@@ -351,7 +370,8 @@
         "L2-010",
         "L2-046",
         "L2-048",
-        "L2-069"
+        "L2-069",
+        "L2-118"
       ]
     },
     {
@@ -632,7 +652,7 @@
         "L2-003",
         "L2-042",
         "L2-043",
-        "L2-114"
+        "L2-118"
       ]
     },
     {
@@ -652,7 +672,7 @@
       ],
       "not_applicable": {},
       "requirements": [
-        "L2-114",
+        "L2-118",
         "L2-115",
         "L2-116",
         "L2-117"
