@@ -21,7 +21,7 @@ The slice runs from the operator's terminal to the `directory_profile` table.
   - `POST /profiles/:id/hide` with scope `write` → `setProfileStatus(tx, id, 'hidden')`, the same way.
   - The id is checked with the router's `params` schema; a bad id answers 400 `validation`.
 - **`admin.service.ts`**:
-  - `listDirectoryProfiles(db)` → rows of `{ id, kind, name, email, status, bio, website, ages, contact, bookCount }` for every profile whose role is `author` or `volunteer`, newest pending first then by name. `kind` is the role; `bookCount` counts `catalogue_book` rows (0 for a volunteer).
+  - `listDirectoryProfiles(db)` → rows of `{ id, kind, name, email, status, bio, website, ages, contact, bookCount }` for every profile whose role is `author` or `volunteer`, waiting (`pending`) profiles first, then by name. `kind` is the role; `bookCount` counts `catalogue_book` rows (0 for a volunteer).
   - `setProfileStatus(db, id, status)` → reads the profile; 404 `not-found` when no profile has the id; 400 `not-a-directory-profile` when it is a parent or reader; otherwise updates `directory_profile.status` and `updated_at` and returns `{ id, name, kind, status }`. Approving an approved profile, or hiding a hidden one, succeeds and changes nothing else.
 - **`admin-api.yaml`** — documents the three operations, the `DirectoryProfile` schema and the two new error types.
 - **Audit** — `adminAudit` writes one `admin_audit` row per call with the time, token id, method, route pattern (`/api/admin/v1/profiles/:id/approve`), target id, dry-run flag, status and request id. It never writes a body, so a profile's text never reaches the audit trail or the request log (`L2-052`, `L2-155`).
@@ -56,7 +56,7 @@ The new commands reuse `Cli.RunAsync`, `Print` and `WriteAsync`; the new routes 
 
 ### Class structure
 
-`QueryCommands` and `WriteCommands` call `AdminClient`; `admin.service.ts` maps a profile row onto `DirectoryProfileRow` and `StatusChange`.
+`QueryCommands` and `WriteCommands` call `AdminClient`; `admin.service.ts` returns the profile rows and the `{ id, name, kind, status }` of a status change.
 
 ![Class diagram for approving profiles](diagrams/class-structure.png)
 

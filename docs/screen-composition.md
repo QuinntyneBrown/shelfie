@@ -71,7 +71,7 @@ Composition rules that hold on every screen:
 | Top bar, volunteer | `sh-top-bar` (home `/me`, no links, no streak); no `sh-tab-bar` | — |
 | Banner slot | `sh-banner` per `BannerService.banners()` | — |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
-| Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password) | — | `auth-layout`, `auth-card`, logo and sticker header |
+| Auth layout (sign-in, sign-up, join, accept-invite, forgot-password, reset-password) | — | `auth-layout`, `auth-card`, logo and sticker header |
 
 ## Shared local components
 
@@ -201,7 +201,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 |---|---|---|---|
 | Give a reward (`dialogs/give-reward`: default, busy, invalid, failed, goal) | `sh-dialog`, bottom sheet under 640 px, over Review | `sh-cover` sm, `sh-text-field` (reward), `sh-textarea` (note, optional), `sh-button` primary / ghost / icon close; `sh-banner` `danger` (failed) | "Quick picks" chip buttons (local per the give-reward design); `goal`: the reward field starts with the goal's name |
 | Add / edit a catalogue book (`dialogs/catalogue-book`: default, edit, busy, invalid, too-large, wrong-file, failed) | `sh-dialog`, form, bottom sheet under 640 px, over My catalogue | `sh-cover` lg (preview; `sh-cover` placeholder 📖 without a picture), `sh-cover-picker` ("Cover picture (optional)", inline type and size errors), `sh-text-field` (title; `type: 'number'` chapters with help), `sh-textarea` (short description, optional, `maxlength` 300, help), `sh-button` primary "Add book" / "Save changes" (`busy`) / ghost "Cancel" / icon close; `sh-banner` `danger` (invalid "Fix N things" summary; failed with "Try again") | — |
-| Remove a catalogue book (`dialogs/remove-catalogue-book`: default, busy, failed) | `sh-dialog`, destructive, over My catalogue | `sh-cover` sm, `sh-button` danger "Remove book" / ghost "Keep it" (focused) / icon close; `sh-banner` `danger` (failed) | danger icon in the dialog header; the line that families keep their copies |
+| Remove a catalogue book (`dialogs/remove-catalogue-book`: default, busy, failed) | `sh-dialog`, destructive, over My catalogue | `sh-cover` sm, `sh-button` danger "Remove book" / "Keep it" (focused); `sh-banner` `danger` (failed) | the line that families keep their copies |
 | Remove a book (`dialogs/delete-book`: default, busy, failed) | `sh-dialog`, destructive, over Manage a book | `sh-button` danger / ghost / icon close; `sh-banner` `danger` (failed) | danger icon in the dialog header |
 | Add / edit a question (`dialogs/edit-question`: default, busy, invalid, failed) | `sh-dialog`, form, over Manage a book | `sh-textarea` (question, with field error on invalid), `sh-button` primary / ghost / icon close; `sh-banner` `danger` (failed) | — |
 | Suggested questions (`dialogs/suggest-questions`: busy, none-selected, default, invalid, saving, success, empty, failed, unavailable) | `sh-dialog`, form, over Manage a book | `sh-suggestion` per idea (tick to keep, wording editable, field error on invalid; locked while saving), `sh-skeleton` rows (busy), `sh-empty-state` "No new ideas this time" with "Ask again" (empty), `sh-banner` `danger` with "Try again" (failed) and `info` (unavailable), `sh-button` primary "Add N questions" (`busy` while saving) / ghost "Ask again" / "Cancel" / "Close"; `ToastService` `success` "N questions added" (success) | intro line; "Thinking up questions…" status line; "Tick at least one question" hint |
@@ -250,7 +250,6 @@ These are local UI that more than one screen needs. Build once in the feature li
 24. Join page: the "I’m joining as" choice rows and the two links under the card; the sign-in page's join link.
 25. My profile and My catalogue page headers, cards and catalogue book rows.
 26. Directory person rows, directory profile header, the "Books by …" card and the volunteer contact card.
-27. Remove-catalogue-book danger icon.
 
 ## Inferred, not read from a mock
 
