@@ -1,6 +1,6 @@
 import { all, get, type Db } from './db.ts';
 
-const dayBefore = (isoDay: string) => {
+export const dayBefore = (isoDay: string) => {
   const date = new Date(`${isoDay}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() - 1);
   return date.toISOString().slice(0, 10);

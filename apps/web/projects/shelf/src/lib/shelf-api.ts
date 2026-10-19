@@ -105,9 +105,20 @@ export interface GalleryView {
   goal: Goal | null;
 }
 
+export interface Badge {
+  id: string;
+  icon: string;
+  name: string;
+  hint: string;
+  earned: boolean;
+  /** The day it was earned (YYYY-MM-DD); null while locked. */
+  earnedOn: string | null;
+}
+
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
+  badges: Badge[];
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];

@@ -125,6 +125,8 @@
       "route": "/shelf",
       "states": [
         "default",
+        "badges-none",
+        "badges-all",
         "loading",
         "empty",
         "error",
@@ -142,6 +144,8 @@
         "L2-086",
         "L2-087",
         "L2-088",
+        "L2-096",
+        "L2-097",
         "L2-103"
       ]
     },
@@ -263,7 +267,8 @@
       "not_applicable": {},
       "requirements": [
         "L2-017",
-        "L2-089"
+        "L2-089",
+        "L2-098"
       ]
     },
     {

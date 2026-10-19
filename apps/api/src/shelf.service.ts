@@ -1,3 +1,4 @@
+import { badgesFor, type Badge } from './badges.ts';
 import { COVER_IMAGE_COLUMN } from './covers.service.ts';
 import { all, get, type Db } from './db.ts';
 import { streakFor } from './streak.ts';
@@ -37,6 +38,7 @@ export interface UnseenFeedback {
 export interface ShelfResponse {
   unseenFeedback: UnseenFeedback[];
   streak: number;
+  badges: Badge[];
   grownUpName: string;
   reading: ShelfBook[];
   upNext: ShelfBook[];
@@ -102,6 +104,7 @@ export async function getShelf(db: Db, householdId: string): Promise<ShelfRespon
   return {
     unseenFeedback,
     streak: await streakFor(db, householdId),
+    badges: await badgesFor(db, householdId),
     grownUpName: grownUp.name,
     reading: rows
       .filter((r) => !r.finished_at && r.logged_count > 0)

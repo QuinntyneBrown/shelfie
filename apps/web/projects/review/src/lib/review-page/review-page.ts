@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
+import { AchievementBadge, ActivityItem as ActivityLine, Cover, EmptyState, FEEDBACK_STICKERS } from 'components';
 import { ShellStatusService, ToastService } from 'core';
 import { GiveRewardDialog } from '../give-reward-dialog/give-reward-dialog';
 import { ActivityItem, FinishedBook, QueueItem, ReviewApi, ReviewOverview } from '../review-api';
@@ -17,12 +17,13 @@ const LONG_QUEUE = 10;
 
 @Component({
   selector: 'sh-review-page',
-  imports: [ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink],
+  imports: [AchievementBadge, ActivityLine, Cover, DatePipe, EmptyState, GiveRewardDialog, RouterLink],
   templateUrl: './review-page.html',
   styleUrl: './review-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewPage {
+  protected earnedBadges = (overview: ReviewOverview) => overview.badges.filter((badge) => badge.earned).length;
   private readonly toasts = inject(ToastService);
   protected readonly overview = signal<ReviewOverview | null>(null);
   protected readonly rewarding = signal<FinishedBook | null>(null);
