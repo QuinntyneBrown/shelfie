@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 
 /** The Add a reward / Edit {name} dialog over Settings. */
 export class GalleryRewardDialog {
@@ -85,6 +85,57 @@ export class GalleryRewardDialog {
 
   async choosePicture(file: string) {
     await this.pictureChooser().setInputFiles(file);
+  }
+
+  async chooseNotAPicture() {
+    await this.pictureChooser().setInputFiles({ name: 'story.txt', mimeType: 'text/plain', buffer: Buffer.from('Once upon a time') });
+  }
+
+  /** A real JPEG name and type, but not a picture inside: only the server can tell. */
+  async chooseBrokenJpeg() {
+    await this.pictureChooser().setInputFiles({ name: 'zoo.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('not really a jpeg') });
+  }
+
+  async chooseTooLargePicture() {
+    await this.pictureChooser().setInputFiles({ name: 'huge.jpg', mimeType: 'image/jpeg', buffer: Buffer.alloc(5 * 1024 * 1024 + 1) });
+  }
+
+  /** The error under the pictures, such as a refused file. */
+  pictureError() {
+    return this.pictures().getByRole('alert');
+  }
+
+  async retryPicture(n: number) {
+    await this.pictures().getByRole('button', { name: `Try picture ${n} again` }).click();
+  }
+
+  /** Uploads wait until released, so the busy state can be seen. */
+  holdUploads() {
+    const held: Route[] = [];
+    void this.page.route('**/api/gallery-rewards/*/pictures', (route) => {
+      held.push(route);
+    });
+    return async () => {
+      for (const route of held) await route.continue();
+      await this.page.unroute('**/api/gallery-rewards/*/pictures');
+    };
+  }
+
+  /** Picture uploads, removals and feature changes fail to reach the server. */
+  async breakPictureChanges() {
+    await this.page.route(/\/api\/gallery-rewards\/[^/]+\/pictures/, (route) => (route.request().method() === 'GET' ? route.continue() : route.abort()));
+  }
+
+  async repairPictureChanges() {
+    await this.page.unroute(/\/api\/gallery-rewards\/[^/]+\/pictures/);
+  }
+
+  /** Whether the dialog's panel is wider than the screen. */
+  async overflowsScreen() {
+    return this.dialog().evaluate((dialog) => {
+      const panel = dialog.querySelector('.dialog__panel') ?? dialog;
+      return panel.getBoundingClientRect().right > window.innerWidth + 1 || document.documentElement.scrollWidth > window.innerWidth;
+    });
   }
 
   async fill(reward: { name?: string; description?: string; target?: string }) {

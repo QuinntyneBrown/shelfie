@@ -145,6 +145,11 @@ export class ShelfPage {
     return this.galleryRewardPicture(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
   }
 
+  /** The 🎁 sticker on a gallery reward's card, which shows when it has no picture or the picture fails. */
+  galleryRewardGift(name: string) {
+    return this.galleryReward(name).getByText('🎁');
+  }
+
   /** The Pick button on one gallery reward's card. */
   pickButton(name: string) {
     return this.galleryReward(name).getByRole('button', { name: `Pick ${name}` });

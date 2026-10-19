@@ -55,9 +55,12 @@
     <sh-picture-list
       [pictures]="pictures()"
       [help]="pictureHelp()"
+      [error]="pictureError()"
+      [disabled]="busy()"
       (picked)="addPicture($event)"
       (removed)="removePicture($event)"
       (featured)="featurePicture($event)"
+      (retried)="retryPicture($event)"
     />
   </form>
   <div dialog-actions class="cluster">
@@ -69,7 +72,7 @@
       [disabled]="busy()"
       [attr.aria-busy]="busy() ? true : null"
     >
-      {{ editing() ? 'Save changes' : 'Add reward' }}
+      {{ current() ? 'Save changes' : 'Add reward' }}
     </button>
   </div>
 </sh-dialog>
