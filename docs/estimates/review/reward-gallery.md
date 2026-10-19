@@ -16,7 +16,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 | Shelf: "Reading toward" section with empty, failed, picker, goal and reached states; `ShelfApi.gallery` and `pickGoal` | 3 |
 | Review: goal line on the goal book's card; `GiveRewardDialog` `suggested` input | 1 |
 | Playwright acceptance tests via the Settings, gallery dialog, Shelf, Review and Give a reward page objects | 4 |
-| Descriptions and pictures: `006-reward-pictures.sql`; description in the schema, service and `GalleryReward` | 1 |
+| Descriptions and pictures: `007-reward-pictures.sql`; description in the schema, service and `GalleryReward` | 1 |
 | Picture routes and service: upload through `readImage` and `processImage`, remove, make featured, read with cache and sandbox headers; row lock, limit of 6 and featured fallback | 4 |
 | API tests for pictures: processing, metadata, 400/401/403/404/409/413, one featured under any sequence, cascade, erasure, log | 3 |
 | `sh-sticker` and `sh-picture-list` (components); `sh-reward-card` `picture` and `description`; the Settings row | 5 |
@@ -28,7 +28,7 @@ Hours for an intermediate Angular/TypeScript and Node/Express developer who has 
 
 The API with the gallery, the pick and the derived goal; the Settings card and dialog without the remove confirmation (remove at once); the shelf section without the celebration (the goal card's "Ready!" badge alone); no Review goal line or prefill, so the parent types the reward as before. It satisfies `L2-081`, `L2-082`, `L2-084` to `L2-087` and criterion 3 of `L2-089`, and defers `L2-083` criterion 1, `L2-088` and `L2-089` criteria 1 and 2. Total: 18 hours.
 
-Descriptions and pictures (`L2-100` to `L2-105`) can be dropped as a whole, saving 22 hours.
+Descriptions and pictures (`L2-105` to `L2-110`) can be dropped as a whole, saving 22 hours.
 
 ## Partial descoping
 

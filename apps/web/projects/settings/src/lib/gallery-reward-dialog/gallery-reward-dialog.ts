@@ -24,7 +24,7 @@ const pictureOf = (reward: GalleryReward): DialogPicture[] =>
 
 /**
  * Adds a reward to the gallery, or edits one; saves through the API and reports the saved reward.
- * Editing, each picture change is stored at once and reported as `changed` (ADR-0012).
+ * Editing, each picture change is stored at once and reported as `changed` (ADR-0013).
  */
 @Component({
   selector: 'sh-gallery-reward-dialog',
@@ -93,7 +93,7 @@ export class GalleryRewardDialog {
     });
   }
 
-  /** Editing, uploads the file at once; adding, keeps it until the reward is saved (ADR-0012). */
+  /** Editing, uploads the file at once; adding, keeps it until the reward is saved (ADR-0013). */
   protected async addPicture(file: File) {
     this.pictureError.set(null);
     const first = this.pictures().length === 0;

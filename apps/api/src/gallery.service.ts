@@ -135,7 +135,7 @@ export async function pickGoal(pool: Pool, householdId: string, id: string): Pro
   return getGallery(pool, householdId);
 }
 
-/** The most pictures a reward can have (ADR-0012). */
+/** The most pictures a reward can have (ADR-0013). */
 export const MAX_REWARD_PICTURES = 6;
 
 export interface RewardImage {
@@ -148,7 +148,7 @@ export function processRewardPicture(bytes: Buffer): Promise<Buffer> {
   return processImage(bytes, 480, 480);
 }
 
-/** Locks the household's reward for a change to its pictures, so changes to one reward run one at a time (ADR-0012). */
+/** Locks the household's reward for a change to its pictures, so changes to one reward run one at a time (ADR-0013). */
 async function lockReward(db: Db, householdId: string, id: string): Promise<RewardRow> {
   const reward = await get<RewardRow>(db, 'SELECT id, name, target, description FROM gallery_reward WHERE id = $1 AND household_id = $2 FOR UPDATE', [
     id,

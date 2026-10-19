@@ -63,7 +63,7 @@ export function galleryRouter(db: Pool) {
     await answer(res, async () => res.json(await pickGoal(db, householdId, String(req.params['id']))));
   });
 
-  // One picture per request, as the raw body; the content decides what it is (ADR-0012, L2-104).
+  // One picture per request, as the raw body; the content decides what it is (ADR-0013, L2-109).
   router.post('/:id/pictures', requireRole('parent'), readImage, async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     await answer(res, async () => {
