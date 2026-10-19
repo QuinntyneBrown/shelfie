@@ -9,6 +9,8 @@ import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type S
 import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
 import type { Mail } from './mail.ts';
+import type { Log } from './logging.ts';
+import { sendVerification } from './verify-email.service.ts';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
@@ -43,8 +45,8 @@ export function authRouter(db: Pool, mail?: Mail) {
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo, onboarded } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded });
+    const { profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified });
   });
 
   router.post('/sign-out', async (req, res) => {
@@ -78,6 +80,11 @@ export function authRouter(db: Pool, mail?: Mail) {
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       const session = await signUp(db, body.data);
+      // Sign-up does not wait for the provider; a failed send is logged with the request id only (L2-144, L2-152).
+      const log = res.locals['log'] as Log;
+      sendVerification(db, { id: session.profileId, name: session.name, email: session.email! }, mail).catch(() =>
+        log({ level: 'error', time: new Date().toISOString(), requestId: res.locals['requestId'], event: 'verify-mail-failed' }),
+      );
       await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));

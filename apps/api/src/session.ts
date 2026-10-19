@@ -18,6 +18,8 @@ export interface RequestSession {
   photo: string | null;
   /** Whether the household has finished or skipped the set-up wizard (L2-137). */
   onboarded: boolean;
+  /** Whether the person's e-mail is confirmed (L2-146). */
+  emailVerified: boolean;
 }
 
 export function readCookie(header: string | undefined, name: string): string | null {
@@ -35,7 +37,7 @@ export function requireSession(db: Db) {
     const row = id
       ? await get<RequestSession & { expiresAt: string }>(
           db,
-          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, h.onboarded, s.expires_at AS "expiresAt",
+          `SELECT p.id AS "profileId", p.name, p.username, p.color, p.email, h.theme, p.household_id AS "householdId", p.role, h.onboarded, p.email_verified_at IS NOT NULL AS "emailVerified", s.expires_at AS "expiresAt",
                   ${PHOTO_COLUMN}
              FROM session s JOIN profile p ON p.id = s.profile_id JOIN household h ON h.id = p.household_id
              LEFT JOIN profile_photo pp ON pp.profile_id = p.id WHERE s.id = $1`,

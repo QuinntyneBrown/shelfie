@@ -97,7 +97,7 @@ export async function acceptInvite(pool: Pool, input: AcceptInviteInput): Promis
   const taken = await takenFields(pool, input.username, invite.email);
   if (taken.includes('email')) throw new Problem(409, 'email-taken');
   if (taken.includes('username')) throw new Problem(409, 'username-taken');
-  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'lilac', email: invite.email, household_id: invite.household_id };
+  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'lilac', email: invite.email, household_id: invite.household_id, email_verified_at: null };
   const passwordHash = hashSecret(input.password);
   return transaction(pool, async (db) => {
     await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [

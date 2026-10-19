@@ -21,6 +21,8 @@ export interface Session {
   photo: string | null;
   /** Whether the household has finished or skipped the set-up wizard (L2-137). */
   onboarded: boolean;
+  /** Whether the person's e-mail is confirmed (L2-146); false for a parent who has not opened the link, and for readers. */
+  emailVerified: boolean;
 }
 
 interface ProfileRow {
@@ -32,9 +34,10 @@ interface ProfileRow {
   email: string | null;
   household_id: string;
   password_hash: string | null;
+  email_verified_at: string | null;
 }
 
-const PROFILE_COLUMNS = 'id, name, username, role, color, email, household_id, password_hash';
+const PROFILE_COLUMNS = 'id, name, username, role, color, email, household_id, password_hash, email_verified_at';
 
 // Verified against when the username is unknown, so both failures take the same time.
 const DUMMY_HASH = hashSecret('not-a-real-password');
@@ -68,6 +71,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     theme,
     photo: photo ? photoUrl(profile.id, photo.etag) : null,
     onboarded,
+    emailVerified: profile.email_verified_at !== null,
   };
 }
 
@@ -104,7 +108,7 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
   if (taken.length) throw new Problem(409, 'taken', { fields: taken });
   const passwordHash = hashSecret(input.password);
   const householdId = randomUUID();
-  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
+  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId, email_verified_at: null };
   return transaction(pool, async (db) => {
     // A household started here goes through the set-up wizard once; every other household is already done (ADR-0018).
     await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
