@@ -224,6 +224,22 @@
       </div>
     </section>
 
+    <section class="ds-section" id="together-card"><h2><a href="#together-card">Together card</a></h2>
+      <p>The shelf's “Together” section lists the last five reading-together sessions a reader is part of, newest first, in one flush card. Each row is a list row: the other reader's <code>sh-avatar</code> sm, what happened from the viewer's side (“You read to Zoe · 20 minutes”, “Nia helped you read · 10 minutes”), and the day with who logged it or that the partner said it was right. A session the other reader logged and nobody has confirmed carries one trailing small button, “That’s right”.</p>
+      <p>When the household has a helper reward and the viewer has helper minutes this round, the card opens with the reward's name, an info badge with the minutes to go and an <code>sh-progress</code> labelled “Nia has helped for 60 of 120 minutes”. Once she reaches the target the top of the card is an <code>sh-celebration</code> with 🤝, “You did it!” and “Dad is giving your reward”, until the parent gives it. Households with one reader never show the card.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="card card--flush stack" style="gap: 0; width: 100%;">
+            <ul class="list">
+              <li class="list__item"><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span><div class="list__body"><div class="list__title">Nia read to you · 20 minutes</div><div class="list__meta">Today · Nia logged it</div></div><button class="btn btn--sm" type="button">That’s right</button></li>
+              <li class="list__item"><span class="avatar avatar--sm avatar--rose" aria-hidden="true">N</span><div class="list__body"><div class="list__title">You read to Nia · 15 minutes</div><div class="list__meta">Wed 14 Oct</div></div></li>
+            </ul>
+          </div>
+        </div>
+        <div class="ds-example__caption"><span>From My shelf, together-confirm (Zoe's view).</span></div>
+      </div>
+    </section>
+
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">State</th><th scope="col">Lists and grids</th><th scope="col">Table</th></tr></thead>

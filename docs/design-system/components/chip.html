@@ -148,6 +148,17 @@
     &lt;input class="input input--sm" type="date" value="2026-10-17" aria-label="Pick the day"&gt;&lt;/label&gt;
 &lt;/div&gt;</code></pre></details>
       </div>
+      <h3>Reader chips</h3>
+      <div class="ds-example">
+        <div class="ds-example__canvas">
+          <div class="cluster" role="group" aria-label="Who you read with"><button class="chip chip--reader" type="button" aria-pressed="true"><span class="avatar avatar--sm avatar--sun" aria-hidden="true">Z</span>Zoe</button><button class="chip chip--reader" type="button" aria-pressed="false"><span class="avatar avatar--sm avatar--mint" aria-hidden="true">I</span>Ivy</button></div>
+        </div>
+        <div class="ds-example__caption"><span>From Read together (<code>sh-reader-picker</code>). One chip per other reader, led by her avatar (photo or initial). Single select: one tap picks a reader and un-picks the others. 44px tall, so a six-year-old can hit it.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster" role="group" aria-label="Who you read with"&gt;
+  &lt;button class="chip chip--reader" type="button" aria-pressed="true"&gt;
+    &lt;span class="avatar avatar--sm avatar--sun" aria-hidden="true"&gt;Z&lt;/span&gt;Zoe&lt;/button&gt;
+&lt;/div&gt;</code></pre></details>
+      </div>
       <h3>Suggestion chips</h3>
       <div class="ds-example">
         <div class="ds-example__canvas">
@@ -265,6 +276,7 @@
         <tr><td><code>.chip</code></td><td>Pill button, 32px tall.</td></tr>
         <tr><td><code>aria-pressed="true|false"</code></td><td>Toggle chip; <code>true</code> shows the accent style.</td></tr>
         <tr><td><code>disabled</code></td><td>50% opacity, not focusable. Only while the form is sending.</td></tr>
+        <tr><td><code>.chip--reader</code></td><td>Reader chip: 44px tall, an <code>avatar--sm</code> before the name.</td></tr>
         <tr><td><code>label.chip</code></td><td>A chip that wraps a small input (the date picker).</td></tr>
         <tr><td><code>data-state="hover|focus|selected|disabled"</code></td><td>Documentation only.</td></tr>
       </tbody></table>
