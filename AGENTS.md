@@ -83,6 +83,7 @@ shelfie/
 │   │       │               #   log-chapter, review, settings
 │   │       └── shelfie/    # application: shell, routing, composition only
 │   ├── api/                # Node backend (web API and admin API)
+│   ├── marketing/          # static marketing page for www.shelfie.kids (see docs/adr/0014)
 │   └── admin-cli/          # .NET global tool shelfie-admin (see docs/adr/0003)
 │       ├── src/ShelfieAdmin/
 │       └── tests/ShelfieAdmin.Tests/   # runs the real tool against a local API
