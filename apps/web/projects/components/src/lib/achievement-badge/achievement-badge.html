@@ -1,0 +1,13 @@
+<div class="achievement" [class.achievement--locked]="!earnedOn()">
+  <span class="achievement__icon" aria-hidden="true">{{ icon() }}</span>
+  <div class="achievement__body">
+    <div class="achievement__name">{{ name() }}</div>
+    <div class="achievement__note">
+      @if (earnedOn(); as day) {
+        Earned {{ day | date: 'EEE d MMM' : 'UTC' }}
+      } @else {
+        Not yet · {{ hint() }}
+      }
+    </div>
+  </div>
+</div>

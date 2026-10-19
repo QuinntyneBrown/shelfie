@@ -22,6 +22,20 @@
       </div>
     </section>
 
+    <section class="card stack" aria-labelledby="badges">
+      <h2 id="badges" class="section-title">
+        {{ overview.readerName }}’s badges
+        <span class="badge">{{ earnedBadges(overview) }} of {{ overview.badges.length }}</span>
+      </h2>
+      <ul class="achievements">
+        @for (badge of overview.badges; track badge.id) {
+          <li>
+            <sh-achievement-badge [icon]="badge.icon" [name]="badge.name" [hint]="badge.hint" [earnedOn]="badge.earnedOn" />
+          </li>
+        }
+      </ul>
+    </section>
+
     @if (overview.queue.length === 0) {
       <sh-empty-state
         title="All caught up"

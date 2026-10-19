@@ -180,4 +180,17 @@ export class ShelfPage {
   goalConfetti() {
     return this.gallery().locator('.confetti');
   }
+
+  /** The "Badges" section of the shelf. */
+  badges() {
+    return this.page.getByRole('region', { name: /^Badges/ });
+  }
+
+  badge(name: string) {
+    return this.badges().getByRole('listitem').filter({ hasText: name });
+  }
+
+  badgeNames() {
+    return this.badges().locator('.achievement__name');
+  }
 }

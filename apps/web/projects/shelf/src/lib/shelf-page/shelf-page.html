@@ -208,5 +208,17 @@
         </ul>
       </section>
     }
+    <section class="section" aria-labelledby="badges">
+      <h2 id="badges" class="group-title">
+        Badges <span class="badge">{{ earnedBadges(data) }} of {{ data.badges.length }}</span>
+      </h2>
+      <ul class="achievements">
+        @for (badge of data.badges; track badge.id) {
+          <li>
+            <sh-achievement-badge [icon]="badge.icon" [name]="badge.name" [hint]="badge.hint" [earnedOn]="badge.earnedOn" />
+          </li>
+        }
+      </ul>
+    </section>
   }
 </div>
