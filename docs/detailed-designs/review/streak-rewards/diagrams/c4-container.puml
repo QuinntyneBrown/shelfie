@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Streak rewards
+
+Person(reader, "Reader", "Opens her shelf")
+Person(grownUp, "Parent", "Uses Settings and Review")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Streak rewards card in Settings, section on the shelf, Give it on Review")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Earns a reward when a read sees the streak at its milestone; sets, clears and gives rewards")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "streak_reward (own table); chapter_log.read_on for the streak")
+}
+Rel(reader, web, "Reads her streak rewards", "HTTPS")
+Rel(grownUp, web, "Sets and gives rewards", "HTTPS")
+Rel(web, api, "GET /api/shelf, GET /api/review, /api/streak-rewards", "JSON/HTTPS")
+Rel(api, db, "Reads the streak, writes earned_at and given_at", "SQL")
+@enduml

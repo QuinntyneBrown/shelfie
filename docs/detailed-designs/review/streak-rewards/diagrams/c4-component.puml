@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Streak rewards
+
+Container(web, "Shelfie web", "Angular", "SettingsPage, ShelfPage, ReviewPage")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "streak-rewards.router.ts", "Express Router", "GET, PUT, DELETE, POST give; requireSession and requireRole('parent')")
+  Component(service, "streak-rewards.service.ts", "Service", "streakRewardsOf (earns first), set, clear, give")
+  Component(shelfService, "shelf.service.ts", "Service", "Adds streakRewards to the shelf")
+  Component(reviewService, "review.service.ts", "Service", "Adds streakRewards to the overview")
+  Component(streak, "streak.ts", "Service", "streakFor(db, householdId, now)")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "streak_reward, chapter_log, household")
+}
+Rel(web, router, "/api/streak-rewards", "JSON/HTTPS")
+Rel(web, shelfService, "GET /api/shelf", "JSON/HTTPS")
+Rel(web, reviewService, "GET /api/review", "JSON/HTTPS")
+Rel(router, service, "Calls")
+Rel(shelfService, service, "streakRewardsOf")
+Rel(reviewService, service, "streakRewardsOf")
+Rel(service, streak, "streakFor")
+Rel(service, db, "Reads and writes", "SQL")
+@enduml
