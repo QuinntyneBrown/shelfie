@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Provider sign-in refused
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as person
+box "Frontend — Shelfie web (sign-in library)" #E0F2FE
+  participant "SignInPage / SignUpPage" as page
+  participant "sh-banner" as banner
+end box
+box "Backend — Shelfie API (routers and middleware)" #D1FADF
+  participant "auth.router.ts\n+ providerSignInLimiter" as router
+end box
+box "Backend — Shelfie API (modules and services)" #ECFDF3
+  participant "oauth.ts" as oauth
+  participant "auth.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+participant "Google or Facebook" as provider #FDF2FA
+
+person -> router : GET /api/auth/google/callback?…
+alt more than 10 start or callback requests in 10 minutes from this source
+  router -> db : sign_in_attempt
+  router --> person : 302 /sign-in?reason=too-many&provider=google (L2-142)
+else error=access_denied (consent cancelled)
+  router --> person : 302 /sign-in?reason=cancelled&provider=google (L2-140)
+else other provider error, no cookie, or state differs from the cookie's
+  router -> router : Exchange nothing (L2-142)
+  router --> person : 302 /sign-in?reason=failed&provider=google (L2-140)
+else state matches
+  router -> oauth : exchangeCode(…)
+  alt token endpoint fails or aud is not the client id
+    oauth --> router : throws
+    router --> person : 302 /sign-in?reason=failed&provider=google (L2-140)
+  else identity read
+    oauth --> router : ProviderIdentity
+    router -> service : signInWithProvider(google, identity, remember)
+    service -> db : SELECT profile_provider; SELECT profile WHERE email
+    alt no link and e-mail missing or not verified
+      service --> router : Problem no-email
+      router --> person : 302 /sign-in?reason=no-email&provider=google (L2-140)
+    else no link and the e-mail is a reader's
+      service --> router : Problem reader
+      router --> person : 302 /sign-in?reason=reader&provider=google (L2-140)
+    end
+  end
+end
+person -> page : /sign-in?reason=…&provider=google
+page -> banner : danger or info with the message for the reason
+banner --> person : "Google didn’t share an e-mail", "That e-mail belongs to a reader",\n"You cancelled", "Something went wrong. Try again", "Too many tries"
+page --> person : The form below works as before; no session; cookie cleared (L2-140)
+@enduml
