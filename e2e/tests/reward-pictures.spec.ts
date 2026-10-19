@@ -1,4 +1,4 @@
-// Traces to: L2-094, L2-096
+// Traces to: L2-094, L2-095, L2-096
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { addGalleryReward } from '../support/database';
@@ -45,7 +45,7 @@ test('Given a reward with three pictures, when Dad removes the featured one, the
   await dialog.removePicture(1);
 
   await expect(dialog.pictureItems()).toHaveCount(2);
-  await expect(dialog.picture(1)).toContainText('Featured');
+  await expect(dialog.featuredPictureImage()).toHaveAccessibleName('Picture 1 of 2');
   await expect(dialog.pictureImage(1)).toHaveAttribute('src', second!);
   await expect(dialog.pictureChooser()).toBeFocused();
   await expect(settings.galleryRewardPicture('Trip to the zoo')).toHaveAttribute('src', second!);
@@ -81,4 +81,27 @@ test('Given a reward with 6 pictures, when Dad edits it, then Add a picture is o
   await expect(dialog.pictureItems()).toHaveCount(6);
   await expect(dialog.pictureChooser()).toBeDisabled();
   await expect(dialog.pictureHelp()).toHaveText('That’s 6 pictures, the most a reward can have. Remove one to add another.');
+});
+
+test('Given a reward with two pictures, when Dad makes the second featured, then the mark moves and Nia’s card shows it', async ({ page }) => {
+  const id = await addGalleryReward('Trip to the zoo', 3);
+  await signInAsDad(page);
+  await addRewardPictureViaApi(page, id);
+  await addRewardPictureViaApi(page, id, coverFixture('lion-cover.jpg'));
+  const settings = new SettingsPage(page);
+  await settings.open();
+  await settings.editGalleryReward('Trip to the zoo');
+  const dialog = new GalleryRewardDialog(page);
+  await expect(dialog.makeFeaturedButtons()).toHaveCount(1);
+  const second = await dialog.pictureImage(2).getAttribute('src');
+
+  await dialog.makeFeatured(2);
+
+  await expect(dialog.featuredPicture()).toHaveCount(1);
+  await expect(dialog.featuredPictureImage()).toHaveAttribute('src', second!);
+  await expect(dialog.makeFeaturedButtons()).toHaveAccessibleName('Make picture 1 featured');
+  await expect(settings.galleryRewardPicture('Trip to the zoo')).toHaveAttribute('src', second!);
+  await page.context().clearCookies();
+  await signInAsNia(page);
+  await expect(new ShelfPage(page).galleryRewardPicture('Trip to the zoo')).toHaveAttribute('src', second!);
 });

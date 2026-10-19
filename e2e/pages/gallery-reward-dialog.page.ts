@@ -55,7 +55,11 @@ export class GalleryRewardDialog {
 
   /** The thumbnail marked Featured. */
   featuredPicture() {
-    return this.pictureItems().filter({ hasText: 'Featured' });
+    return this.pictureItems().filter({ has: this.page.getByText('Featured', { exact: true }) });
+  }
+
+  featuredPictureImage() {
+    return this.featuredPicture().getByRole('img');
   }
 
   pictureChooser() {
@@ -69,6 +73,14 @@ export class GalleryRewardDialog {
 
   async removePicture(n: number) {
     await this.pictures().getByRole('button', { name: `Remove picture ${n}` }).click();
+  }
+
+  async makeFeatured(n: number) {
+    await this.pictures().getByRole('button', { name: `Make picture ${n} featured` }).click();
+  }
+
+  makeFeaturedButtons() {
+    return this.pictures().getByRole('button', { name: /^Make picture \d+ featured$/ });
   }
 
   async choosePicture(file: string) {

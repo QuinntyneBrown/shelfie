@@ -103,6 +103,15 @@ export class GalleryRewardDialog {
     this.changed.emit(stored);
   }
 
+  protected async featurePicture(index: number) {
+    const reward = this.editing();
+    const picture = this.pictures()[index];
+    if (!reward || !picture?.id) return;
+    const stored = await this.api.featurePicture(reward.id, picture.id);
+    this.pictures.set(pictureOf(stored));
+    this.changed.emit(stored);
+  }
+
   protected async save() {
     if (this.busy()) return;
     this.failed.set(false);

@@ -54,7 +54,7 @@ test('Given a goal with progress, when Nia picks a different reward, then that o
 
   await expect(shelf.goalProgress('New art set')).toHaveAccessibleName('0 of 2 books finished');
   await expect(shelf.goalProgress('Trip to the zoo')).toHaveCount(0);
-  await expect(shelf.galleryReward('Trip to the zoo').getByRole('button', { name: 'Pick Trip to the zoo' })).toBeVisible();
+  await expect(shelf.pickButton('Trip to the zoo')).toBeVisible();
 });
 
 test('Given the gallery cannot be loaded, when Nia opens her shelf, then it says so with Try again and the rest of the shelf works', async ({ page }) => {

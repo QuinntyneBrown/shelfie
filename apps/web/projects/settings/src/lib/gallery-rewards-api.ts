@@ -48,4 +48,9 @@ export class GalleryRewardsApi {
   removePicture(id: string, pictureId: string) {
     return this.api.delete<GalleryReward>(`/gallery-rewards/${id}/pictures/${pictureId}`);
   }
+
+  /** Makes one picture the featured one and answers the reward as it now is. */
+  featurePicture(id: string, pictureId: string) {
+    return this.api.post<GalleryReward>(`/gallery-rewards/${id}/pictures/${pictureId}/feature`, {});
+  }
 }

@@ -193,6 +193,17 @@ export async function removeRewardPicture(pool: Pool, householdId: string, id: s
   });
 }
 
+/** Makes one picture the featured one; the old mark is cleared first, as the unique index requires. */
+export async function featureRewardPicture(pool: Pool, householdId: string, id: string, pictureId: string): Promise<GalleryReward> {
+  return transaction(pool, async (db) => {
+    const reward = await lockReward(db, householdId, id);
+    if (!(await get(db, 'SELECT id FROM reward_picture WHERE id = $1 AND reward_id = $2', [pictureId, id]))) throw new Problem(404, 'not-found');
+    await run(db, 'UPDATE reward_picture SET featured = false WHERE reward_id = $1 AND featured', [id]);
+    await run(db, 'UPDATE reward_picture SET featured = true WHERE id = $1', [pictureId]);
+    return (await withPictures(db, [reward]))[0]!;
+  });
+}
+
 /** A picture of a reward in the household; another household's picture reads as absent. */
 export function readRewardPicture(db: Db, householdId: string, id: string, pictureId: string): Promise<RewardImage | undefined> {
   return get<RewardImage>(

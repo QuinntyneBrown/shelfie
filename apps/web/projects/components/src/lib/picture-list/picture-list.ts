@@ -36,6 +36,8 @@ export class PictureList {
   readonly picked = output<File>();
   /** The index of the picture to remove. */
   readonly removed = output<number>();
+  /** The index of the picture to make the featured one. */
+  readonly featured = output<number>();
 
   protected readonly labelId = `sh-picture-list-${nextId++}-label`;
   protected readonly helpId = this.labelId.replace('label', 'help');

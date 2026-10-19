@@ -5,6 +5,7 @@ import { requireRole } from './authz.ts';
 import {
   addGalleryReward,
   addRewardPicture,
+  featureRewardPicture,
   getGallery,
   pickGoal,
   processRewardPicture,
@@ -75,6 +76,11 @@ export function galleryRouter(db: Pool) {
   router.delete('/:id/pictures/:pictureId', requireRole('parent'), async (req, res) => {
     const { householdId } = res.locals['session'] as RequestSession;
     await answer(res, async () => res.json(await removeRewardPicture(db, householdId, String(req.params['id']), String(req.params['pictureId']))));
+  });
+
+  router.post('/:id/pictures/:pictureId/feature', requireRole('parent'), async (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    await answer(res, async () => res.json(await featureRewardPicture(db, householdId, String(req.params['id']), String(req.params['pictureId']))));
   });
 
   router.get('/:id/pictures/:pictureId', async (req, res) => {

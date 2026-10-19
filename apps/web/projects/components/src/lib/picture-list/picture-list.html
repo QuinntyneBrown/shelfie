@@ -25,6 +25,15 @@
           <div class="picture-list__actions">
             @if (picture.featured) {
               <span class="picture-list__note">Shows on her shelf</span>
+            } @else {
+              <button
+                class="btn btn--sm"
+                type="button"
+                [attr.aria-label]="'Make picture ' + (i + 1) + ' featured'"
+                (click)="featured.emit(i)"
+              >
+                Make featured
+              </button>
             }
           </div>
         </li>

@@ -294,3 +294,50 @@ test('Given Nia, or another household, or an unknown picture, when a picture is 
   assert.equal((await change(null, 'DELETE', `/${reward.id}/pictures/${picture}`)).status, 401);
   assert.deepEqual(await rewardIn(cookie, reward.id), reward);
 });
+
+test('Given a reward with three pictures, when Dad makes the third featured, then it alone is featured, and Nia sees it', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  await uploaded(cookie, reward.id);
+  await uploaded(cookie, reward.id);
+  const { pictures } = await uploaded(cookie, reward.id);
+
+  const response = await change(cookie, 'POST', `/${reward.id}/pictures/${pictures[2]!.id}/feature`);
+
+  assert.equal(response.status, 200);
+  const answered = (await response.json()) as Reward;
+  assert.deepEqual([answered.pictures, answered.featuredPicture], [pictures, pictures[2]!.url]);
+  assert.equal((await rewardIn(await nia(), reward.id))?.featuredPicture, pictures[2]!.url);
+  assert.equal((await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM reward_picture WHERE reward_id = $1 AND featured', [reward.id]))!.n, 1);
+});
+
+test('Given feature changes and removals at the same time, then the reward always has exactly one featured picture', async () => {
+  const cookie = await dad();
+  const reward = await addReward(cookie);
+  for (let i = 0; i < 5; i++) await uploaded(cookie, reward.id);
+  const { pictures } = (await rewardIn(cookie, reward.id))!;
+
+  await Promise.all([
+    ...pictures.slice(1).map((p) => change(cookie, 'POST', `/${reward.id}/pictures/${p.id}/feature`)),
+    change(cookie, 'DELETE', `/${reward.id}/pictures/${pictures[0]!.id}`),
+    change(cookie, 'DELETE', `/${reward.id}/pictures/${pictures[4]!.id}`),
+  ]);
+
+  const featured = await get<{ n: number }>(db.pool, 'SELECT COUNT(*)::int AS n FROM reward_picture WHERE reward_id = $1 AND featured', [reward.id]);
+  assert.equal(featured!.n, 1);
+  assert.equal((await rewardIn(cookie, reward.id))?.pictures.length, 3);
+});
+
+test('Given Nia, or another household, or an unknown picture, when a picture is made featured, then the API answers 403 or 404 and nothing changes', async () => {
+  const cookie = await dad();
+  const { id } = await addReward(cookie);
+  await uploaded(cookie, id);
+  const reward = await uploaded(cookie, id);
+  const second = reward.pictures[1]!.id;
+
+  assert.deepEqual(await typeOf(await change(await nia(), 'POST', `/${reward.id}/pictures/${second}/feature`)), [403, 'grown-ups-only']);
+  assert.equal((await change(await zedsDad(), 'POST', `/${reward.id}/pictures/${second}/feature`)).status, 404);
+  assert.equal((await change(cookie, 'POST', `/${reward.id}/pictures/no-such-picture/feature`)).status, 404);
+  assert.equal((await change(null, 'POST', `/${reward.id}/pictures/${second}/feature`)).status, 401);
+  assert.deepEqual(await rewardIn(cookie, reward.id), reward);
+});

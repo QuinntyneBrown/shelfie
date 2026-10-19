@@ -145,6 +145,11 @@ export class ShelfPage {
     return this.galleryRewardPicture(name).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
   }
 
+  /** The Pick button on one gallery reward's card. */
+  pickButton(name: string) {
+    return this.galleryReward(name).getByRole('button', { name: `Pick ${name}` });
+  }
+
   /** The description under a gallery reward, when it has one. */
   galleryRewardDescription(name: string) {
     return this.galleryReward(name).locator('.trophy__description');
