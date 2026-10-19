@@ -70,6 +70,22 @@
         Create my account
       </sh-button>
     </form>
+    @if (providers().length) {
+      <p class="divider"><span>or</span></p>
+      <div class="stack">
+        @for (provider of providers(); track provider) {
+          <sh-button
+            variant="secondary"
+            [large]="true"
+            [block]="true"
+            [busy]="redirecting() === provider"
+            (click)="continueWith(provider)"
+          >
+            <sh-provider-icon [provider]="provider" />Continue with {{ PROVIDER_NAMES[provider] }}
+          </sh-button>
+        }
+      </div>
+    }
   </div>
   <p class="text-caption centred">Already have an account? <a routerLink="/sign-in">Sign in</a></p>
 </sh-auth-layout>

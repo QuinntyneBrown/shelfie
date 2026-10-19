@@ -9,6 +9,7 @@ import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type S
 import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
 import type { Mail } from './mail.ts';
+import type { OAuthProvider } from './oauth.ts';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
@@ -33,8 +34,13 @@ export function sessionSummary({ id, remember, ...summary }: Session) {
   return summary;
 }
 
-export function authRouter(db: Pool, mail?: Mail) {
+export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = []) {
   const router = Router();
+
+  /** Which providers a parent can continue with; names only, never the ids or secrets (L2-142). */
+  router.get('/providers', (_req, res) => {
+    res.json({ providers: providers.map((provider) => provider.name) });
+  });
 
   /** A new sign-in always gets a new session id; the browser's previous one stops working. */
   const endPreviousSession = async (cookieHeader: string | undefined) => {

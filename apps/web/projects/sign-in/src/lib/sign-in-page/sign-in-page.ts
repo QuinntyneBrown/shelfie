@@ -7,14 +7,14 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Banner, Button, TextField } from 'components';
+import { Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
 import { ApiError, SessionService } from 'core';
 import { AuthApi } from '../auth-api';
 import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'sh-sign-in-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Banner, Button, ProviderIcon, RouterLink, TextField],
   templateUrl: './sign-in-page.html',
   styleUrl: './sign-in-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +37,21 @@ export class SignInPage {
   protected readonly submitting = signal(false);
   protected readonly unreachable = signal(false);
   private readonly summary = viewChild<Banner>('summary');
+  protected readonly PROVIDER_NAMES = PROVIDER_NAMES;
+  /** The providers a parent can continue with; none until the API has answered, and none when none is configured. */
+  protected readonly providers = signal<ProviderName[]>([]);
+  protected readonly redirecting = signal<ProviderName | null>(null);
+
+  constructor() {
+    this.api.providers().then(({ providers }) => this.providers.set(providers), () => {});
+  }
+
+  /** Leaves for the provider's consent screen; the button stays busy until the browser has gone. */
+  protected continueWith(provider: ProviderName) {
+    if (this.redirecting()) return;
+    this.redirecting.set(provider);
+    window.location.assign(`/api/auth/${provider}/start?remember=${this.remember() ? 1 : 0}&from=sign-in`);
+  }
 
   protected async submit() {
     if (this.submitting()) return;

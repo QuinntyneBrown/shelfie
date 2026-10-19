@@ -100,4 +100,25 @@ export class SignInPage {
   async chooseCreateAccount() {
     await this.page.getByRole('link', { name: 'Create a parent account' }).click();
   }
+
+  /** The "Continue with Google" or "Continue with Facebook" button below the form. */
+  continueWithButton(provider: 'Google' | 'Facebook') {
+    return this.page.getByRole('button', { name: `Continue with ${provider}` });
+  }
+
+  /** The line that introduces the provider buttons to parents. */
+  parentsCanAlso() {
+    return this.page.getByText('Parents can also');
+  }
+
+  async continueWith(provider: 'Google' | 'Facebook', { remember = true } = {}) {
+    await this.page.waitForURL(/\/sign-in(\?|$)/);
+    await this.keepMeSignedIn().setChecked(remember);
+    await this.continueWithButton(provider).click();
+  }
+
+  /** The banner above the card after coming back from a provider. */
+  providerBanner() {
+    return this.page.getByRole('alert').or(this.page.getByRole('status')).filter({ hasText: /Google|Facebook|reader|cancelled|wrong|Too many/ });
+  }
 }

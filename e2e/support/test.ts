@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { createApp } from '../../apps/api/src/app.ts';
 import { seed } from '../../apps/api/src/seed.ts';
 import { createTestDatabase } from '../../apps/api/src/test-db.ts';
+import { configuredProviders } from '../../apps/api/src/oauth.ts';
 import { useDatabase } from './database';
 import { fakeAssistant, resetAssistant } from './assistant';
 import { fakeAi, fakeCatalogue, fakeCoverFetch, fakeWorkCovers } from './lookup';
@@ -26,12 +27,12 @@ interface Stack {
 // Each worker runs its own copy of the API over a database of its own on the PostgreSQL server at
 // DATABASE_URL and serves the built web app from the same port, so tests never share state. The static
 // marketing site is served under /marketing/.
-export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 'on' | 'off'; pushSwitch: void }, { stack: Stack }>({
+export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 'on' | 'off'; pushSwitch: void; providers: 'both' | 'google' | 'none'; providerSwitch: void }, { stack: Stack }>({
   stack: [
     async ({}, use) => {
       const db = await createTestDatabase();
       const app = express();
-      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work() }));
+      app.use(createApp(db.pool, { log: () => {}, mail: deliver, assistant: fakeAssistant, suggest, catalogue: fakeCatalogue, ai: fakeAi, coverFetch: fakeCoverFetch, workCovers: fakeWorkCovers, push: fakePush, schedule: (work) => void work(), providers: configuredProviders({ GOOGLE_CLIENT_ID: 'google-test', GOOGLE_CLIENT_SECRET: 'google-secret', FACEBOOK_CLIENT_ID: 'facebook-test', FACEBOOK_CLIENT_SECRET: 'facebook-secret' }) }));
       app.use('/marketing', (_req, res, next) => (res.set('Content-Security-Policy', MARKETING_CSP), next()), express.static(MARKETING));
       app.use(express.static(WEB));
       app.use((_req, res) => res.sendFile(join(WEB, 'index.html')));
@@ -54,6 +55,18 @@ export const test = base.extend<{ seeded: void; shelf: 'books' | 'empty'; push: 
   pushSwitch: [
     async ({ context, push }, use) => {
       if (push === 'off') await context.route('**/api/push/key', (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{"type":"push-off"}' }));
+      await use();
+    },
+    { auto: true },
+  ],
+  // Google and Facebook are both configured on every worker's API (against the stand-in provider); a test sees fewer unless it asks.
+  providers: ['both', { option: true }],
+  providerSwitch: [
+    async ({ context, providers }, use) => {
+      if (providers !== 'both') {
+        const names = providers === 'google' ? ['google'] : [];
+        await context.route('**/api/auth/providers', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ providers: names }) }));
+      }
       await use();
     },
     { auto: true },

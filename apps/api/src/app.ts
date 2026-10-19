@@ -29,8 +29,9 @@ import { photosRouter } from './photos.router.ts';
 import { settingsRouter } from './settings.router.ts';
 import { shelfRouter } from './shelf.router.ts';
 import type { SuggestQuestions } from './suggestions.ts';
+import { configuredProviders, type OAuthProvider } from './oauth.ts';
 
-export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch; workCovers?: WorkCoversProvider; push?: Push | null; schedule?: Schedule } = {}) {
+export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant?: ReviewAssistant; suggest?: SuggestQuestions; catalogue?: Provider; ai?: Provider | null; coverFetch?: typeof fetch; workCovers?: WorkCoversProvider; push?: Push | null; schedule?: Schedule; providers?: OAuthProvider[] } = {}) {
   const app = express();
   const log = options.log ?? stdoutLog;
   // Push needs VAPID keys; with none set it is off, and tests pass a fake (ADR-0016).
@@ -59,7 +60,8 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   // Bearer-token only, no cookies: browsers never send the credential on their own, so no CSRF guard (ADR-0005).
   app.use('/api/admin/v1', adminRouter(db));
   app.use('/api', csrfGuard);
-  app.use('/api/auth', authRouter(db, options.mail));
+  // Google and Facebook sign-in are on when their client ids and secrets are set; tests pass providers aimed at a stand-in (ADR-0018).
+  app.use('/api/auth', authRouter(db, options.mail, options.providers ?? configuredProviders()));
   app.use('/api/shelf', shelfRouter(db));
   app.use('/api', questionsRouter(db, options.suggest));
   app.use('/api', reviewRouter(db, options.assistant ?? anthropicAssistant, notifier));
