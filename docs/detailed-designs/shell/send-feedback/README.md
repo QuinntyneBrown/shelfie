@@ -68,7 +68,7 @@ The feature realizes the following level-2 (L2) requirements. Each refines a lev
 
 - **Stored per household, read only by the operator.** Recorded in [ADR-0014](../../../adr/0014-feedback-is-read-only-by-the-operator.md).
 - **The dialog lives in the `settings` library.** The application holds only the shell and composition, and `core` holds no dialogs. `settings` already owns the other dialog the account menu opens ("Your photo"), so the feedback dialog sits beside it rather than in a new library for one dialog.
-- **The score is `sh-sticker-picker`, not a new `sh-score`.** The sticker picker is already a big, tappable radio group of emoji with a visible word, arrow-key movement and a field error; five faces with values `"1"` to `"5"` are just its options. `sh-segmented` was tried first, but its chips are small and have no room for a face and a word.
+- **The score is `sh-sticker-picker`, not a new `sh-score`.** The sticker picker is already a big, tappable radio group of emoji, each named for screen readers, with arrow-key movement and a field error; five faces with values `"1"` to `"5"` are just its options. `sh-segmented` was tried first, but its chips are small, text-only toggle buttons, not a radio group.
 - **A score or a message is required; the kind always has a value.** "How it feels" is chosen at first, so the kind never blocks a young reader. One tap on a face is enough to send.
 - **The message has no `maxlength`.** The count of characters left shows instead, so a pasted long message is kept and the invalid state can explain it, rather than being cut silently.
 - **Ten per person in ten minutes.** Enough for anyone, and the same limiter and table as the other limits; keyed by profile because the sender is always signed in.

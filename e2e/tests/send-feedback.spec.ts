@@ -81,3 +81,104 @@ test('Given a phone, then the dialog fits without scrolling sideways, the faces 
   expect(await shell.scrollsSideways()).toBe(false);
   expect(await shell.seriousAccessibilityProblems()).toEqual([]);
 });
+
+test('Given nothing picked or typed, when Send is pressed, then it says to pick a face or write a message and sends nothing', async ({ page }) => {
+  await signInAsNia(page);
+  const feedback = new SendFeedbackDialog(page);
+  feedback.watchSending();
+
+  await new ShellPage(page).openSendFeedback('Nia');
+  await feedback.write('   ');
+  await feedback.send();
+
+  await expect(feedback.banner()).toContainText('Fix 1 thing');
+  await expect(feedback.scoreGroup()).toHaveAccessibleDescription(/Pick a face or write a message\./);
+  expect(feedback.sendCount()).toBe(0);
+});
+
+test('Given a message over 1,000 characters, when Send is pressed, then it says how many too many, keeps it and sends nothing', async ({ page }) => {
+  await signInAsNia(page);
+  const feedback = new SendFeedbackDialog(page);
+  feedback.watchSending();
+  const long = 'I love Shelfie! '.repeat(64);
+
+  await new ShellPage(page).openSendFeedback('Nia');
+  await feedback.pickFace('Love it');
+  await feedback.write(long);
+  await feedback.send();
+
+  await expect(feedback.banner()).toContainText('Fix 1 thing');
+  await expect(feedback.message()).toHaveAccessibleDescription(/Keep it to 1,000 characters \(23 too many\)\./);
+  await expect(feedback.message()).toHaveValue(long);
+  expect(feedback.sendCount()).toBe(0);
+});
+
+test('Given a message being typed, then the help counts the characters left', async ({ page }) => {
+  await signInAsNia(page);
+  const feedback = new SendFeedbackDialog(page);
+
+  await new ShellPage(page).openSendFeedback('Nia');
+  await feedback.write('Dragons!');
+
+  await expect(feedback.message()).toHaveAccessibleDescription('Up to 1,000 characters · 992 left');
+});
+
+test('Given sending is slow, then Send is busy, the fields and Cancel are locked and a second press sends nothing more', async ({ page }) => {
+  await signInAsNia(page);
+  const feedback = new SendFeedbackDialog(page);
+  feedback.watchSending();
+  const release = await feedback.holdSending();
+
+  await new ShellPage(page).openSendFeedback('Nia');
+  await feedback.pickFace('Good');
+  await feedback.write('Fun!');
+  await feedback.send();
+
+  await expect(feedback.sendButton()).toHaveAttribute('aria-busy', 'true');
+  await expect(feedback.sendButton()).toBeDisabled();
+  await expect(feedback.face('Okay')).toBeDisabled();
+  await expect(feedback.kind('An idea')).toBeDisabled();
+  await expect(feedback.message()).toBeDisabled();
+  await expect(feedback.dialog().getByRole('button', { name: 'Cancel' })).toBeDisabled();
+  await feedback.sendButton().click({ force: true });
+  release();
+  await expect(feedback.thanks()).toBeVisible();
+  expect(feedback.sendCount()).toBe(1);
+  expect(await storedFeedback()).toHaveLength(1);
+});
+
+test('Given the network fails, then the dialog says it wasn’t sent, keeps everything, and Try again sends it', async ({ page }) => {
+  await signInAsNia(page);
+  const feedback = new SendFeedbackDialog(page);
+  await feedback.breakSending();
+
+  await new ShellPage(page).openSendFeedback('Nia');
+  await feedback.pickFace('Okay');
+  await feedback.chooseKind('An idea');
+  await feedback.write('More dragon books');
+  await feedback.send();
+
+  await expect(feedback.banner()).toContainText('Your feedback wasn’t sent');
+  await expect(feedback.face('Okay')).toBeChecked();
+  await expect(feedback.kind('An idea')).toHaveAttribute('aria-pressed', 'true');
+  await expect(feedback.message()).toHaveValue('More dragon books');
+  await feedback.repairSending();
+  await feedback.tryAgain();
+
+  await expect(feedback.thanks()).toBeVisible();
+  expect(await storedFeedback()).toEqual([{ household_id: 'h1', profile_id: 'p-nia', kind: 'idea', score: 3, message: 'More dragon books' }]);
+});
+
+test('Given too many notes were sent, then the dialog shows the same failure and keeps everything', async ({ page }) => {
+  await signInAsDad(page);
+  const feedback = new SendFeedbackDialog(page);
+  await feedback.limitSending();
+
+  await new ShellPage(page).openSendFeedback('Dad');
+  await feedback.pickFace('Good');
+  await feedback.send();
+
+  await expect(feedback.banner()).toContainText('Your feedback wasn’t sent');
+  await expect(feedback.face('Good')).toBeChecked();
+  await expect(feedback.dialog()).toBeVisible();
+});
