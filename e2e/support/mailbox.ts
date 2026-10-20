@@ -2,13 +2,14 @@ interface Mail {
   to: string;
   subject: string;
   text: string;
+  html: string;
 }
 
 const outbox: Mail[] = [];
 
 /** Stands in for the API's mail sender: keeps every mail here instead of sending it. */
-export async function deliver(to: string, subject: string, text: string) {
-  outbox.push({ to, subject, text });
+export async function deliver(to: string, subject: string, text: string, html: string) {
+  outbox.push({ to, subject, text, html });
 }
 
 export function clearMailbox() {
@@ -31,6 +32,11 @@ async function linkFor(address: string, pattern: RegExp, kind: string): Promise<
 /** The invite link in the newest mail sent to the address, once it has arrived. */
 export function inviteLinkFor(address: string): Promise<string> {
   return linkFor(address, /http:\/\/\S+\/accept-invite\?\S+/, 'invite');
+}
+
+/** The confirm-your-e-mail link in the newest mail sent to the address, once it has arrived. */
+export function verifyLinkFor(address: string): Promise<string> {
+  return linkFor(address, /http:\/\/\S+\/verify-email\?\S+/, 'confirm');
 }
 
 /** The reset link in the newest mail sent to the address, once it has arrived. */

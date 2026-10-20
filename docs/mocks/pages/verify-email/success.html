@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirm your e-mail · success — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="verify-email">
+<meta name="mock:state" content="success">
+<meta name="mock:requirements" content="L2-146, L2-147">
+<meta name="description" content="The link was valid: the address is confirmed. Nobody is signed in or out.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="logo-mark"><img src="../../assets/logo.png" alt="" width="64" height="64"></span></div>
+<div class="card stack" style="text-align: center;">
+  <span class="sticker sticker--lg" style="margin-inline: auto;" aria-hidden="true">🎉</span>
+  <h1>Your e-mail is confirmed</h1>
+  <p class="text-muted" style="margin-inline: auto;">Thanks! marcus@example.com is all set. We’ll only write to it about your account.</p>
+  <a class="btn btn--primary btn--lg btn--block" href="../../pages/review/default.html">Go to Shelfie</a>
+</div>
+  </div>
+</main>
+<p class="mock-note" style="top: 1rem; right: 1rem;">Go to Shelfie opens the parent’s home when signed in on this device (Review, or the wizard while it is pending), and Sign in otherwise. The “Confirm your e-mail” banner is gone from then on.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Confirm your e-mail</span>
+  <ul class="mock-bar__states"><li><a href="verifying.html">verifying</a></li><li><a href="success.html" aria-current="page">success</a></li><li><a href="error.html">error</a></li><li><a href="error-signed-out.html">error-signed-out</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

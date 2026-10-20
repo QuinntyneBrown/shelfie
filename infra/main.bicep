@@ -1,6 +1,7 @@
 // Production environment for Shelfie: one small Ubuntu VM running Caddy + the Node API, a managed
-// PostgreSQL flexible server reachable only inside the virtual network, and a storage account that
-// holds release tarballs and nightly database dumps. Deployed once by infra/bootstrap.sh; code
+// PostgreSQL flexible server reachable only inside the virtual network, a storage account that
+// holds release tarballs and nightly database dumps, and Azure Communication Services Email, which
+// sends Shelfie's mail from hello@shelfie.kids (ADR-0019). Deployed once by infra/bootstrap.sh; code
 // deploys never touch it.
 
 targetScope = 'resourceGroup'
@@ -30,12 +31,19 @@ param hostname string = 'app.shelfie.kids'
 @secure()
 param databaseAdminPassword string
 
+@description('Domain Shelfie sends mail from; its DNS stays at Namecheap (docs/runbook.md, "Mail").')
+param emailDomain string = 'shelfie.kids'
+
+@description('Link the e-mail domain to Communication Services. True only once Azure reports the domain, SPF and both DKIM records verified; ACS refuses an unverified domain.')
+param linkEmailDomain bool = false
+
 @description('PostgreSQL compute. B1ms is 1 burstable vCore and 2 GiB, enough for the API\'s pool of 10 connections.')
 param databaseSku string = 'Standard_B1ms'
 
 var storageAccountName = toLower('${name}${uniqueString(resourceGroup().id)}')
 var databaseServerName = toLower('${name}-db-${uniqueString(resourceGroup().id)}')
 var storageBlobDataContributor = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+var communicationEmailOwner = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '09976791-48a7-449e-bb21-39d1a415f350')
 var cloudInit = replace(replace(loadTextContent('cloud-init.yaml'), '__HOSTNAME__', hostname), '__STORAGE_ACCOUNT__', storageAccountName)
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -188,6 +196,44 @@ resource vmBlobAccess 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+// Mail: the customer-managed shelfie.kids domain with the hello sender, shown as "Shelfie". Its data stays in Canada.
+resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
+  name: toLower('${name}-email-${uniqueString(resourceGroup().id)}')
+  location: 'global'
+  properties: { dataLocation: 'Canada' }
+
+  resource domain 'domains' = {
+    name: emailDomain
+    location: 'global'
+    properties: { domainManagement: 'CustomerManaged', userEngagementTracking: 'Disabled' }
+
+    resource hello 'senderUsernames' = {
+      name: 'hello'
+      properties: { username: 'hello', displayName: 'Shelfie' }
+    }
+  }
+}
+
+resource communication 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: toLower('${name}-acs-${uniqueString(resourceGroup().id)}')
+  location: 'global'
+  properties: {
+    dataLocation: 'Canada'
+    linkedDomains: linkEmailDomain ? [emailService::domain.id] : []
+  }
+}
+
+// The API sends with the VM's managed identity; there is no connection string or key.
+resource vmSendsMail 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(communication.id, vm.id, communicationEmailOwner)
+  scope: communication
+  properties: {
+    principalId: vm.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: communicationEmailOwner
+  }
+}
+
 // The server's name resolves to its private address only through this zone, which the VM's network is linked to.
 resource databaseDns 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name: '${name}.private.postgres.database.azure.com'
@@ -233,3 +279,6 @@ output publicIp string = publicIp.properties.ipAddress
 output databaseHost string = database.properties.fullyQualifiedDomainName
 output vmName string = vm.name
 output storageAccountName string = storage.name
+output emailServiceName string = emailService.name
+output acsEmailEndpoint string = 'https://${communication.properties.hostName}'
+output acsEmailSender string = 'hello@${emailDomain}'

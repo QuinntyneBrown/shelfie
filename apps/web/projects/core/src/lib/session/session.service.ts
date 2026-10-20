@@ -14,6 +14,8 @@ export interface Session {
   photo: string | null;
   /** Whether the household has finished or skipped the set-up wizard; false only for a household just signed up. */
   onboarded: boolean;
+  /** Whether the person's e-mail is confirmed; false for a parent who has not opened the link yet, and for readers. */
+  emailVerified: boolean;
 }
 
 /** Where a person lands after signing in: a reader on her shelf, a parent on Review, or on the set-up wizard while it is pending. */

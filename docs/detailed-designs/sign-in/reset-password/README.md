@@ -10,7 +10,7 @@ When a parent forgets the password, this feature lets the parent choose a new on
 
 The Forgot password page gives the same answer whether or not the e-mail belongs to an account: "If marcus@example.com has a Shelfie account, a reset link is on its way." This keeps the page from confirming which addresses exist. The token itself is never stored; only its hash is, so a copy of the database does not yield working links.
 
-The feature sits in the `sign-in` subsystem beside password sign-in, sign-up, invite acceptance, session management and route authorisation. It shares the mail transport with the invite-parent design. The production e-mail provider is deferred (AGENTS.md, Deferred work); locally the mail goes to Mailpit.
+The feature sits in the `sign-in` subsystem beside password sign-in, sign-up, invite acceptance, session management and route authorisation. It shares the mail transport with the invite-parent design. The mail is the branded HTML mail with a plain-text part (`L2-151`), sent through Azure Communication Services from `hello@shelfie.kids` in production and to Mailpit locally (sign-in/verify-email, ADR-0019).
 
 ## Description
 
@@ -21,7 +21,7 @@ The slice runs from two pages in the sign-in library to the `password_reset`, `u
 - **`AuthApi`** — `forgotPassword(email)` posts to `/api/auth/forgot-password`; `resetPassword(token, password)` posts to `/api/auth/reset-password` and returns a `Session`.
 - **`auth.router.ts`** — `POST /api/auth/forgot-password` validates with `forgotPasswordSchema` (`email`, e-mail format) and always answers `202` with an empty body. `POST /api/auth/reset-password` validates with `resetPasswordSchema` (`token`, and `password` of at least 8 characters) and answers `200` with the session summary and `Set-Cookie shelfie_session`. Both endpoints require no session. The page compares the two password fields; the API receives one.
 - **`auth.service.ts`** — `requestPasswordReset(email)` finds the parent by e-mail. When found, it generates 32 random bytes, stores the SHA-256 hash of their base64url form in `password_reset` with `expires_at` = now + 1 hour, and sends the mail. When not found it returns without inserting or sending, and the router answers the same `202`. `resetPassword(token, password)` hashes the token and loads the matching row where `used_at IS NULL` and `expires_at` is in the future; otherwise it returns `null` and the router answers `400` with type `reset-token-invalid`. A valid token leads to one transaction that hashes the password, updates `users.password_hash`, sets `used_at`, deletes every session of that user (`L2-004`) and creates a new session. That new session is remembered.
-- **Mail transport** — `mail.ts` sends plain text with the link, using `APP_URL` to build it. The token never appears in logs.
+- **Mail transport** — `renderMail` (`mail-template.ts`) builds the HTML and text parts (heading and button "Choose a new password", the unchanged sentence and the link, built from `APP_URL`); `mail.ts` sends both (sign-in/verify-email). The token never appears in logs.
 - **Tables** — `password_reset`: `token_hash`, `user_id`, `expires_at`, `used_at`. `users` columns used: `id`, `household_id`, `role`, `username`, `email`, `password_hash`. `session`: as in the manage-session design.
 
 The mock's success state signs the parent in on the device and offers Go to Review. The design follows the mock, creating the new session after all existing sessions of that parent are deleted, so that the invalidation in criterion 5 holds for every other device.

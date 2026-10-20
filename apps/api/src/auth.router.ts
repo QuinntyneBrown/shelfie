@@ -3,16 +3,21 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { run } from './db.ts';
-import { passwordSignInLimiter } from './rate-limit.ts';
+import { passwordSignInLimiter, verifyResendLimiter } from './rate-limit.ts';
+import { requireRole } from './authz.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
 import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type Session } from './auth.service.ts';
 import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
-import type { Mail } from './mail.ts';
+import { sendMail, type Mail } from './mail.ts';
+import type { Log } from './logging.ts';
+import { issueVerification, sendVerification, verifyEmail } from './verify-email.service.ts';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
 const resetPasswordSchema = z.object({ token: z.string(), password: z.string().min(8) });
+
+const verifyEmailSchema = z.object({ token: z.string() });
 
 const passwordSignInSchema = z.object({ username: z.string().trim().min(1), password: z.string().min(1), remember: z.boolean() });
 
@@ -43,8 +48,8 @@ export function authRouter(db: Pool, mail?: Mail) {
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo, onboarded } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded });
+    const { profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified });
   });
 
   router.post('/sign-out', async (req, res) => {
@@ -73,11 +78,34 @@ export function authRouter(db: Pool, mail?: Mail) {
     res.json(sessionSummary(session));
   });
 
+  /** Confirms the address the link was mailed to; it neither reads nor changes the session (L2-146). */
+  router.post('/verify-email', async (req, res) => {
+    const body = verifyEmailSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    const email = await verifyEmail(db, body.data.token);
+    if (!email) return res.status(400).json({ type: 'verify-token-invalid' });
+    res.json({ email });
+  });
+
+  /** Mails the signed-in parent a fresh confirm link, which replaces every earlier one; nothing when already verified (L2-149). */
+  router.post('/verify-email/resend', requireSession(db), requireRole('parent'), verifyResendLimiter(db), async (_req, res) => {
+    const { profileId, name, email, emailVerified } = res.locals['session'] as RequestSession;
+    if (!emailVerified) await sendVerification(db, { id: profileId, name, email: email! }, mail);
+    res.status(204).end();
+  });
+
   router.post('/sign-up', async (req, res) => {
     const body = signUpSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       const session = await signUp(db, body.data);
+      // The link is stored before the answer, but sign-up does not wait for the provider; a failed send is logged
+      // with the request id only (L2-144, L2-152).
+      const letter = await issueVerification(db, { id: session.profileId, name: session.name, email: session.email! });
+      const log = res.locals['log'] as Log;
+      (mail ?? sendMail)(...letter).catch(() =>
+        log({ level: 'error', time: new Date().toISOString(), requestId: res.locals['requestId'], event: 'verify-mail-failed' }),
+      );
       await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));

@@ -5,10 +5,16 @@
 # with (OpenID Connect, no stored credentials), and the GitHub `production` environment with its
 # secrets and variables. Prints the DNS records to create.
 #
+# Mail goes through Azure Communication Services from hello@shelfie.kids (ADR-0019). The first run
+# creates the e-mail domain and prints its DNS records; once Azure reports them verified, run again
+# with LINK_EMAIL_DOMAIN=true to link the domain and write ACS_EMAIL_ENDPOINT and ACS_EMAIL_SENDER
+# into /etc/shelfie/env (docs/runbook.md, "Mail").
+#
 # The database passwords live only on the VM: /etc/shelfie/env carries DATABASE_URL for the API and
 # /etc/shelfie/db-admin (root, 0600) the administrator credential. A re-run reads them back from there.
 #
 #   SSH_KEY=~/.ssh/id_ed25519.pub bash infra/bootstrap.sh
+#   SSH_KEY=~/.ssh/id_ed25519.pub LINK_EMAIL_DOMAIN=true bash infra/bootstrap.sh   # after the domain verifies
 set -euo pipefail
 export MSYS_NO_PATHCONV=1 # Git Bash on Windows: do not rewrite /subscriptions/... arguments as paths
 cd "$(dirname "$0")"
@@ -21,6 +27,7 @@ DOMAIN=${APP_HOSTNAME#app.}
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/id_ed25519.pub}
 ADMIN_IP=${ADMIN_IP:-$(curl -fsS https://api.ipify.org)}
 IDENTITY=shelfie-github
+LINK_EMAIL_DOMAIN=${LINK_EMAIL_DOMAIN:-false}
 
 [[ -f $SSH_KEY ]] || { echo "SSH public key $SSH_KEY not found; set SSH_KEY" >&2; exit 1; }
 
@@ -44,7 +51,7 @@ DB_APP_PASSWORD=$(sed -n 's/^DB_APP_PASSWORD=//p' <<<"$existing")
 echo "==> VM, network, database server and storage (infra/main.bicep)"
 az deployment group create -g "$RG" -n shelfie -f main.bicep -o none \
   -p adminSshPublicKey="$(cat "$SSH_KEY")" adminSourceAddress="$ADMIN_IP" hostname="$APP_HOSTNAME" \
-  databaseAdminPassword="$DB_ADMIN_PASSWORD"
+  databaseAdminPassword="$DB_ADMIN_PASSWORD" emailDomain="$DOMAIN" linkEmailDomain="$LINK_EMAIL_DOMAIN"
 IP=$(output publicIp)
 VM=$(output vmName)
 STORAGE=$(output storageAccountName)
@@ -101,6 +108,31 @@ echo database-configured
 SCRIPT
 )" | grep -q database-configured
 
+echo "==> Mail through Azure Communication Services"
+az extension add --name communication --upgrade -y -o none 2>/dev/null
+EMAIL_SERVICE=$(output emailServiceName)
+if [[ $LINK_EMAIL_DOMAIN == true ]]; then
+  # Only a linked domain can send, so the API learns about ACS only now; until then it sends no mail.
+  ACS_EMAIL_ENDPOINT=$(output acsEmailEndpoint)
+  ACS_EMAIL_SENDER=$(output acsEmailSender)
+  on_vm "$(cat <<SCRIPT
+set -euo pipefail
+sed -i '/^ACS_EMAIL_ENDPOINT=/d;/^ACS_EMAIL_SENDER=/d' /etc/shelfie/env
+printf 'ACS_EMAIL_ENDPOINT=%s\nACS_EMAIL_SENDER=%s\n' '$ACS_EMAIL_ENDPOINT' '$ACS_EMAIL_SENDER' >> /etc/shelfie/env
+systemctl try-restart shelfie 2>/dev/null || true
+echo mail-configured
+SCRIPT
+)" | grep -q mail-configured
+  MAIL_STATUS="Mail is on: the API sends from $ACS_EMAIL_SENDER through $ACS_EMAIL_ENDPOINT."
+else
+  MAIL_STATUS="Mail is off until $DOMAIN verifies. Add the records below at Namecheap, then run
+  az communication email domain initiate-verification -g $RG --email-service-name $EMAIL_SERVICE --domain-name $DOMAIN --verification-type <Domain|SPF|DKIM|DKIM2>
+for each type, and once every one shows Verified run this script again with LINK_EMAIL_DOMAIN=true.
+$(tsv communication email domain show -g "$RG" --email-service-name "$EMAIL_SERVICE" -n "$DOMAIN" \
+  --query 'verificationRecords.[Domain, SPF, DKIM, DKIM2].[type, name, value]' | sed 's/^/  /')
+  TXT    _dmarc  v=DMARC1; p=none; rua=mailto:hello@$DOMAIN"
+fi
+
 echo "==> Blob access for you (to list and download backups)"
 az role assignment create -o none --assignee "$(tsv ad signed-in-user show --query id)" \
   --role "Storage Blob Data Contributor" --scope "$STORAGE_ID"
@@ -124,4 +156,6 @@ Done. Create these DNS records for $DOMAIN:
 VM: $VM   Storage account: $STORAGE   Database: $DB_HOST (private; credentials in /etc/shelfie on the VM)
 SSH: ssh shelfie-admin@$IP (allowed from $ADMIN_IP only)
 The first push to main now deploys; Caddy fetches the certificate once the A record resolves.
+
+$MAIL_STATUS
 SUMMARY
