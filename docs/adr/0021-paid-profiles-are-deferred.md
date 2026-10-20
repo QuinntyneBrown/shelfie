@@ -1,4 +1,4 @@
-# ADR-0020: Paid profiles are deferred
+# ADR-0021: Paid profiles are deferred
 
 - Status: Accepted
 - Date: 2026-10-19

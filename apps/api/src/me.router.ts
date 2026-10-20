@@ -20,7 +20,7 @@ const website = z
 const authorSchema = z.object({ name, bio, website });
 const volunteerSchema = z.object({ name, bio, ages: z.string().trim().min(1).max(40), contact: z.string().trim().min(1).max(120) });
 
-/** An author's or volunteer's own profile and photo (`L2-145`, `L2-146`). No route takes a profile id. */
+/** An author's or volunteer's own profile and photo (`L2-155`, `L2-156`). No route takes a profile id. */
 export function meRouter(db: Pool) {
   const router = Router();
   router.use(requireDirectorySession(db));

@@ -17,7 +17,7 @@ export interface Session {
 }
 
 /**
- * Where a person lands after signing in: a reader on her shelf, an author or volunteer on My profile (ADR-0024),
+ * Where a person lands after signing in: a reader on her shelf, an author or volunteer on My profile (ADR-0025),
  * a parent on Review, or on the set-up wizard while it is pending.
  */
 export function homeOf(session: Pick<Session, 'role' | 'onboarded'>): string {

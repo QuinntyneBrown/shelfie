@@ -11,7 +11,7 @@ import { Banner, Cover, Dialog } from 'components';
 import { ApiError } from 'core';
 import { CatalogueBook, MeApi } from '../me-api';
 
-/** Asks before a book leaves the catalogue; families who added it keep their copy (L2-150). */
+/** Asks before a book leaves the catalogue; families who added it keep their copy (L2-160). */
 @Component({
   selector: 'sh-remove-catalogue-book-dialog',
   imports: [Banner, Cover, Dialog],

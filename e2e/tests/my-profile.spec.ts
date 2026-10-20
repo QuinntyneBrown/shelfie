@@ -1,4 +1,4 @@
-// Traces to: L2-145, L2-146, L2-147
+// Traces to: L2-155, L2-156, L2-157
 import { test, expect } from '../support/test';
 import { ROSA, SAM } from '../support/accounts';
 import { joinAsRosa, joinAsSam } from '../support/signed-in';

@@ -41,7 +41,7 @@ export interface BookMatch {
 /** Where a catalogue cover is loaded from: the API fetches and re-encodes it; the browser never calls the catalogue. */
 export const catalogueCoverUrl = (coverId: string) => `/api/books/search/covers/${coverId}`;
 
-/** A listed author's catalogue book, as Add a book is filled in from it (ADR-0023). */
+/** A listed author's catalogue book, as Add a book is filled in from it (ADR-0024). */
 export interface CatalogueBookEntry {
   id: string;
   title: string;

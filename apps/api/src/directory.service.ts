@@ -1,8 +1,8 @@
 import { all, get, type Db } from './db.ts';
 
 /**
- * The parent's directory: only approved authors and volunteers (ADR-0021). Pending, hidden, erased and unknown ids all
- * read as absent, so a parent learns nothing about why. Nothing here writes, so no author learns who looked (L2-161).
+ * The parent's directory: only approved authors and volunteers (ADR-0022). Pending, hidden, erased and unknown ids all
+ * read as absent, so a parent learns nothing about why. Nothing here writes, so no author learns who looked (L2-171).
  */
 
 /** A listed person's photo, served to parents from the directory's own address. */
@@ -49,7 +49,7 @@ export function readDirectoryPhoto(db: Db, profileId: string) {
   );
 }
 
-/** A listed volunteer's profile with the contact line they wrote; Shelfie sends nothing for them (ADR-0022). */
+/** A listed volunteer's profile with the contact line they wrote; Shelfie sends nothing for them (ADR-0023). */
 export function getVolunteer(db: Db, id: string) {
   return get<VolunteerRow & { contact: string }>(
     db,
@@ -85,7 +85,7 @@ export async function getAuthor(db: Db, id: string) {
   return { ...author, books };
 }
 
-/** A listed author's catalogue book with the author's name, as Add a book fills it in (ADR-0023). */
+/** A listed author's catalogue book with the author's name, as Add a book fills it in (ADR-0024). */
 export function getCatalogueBook(db: Db, id: string) {
   return get<DirectoryBook & { author: string }>(
     db,

@@ -32,7 +32,7 @@ export interface CatalogueBookSaved {
   pictureFailed: boolean;
 }
 
-/** Adds a book to the author's catalogue, or edits one, with an optional cover picture (L2-149 to L2-151). */
+/** Adds a book to the author's catalogue, or edits one, with an optional cover picture (L2-159 to L2-161). */
 @Component({
   selector: 'sh-catalogue-book-dialog',
   imports: [Banner, Cover, CoverPicker, Dialog, TextField, Textarea],

@@ -117,7 +117,7 @@ The one `DELETE` removes the household's profiles, devices, sessions, password r
 
 ## Erasing an author or volunteer
 
-Authors and volunteers have no household (ADR-0019); everything they own cascades from their profile. Find them with `shelfie-admin profiles list`, or on the VM:
+Authors and volunteers have no household (ADR-0020); everything they own cascades from their profile. Find them with `shelfie-admin profiles list`, or on the VM:
 
 ```bash
 set -a; . /etc/shelfie/env; set +a
@@ -125,7 +125,7 @@ psql "$DATABASE_URL" -c "SELECT id, role, name, email FROM profile WHERE househo
 psql "$DATABASE_URL" -c "DELETE FROM profile WHERE id = '<id from above>' AND role IN ('author','volunteer')"
 ```
 
-The one `DELETE` removes their profile, listing, photo, sessions, password resets, catalogue books and catalogue cover pictures. Books a household added from their catalogue are the household's own copies and stay (ADR-0023). The `role` condition makes the statement delete nothing when given a parent's or reader's id. Nightly dumps keep the data as for households.
+The one `DELETE` removes their profile, listing, photo, sessions, password resets, catalogue books and catalogue cover pictures. Books a household added from their catalogue are the household's own copies and stay (ADR-0024). The `role` condition makes the statement delete nothing when given a parent's or reader's id. Nightly dumps keep the data as for households.
 
 ## Changing settings
 
@@ -198,7 +198,7 @@ Write commands change production directly. Take a backup first: `sudo -u shelfie
 | `logs correct <id> --read-on <yyyy-mm-dd>` | Fix the day a chapter was read |
 | `logs delete <id>` | Delete the newest logged chapter of a book |
 | `profiles list` | Every author and volunteer with what they wrote, waiting ones first |
-| `profiles approve <id>` | List the profile in the parents' directory (ADR-0021) |
+| `profiles approve <id>` | List the profile in the parents' directory (ADR-0022) |
 | `profiles hide <id>` | Take the profile out of the directory; its owner can still sign in |
 
 Every command takes `--json` and `--api-url`; writes take `--dry-run`, destructive ones `--yes`. Exit codes: 0 done, 1 refused or failed, 2 token problem, 3 aborted. For development, point it at the local API: `shelfie-admin login --api-url http://localhost:3000` with a token made by `DATABASE_URL=<local database> npm run admin-token -w apps/api -- create --name dev --scopes read,write`.

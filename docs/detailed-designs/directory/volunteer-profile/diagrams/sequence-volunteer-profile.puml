@@ -21,7 +21,7 @@ box "Backend — Shelfie infrastructure" #FFF4E5
   database "Shelfie database (PostgreSQL)" as db
 end box
 
-vol -> page : Open /me after joining (L2-148)
+vol -> page : Open /me after joining (L2-158)
 page -> client : profile()
 client -> me : GET /api/me
 me -> svc : getMyProfile(profileId)
@@ -29,7 +29,7 @@ svc -> db : SELECT profile JOIN directory_profile
 me --> page : {role: volunteer, status: pending, ...}
 page --> vol : "Waiting for approval"; About you, Ages you help with, How parents can reach you
 vol -> page : Fill in; Save profile
-page -> page : Client checks: name 1-40, bio 1-500, ages 1-40, contact 1-120 (L2-145)
+page -> page : Client checks: name 1-40, bio 1-500, ages 1-40, contact 1-120 (L2-155)
 alt a check fails
   page --> vol : "Fix N things"; send nothing
 else checks pass
@@ -45,5 +45,5 @@ end
 vol -> page : Type /catalogue
 page --> vol : authorGuard -> Forbidden page "This part is for families"
 client -> cat : GET /api/catalogue-books (by hand)
-cat --> client : 403 authors-only (L2-160)
+cat --> client : 403 authors-only (L2-170)
 @enduml

@@ -22,12 +22,12 @@ box "Backend — Shelfie infrastructure" #FFF4E5
 end box
 
 author -> dialog : Choose a cover picture
-dialog -> dialog : Over 5 MB? show "That picture is too big" without sending (L2-151)
+dialog -> dialog : Over 5 MB? show "That picture is too big" without sending (L2-161)
 author -> dialog : Title, chapters, description; Add book
-dialog -> dialog : Client checks: title 1-120, chapters 1-200, description <= 300 (L2-149)
+dialog -> dialog : Client checks: title 1-120, chapters 1-200, description <= 300 (L2-159)
 dialog -> client : addBook(input)
 client -> router : POST /api/catalogue-books
-router -> router : Volunteer -> 403 authors-only; parent/reader -> 403 directory-only (L2-160)
+router -> router : Volunteer -> 403 authors-only; parent/reader -> 403 directory-only (L2-170)
 router -> service : addBook(profileId, input)
 service -> db : INSERT catalogue_book (profile_id = session's own)
 router --> client : 201 CatalogueBook
@@ -39,7 +39,7 @@ alt not an image
   covers --> router : Problem 400 photo-type
   router --> client : 400
   client --> dialog : ApiError
-  dialog --> author : Book is in the catalogue; warning toast: picture didn't upload (L2-151)
+  dialog --> author : Book is in the catalogue; warning toast: picture didn't upload (L2-161)
 else accepted
   service -> db : UPSERT catalogue_cover
   router --> client : {coverImage: /api/catalogue-books/{id}/cover?v=etag}

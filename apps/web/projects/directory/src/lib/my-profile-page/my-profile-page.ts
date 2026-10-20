@@ -41,7 +41,7 @@ const STATUS_BANNERS = {
   },
 } as const;
 
-/** An author's or volunteer's own profile, as parents will see it in the directory (L2-145 to L2-147). */
+/** An author's or volunteer's own profile, as parents will see it in the directory (L2-155 to L2-157). */
 @Component({
   selector: 'sh-my-profile-page',
   imports: [Banner, Button, ErrorState, PhotoPicker, Skeleton, TextField, Textarea],
@@ -149,7 +149,7 @@ export class MyProfilePage {
     }
   }
 
-  /** Uploads a chosen photo at once, as the Your photo dialog does (L2-146). */
+  /** Uploads a chosen photo at once, as the Your photo dialog does (L2-156). */
   protected async upload(file: File) {
     await this.changePhoto(async () => (await this.api.uploadPhoto(file)).photo);
   }

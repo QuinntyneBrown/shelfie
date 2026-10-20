@@ -36,7 +36,7 @@ export class App {
         { label: 'Directory', route: '/directory', icon: 'directory' },
         { label: 'Settings', route: '/settings', icon: 'settings' },
       ];
-    // An author's own pages; a volunteer has only My profile, so no tabs (ADR-0024).
+    // An author's own pages; a volunteer has only My profile, so no tabs (ADR-0025).
     if (role === 'author')
       return [
         { label: 'My profile', route: '/me', icon: 'profile' },

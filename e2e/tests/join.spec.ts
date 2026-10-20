@@ -1,4 +1,4 @@
-// Traces to: L2-144, L2-148, L2-025
+// Traces to: L2-154, L2-158, L2-025
 import { test, expect } from '../support/test';
 import { JoinPage } from '../pages/join.page';
 import { MyProfilePage } from '../pages/my-profile.page';

@@ -1,8 +1,8 @@
-# ADR-0021: The operator approves directory profiles before parents see them
+# ADR-0022: The operator approves directory profiles before parents see them
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-147, L2-152, L2-153, L2-154, L2-155
+- Requirements: L2-157, L2-162, L2-163, L2-164, L2-165
 
 ## Context
 

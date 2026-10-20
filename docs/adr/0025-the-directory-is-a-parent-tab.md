@@ -1,8 +1,8 @@
-# ADR-0024: The directory is a parent tab; authors and volunteers land on My profile
+# ADR-0025: The directory is a parent tab; authors and volunteers land on My profile
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-148, L2-153, L2-158
+- Requirements: L2-158, L2-163, L2-168
 
 ## Context
 

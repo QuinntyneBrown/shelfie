@@ -24,7 +24,7 @@ box "Backend — Shelfie infrastructure" #FFF4E5
 end box
 
 author -> join : Choose "I'm an author"; name, e-mail, username, password twice; Create my account
-join -> join : Client checks (L2-144)
+join -> join : Client checks (L2-154)
 alt a check fails
   join --> author : "Fix N things" and field errors; send nothing
 else checks pass
@@ -34,7 +34,7 @@ else checks pass
   alt e-mail or username held by any account
     svc --> auth : Problem 409 taken {fields}
     auth --> join : 409
-    join --> author : Field errors; keep values (L2-144)
+    join --> author : Field errors; keep values (L2-154)
   else free
     svc -> db : BEGIN; INSERT profile (role author, household_id NULL, color peach)\nINSERT directory_profile (status pending); INSERT session; COMMIT
     auth --> join : 201 session summary + Set-Cookie shelfie_session
@@ -44,11 +44,11 @@ else checks pass
     me -> mesvc : getMyProfile(profileId)
     mesvc -> db : SELECT profile JOIN directory_profile
     me --> page : {role: author, status: pending, ...}
-    page --> author : "Waiting for approval" banner and the form (L2-147)
+    page --> author : "Waiting for approval" banner and the form (L2-157)
     author -> page : Write About you, website; Save profile
     page -> client : save(input)
     client -> me : PUT /api/me {name, bio, website}
-    me -> me : Validate by role (bio 1-500, website http(s) <= 200) (L2-145)
+    me -> me : Validate by role (bio 1-500, website http(s) <= 200) (L2-155)
     me -> mesvc : updateMyProfile(session, input)
     mesvc -> db : UPDATE profile SET name; UPDATE directory_profile SET bio, website, updated_at
     me --> page : MyProfile

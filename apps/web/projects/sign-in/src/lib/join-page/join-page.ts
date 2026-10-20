@@ -7,7 +7,7 @@ import { usernameProblem } from '../sign-up-page/sign-up-page';
 
 type Field = 'name' | 'email' | 'username' | 'password' | 'confirm';
 
-/** Join as an author or a reading volunteer: an account outside any household (ADR-0019). */
+/** Join as an author or a reading volunteer: an account outside any household (ADR-0020). */
 @Component({
   selector: 'sh-join-page',
   imports: [AuthLayout, Banner, Button, RouterLink, TextField],

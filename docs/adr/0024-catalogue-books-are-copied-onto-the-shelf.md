@@ -1,8 +1,8 @@
-# ADR-0023: Catalogue books are copied onto the household's shelf
+# ADR-0024: Catalogue books are copied onto the household's shelf
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-157, L2-161, L2-150, L2-163
+- Requirements: L2-167, L2-171, L2-160, L2-173
 
 ## Context
 
@@ -17,5 +17,5 @@ A parent adds an author's catalogue book to the household's shelf. A link from t
 ## Consequences
 
 - No new write endpoint and no change to `book`; Add a book's validation, colour, sticker and toast apply unchanged.
-- Shelfie cannot tell an author how many families added a book (`L2-161`); showing authors statistics stays deferred.
+- Shelfie cannot tell an author how many families added a book (`L2-171`); showing authors statistics stays deferred.
 - The cover is fetched and re-uploaded by the browser, so it goes through the same checks as any other cover.

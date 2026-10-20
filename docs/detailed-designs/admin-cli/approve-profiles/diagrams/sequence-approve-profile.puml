@@ -50,5 +50,5 @@ else allowed
   end
   router -> db : INSERT admin_audit (route, target id, dry run, status; no body) (L2-052)
 end
-note over db : Parents' next GET /api/directory lists the profile (L2-152)
+note over db : Parents' next GET /api/directory lists the profile (L2-162)
 @enduml
