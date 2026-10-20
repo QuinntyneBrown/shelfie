@@ -114,7 +114,7 @@ export async function logChapter(pool: Pool, householdId: string, bookId: string
     chapterCount: book.chapter_count,
     bookFinished: count === book.chapter_count,
     streak: await streakFor(pool, householdId),
-    week: await weekFor(pool, householdId),
+    week: await weekFor(pool, householdId, new Date(), false),
     badgesEarned: (await badgesFor(pool, householdId)).filter((b) => b.earned && !badgesBefore.find((was) => was.id === b.id)!.earned),
   };
 }
