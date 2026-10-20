@@ -2,7 +2,10 @@
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { healedDays, householdDay, healInDatabase, setHealingActivity, setReadingDays } from '../support/database';
+import AxeBuilder from '@axe-core/playwright';
 import { ReviewPage } from '../pages/review.page';
+import { ShelfPage } from '../pages/shelf.page';
+import { ShellPage } from '../pages/shell.page';
 import { SettingsPage } from '../pages/settings.page';
 import { HealingActivityDialog } from '../pages/healing-activity-dialog.page';
 
@@ -166,4 +169,46 @@ test('Given a reader session, when it sends a heal, then the API answers 403 and
   const response = await page.request.post('/api/streak-healing/heals', { headers: { 'X-Requested-With': 'Shelfie' }, data: { day: householdDay(-1) } });
   expect(response.status()).toBe(403);
   expect(await healedDays()).toEqual([]);
+});
+
+// A day earlier this week to heal: yesterday, or today itself on a Monday, which has no earlier day this week.
+const HEALED = new Date().getUTCDay() === 1 ? 0 : 1;
+const READ = [0, 1, 2, 3].filter((d) => d !== HEALED);
+
+test('Given a day healed this week, when Nia opens her shelf, then the week strip joins it marked as healed, names the activity, and her streak counts it', async ({ page }) => {
+  await setReadingDays(READ);
+  await healInDatabase(HEALED, BROTHER);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.weekStrip()).toHaveAccessibleName(new RegExp(`Healed ${weekday(HEALED)}: ${BROTHER}$`));
+  await expect(shelf.healedNote()).toHaveText(`🩹 Healed ${weekday(HEALED)}: ${BROTHER}`);
+  expect(await shelf.healedDayCount()).toBe(1);
+  await expect(new ShellPage(page).streakBadge()).toHaveAccessibleName('4-day reading streak');
+  await expect(shelf.summary()).toContainText('4-day streak');
+});
+
+test('Given a healed day on which a chapter is later logged, then the strip shows it as an ordinary read day', async ({ page }) => {
+  await setReadingDays([0, 1, 2, 3]);
+  await healInDatabase(HEALED, BROTHER);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.weekStrip()).not.toHaveAccessibleName(/Healed/);
+  expect(await shelf.healedDayCount()).toBe(0);
+  await expect(shelf.healedNote()).toHaveCount(0);
+  await expect(new ShellPage(page).streakBadge()).toHaveAccessibleName('4-day reading streak');
+});
+
+test('Given a phone, then the week strip with a healed day fits the screen and the shelf passes an axe scan', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await setReadingDays(READ);
+  await healInDatabase(HEALED, BROTHER);
+  await signInAsNia(page);
+  const shelf = new ShelfPage(page);
+
+  await expect(shelf.healedNote()).toBeVisible();
+  expect(await shelf.scrollsSideways()).toBe(false);
+  const scan = await new AxeBuilder({ page }).analyze();
+  expect(scan.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
 });
