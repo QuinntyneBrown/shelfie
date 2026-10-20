@@ -43,6 +43,8 @@ export function seed(pool: Pool, { books = true } = {}) {
     await household('h2');
     await profile('p-other-reader', 'h2', 'reader', 'Zed', 'sky', 'zed', null, ZED_PASSWORD);
     await profile('p-other-dad', 'h2', 'parent', 'Zed’s dad', 'rose', 'zedsdad', 'other@example.com', ZEDS_DAD_PASSWORD);
+    // Both parents were here before e-mails were confirmed, so theirs count as confirmed (L2-150).
+    await db.query("UPDATE profile SET email_verified_at = '2026-10-01T09:00:00.000Z' WHERE role = 'parent'");
     await book('b-other', 'h2', 'The Secret Garden', 'F. H. Burnett', 5, 'sage', '🌷', 'parent', '2026-10-01T09:00:00.000Z', null);
     await log('b-other-c1', 'b-other', 1, '2026-10-02', '2026-10-02T16:00:00.000Z', '2026-10-02T16:00:00.000Z');
 

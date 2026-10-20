@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Send it again
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Parent" as parent
+box "Frontend — Shelfie web" #E0F2FE
+  participant "App banner or VerifyEmailPage" as ui
+  participant "EmailVerificationService" as svc
+  participant "ToastService" as toasts
+end box
+box "Backend — Shelfie API" #D1FADF
+  participant "auth.router.ts\n+ requireSession, requireRole(parent),\nverifyResendLimiter (3 per 10 min)" as router
+  participant "verify-email.service.ts" as verify
+end box
+database "PostgreSQL" as db
+participant "ACS Email or SMTP" as provider
+parent -> ui : Send it again / Send a new link
+ui -> svc : resend()
+svc -> router : POST /api/auth/verify-email/resend
+alt fourth ask in 10 minutes
+  router --> svc : 429 too-many-attempts
+  svc -> toasts : warning "That’s a few links already" (L2-149)
+else already verified
+  router --> svc : 204, nothing sent
+  svc -> toasts : success "Sent. Check your inbox."
+else unverified
+  router -> verify : sendVerification(db, parent, mail)
+  verify -> db : DELETE unused rows of the parent (only the newest works); INSERT new hash
+  verify -> provider : branded mail, awaited
+  router --> svc : 204
+  svc -> toasts : success "Sent. Check your inbox." (L2-149)
+end
+alt send failed or no connection
+  svc -> toasts : danger "The link wasn’t sent"
+end
+@enduml

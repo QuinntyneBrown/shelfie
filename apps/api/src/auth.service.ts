@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { get, run, transaction, type Db } from './db.ts';
 import { sendMail, type Mail } from './mail.ts';
+import { renderMail } from './mail-template.ts';
 import { Problem } from './problem.ts';
 import { ownPhotoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
@@ -20,6 +21,8 @@ export interface Session {
   photo: string | null;
   /** Whether the household has finished or skipped the set-up wizard (L2-137). */
   onboarded: boolean;
+  /** Whether the person's e-mail is confirmed (L2-146); false for a parent who has not opened the link, and for readers. */
+  emailVerified: boolean;
 }
 
 interface ProfileRow {
@@ -31,9 +34,10 @@ interface ProfileRow {
   email: string | null;
   household_id: string | null;
   password_hash: string | null;
+  email_verified_at: string | null;
 }
 
-const PROFILE_COLUMNS = 'id, name, username, role, color, email, household_id, password_hash';
+const PROFILE_COLUMNS = 'id, name, username, role, color, email, household_id, password_hash, email_verified_at';
 
 // Verified against when the username is unknown, so both failures take the same time.
 const DUMMY_HASH = hashSecret('not-a-real-password');
@@ -69,6 +73,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     theme,
     photo: photo ? ownPhotoUrl(profile.role, profile.id, photo.etag) : null,
     onboarded,
+    emailVerified: profile.email_verified_at !== null,
   };
 }
 
@@ -105,7 +110,7 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
   if (taken.length) throw new Problem(409, 'taken', { fields: taken });
   const passwordHash = hashSecret(input.password);
   const householdId = randomUUID();
-  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId };
+  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'sky', email, household_id: householdId, email_verified_at: null };
   return transaction(pool, async (db) => {
     // A household started here goes through the set-up wizard once; every other household is already done (ADR-0018).
     await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
@@ -133,7 +138,7 @@ export async function join(pool: Pool, input: JoinInput): Promise<Session> {
   const taken = await takenFields(pool, input.username, email);
   if (taken.length) throw new Problem(409, 'taken', { fields: taken });
   const passwordHash = hashSecret(input.password);
-  const account = { id: randomUUID(), name: input.name.trim(), username: input.username, role: input.kind, color: input.kind === 'author' ? 'peach' : 'mint', email, household_id: null };
+  const account = { id: randomUUID(), name: input.name.trim(), username: input.username, role: input.kind, color: input.kind === 'author' ? 'peach' : 'mint', email, household_id: null, email_verified_at: null };
   return transaction(pool, async (db) => {
     await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, NULL, $2, $3, $4, $5, $6, $7)', [
       account.id,
@@ -160,7 +165,13 @@ export async function requestPasswordReset(db: Db, email: string, mail: Mail = s
   const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();
   await run(db, 'INSERT INTO password_reset (token_hash, profile_id, expires_at) VALUES ($1, $2, $3)', [sha256(token), profile.id, expires]);
   const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-  await mail(email, 'Choose a new Shelfie password', `Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.\n\n${link}\n`);
+  const { html, text } = renderMail({
+    heading: 'Choose a new password',
+    paragraphs: [`Use this link to choose a new password. It works once, for ${RESET_HOURS} hour.`],
+    button: { label: 'Choose a new password', url: link },
+    footer: 'You got this because someone asked to reset the password for this address. If it wasn’t you, ignore this e-mail; your password stays the same.',
+  });
+  await mail(email, 'Choose a new Shelfie password', text, html);
 }
 
 /** Spends a reset token: sets the new password, ends every session of the parent and signs them in. Null when the link is used or expired. */

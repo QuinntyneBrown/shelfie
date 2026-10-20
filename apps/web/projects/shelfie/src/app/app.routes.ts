@@ -48,6 +48,10 @@ export const routes: Routes = [
     loadComponent: () => import('sign-in').then((m) => m.ResetPasswordPage),
   },
   {
+    path: 'verify-email',
+    loadComponent: () => import('sign-in').then((m) => m.VerifyEmailPage),
+  },
+  {
     path: 'onboarding',
     canActivate: [authGuard, grownUpGuard],
     loadComponent: () => import('onboarding').then((m) => m.OnboardingPage),

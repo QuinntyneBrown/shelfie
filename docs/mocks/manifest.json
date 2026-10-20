@@ -156,6 +156,27 @@
       }
     },
     {
+      "id": "verify-email",
+      "kind": "page",
+      "title": "Confirm your e-mail",
+      "route": "/verify-email?token=…",
+      "requirements": [
+        "L2-146",
+        "L2-147"
+      ],
+      "states": [
+        "verifying",
+        "success",
+        "error",
+        "error-signed-out"
+      ],
+      "not_applicable": {
+        "default": "The page has no resting state: it confirms the token as it opens, then shows success or error.",
+        "loading": "verifying is this page's loading state.",
+        "empty": "A single message; there is no collection to be empty."
+      }
+    },
+    {
       "id": "shelf",
       "kind": "page",
       "title": "My shelf",
@@ -934,7 +955,11 @@
         "success",
         "warning",
         "danger",
-        "persistent"
+        "persistent",
+        "verify-email",
+        "verify-email-sent",
+        "verify-email-limited",
+        "verify-email-failed"
       ],
       "not_applicable": {}
     },
@@ -982,6 +1007,30 @@
         "L2-125",
         "L2-126",
         "L2-127"
+      ]
+    },
+    {
+      "id": "email",
+      "kind": "notification",
+      "title": "E-mail",
+      "opens_from": "sign-up",
+      "states": [
+        "verify-email",
+        "reset-password",
+        "invite"
+      ],
+      "not_applicable": {
+        "info": "Each e-mail is one kind of message; its tone is carried by its copy.",
+        "success": "Not a success/failure message.",
+        "warning": "Not a success/failure message.",
+        "danger": "Shelfie never e-mails an error; failures stay in the app."
+      },
+      "requirements": [
+        "L2-004",
+        "L2-034",
+        "L2-144",
+        "L2-145",
+        "L2-151"
       ]
     }
   ]

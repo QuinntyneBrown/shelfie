@@ -53,6 +53,7 @@ const HOUSEHOLD_ROUTES: [string, string][] = [
   ['GET', '/api/settings'],
   ['PATCH', '/api/settings'],
   ['POST', '/api/settings/onboarded'],
+  ['POST', '/api/auth/verify-email/resend'],
   ['POST', '/api/readers'],
   ['PATCH', `/api/readers/${SEED.readerId}`],
   ['GET', '/api/gallery-rewards'],

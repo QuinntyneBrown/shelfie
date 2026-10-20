@@ -43,6 +43,11 @@ export async function expireResetLinks() {
   await db.query("UPDATE password_reset SET expires_at = '2020-01-01T00:00:00.000Z'");
 }
 
+/** Makes every confirm-your-e-mail link older than its 24 hours. */
+export async function expireVerifyLinks() {
+  await db.query("UPDATE email_verification SET expires_at = '2020-01-01T00:00:00.000Z'");
+}
+
 /** Makes every invite link older than its 7 days. */
 export async function expireInvites() {
   await db.query("UPDATE invites SET expires_at = '2020-01-01T00:00:00.000Z'");

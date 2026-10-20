@@ -1,0 +1,39 @@
+<sh-auth-layout>
+  <div class="card stack centred">
+    @switch (state()) {
+      @case ('verifying') {
+        <span class="sticker sticker--xl centred-item" aria-hidden="true">✉️</span>
+        <h1>Confirming your e-mail…</h1>
+        <p class="text-muted" role="status">This only takes a moment.</p>
+        <sh-skeleton class="button-placeholder" aria-hidden="true" />
+      }
+      @case ('success') {
+        <span class="sticker sticker--xl centred-item" aria-hidden="true">🎉</span>
+        <h1>Your e-mail is confirmed</h1>
+        <p class="text-muted">
+          Thanks! {{ email() }} is all set. We’ll only write to it about your account.
+        </p>
+        <a class="btn btn--primary btn--lg" [routerLink]="home()">Go to Shelfie</a>
+      }
+      @case ('error') {
+        <span class="sticker sticker--xl centred-item" aria-hidden="true">⏳</span>
+        <h1>This link has expired</h1>
+        @if (signedIn()) {
+          <p class="text-muted">
+            Confirmation links work once, for 24 hours, and only the newest one works. We can send
+            you a fresh one now.
+          </p>
+          <form (submit)="$event.preventDefault(); sendNewLink()">
+            <sh-button [large]="true" [block]="true" [busy]="sending()">Send a new link</sh-button>
+          </form>
+        } @else {
+          <p class="text-muted">
+            Confirmation links work once, for 24 hours, and only the newest one works. Sign in and
+            choose Send it again to get a fresh one.
+          </p>
+          <a class="btn btn--primary btn--lg" routerLink="/sign-in">Sign in</a>
+        }
+      }
+    }
+  </div>
+</sh-auth-layout>

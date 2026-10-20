@@ -44,6 +44,10 @@ export const lookupLimiter = (db: Db) => rateLimiter(db, 60, (req) => `lookup:${
 export const feedbackLimiter = (db: Db) =>
   rateLimiter(db, 10, (_req, res) => `feedback:${(res.locals['session'] as RequestSession).profileId}`);
 
+/** At most three confirm-your-e-mail links per parent in ten minutes (L2-149). Use after `requireSession`. */
+export const verifyResendLimiter = (db: Db) =>
+  rateLimiter(db, 3, (_req, res) => `verify:${(res.locals['session'] as RequestSession).profileId}`);
+
 /** At most twenty subscription requests per person in ten minutes. Use after `requireSession`. */
 export const pushLimiter = (db: Db) =>
   rateLimiter(db, 20, (_req, res) => `push:${(res.locals['session'] as RequestSession).profileId}`);

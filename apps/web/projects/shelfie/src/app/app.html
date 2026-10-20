@@ -18,7 +18,13 @@
     [severity]="banner.severity"
     [title]="banner.title"
     [message]="banner.message ?? null"
-  />
+  >
+    @if (banner.action; as action) {
+      <div class="alert__actions">
+        <button class="btn btn--sm" type="button" (click)="action.run()">{{ action.label }}</button>
+      </div>
+    }
+  </sh-banner>
 }
 <main #main id="main" tabindex="-1" [class.has-tabbar]="navLinks().length > 0">
   <router-outlet />
