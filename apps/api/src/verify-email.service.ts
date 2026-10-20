@@ -6,11 +6,13 @@ import { renderMail } from './mail-template.ts';
 
 const VERIFY_HOURS = 24;
 
+type Parent = { id: string; name: string; email: string };
+
 /**
- * Mails the parent a fresh confirm link and keeps only its token's hash. The parent's unused links are deleted
- * first, so only the newest one works. The row is written before the mail is handed over.
+ * Issues the parent a fresh confirm link, keeping only its token's hash, and returns the mail that carries it. The
+ * parent's unused links are deleted first, so only the newest one works.
  */
-export async function sendVerification(db: Db, parent: { id: string; name: string; email: string }, mail: Mail = sendMail) {
+export async function issueVerification(db: Db, parent: Parent): Promise<Parameters<Mail>> {
   const token = randomBytes(32).toString('base64url');
   const now = new Date();
   await run(db, 'DELETE FROM email_verification WHERE profile_id = $1 AND used_at IS NULL', [parent.id]);
@@ -27,7 +29,12 @@ export async function sendVerification(db: Db, parent: { id: string; name: strin
     button: { label: 'Confirm my e-mail', url: link },
     footer: 'You got this because a Shelfie account was made with this address. If it wasn’t you, ignore this e-mail and nothing happens.',
   });
-  return mail(parent.email, 'Confirm your e-mail for Shelfie', text, html);
+  return [parent.email, 'Confirm your e-mail for Shelfie', text, html];
+}
+
+/** Issues a fresh confirm link and waits until the mail is handed over. */
+export async function sendVerification(db: Db, parent: Parent, mail: Mail = sendMail) {
+  await mail(...(await issueVerification(db, parent)));
 }
 
 /** Spends a live confirm token and marks its parent's e-mail verified; returns the address. Null when the link is used, replaced, expired or unknown. */
