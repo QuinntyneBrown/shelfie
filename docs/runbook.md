@@ -13,9 +13,10 @@ How Shelfie runs in production and what to do when something needs a hand. A par
 | Backups | 7 days of automated backups with point-in-time restore on the server; a nightly `pg_dump` in the `backups` blob container as `shelfie-YYYY-MM-DD.dump`, deleted after 30 days by a lifecycle rule |
 | Releases | `/opt/shelfie/releases/<git sha>`; `current` is a symlink to the live one; the last three are kept |
 | Settings | `/etc/shelfie/env` (holds `DATABASE_URL`); `/etc/shelfie/db-admin` (root only) holds the administrator credential |
+| Mail | Azure Communication Services Email (`shelfie-acs-…`, `shelfie-email-…`, data in Canada) sends from `Shelfie <hello@shelfie.kids>` with the VM's managed identity (ADR-0019); DNS records at Namecheap |
 | Logs | journald: `journalctl -u shelfie`, `journalctl -u caddy`, `journalctl -t shelfie-backup` |
 
-Monthly cost (CAD retail): VM 10.88 + 32 GiB SSD 3.74 + static IP 5.18 + storage ≈ 0.10 + PostgreSQL B1ms ≈ 17 + 32 GiB database storage ≈ 5, about **$42**.
+Monthly cost (CAD retail): VM 10.88 + 32 GiB SSD 3.74 + static IP 5.18 + storage ≈ 0.10 + PostgreSQL B1ms ≈ 17 + 32 GiB database storage ≈ 5 + e-mail ≈ 0 (Azure charges about US$0.00025 a mail), about **$42**.
 
 ## First-time set-up
 
@@ -47,6 +48,26 @@ The release that adds the marketing site moves the app from `shelfie.kids` to `a
 2. On the VM set `APP_URL=https://app.shelfie.kids` in `/etc/shelfie/env` and `sudo systemctl restart shelfie`, so reset and invite links point at the new host. Links already sent to `shelfie.kids` keep working through the redirect.
 3. Merge. Everyone signs in once more on the new host: the session cookie is host-only.
 4. `shelfie-admin` now defaults to `https://app.shelfie.kids`; run `shelfie-admin login` once to store the token for that URL.
+
+### Mail (once)
+
+Shelfie mails the confirm-your-e-mail link at sign-up, password-reset links and parent invites from `hello@shelfie.kids` through Azure Communication Services (ADR-0019, `docs/detailed-designs/sign-in/verify-email/`). ACS refuses to send from a domain it has not verified, and refuses to link one it has not verified, so it takes two bootstrap runs:
+
+1. **Deploy.** The first `bash infra/bootstrap.sh` creates the communication service, the e-mail service, the customer-managed `shelfie.kids` domain with the `hello` sender (display name "Shelfie") and the role that lets the VM's identity send. It leaves the domain unlinked and the API without `ACS_EMAIL_ENDPOINT`, so production still sends no mail, and it prints the records below with their real values.
+2. **Add the records at Namecheap** (Advanced DNS for `shelfie.kids`). Re-read the values with `az communication email domain show -g shelfie-prod --email-service-name <emailServiceName> -n shelfie.kids --query verificationRecords` if the printout is lost.
+
+   | Type | Host | Value |
+   |---|---|---|
+   | TXT | `@` | `ms-domain-verification=<value from Azure>` (domain verification) |
+   | TXT | `@` | `v=spf1 include:spf.protection.outlook.com -all`. Keep exactly one SPF record: if Namecheap already has one (for example `include:spf.efwd.registrar-servers.com` for mail forwarding), merge the includes into it. Azure only verifies an SPF record that ends in `-all` |
+   | CNAME | `selector1-azurecomm-prod-net._domainkey` | `selector1-azurecomm-prod-net._domainkey.azurecomm.net` (DKIM) |
+   | CNAME | `selector2-azurecomm-prod-net._domainkey` | `selector2-azurecomm-prod-net._domainkey.azurecomm.net` (DKIM2) |
+   | TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:hello@shelfie.kids` |
+
+   Keep the existing MX records, so `hello@shelfie.kids` still reaches the inbox that reads it.
+3. **Verify.** Once `dig TXT shelfie.kids` shows the records, run `az communication email domain initiate-verification -g shelfie-prod --email-service-name <emailServiceName> --domain-name shelfie.kids --verification-type <type>` for `Domain`, `SPF`, `DKIM` and `DKIM2`, and wait until `az communication email domain show … --query verificationStates` reports each as `Verified` (minutes to a day).
+4. **Link and switch on.** Run `LINK_EMAIL_DOMAIN=true bash infra/bootstrap.sh`. It deploys with `linkEmailDomain=true`, then writes `ACS_EMAIL_ENDPOINT` (`https://<communication service>.communication.azure.com`) and `ACS_EMAIL_SENDER` (`hello@shelfie.kids`) into `/etc/shelfie/env` and restarts the API. Pass `LINK_EMAIL_DOMAIN=true` on every later bootstrap run, or the domain is unlinked again.
+5. **Check.** Ask for a password reset for your own parent address on `https://app.shelfie.kids/forgot-password`; the branded mail arrives from Shelfie. A failed send shows in `journalctl -u shelfie` as a `500` on the request, or as `event: verify-mail-failed` for a sign-up; neither line holds the address or the link.
 
 SSH is allowed only from the IP you ran bootstrap from. If yours changes, rerun bootstrap (it is idempotent) or `ADMIN_IP=<new ip> bash infra/bootstrap.sh`.
 
@@ -117,7 +138,7 @@ The one `DELETE` removes the household's profiles, devices, sessions, password r
 
 ## Changing settings
 
-Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL` (`https://app.shelfie.kids`; the host that reset and invite links point at), `STORAGE_ACCOUNT`. `SMTP_URL` (and `MAIL_FROM`) carry password-reset and invite mail; the production provider is still to be chosen (see AGENTS.md, Deferred work). `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged. The same key switches on suggested questions on Manage a book (`docs/detailed-designs/books/suggest-questions/`): when a parent presses "Suggest questions" the API sends the book's title, author, next chapter number and existing questions to Anthropic (`claude-opus-5-5`), at most 5 asks per household in 10 minutes; without the key the dialog says suggestions aren’t switched on and adding questions by hand keeps working. The same key turns on the AI fallback of book autocomplete on Add a book (`docs/detailed-designs/books/autocomplete-book/`); unset, titles are looked up in the Open Library catalogue only. The VM needs outbound HTTPS to `openlibrary.org`, `covers.openlibrary.org` and, with the key, `api.anthropic.com`. `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (a `mailto:` or `https:` contact for the push services) turn on push notifications for feedback (`docs/detailed-designs/shell/push-notifications/`, ADR-0016); all are optional, and with the two keys unset Settings says "Notifications aren’t set up", the shelf offers nothing and nothing is sent. Make a pair once with `npx web-push generate-vapid-keys` and keep it: a new pair strands every stored subscription until each person turns notifications on again. A message carries only a title, a body, a tag and a page, never answers, notes or reward text. The VM needs outbound HTTPS to the browser vendors' push services (for Chrome, `fcm.googleapis.com`).
+Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL` (`https://app.shelfie.kids`; the host that reset and invite links point at), `STORAGE_ACCOUNT`. `ACS_EMAIL_ENDPOINT` and `ACS_EMAIL_SENDER` send every mail (the confirm-your-e-mail link, reset and invite) through Azure Communication Services with the VM's managed identity; bootstrap writes them once the domain is linked ("Mail" above). With `ACS_EMAIL_ENDPOINT` unset, `SMTP_URL` (and `MAIL_FROM`, default `Shelfie <hello@shelfie.kids>`) send over SMTP, which is how development reaches Mailpit; with neither set, nothing is sent and the API logs a warning without the address. The VM needs outbound HTTPS to `*.communication.azure.com`. `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged. The same key switches on suggested questions on Manage a book (`docs/detailed-designs/books/suggest-questions/`): when a parent presses "Suggest questions" the API sends the book's title, author, next chapter number and existing questions to Anthropic (`claude-opus-5-5`), at most 5 asks per household in 10 minutes; without the key the dialog says suggestions aren’t switched on and adding questions by hand keeps working. The same key turns on the AI fallback of book autocomplete on Add a book (`docs/detailed-designs/books/autocomplete-book/`); unset, titles are looked up in the Open Library catalogue only. The VM needs outbound HTTPS to `openlibrary.org`, `covers.openlibrary.org` and, with the key, `api.anthropic.com`. `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (a `mailto:` or `https:` contact for the push services) turn on push notifications for feedback (`docs/detailed-designs/shell/push-notifications/`, ADR-0016); all are optional, and with the two keys unset Settings says "Notifications aren’t set up", the shelf offers nothing and nothing is sent. Make a pair once with `npx web-push generate-vapid-keys` and keep it: a new pair strands every stored subscription until each person turns notifications on again. A message carries only a title, a body, a tag and a page, never answers, notes or reward text. The VM needs outbound HTTPS to the browser vendors' push services (for Chrome, `fcm.googleapis.com`).
 
 ## Changing the infrastructure
 
@@ -200,7 +221,7 @@ The request id matches the `requestId` in `journalctl -u shelfie`. The admin API
 
 ## Still deferred
 
-Uptime monitoring, log shipping beyond journald and the production e-mail provider (AGENTS.md, Deferred work).
+Uptime monitoring, log shipping beyond journald and re-verifying an e-mail changed in Settings (AGENTS.md, Deferred work).
 
 ## Health and logs
 
