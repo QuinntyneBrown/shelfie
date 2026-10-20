@@ -1,3 +1,7 @@
+/* The host takes no space, so a dialog placed in a .stack adds no gap while closed. */
+:host {
+  display: contents;
+}
 /* A bottom sheet on phones, a centred panel from 640px. */
 dialog {
   margin: auto auto 0;

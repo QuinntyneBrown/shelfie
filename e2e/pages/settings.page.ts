@@ -166,6 +166,13 @@ export class SettingsPage {
     return this.reader(name).locator('img');
   }
 
+  /** Pixels of empty space between the bottom of one section card and the top of the next. */
+  async spaceBetween(above: string, below: string) {
+    const top = await this.page.getByRole('region', { name: above, exact: true }).boundingBox();
+    const bottom = await this.page.getByRole('region', { name: below, exact: true }).boundingBox();
+    return Math.round(bottom!.y - (top!.y + top!.height));
+  }
+
   /** Asks the API for the settings, as a client that skips the page would. */
   getViaApi() {
     return this.page.request.get('/api/settings');
