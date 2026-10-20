@@ -57,7 +57,7 @@ export class ShellPage {
       const spacer = document.createElement('div');
       spacer.style.height = '3000px';
       document.querySelector('main')!.append(spacer);
-      window.scrollTo(0, document.documentElement.scrollHeight);
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' });
       return document.querySelector('header.topbar')!.getBoundingClientRect().top;
     });
   }
