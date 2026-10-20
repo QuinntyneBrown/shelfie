@@ -45,6 +45,8 @@ The feature sits in the `review` subsystem beside reward-gallery, because its en
 - **`ShelfPage`** (shelf) — a "Streak rewards" section between Up next and Finished, only when at least one reward is set. One `sh-streak-reward-card` per set reward, its note "Read 7 days in a row to earn $20" (or without "to earn …" when it has no amount): the next unearned one gets `progress` (the streak, capped at the milestone); an earned, ungiven one gets `progress` equal to the milestone ("Ready!"); a given one has no progress and the note "Given Sat 10 Oct". An earned, ungiven reward shows `sh-celebration` `variant="book"` above the list, with `sh-streak-reward-badge` and "getting your $20 ready" when it has an amount.
 - **`ReviewPage`** (review) — a card "Nia reached a 7-day streak" with "Her reward: Ice cream" and an `sh-button` "Give it" for each earned, ungiven reward; the summary counts them among the rewards to give. Give it calls `ReviewApi.giveStreakReward(milestone)`, shows busy, replaces the reward with the answer, and toasts "… given"; on failure a danger toast says "The reward wasn’t given".
 
+- **Healed days** — earning reads `streakFor`, which counts days the parent healed (reading-log/heal-streak), so a healed streak earns its milestones with no code here.
+
 ### Error mapping
 
 | Situation | API | Page |

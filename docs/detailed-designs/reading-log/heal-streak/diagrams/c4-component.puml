@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Heal the streak
+
+Container(web, "Shelfie web", "Angular", "SettingsPage, ReviewPage, ShelfPage")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "streak-healing.router.ts", "Express Router", "GET, PUT and DELETE activity, POST heals; requireSession and requireRole('parent')")
+  Component(service, "streak-healing.service.ts", "Service", "healingOf, healOffer, set, clear, healDay")
+  Component(reviewService, "review.service.ts", "Service", "Adds heal to the overview")
+  Component(shelfService, "shelf.service.ts", "Service", "streak and week")
+  Component(streak, "streak.ts", "Service", "streakFor and weekFor join the heals")
+  Component(badges, "badges.ts", "Service", "Chapter logs only")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "household, streak_heal, chapter_log")
+}
+Rel(web, router, "/api/streak-healing", "JSON/HTTPS")
+Rel(web, reviewService, "GET /api/review", "JSON/HTTPS")
+Rel(web, shelfService, "GET /api/shelf", "JSON/HTTPS")
+Rel(router, service, "Calls")
+Rel(reviewService, service, "healOffer")
+Rel(service, streak, "readingDays, streakFor, mondayOf")
+Rel(shelfService, streak, "streakFor, weekFor")
+Rel(streak, db, "Reads read days and heals", "SQL")
+Rel(service, db, "Writes the activity and heals", "SQL")
+Rel(badges, db, "Reads chapter logs", "SQL")
+@enduml

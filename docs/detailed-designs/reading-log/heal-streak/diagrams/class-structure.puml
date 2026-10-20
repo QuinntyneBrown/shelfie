@@ -1,0 +1,67 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Heal the streak
+
+class HealOffer {
+  +day: string
+  +activity: string
+}
+
+class WeekDay {
+  +date: string
+  +read: boolean
+  +healed: string|null
+  +today: boolean
+}
+
+class StreakHealingService {
+  +healableDays(readOnDays, heals, today): string[]
+  +healingOf(db, householdId): {activity}
+  +healOffer(db, householdId, now): HealOffer|null
+  +setHealingActivity(db, householdId, name): void
+  +clearHealingActivity(db, householdId): void
+  +healDay(db, householdId, day, now): {day, streak}
+}
+
+class StreakService {
+  +mondayOf(day): string
+  +computeWeek(readOnDays, today, heals): WeekDay[]
+  +readingDays(db, householdId, now)
+  +streakFor(db, householdId, now): number
+  +weekFor(db, householdId, now, withHeals): WeekDay[]
+}
+
+class SettingsPage {
+  +healingActivity: Signal<string|null>
+}
+
+class HealingActivityDialog {
+  +open: boolean
+  +editing: string|null
+  +saved: output<string>
+}
+
+class ReviewPage {
+  +heal(offer): void
+}
+
+class "sh-week-strip" as WeekStrip {
+  +days: WeekStripDay[]
+}
+
+StreakHealingService --> StreakService : readingDays, streakFor
+StreakHealingService ..> HealOffer : returns
+StreakService ..> WeekDay : returns
+SettingsPage *-- HealingActivityDialog
+ReviewPage ..> HealOffer : overview.heal
+WeekStrip ..> WeekDay : draws healed days
+@enduml
