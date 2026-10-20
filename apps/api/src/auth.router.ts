@@ -10,11 +10,13 @@ import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
 import type { Mail } from './mail.ts';
 import type { Log } from './logging.ts';
-import { sendVerification } from './verify-email.service.ts';
+import { sendVerification, verifyEmail } from './verify-email.service.ts';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
 const resetPasswordSchema = z.object({ token: z.string(), password: z.string().min(8) });
+
+const verifyEmailSchema = z.object({ token: z.string() });
 
 const passwordSignInSchema = z.object({ username: z.string().trim().min(1), password: z.string().min(1), remember: z.boolean() });
 
@@ -73,6 +75,15 @@ export function authRouter(db: Pool, mail?: Mail) {
     await endPreviousSession(req.headers.cookie);
     setSessionCookie(res, session);
     res.json(sessionSummary(session));
+  });
+
+  /** Confirms the address the link was mailed to; it neither reads nor changes the session (L2-146). */
+  router.post('/verify-email', async (req, res) => {
+    const body = verifyEmailSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    const email = await verifyEmail(db, body.data.token);
+    if (!email) return res.status(400).json({ type: 'verify-token-invalid' });
+    res.json({ email });
   });
 
   router.post('/sign-up', async (req, res) => {

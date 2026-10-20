@@ -30,15 +30,15 @@ export async function sendVerification(db: Db, parent: { id: string; name: strin
   return mail(parent.email, 'Confirm your e-mail for Shelfie', text, html);
 }
 
-/** Spends a live confirm token and marks its parent's e-mail verified. False when the link is used, replaced, expired or unknown. */
-export async function verifyEmail(db: Db, token: string): Promise<boolean> {
+/** Spends a live confirm token and marks its parent's e-mail verified; returns the address. Null when the link is used, replaced, expired or unknown. */
+export async function verifyEmail(db: Db, token: string): Promise<string | null> {
   const now = new Date().toISOString();
   const spent = await get<{ profile_id: string }>(
     db,
     'UPDATE email_verification SET used_at = $2 WHERE token_hash = $1 AND used_at IS NULL AND expires_at > $2 RETURNING profile_id',
     [sha256(token), now],
   );
-  if (!spent) return false;
-  await run(db, 'UPDATE profile SET email_verified_at = $2 WHERE id = $1 AND email_verified_at IS NULL', [spent.profile_id, now]);
-  return true;
+  if (!spent) return null;
+  await run(db, 'UPDATE profile SET email_verified_at = COALESCE(email_verified_at, $2) WHERE id = $1', [spent.profile_id, now]);
+  return (await get<{ email: string }>(db, 'SELECT email FROM profile WHERE id = $1', [spent.profile_id]))!.email;
 }

@@ -34,6 +34,11 @@ export function inviteLinkFor(address: string): Promise<string> {
   return linkFor(address, /http:\/\/\S+\/accept-invite\?\S+/, 'invite');
 }
 
+/** The confirm-your-e-mail link in the newest mail sent to the address, once it has arrived. */
+export function verifyLinkFor(address: string): Promise<string> {
+  return linkFor(address, /http:\/\/\S+\/verify-email\?\S+/, 'confirm');
+}
+
 /** The reset link in the newest mail sent to the address, once it has arrived. */
 export function resetLinkFor(address: string): Promise<string> {
   return linkFor(address, /http:\/\/\S+\/reset-password\?\S+/, 'reset');

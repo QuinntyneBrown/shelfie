@@ -1,4 +1,4 @@
-// Traces to: L2-144, L2-145, L2-152
+// Traces to: L2-144, L2-145, L2-146, L2-147, L2-152
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -98,4 +98,42 @@ test('Given a parent from before this release, when they sign in, then the sessi
   assert.equal((await response.json()).emailVerified, true);
   const session = await fetch(`${url}/api/auth/session`, { headers: { Cookie: cookieOf(response) } });
   assert.equal((await session.json()).emailVerified, true);
+});
+
+async function signUpAndTakeToken() {
+  const response = await post('/auth/sign-up', NEW_PARENT);
+  await until(() => outbox.length > 0);
+  return { cookie: cookieOf(response), token: tokenIn(outbox.at(-1)!)! };
+}
+
+test('Given a live confirm link, when it is posted, then the address is verified, the link is spent and no cookie is set or cleared', async () => {
+  const { cookie, token } = await signUpAndTakeToken();
+
+  const response = await post('/auth/verify-email', { token });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { email: NEW_PARENT.email });
+  assert.equal(response.headers.get('set-cookie'), null);
+  const session = await (await fetch(`${url}/api/auth/session`, { headers: { Cookie: cookie } })).json();
+  assert.equal(session.emailVerified, true);
+  const [row] = await all<{ used_at: string | null }>(db.pool, 'SELECT used_at FROM email_verification');
+  assert.ok(row.used_at);
+});
+
+test('Given a used, expired or unknown confirm link, when it is posted, then the API answers verify-token-invalid and nothing changes', async () => {
+  const { cookie, token } = await signUpAndTakeToken();
+  await post('/auth/verify-email', { token });
+  await db.pool.query('UPDATE profile SET email_verified_at = NULL WHERE username = $1', [NEW_PARENT.username]);
+
+  const used = await post('/auth/verify-email', { token });
+  assert.equal(used.status, 400);
+  assert.deepEqual(await used.json(), { type: 'verify-token-invalid' });
+
+  await db.pool.query('UPDATE email_verification SET used_at = NULL, expires_at = $1', ['2020-01-01T00:00:00.000Z']);
+  assert.equal((await post('/auth/verify-email', { token })).status, 400);
+  assert.equal((await post('/auth/verify-email', { token: 'not-a-token' })).status, 400);
+  assert.equal((await post('/auth/verify-email', {})).status, 400);
+
+  const session = await (await fetch(`${url}/api/auth/session`, { headers: { Cookie: cookie } })).json();
+  assert.equal(session.emailVerified, false);
 });
