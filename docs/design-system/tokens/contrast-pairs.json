@@ -636,6 +636,12 @@
       "bg": "--color-tint-peach",
       "min": 3,
       "note": "primary button / progress fill edge on a peach-tinted card"
+    },
+    {
+      "fg": "--color-fg-accent",
+      "bg": "--color-accent-subtle",
+      "min": 4.5,
+      "note": "week strip: letter on a healed day"
     }
   ]
 }

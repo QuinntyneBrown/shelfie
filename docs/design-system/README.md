@@ -101,7 +101,7 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 
 - `tokens/tokens.css` — source of truth: primitives, semantic tokens, component sizes; light on `:root` and `[data-theme="light"]`, dark on `[data-theme="dark"]` and under `prefers-color-scheme: dark`; reduced-motion, more-contrast and forced-colours overrides.
 - `tokens/tokens.json` — DTCG export generated from `tokens.css` (dark values under `$extensions`). Regenerate, never hand-edit.
-- `tokens/contrast-pairs.json` — every foreground/background pairing the components rely on: 103 pairs, 200 checks across both themes.
+- `tokens/contrast-pairs.json` — every foreground/background pairing the components rely on: 104 pairs, 202 checks across both themes.
 - `assets/components.css` — the product stylesheet; `assets/ds.css` and `assets/ds.js` — documentation-site chrome only.
 
 ## Drift found in the mocks
@@ -203,7 +203,7 @@ Run on 2026-10-19 from the repository root, after the Beanstack review update.
 
 | Check | Command | Result |
 |---|---|---|
-| Contrast, both themes | `python3 -I .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 200 passed, 0 failed, 0 unresolved (103 pairs) |
+| Contrast, both themes | `python3 -I .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 202 passed, 0 failed, 0 unresolved (104 pairs) |
 | Token export | `tokens_to_json.py docs/design-system/tokens/tokens.css` | 330 tokens; regenerated output identical to `tokens/tokens.json` |
 | Structure | `python3 -I .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 74 pages (12 foundations, 52 components, 9 patterns, index), 0 errors, 0 warnings |
 | Token coverage | script over `tokens.css` | All 266 custom properties appear in a `data-token` cell on exactly one foundation page |
