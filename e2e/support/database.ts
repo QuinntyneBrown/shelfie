@@ -149,3 +149,26 @@ export async function pushDevicesOf(username: string): Promise<string[]> {
   return found.map((r) => r.endpoint);
 }
 
+
+/** Sets the seeded household's streak healing activity, as Dad would in Settings. */
+export async function setHealingActivity(name: string | null) {
+  await db.query("UPDATE household SET healing_activity = $1 WHERE id = 'h1'", [name]);
+}
+
+/** Heals a day for the seeded household, `daysAgo` days before today, as Review's Heal it does. */
+export async function healInDatabase(daysAgo: number, activity: string) {
+  const day = householdDay(-daysAgo);
+  const monday = new Date(`${day}T00:00:00Z`);
+  monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
+  await db.query("INSERT INTO streak_heal (household_id, healed_on, week_of, activity, healed_at) VALUES ('h1', $1, $2, $3, $4)", [
+    day,
+    monday.toISOString().slice(0, 10),
+    activity,
+    new Date().toISOString(),
+  ]);
+}
+
+/** The days healed for the seeded household, oldest first. */
+export async function healedDays(): Promise<string[]> {
+  return (await rows<{ healed_on: string }>("SELECT healed_on FROM streak_heal WHERE household_id = 'h1' ORDER BY healed_on")).map((r) => r.healed_on);
+}

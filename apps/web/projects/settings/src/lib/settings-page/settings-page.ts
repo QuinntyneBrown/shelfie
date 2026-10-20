@@ -6,9 +6,11 @@ import { ApiError, SessionService, ToastService } from 'core';
 import { EditReaderDialog } from '../edit-reader-dialog/edit-reader-dialog';
 import { GalleryRewardDialog } from '../gallery-reward-dialog/gallery-reward-dialog';
 import { GalleryReward, GalleryRewardsApi } from '../gallery-rewards-api';
+import { HealingActivityDialog } from '../healing-activity-dialog/healing-activity-dialog';
 import { InviteParentDialog } from '../invite-parent-dialog/invite-parent-dialog';
 import { ProfilePhotoDialog } from '../profile-photo-dialog/profile-photo-dialog';
 import { InvitesApi } from '../invites-api';
+import { StreakHealingApi } from '../streak-healing-api';
 import { StreakRewardDialog } from '../streak-reward-dialog/streak-reward-dialog';
 import { StreakReward, StreakRewardsApi } from '../streak-rewards-api';
 import { NotificationsSection } from '../notifications-section/notifications-section';
@@ -25,6 +27,7 @@ import { InviteView, NotificationChoices, ParentView, ReaderView, SettingsApi, S
     EditReaderDialog,
     GalleryRewardDialog,
     ErrorState,
+    HealingActivityDialog,
     InviteParentDialog,
     NotificationsSection,
     ProfilePhotoDialog,
@@ -45,6 +48,7 @@ export class SettingsPage {
   private readonly invites = inject(InvitesApi);
   private readonly galleryApi = inject(GalleryRewardsApi);
   private readonly streakApi = inject(StreakRewardsApi);
+  private readonly healingApi = inject(StreakHealingApi);
 
   protected readonly view = signal<SettingsView | null>(null);
   /** The reward gallery, loaded with the settings. */
@@ -54,6 +58,9 @@ export class SettingsPage {
   protected readonly streakDialogOpen = signal(false);
   protected readonly streakMilestone = signal(7);
   protected readonly editingStreak = signal<StreakReward | null>(null);
+  /** The streak healing activity, or null when healing is off (L2-160). */
+  protected readonly healingActivity = signal<string | null>(null);
+  protected readonly healingDialogOpen = signal(false);
   protected readonly rewardDialogOpen = signal(false);
   protected readonly editingReward = signal<GalleryReward | null>(null);
   protected readonly removingReward = signal<GalleryReward | null>(null);
@@ -102,13 +109,15 @@ export class SettingsPage {
     this.loadFailed.set(false);
     this.view.set(null);
     try {
-      const [view, rewards, streakRewards] = await Promise.all([
+      const [view, rewards, streakRewards, healingActivity] = await Promise.all([
         this.api.get(),
         this.galleryApi.list(),
         this.streakApi.list(),
+        this.healingApi.get(),
       ]);
       this.rewards.set(rewards);
       this.streakRewards.set(streakRewards);
+      this.healingActivity.set(healingActivity);
       this.theme.set(view.theme);
       this.notifications.set(view.notifications);
       this.name.set(view.account.name);
@@ -200,6 +209,25 @@ export class SettingsPage {
       rewards.map((r) => (r.milestone === reward.milestone ? { ...r, name: null } : r)),
     );
     this.toasts.show({ title: `${reward.name} removed` });
+  }
+
+  protected healingActivitySaved(activity: string) {
+    this.healingDialogOpen.set(false);
+    this.toasts.show({ title: this.healingActivity() ? 'Healing activity saved' : 'Healing activity set', text: 'Heal one missed day a week from Review.' });
+    this.healingActivity.set(activity);
+  }
+
+  /** Turns healing off at once; days already healed stay healed. */
+  protected async removeHealingActivity() {
+    try {
+      await this.healingApi.clear();
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: 'The healing activity wasn’t removed', severity: 'danger' });
+      return;
+    }
+    this.healingActivity.set(null);
+    this.toasts.show({ title: 'Healing activity removed', text: 'Days already healed stay healed.' });
   }
 
   protected openRemoveReward(reward: GalleryReward) {
