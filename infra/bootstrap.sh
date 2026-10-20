@@ -2,8 +2,10 @@
 # One-time, re-runnable set-up of production. Run as the Azure subscription owner after
 # `az login` and `gh auth login`. Creates the resource group, the VM and the PostgreSQL server
 # (infra/main.bicep), the database role the API signs in with, the identity GitHub Actions deploys
-# with (OpenID Connect, no stored credentials), and the GitHub `production` environment with its
-# secrets and variables. Prints the DNS records to create.
+# with (OpenID Connect, no stored credentials), the mail resources (infra/main.bicep; the API sends from
+# hello@ the domain through Azure Communication Services) and the GitHub `production` environment with
+# its secrets and variables. Prints the DNS records to create. Azure must verify the mail domain's records
+# before it can send, so re-run this once they resolve: the re-run links the domain and prints nothing new.
 #
 # The database passwords live only on the VM: /etc/shelfie/env carries DATABASE_URL for the API and
 # /etc/shelfie/db-admin (root, 0600) the administrator credential. A re-run reads them back from there.
@@ -27,6 +29,9 @@ IDENTITY=shelfie-github
 # `az ... -o tsv` with the carriage return the Windows CLI appends stripped off.
 tsv() { az "$@" -o tsv | tr -d '\r'; }
 output() { tsv deployment group show -g "$RG" -n shelfie --query "properties.outputs.$1.value"; }
+arm() { az rest -o tsv --method "$1" --url "https://management.azure.com/subscriptions/$(tsv account show --query id)/resourceGroups/$RG/providers/Microsoft.Communication/$2?api-version=2023-04-01" "${@:3}" | tr -d '\r'; }
+MAIL_DOMAIN_PATH="emailServices/shelfie-email/domains/$DOMAIN"
+mail_verified() { arm GET "$MAIL_DOMAIN_PATH" --query "properties.verificationStates.$1.status" 2>/dev/null || true; }
 
 # Runs a script on the VM as root and prints its stdout.
 on_vm() { tsv vm run-command invoke -g "$RG" -n "${VM:-shelfie-vm}" --command-id RunShellScript --scripts "$1" --query 'value[0].message' | sed -n '/^\[stdout\]/,/^\[stderr\]/p' | sed '1d;$d'; }
@@ -41,16 +46,36 @@ DB_APP_PASSWORD=$(sed -n 's/^DB_APP_PASSWORD=//p' <<<"$existing")
 [[ -n $DB_ADMIN_PASSWORD ]] || DB_ADMIN_PASSWORD=$(openssl rand -base64 30 | tr -d '/+=')
 [[ -n $DB_APP_PASSWORD ]] || DB_APP_PASSWORD=$(openssl rand -base64 30 | tr -d '/+=')
 
-echo "==> VM, network, database server and storage (infra/main.bicep)"
+echo "==> VM, network, database server, storage and mail (infra/main.bicep)"
+# The mail domain can only be linked to the Communication Services resource once Azure has verified
+# its DNS records, so the deployment is told the current state (a domain not created yet is unverified).
+MAIL_VERIFIED=false
+[[ $(mail_verified Domain)$(mail_verified SPF)$(mail_verified DKIM)$(mail_verified DKIM2) == VerifiedVerifiedVerifiedVerified ]] && MAIL_VERIFIED=true
 az deployment group create -g "$RG" -n shelfie -f main.bicep -o none \
   -p adminSshPublicKey="$(cat "$SSH_KEY")" adminSourceAddress="$ADMIN_IP" hostname="$APP_HOSTNAME" \
-  databaseAdminPassword="$DB_ADMIN_PASSWORD"
+  databaseAdminPassword="$DB_ADMIN_PASSWORD" mailDomain="$DOMAIN" mailDomainVerified=$MAIL_VERIFIED
 IP=$(output publicIp)
 VM=$(output vmName)
 STORAGE=$(output storageAccountName)
 DB_HOST=$(output databaseHost)
 VM_ID=$(tsv vm show -g "$RG" -n "$VM" --query id)
 STORAGE_ID=$(tsv storage account show -g "$RG" -n "$STORAGE" --query id)
+
+echo "==> Mail from hello@$DOMAIN (verified: $MAIL_VERIFIED)"
+# Azure checks a record only when asked; asking for one already verified is refused, so each unverified
+# type is asked for on every run until the records resolve.
+for kind in Domain SPF DKIM DKIM2; do
+  [[ $(mail_verified $kind) == Verified ]] || arm POST "$MAIL_DOMAIN_PATH/initiateVerification" --body "{\"verificationType\":\"$kind\"}" >/dev/null || true
+done
+COMMS=$(output communicationServiceName)
+ACS_CONNECTION_STRING="endpoint=https://$(arm GET "communicationServices/$COMMS" --query properties.hostName)/;accesskey=$(arm POST "communicationServices/$COMMS/listKeys" --query primaryKey)"
+on_vm "$(cat <<SCRIPT
+sed -i '/^ACS_CONNECTION_STRING=/d;/^MAIL_FROM=/d' /etc/shelfie/env
+printf 'ACS_CONNECTION_STRING=%s\nMAIL_FROM=hello@%s\n' $(printf %q "$ACS_CONNECTION_STRING") "$DOMAIN" >> /etc/shelfie/env
+systemctl try-restart shelfie 2>/dev/null || true
+echo mail-configured
+SCRIPT
+)" | grep -q mail-configured
 
 echo "==> Deployment identity $IDENTITY for GitHub Actions"
 az identity create -g "$RG" -n "$IDENTITY" -o none
@@ -114,12 +139,20 @@ gh variable set AZURE_RESOURCE_GROUP -R "$REPO" --env production -b "$RG"
 gh variable set AZURE_VM_NAME -R "$REPO" --env production -b "$VM"
 gh variable set AZURE_STORAGE_ACCOUNT -R "$REPO" --env production -b "$STORAGE"
 
+mail_record() { output "mailDomainRecords.value.$1.value"; }
 cat <<SUMMARY
 
 Done. Create these DNS records for $DOMAIN:
   A      @     $IP
   CNAME  www   $DOMAIN.
   CNAME  app   $DOMAIN.
+Mail from hello@$DOMAIN (Azure verifies these; SPF must end in -all, and keep any other sender's include in it):
+  TXT    @                                         $(mail_record Domain)
+  TXT    @                                         $(mail_record SPF)
+  CNAME  selector1-azurecomm-prod-net._domainkey   $(mail_record DKIM)
+  CNAME  selector2-azurecomm-prod-net._domainkey   $(mail_record DKIM2)
+  TXT    _dmarc                                    v=DMARC1; p=none; rua=mailto:quinntynebrown@gmail.com
+Mail domain verified and linked: $MAIL_VERIFIED (if false, re-run this script once the records resolve).
 
 VM: $VM   Storage account: $STORAGE   Database: $DB_HOST (private; credentials in /etc/shelfie on the VM)
 SSH: ssh shelfie-admin@$IP (allowed from $ADMIN_IP only)

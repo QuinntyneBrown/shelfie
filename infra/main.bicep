@@ -30,6 +30,12 @@ param hostname string = 'app.shelfie.kids'
 @secure()
 param databaseAdminPassword string
 
+@description('Domain the API sends password-reset and invite mail from, as hello@ this domain. Azure proves ownership through the DNS records bootstrap.sh prints.')
+param mailDomain string = 'shelfie.kids'
+
+@description('Whether Azure has verified mailDomain (Domain, SPF, DKIM, DKIM2). bootstrap.sh reads the state and passes it; the domain can only be linked to the Communication Services resource once verified, and an earlier link is dropped if this is false.')
+param mailDomainVerified bool = false
+
 @description('PostgreSQL compute. B1ms is 1 burstable vCore and 2 GiB, enough for the API\'s pool of 10 connections.')
 param databaseSku string = 'Standard_B1ms'
 
@@ -229,7 +235,37 @@ resource database 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
   }
 }
 
+// Outbound mail: an Email Communication Service that owns the sending domain and the sender
+// hello@, and the Communication Services resource the API talks to (ACS_CONNECTION_STRING in
+// /etc/shelfie/env on the VM). Both are global resources whose data stays in Canada.
+resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
+  name: '${name}-email'
+  location: 'global'
+  properties: { dataLocation: 'Canada' }
+}
+
+resource mailDomainResource 'Microsoft.Communication/emailServices/domains@2023-04-01' = {
+  parent: emailService
+  name: mailDomain
+  location: 'global'
+  properties: { domainManagement: 'CustomerManaged', userEngagementTracking: 'Disabled' }
+}
+
+resource mailSender 'Microsoft.Communication/emailServices/domains/senderUsernames@2023-04-01' = {
+  parent: mailDomainResource
+  name: 'hello'
+  properties: { username: 'hello', displayName: 'Shelfie' }
+}
+
+resource communication 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: '${name}-comms'
+  location: 'global'
+  properties: { dataLocation: 'Canada', linkedDomains: mailDomainVerified ? [mailDomainResource.id] : [] }
+}
+
 output publicIp string = publicIp.properties.ipAddress
 output databaseHost string = database.properties.fullyQualifiedDomainName
 output vmName string = vm.name
 output storageAccountName string = storage.name
+output communicationServiceName string = communication.name
+output mailDomainRecords object = mailDomainResource.properties.verificationRecords

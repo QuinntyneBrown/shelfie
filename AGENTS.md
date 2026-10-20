@@ -104,5 +104,4 @@ shelfie/
 Not built yet. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete. Hosting, TLS, deployment and the nightly backup schedule are built (`infra/`, `docs/runbook.md`).
 
 *   Uptime monitoring and log shipping beyond journald on the VM.
-*   The production e-mail provider for password-reset links (Mailpit locally).
 *   Self-service household deletion and data export screens; until then the operator runs the erasure statement in `docs/runbook.md`.
