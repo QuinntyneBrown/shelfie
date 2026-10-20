@@ -198,7 +198,7 @@ resource vmBlobAccess 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 
 // Mail: the customer-managed shelfie.kids domain with the hello sender, shown as "Shelfie". Its data stays in Canada.
 resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
-  name: toLower('${name}-email-${uniqueString(resourceGroup().id)}')
+  name: '${name}-email'
   location: 'global'
   properties: { dataLocation: 'Canada' }
 
@@ -215,7 +215,7 @@ resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
 }
 
 resource communication 'Microsoft.Communication/communicationServices@2023-04-01' = {
-  name: toLower('${name}-acs-${uniqueString(resourceGroup().id)}')
+  name: '${name}-comms'
   location: 'global'
   properties: {
     dataLocation: 'Canada'

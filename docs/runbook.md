@@ -13,7 +13,7 @@ How Shelfie runs in production and what to do when something needs a hand. A par
 | Backups | 7 days of automated backups with point-in-time restore on the server; a nightly `pg_dump` in the `backups` blob container as `shelfie-YYYY-MM-DD.dump`, deleted after 30 days by a lifecycle rule |
 | Releases | `/opt/shelfie/releases/<git sha>`; `current` is a symlink to the live one; the last three are kept |
 | Settings | `/etc/shelfie/env` (holds `DATABASE_URL`); `/etc/shelfie/db-admin` (root only) holds the administrator credential |
-| Mail | Azure Communication Services Email (`shelfie-acs-…`, `shelfie-email-…`, data in Canada) sends from `Shelfie <hello@shelfie.kids>` with the VM's managed identity (ADR-0019); DNS records at Namecheap |
+| Mail | Azure Communication Services Email (`shelfie-comms`, `shelfie-email`, data in Canada) sends from `Shelfie <hello@shelfie.kids>` with the VM's managed identity (ADR-0019); DNS records at Namecheap |
 | Logs | journald: `journalctl -u shelfie`, `journalctl -u caddy`, `journalctl -t shelfie-backup` |
 
 Monthly cost (CAD retail): VM 10.88 + 32 GiB SSD 3.74 + static IP 5.18 + storage ≈ 0.10 + PostgreSQL B1ms ≈ 17 + 32 GiB database storage ≈ 5 + e-mail ≈ 0 (Azure charges about US$0.00025 a mail), about **$42**.
@@ -54,7 +54,7 @@ The release that adds the marketing site moves the app from `shelfie.kids` to `a
 Shelfie mails the confirm-your-e-mail link at sign-up, password-reset links and parent invites from `hello@shelfie.kids` through Azure Communication Services (ADR-0019, `docs/detailed-designs/sign-in/verify-email/`). ACS refuses to send from a domain it has not verified, and refuses to link one it has not verified, so it takes two bootstrap runs:
 
 1. **Deploy.** The first `bash infra/bootstrap.sh` creates the communication service, the e-mail service, the customer-managed `shelfie.kids` domain with the `hello` sender (display name "Shelfie") and the role that lets the VM's identity send. It leaves the domain unlinked and the API without `ACS_EMAIL_ENDPOINT`, so production still sends no mail, and it prints the records below with their real values.
-2. **Add the records at Namecheap** (Advanced DNS for `shelfie.kids`). Re-read the values with `az communication email domain show -g shelfie-prod --email-service-name <emailServiceName> -n shelfie.kids --query verificationRecords` if the printout is lost.
+2. **Add the records at Namecheap** (Advanced DNS for `shelfie.kids`). Re-read the values with `az communication email domain show -g shelfie-prod --email-service-name shelfie-email -n shelfie.kids --query verificationRecords` if the printout is lost.
 
    | Type | Host | Value |
    |---|---|---|
@@ -65,8 +65,8 @@ Shelfie mails the confirm-your-e-mail link at sign-up, password-reset links and 
    | TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:hello@shelfie.kids` |
 
    Keep the existing MX records, so `hello@shelfie.kids` still reaches the inbox that reads it.
-3. **Verify.** Once `dig TXT shelfie.kids` shows the records, run `az communication email domain initiate-verification -g shelfie-prod --email-service-name <emailServiceName> --domain-name shelfie.kids --verification-type <type>` for `Domain`, `SPF`, `DKIM` and `DKIM2`, and wait until `az communication email domain show … --query verificationStates` reports each as `Verified` (minutes to a day).
-4. **Link and switch on.** Run `LINK_EMAIL_DOMAIN=true bash infra/bootstrap.sh`. It deploys with `linkEmailDomain=true`, then writes `ACS_EMAIL_ENDPOINT` (`https://<communication service>.communication.azure.com`) and `ACS_EMAIL_SENDER` (`hello@shelfie.kids`) into `/etc/shelfie/env` and restarts the API. Pass `LINK_EMAIL_DOMAIN=true` on every later bootstrap run, or the domain is unlinked again.
+3. **Verify.** Once `dig TXT shelfie.kids` shows the records, run `az communication email domain initiate-verification -g shelfie-prod --email-service-name shelfie-email --domain-name shelfie.kids --verification-type <type>` for `Domain`, `SPF`, `DKIM` and `DKIM2`, and wait until `az communication email domain show … --query verificationStates` reports each as `Verified` (minutes to a day).
+4. **Link and switch on.** Run `LINK_EMAIL_DOMAIN=true bash infra/bootstrap.sh`. It deploys with `linkEmailDomain=true`, then writes `ACS_EMAIL_ENDPOINT` (`https://<communication service>.communication.azure.com`) and `ACS_EMAIL_SENDER` (`hello@shelfie.kids`) into `/etc/shelfie/env` and restarts the API. Pass `LINK_EMAIL_DOMAIN=true` on every later bootstrap run, or the domain is unlinked again. The run also removes any `ACS_CONNECTION_STRING` left in `/etc/shelfie/env` from the earlier access-key set-up; the API no longer reads it.
 5. **Check.** Ask for a password reset for your own parent address on `https://app.shelfie.kids/forgot-password`; the branded mail arrives from Shelfie. A failed send shows in `journalctl -u shelfie` as a `500` on the request, or as `event: verify-mail-failed` for a sign-up; neither line holds the address or the link.
 
 SSH is allowed only from the IP you ran bootstrap from. If yours changes, rerun bootstrap (it is idempotent) or `ADMIN_IP=<new ip> bash infra/bootstrap.sh`.
