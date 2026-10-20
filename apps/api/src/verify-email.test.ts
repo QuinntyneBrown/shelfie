@@ -1,4 +1,4 @@
-// Traces to: L2-144, L2-145, L2-146, L2-147, L2-152
+// Traces to: L2-144, L2-145, L2-146, L2-147, L2-149, L2-152
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
@@ -137,3 +137,40 @@ test('Given a used, expired or unknown confirm link, when it is posted, then the
   const session = await (await fetch(`${url}/api/auth/session`, { headers: { Cookie: cookie } })).json();
   assert.equal(session.emailVerified, false);
 });
+
+const resend = (cookie: string) => post('/auth/verify-email/resend', {}, cookie);
+
+test('Given an unverified parent, when they ask for the link again, then a fresh link is mailed and only the newest one works', async () => {
+  const { cookie, token: first } = await signUpAndTakeToken();
+
+  const response = await resend(cookie);
+
+  assert.equal(response.status, 204);
+  assert.equal(outbox.length, 2);
+  assert.equal(outbox[1].to, NEW_PARENT.email);
+  const second = tokenIn(outbox[1])!;
+  assert.notEqual(second, first);
+  assert.equal((await post('/auth/verify-email', { token: first })).status, 400);
+  assert.equal((await post('/auth/verify-email', { token: second })).status, 200);
+});
+
+test('Given a parent has asked three times in ten minutes, when they ask again, then the API answers 429 and sends nothing', async () => {
+  const { cookie } = await signUpAndTakeToken();
+  for (let i = 0; i < 3; i++) assert.equal((await resend(cookie)).status, 204);
+
+  const fourth = await resend(cookie);
+
+  assert.equal(fourth.status, 429);
+  assert.equal((await fourth.json()).type, 'too-many-attempts');
+  assert.equal(outbox.length, 4);
+});
+
+test('Given a verified parent, a reader or no session, when the resend endpoint is called, then nothing is sent', async () => {
+  const dad = await post('/auth/password', { username: SEED.parentUsername, password: SEED.parentPassword, remember: true });
+  assert.equal((await resend(cookieOf(dad))).status, 204);
+  const nia = await post('/auth/password', { username: SEED.readerUsername, password: SEED.readerPassword, remember: true });
+  assert.equal((await resend(cookieOf(nia))).status, 403);
+  assert.equal((await resend('')).status, 401);
+  assert.equal(outbox.length, 0);
+});
+

@@ -5,6 +5,8 @@ export interface BannerMessage {
   severity: 'info' | 'success' | 'warning' | 'danger';
   title: string;
   message?: string;
+  /** One small button in the banner, such as Send it again. */
+  action?: { label: string; run: () => void };
 }
 
 /** Banners for conditions that last, such as being offline; they stay until cleared. */

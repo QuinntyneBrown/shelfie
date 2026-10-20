@@ -23,6 +23,9 @@
             Confirmation links work once, for 24 hours, and only the newest one works. We can send
             you a fresh one now.
           </p>
+          <form (submit)="$event.preventDefault(); sendNewLink()">
+            <sh-button [large]="true" [block]="true" [busy]="sending()">Send a new link</sh-button>
+          </form>
         } @else {
           <p class="text-muted">
             Confirmation links work once, for 24 hours, and only the newest one works. Sign in and

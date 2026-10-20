@@ -3,7 +3,8 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { run } from './db.ts';
-import { passwordSignInLimiter } from './rate-limit.ts';
+import { passwordSignInLimiter, verifyResendLimiter } from './rate-limit.ts';
+import { requireRole } from './authz.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
 import { requestPasswordReset, resetPassword, signInWithPassword, signUp, type Session } from './auth.service.ts';
 import { Problem } from './problem.ts';
@@ -84,6 +85,13 @@ export function authRouter(db: Pool, mail?: Mail) {
     const email = await verifyEmail(db, body.data.token);
     if (!email) return res.status(400).json({ type: 'verify-token-invalid' });
     res.json({ email });
+  });
+
+  /** Mails the signed-in parent a fresh confirm link, which replaces every earlier one; nothing when already verified (L2-149). */
+  router.post('/verify-email/resend', requireSession(db), requireRole('parent'), verifyResendLimiter(db), async (_req, res) => {
+    const { profileId, name, email, emailVerified } = res.locals['session'] as RequestSession;
+    if (!emailVerified) await sendVerification(db, { id: profileId, name, email: email! }, mail);
+    res.status(204).end();
   });
 
   router.post('/sign-up', async (req, res) => {

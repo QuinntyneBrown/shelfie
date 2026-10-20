@@ -5,6 +5,20 @@ import type { Page } from '@playwright/test';
 export class ShellPage {
   constructor(private readonly page: Page) {}
 
+  /** The parent's "Confirm your e-mail" banner under the top bar. */
+  verifyEmailBanner() {
+    return this.page.getByRole('status').filter({ hasText: 'Confirm your e-mail' });
+  }
+
+  async sendVerifyLinkAgain() {
+    await this.verifyEmailBanner().getByRole('button', { name: 'Send it again' }).click();
+  }
+
+  /** A toast in the toast region, by its title. */
+  toast(title: string) {
+    return this.page.locator('sh-toast').filter({ hasText: title });
+  }
+
   skipLink() {
     return this.page.getByRole('link', { name: 'Skip to content' });
   }
