@@ -167,6 +167,19 @@
 &lt;/button&gt;
 &lt;button class="btn btn--primary btn--lg btn--block" type="submit"&gt;Sign in&lt;/button&gt;</code></pre></details>
       </div>
+      <h3>Provider buttons</h3>
+      <p>"Continue with Google" and "Continue with Facebook" on sign-in and sign-up are secondary block buttons of medium height, with the provider's brand mark leading the label; medium rather than large, so "Continue with Facebook" fits a 360px phone in any fallback font (<a href="../foundations/iconography.html#sheet">Iconography</a>). They never outrank the primary "Sign in" or "Create my account" above them. The busy state shows while the browser leaves for the provider, and hides the mark along with the label.</p>
+      <div class="ds-example">
+        <div class="ds-example__canvas" style="flex-direction: column; align-items: stretch; max-width: 20rem;">
+          <button class="btn btn--block" type="button"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.4a12 12 0 0 0 0 10.8l3.9-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.4 6.6l3.9 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>Continue with Google</button>
+          <button class="btn btn--block" type="button"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#FFFFFF" d="M16.7 15.5l.5-3.5h-3.4V9.8c0-1 .5-1.9 2-1.9h1.5v-3s-1.4-.2-2.7-.2c-2.8 0-4.6 1.7-4.6 4.7V12h-3v3.5h3V24a12 12 0 0 0 3.8 0v-8.5h2.9z"/></svg>Continue with Facebook</button>
+          <button class="btn btn--block" type="button" disabled aria-busy="true"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.4a12 12 0 0 0 0 10.8l3.9-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.4 6.6l3.9 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>Continue with Google</button>
+        </div>
+        <div class="ds-example__caption"><span>Secondary, block, brand mark first; the third is busy (<code>aria-busy="true"</code>) while the browser is redirected. In the app: <code>&lt;sh-button variant="secondary" [block]="true" [busy]="redirecting() === 'google'"&gt;&lt;sh-provider-icon provider="google" /&gt;Continue with Google&lt;/sh-button&gt;</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;button class="btn btn--block" type="button"&gt;
+  &lt;svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;Continue with Google
+&lt;/button&gt;</code></pre></details>
+      </div>
     </section>
 
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>

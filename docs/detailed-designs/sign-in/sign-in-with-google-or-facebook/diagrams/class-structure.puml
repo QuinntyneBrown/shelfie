@@ -1,0 +1,113 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Sign in with Google or Facebook
+
+class SignInPage {
+  +reason: InputSignal<string | undefined>
+  +provider: InputSignal<string | undefined>
+  +providers: Signal<ProviderName[]>
+  +redirecting: Signal<ProviderName | null>
+  +remember: Signal<boolean>
+  +continueWith(provider: ProviderName): void
+}
+class SignUpPage {
+  +reason: InputSignal<string | undefined>
+  +provider: InputSignal<string | undefined>
+  +providers: Signal<ProviderName[]>
+  +redirecting: Signal<ProviderName | null>
+  +continueWith(provider: ProviderName): void
+}
+class ProviderIcon <<sh-provider-icon>> {
+  +provider: InputSignal<ProviderName>
+}
+class Button <<sh-button>> {
+  +variant: 'primary' | 'secondary' | 'ghost'
+  +busy: boolean
+}
+class AuthApi {
+  +providers(): Promise<{ providers: ProviderName[] }>
+}
+class OAuthProvider {
+  +name: ProviderName
+  +clientId: string
+  +clientSecret: string
+  +authorizeUrl: string
+  +tokenUrl: string
+  +userInfoUrl: string | undefined
+  +scope: string
+}
+class OAuthModule <<oauth.ts>> {
+  +configuredProviders(env, endpoints): OAuthProvider[]
+  +pkce(): {verifier, challenge}
+  +authorizeUrl(provider, redirectUri, state, challenge): string
+  +exchangeCode(provider, code, verifier, redirectUri): Promise<ProviderIdentity>
+}
+class ProviderIdentity {
+  +subject: string
+  +email: string | null
+  +verified: boolean
+  +name: string | null
+}
+class OAuthCookie <<shelfie_oauth>> {
+  +provider: ProviderName
+  +state: string
+  +verifier: string
+  +remember: boolean
+  +from: 'sign-in' | 'sign-up'
+}
+class AuthService {
+  +signInWithProvider(provider, identity, remember): Promise<Session>
+  +freeUsername(db, localPart): Promise<string>
+}
+class ProfileProvider {
+  +provider: ProviderName
+  +subject: string
+  +profileId: string
+  +linkedAt: string
+}
+class Profile {
+  +id: string
+  +householdId: string
+  +role: parent | reader
+  +name: string
+  +username: string
+  +email: string | null
+  +passwordHash: string | null
+}
+class Household {
+  +id: string
+}
+class Session {
+  +id: string
+  +profileId: string
+  +remember: boolean
+  +expiresAt: string
+}
+
+SignInPage ..> AuthApi : providers()
+SignUpPage ..> AuthApi : providers()
+SignInPage ..> Button : composes
+SignInPage ..> ProviderIcon : composes
+SignUpPage ..> Button : composes
+SignUpPage ..> ProviderIcon : composes
+SignInPage ..> OAuthCookie : start sets
+OAuthModule ..> OAuthProvider : reads
+OAuthModule --> ProviderIdentity : exchangeCode yields
+AuthService ..> ProviderIdentity : resolves
+AuthService --> ProfileProvider : finds or creates
+AuthService --> Household : creates
+AuthService --> Profile : finds or creates
+AuthService --> Session : creates
+Profile "1" --> "0..2" ProfileProvider : linked to
+Household "1" *-- "1..*" Profile : members
+Profile "1" --> "*" Session : has
+@enduml

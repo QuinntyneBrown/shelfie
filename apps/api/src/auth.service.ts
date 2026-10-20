@@ -7,6 +7,7 @@ import { Problem } from './problem.ts';
 import { ownPhotoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
 import { SESSION_DAYS, type Role } from './session.ts';
+import type { ProviderIdentity, ProviderName } from './oauth.ts';
 
 export interface Session {
   id: string;
@@ -152,6 +153,74 @@ export async function join(pool: Pool, input: JoinInput): Promise<Session> {
     await run(db, 'INSERT INTO directory_profile (profile_id, updated_at) VALUES ($1, $2)', [account.id, new Date().toISOString()]);
     return createSession(db, account);
   });
+}
+
+/**
+ * Signs a parent in from what a provider vouches for (ADR-0020): a parent whose e-mail is the provider's verified
+ * e-mail. A reader's e-mail, and a missing or unverified e-mail, are refused with a Problem the callback turns into
+ * a reason for the page the parent started from.
+ */
+export async function signInWithProvider(pool: Pool, provider: ProviderName, identity: ProviderIdentity, remember: boolean): Promise<Session> {
+  // The link comes first: it survives an e-mail change at the provider (L2-155).
+  const linked = await get<ProfileRow>(
+    pool,
+    `SELECT ${PROFILE_COLUMNS.split(', ').map((column) => `p.${column}`).join(', ')} FROM profile_provider l JOIN profile p ON p.id = l.profile_id WHERE l.provider = $1 AND l.subject = $2`,
+    [provider, identity.subject],
+  );
+  if (linked) return createSession(pool, linked, remember);
+
+  if (!identity.email || !identity.verified) throw new Problem(400, 'no-email');
+  const email = identity.email.trim().toLowerCase();
+  const profile = await get<ProfileRow>(pool, `SELECT ${PROFILE_COLUMNS} FROM profile WHERE email = $1`, [email]);
+  if (profile?.role === 'reader') throw new Problem(403, 'reader');
+  const link = (db: Db, profileId: string) =>
+    run(db, 'INSERT INTO profile_provider (provider, subject, profile_id, linked_at) VALUES ($1, $2, $3, $4)', [provider, identity.subject, profileId, new Date().toISOString()]);
+  if (profile) {
+    return transaction(pool, async (db) => {
+      await link(db, profile.id);
+      return createSession(db, profile, remember);
+    });
+  }
+
+  // Nobody has the e-mail: start a household, as sign-up does, with no password and a username the parent never types (L2-156).
+  const localPart = identity.email.trim().split('@')[0];
+  const householdId = randomUUID();
+  const parent = {
+    id: randomUUID(),
+    name: (identity.name?.trim() || localPart).slice(0, 40),
+    username: await freeUsername(pool, localPart),
+    role: 'parent' as const,
+    color: 'sky',
+    email,
+    household_id: householdId,
+    // The provider has verified the e-mail, so no confirm link is mailed (L2-144 is for sign-up with a password).
+    email_verified_at: new Date().toISOString(),
+  };
+  return transaction(pool, async (db) => {
+    // Like a household from sign-up, one started here goes through the set-up wizard once (ADR-0018).
+    await run(db, 'INSERT INTO household (id, onboarded) VALUES ($1, FALSE)', [householdId]);
+    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash, email_verified_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NULL, $8)', [
+      parent.id,
+      householdId,
+      parent.role,
+      parent.name,
+      parent.color,
+      parent.username,
+      email,
+      parent.email_verified_at,
+    ]);
+    await link(db, parent.id);
+    return createSession(db, parent, remember);
+  });
+}
+
+/** A username nobody holds, ignoring case, made from the e-mail's local part: 3 to 20 of [a-z0-9._], with a number when taken. */
+export async function freeUsername(db: Db, localPart: string): Promise<string> {
+  const base = localPart.toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 20).padEnd(3, '_');
+  for (let n = 1; ; n++) {
+    const candidate = n === 1 ? base : `${base.slice(0, 20 - String(n).length)}${n}`;
+    if (!(await get(db, 'SELECT 1 FROM profile WHERE lower(username) = lower($1)', [candidate]))) return candidate;
+  }
 }
 
 const RESET_HOURS = 1;

@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in with Google or Facebook
+
+Container(web, "Shelfie web", "Angular", "SignInPage and SignUpPage with sh-button secondary and sh-provider-icon; AuthApi.providers()")
+System_Ext(provider, "Google or Facebook", "Authorization, token and user-info endpoints")
+Container_Boundary(api, "Shelfie API") {
+  Component(router, "auth.router.ts", "Express Router", "GET /api/auth/providers, GET /api/auth/:provider/start, GET /api/auth/:provider/callback; shelfie_oauth cookie; redirects back with a reason")
+  Component(limiter, "rate-limit.ts", "Middleware", "providerSignInLimiter: 10 start or callback requests per source in 10 minutes, then a redirect with reason=too-many")
+  Component(oauth, "oauth.ts", "Module", "configuredProviders from the environment; authorizeUrl with state and S256 challenge; exchangeCode with fetch; reads the ID token (Google) or /me (Facebook) into a ProviderIdentity")
+  Component(service, "auth.service.ts", "Service", "signInWithProvider: link by subject, else by verified parent e-mail, else start a household; refuses readers and unverified e-mails; createSession")
+  Component(session, "setSessionCookie", "auth.router.ts", "Sets shelfie_session as password sign-in does, remembered or not")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "profile, profile_provider, household, session, sign_in_attempt")
+}
+Rel(web, router, "GET /api/auth/providers; browser navigates to start", "HTTPS")
+Rel(router, limiter, "Applies to start and callback")
+Rel(router, oauth, "authorizeUrl(); exchangeCode()")
+Rel(oauth, provider, "POST token; GET /me", "HTTPS")
+Rel(router, service, "signInWithProvider(provider, identity, remember)")
+Rel(router, session, "setSessionCookie(res, session)")
+Rel(service, db, "SELECT profile_provider, profile; INSERT household, profile, profile_provider, session", "SQL")
+Rel(limiter, db, "sign_in_attempt", "SQL")
+@enduml

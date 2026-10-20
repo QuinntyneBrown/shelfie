@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · no-providers — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="sign-in">
+<meta name="mock:state" content="no-providers">
+<meta name="mock:requirements" content="L2-002 L2-003 L2-154 L2-157 L2-158">
+<meta name="description" content="No provider is configured: today’s page, no divider and no buttons.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<canvas class="aurora" aria-hidden="true"></canvas>
+<main id="main" class="auth-layout">
+  <div class="auth-card stack">
+    <div class="logo" aria-hidden="true"><span class="logo-mark sticker--bob"><img src="../../assets/logo.png" alt="" width="64" height="64"></span></div>
+<div class="card stack">
+  <h1 style="text-align: center;">Welcome back</h1>
+  <form class="stack stagger" action="../../pages/shelf/default.html" method="get" novalidate>
+    <div style="--i: 0;" class="field"><label class="field__label" for="username">Username</label><input class="input" id="username" name="username" type="text" autocomplete="username" required autofocus value="" autocapitalize="none" spellcheck="false"></div>
+    <div style="--i: 1;" class="field"><label class="field__label" for="password">Password</label><div class="input-group"><input class="input" id="password" name="password" type="password" autocomplete="current-password" required value=""><button class="btn btn--ghost btn--icon input-group__btn" type="button" aria-label="Show password" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+    <label style="--i: 2;" class="switch"><input type="checkbox" name="remember" value="1" checked><span class="switch__text">Keep me signed in</span></label>
+    <button style="--i: 3;" class="btn btn--primary btn--lg btn--block" type="submit">Sign in</button>
+    <p style="--i: 4; text-align: center;"><a href="../../pages/forgot-password/default.html">Forgot your password?</a></p>
+  </form>
+</div>
+<p class="text-caption" style="text-align: center;">New here? <a href="../../pages/sign-up/default.html">Create a parent account</a></p>
+  </div>
+</main>
+<p class="mock-note" style="top: 4.5rem; right: 1rem;">Without GOOGLE_* and FACEBOOK_* values the page is unchanged.</p>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Sign in</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="missing.html">missing</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="expired.html">expired</a></li><li><a href="one-provider.html">one-provider</a></li><li><a href="no-providers.html" aria-current="page">no-providers</a></li><li><a href="redirecting.html">redirecting</a></li><li><a href="provider-no-email.html">provider-no-email</a></li><li><a href="provider-reader.html">provider-reader</a></li><li><a href="provider-cancelled.html">provider-cancelled</a></li><li><a href="provider-failed.html">provider-failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+<script src="../../assets/aurora.js"></script>
+</body>
+</html>

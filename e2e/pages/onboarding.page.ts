@@ -35,7 +35,7 @@ export class OnboardingPage {
 
   async letsGo() {
     await this.page.getByRole('link', { name: 'Let’s go' }).click();
-    await expect(this.page).not.toHaveURL(/\/onboarding$/);
+    await this.page.waitForURL(/\/onboarding\/child$/);
   }
 
   async skipForNow() {

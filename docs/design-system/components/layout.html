@@ -211,11 +211,16 @@
               <div class="card stack">
                 <span class="hero__title" style="text-align: center;">Welcome back</span>
                 <div class="field"><label class="field__label" for="lay-user">Username</label><input class="input" id="lay-user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+                <button class="btn btn--primary btn--lg btn--block" type="button">Sign in</button>
+                <p class="divider"><span>Parents can also</span></p>
+                <button class="btn btn--block" type="button"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.4a12 12 0 0 0 0 10.8l3.9-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.4 6.6l3.9 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>Continue with Google</button>
               </div>
             </div>
           </div>
         </div>
-        <div class="ds-example__caption"><span><code>main.auth-layout</code> centres a 26rem <code>.auth-card</code> in the viewport, with the logo mark above it (<code>min-height</code> is shortened here, and the aurora canvas is left out).</span></div>
+        <div class="ds-example__caption"><span><code>main.auth-layout</code> centres a 26rem <code>.auth-card</code> in the viewport, with the logo mark above it (<code>min-height</code> is shortened here, and the aurora canvas is left out). Below the form, <code>p.divider</code> draws the "or" line: a hairline either side of a short muted text ("Parents can also" on sign-in, "or" on sign-up), followed by the provider <a href="button.html#variants">buttons</a>. The text is read, so the line is not a <code>separator</code> role.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;p class="divider"&gt;&lt;span&gt;Parents can also&lt;/span&gt;&lt;/p&gt;
+&lt;button class="btn btn--block" type="button"&gt;…Continue with Google&lt;/button&gt;</code></pre></details>
       </div>
     </section>
 

@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Sign in with Google or Facebook
+
+Person(parent, "Parent", "Presses Continue with Google or Facebook")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Sign in and Create a parent account pages in the sign-in library; sh-button and sh-provider-icon from components")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Start and callback routes, the oauth module and the auth service; sets the session cookie")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile, profile_provider, household, session, sign_in_attempt")
+}
+System_Ext(provider, "Google or Facebook", "Authorization, token and user-info endpoints")
+
+Rel(parent, web, "Opens sign-in or sign-up; the page lists the configured providers", "HTTPS")
+Rel(web, api, "GET /api/auth/providers; browser follows GET /api/auth/{provider}/start", "HTTPS")
+Rel(api, provider, "302 to the consent screen with state and PKCE challenge", "browser redirect")
+Rel(provider, api, "302 back to /api/auth/{provider}/callback with code and state", "browser redirect")
+Rel(api, provider, "POST token endpoint; GET /me (Facebook)", "HTTPS")
+Rel(api, db, "Finds the link or the e-mail, creates the household, inserts the session", "SQL")
+@enduml
