@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Sign in with Google or Facebook, for parents: below the form on Sign in and Create a parent account, "Continue with Google" and "Continue with Facebook" send the parent to the provider and back, signed in. A parent already linked to the provider account, or whose verified e-mail is a parent's e-mail, signs in to that account (and is linked); an e-mail nobody has starts a household from the provider's name and e-mail with no password and a generated username (Forgot password can give it one later) and opens the set-up wizard, as sign-up does. A reader's e-mail, a missing or unverified e-mail, a cancelled consent screen and a provider error come back as a banner on the page the parent started from; "Keep me signed in" carries through. Buttons show only for providers whose `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` or `FACEBOOK_CLIENT_ID`/`FACEBOOK_CLIENT_SECRET` are set (operator steps in `docs/runbook.md`). Plain OAuth 2.0 with PKCE in the API, no auth library; the browser never sees a provider token. Requirements L1-001 and L2-144 to L2-149, design `sign-in/sign-in-with-google-or-facebook`, ADR-0019, migration `012-profile-provider.sql`, component `sh-provider-icon` and the `secondary` variant of `sh-button`.
+- Sign in with Google or Facebook, for parents: below the form on Sign in and Create a parent account, "Continue with Google" and "Continue with Facebook" send the parent to the provider and back, signed in. A parent already linked to the provider account, or whose verified e-mail is a parent's e-mail, signs in to that account (and is linked); an e-mail nobody has starts a household from the provider's name and e-mail with no password and a generated username (Forgot password can give it one later) and opens the set-up wizard, as sign-up does. A reader's e-mail, a missing or unverified e-mail, a cancelled consent screen and a provider error come back as a banner on the page the parent started from; "Keep me signed in" carries through. Buttons show only for providers whose `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` or `FACEBOOK_CLIENT_ID`/`FACEBOOK_CLIENT_SECRET` are set (operator steps in `docs/runbook.md`). In production the deploy writes the Google pair from the GitHub secrets `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; Facebook stays off for now. Plain OAuth 2.0 with PKCE in the API, no auth library; the browser never sees a provider token. Requirements L1-001 and L2-144 to L2-149, design `sign-in/sign-in-with-google-or-facebook`, ADR-0019, migration `012-profile-provider.sql`, component `sh-provider-icon` and the `secondary` variant of `sh-button`.
 
 ### Changed
 
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The deploy's last step, the marketing-site smoke test, looked for the old headline "Every chapter is a step" and failed every deploy since the headline became "Every chapter, rewarded."; it now looks for the new one.
 - Badges on the shelf and Review show as tiles of one height, as in the mocks, instead of a bulleted list.
 
 ### Added

@@ -106,3 +106,4 @@ Not built yet. Designs mention these as deferred; estimates do not cost them and
 *   Uptime monitoring and log shipping beyond journald on the VM.
 *   The production e-mail provider for password-reset links (Mailpit locally).
 *   Self-service household deletion and data export screens; until then the operator runs the erasure statement in `docs/runbook.md`.
+*   Turning on Continue with Facebook in production (the code is built; the Meta app and its two values are not set up, see `docs/runbook.md`).
