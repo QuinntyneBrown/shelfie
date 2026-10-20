@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The top bar floats 8px below the top of the window once the page scrolls, as designed, instead of sitting flush with it; the acceptance test now scrolls instantly, so it measures the scrolled page rather than the page before a smooth scroll starts.
 - The deploy's last step, the marketing-site smoke test, looked for the old headline "Every chapter is a step" and failed every deploy since the headline became "Every chapter, rewarded."; it now looks for the new one.
 - Badges on the shelf and Review show as tiles of one height, as in the mocks, instead of a bulleted list.
 
