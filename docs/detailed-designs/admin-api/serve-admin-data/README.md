@@ -29,14 +29,14 @@ Terms used below:
 | `DELETE /logs/:id` | write | `deleteLog` | Newest logged chapter only (`log-not-latest`); refused when the book has a reward (`book-rewarded`); answers go by `ON DELETE CASCADE`; clears `book.finished_at` (L2-060) |
 | `POST /books/:id/finish` | write | `finishBook` | Refused when already finished (`book-already-finished`) (L2-061) |
 | `POST /books/:id/reward` | write | `giveReward` (existing, `rewards.service.ts`) | Called with the book's own household id; `book-not-finished`, `reward-exists` (L2-061) |
-| `GET /profiles` | read | `listDirectoryProfiles` | Every author and volunteer with status and what they wrote; designed in `admin-cli/approve-profiles` (L2-162) |
-| `POST /profiles/:id/approve` | write | `setProfileStatus` | Authors and volunteers only (`not-a-directory-profile`); status `approved`; designed in `admin-cli/approve-profiles` (L2-162) |
-| `POST /profiles/:id/hide` | write | `setProfileStatus` | As approve, with status `hidden` (L2-162) |
+| `GET /profiles` | read | `listDirectoryProfiles` | Every author and volunteer with status and what they wrote; designed in `admin-cli/approve-profiles` (L2-168) |
+| `POST /profiles/:id/approve` | write | `setProfileStatus` | Authors and volunteers only (`not-a-directory-profile`); status `approved`; designed in `admin-cli/approve-profiles` (L2-168) |
+| `POST /profiles/:id/hide` | write | `setProfileStatus` | As approve, with status `hidden` (L2-168) |
 
 - **Router helpers** — `idOf` and `bodyOf` validate the path id and body, `answer` turns a thrown `Problem` into a problem document, and `write` runs a change through `transaction` and adds `dryRun` to the result. `householdOfBook` finds the book's household so `giveReward` can run with the web app's own rules.
 - **Reuse** — `giveReward`, its zod schema `giveRewardSchema` (exported from `review.router.ts`) and `hashSecret` are the web app's own functions, so the CLI and the web app apply the same rules. The reading streak is derived from `chapter_log.read_on` (`streak.ts`), so `correctLog` moves the streak without extra code.
 - **Not found** — an unknown id answers 404 `not-found` (L2-053).
-- **Authors and volunteers** — `GET /users` also lists authors and volunteers, whose household id is null (ADR-0020). `PUT /users/:id/password` stays parents only; an author or volunteer resets their own password by e-mail (L2-158).
+- **Authors and volunteers** — `GET /users` also lists authors and volunteers, whose household id is null (ADR-0021). `PUT /users/:id/password` stays parents only; an author or volunteer resets their own password by e-mail (L2-164).
 
 ## Requirements
 

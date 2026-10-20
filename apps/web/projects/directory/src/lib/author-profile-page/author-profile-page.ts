@@ -13,7 +13,7 @@ import { Avatar, Cover, ErrorState, Skeleton } from 'components';
 import { ApiError } from 'core';
 import { AuthorView, DirectoryApi } from '../directory-api';
 
-/** An approved author's profile and catalogue, with Add to shelf on each book (L2-164, L2-167). */
+/** An approved author's profile and catalogue, with Add to shelf on each book (L2-170, L2-173). */
 @Component({
   selector: 'sh-author-profile-page',
   imports: [Avatar, Cover, ErrorState, RouterLink, Skeleton],
@@ -44,7 +44,7 @@ export class AuthorProfilePage {
       this.author.set(await this.api.author(id));
       this.state.set('ready');
     } catch (e) {
-      // Pending, hidden, erased and unknown profiles all read the same (L2-164).
+      // Pending, hidden, erased and unknown profiles all read the same (L2-170).
       this.state.set(e instanceof ApiError && e.status === 404 ? 'not-found' : 'failed');
     }
   }

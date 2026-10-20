@@ -24,13 +24,13 @@ client -> directory : GET /api/directory/books/:id
 directory -> db : SELECT catalogue_book JOIN approved author
 alt author not approved, or book removed
   directory --> client : 404 not-found
-  page --> parent : Empty form; "That book isn’t available any more" (L2-167)
+  page --> parent : Empty form; "That book isn’t available any more" (L2-173)
 else available
   directory --> client : {title, author, chapterCount, coverImage}
   page -> client : fetch coverImage as a File
   client -> directory : GET /api/directory/books/:id/cover
   directory --> client : image/webp
-  page --> parent : Title, author, chapters and picture filled in; all editable (L2-167)
+  page --> parent : Title, author, chapters and picture filled in; all editable (L2-173)
   parent -> page : Pick colour and sticker; tap Add to my shelf
   page -> client : addBook({title, author, chapterCount, coverColor, sticker})
   client -> books : POST /api/books
@@ -40,6 +40,6 @@ else available
   client -> books : PUT /api/books/:id/cover
   books -> db : INSERT book_cover (a copy of the picture)
   books --> client : {coverImage}
-  page --> parent : Toast "… is on Nia’s shelf"; the author is told nothing (L2-171)
+  page --> parent : Toast "… is on Nia’s shelf"; the author is told nothing (L2-177)
 end
 @enduml

@@ -24,9 +24,9 @@ parent -> page : Tap Directory
 page -> client : list()
 client -> router : GET /api/directory
 alt reader session
-  router --> client : 403 grown-ups-only (L2-168)
+  router --> client : 403 grown-ups-only (L2-174)
 else author or volunteer session
-  router --> client : 403 household-only (L2-169)
+  router --> client : 403 household-only (L2-175)
 else parent
   router -> service : listDirectory()
   service -> db : SELECT approved authors with book counts, approved volunteers
@@ -34,7 +34,7 @@ else parent
   service --> router : DirectoryList
   router --> client : 200 {authors, volunteers}
   client --> page : DirectoryList
-  page --> parent : Authors list; Volunteers shows the no-vetting notice (L2-163)
+  page --> parent : Authors list; Volunteers shows the no-vetting notice (L2-169)
 end
 parent -> page : Tap View on Rosa Delgado
 page -> client : author(id)
@@ -45,13 +45,13 @@ alt pending, hidden, erased or unknown
   db --> service : none
   service --> router : not found
   router --> client : 404 not-found
-  page --> parent : "This profile isn’t available" with Back to the directory (L2-164)
+  page --> parent : "This profile isn’t available" with Back to the directory (L2-170)
 else approved
   db --> service : profile
   service -> db : SELECT catalogue_book LEFT JOIN catalogue_cover ORDER BY created_at
   db --> service : books
   service --> router : AuthorView (photo and cover URLs under /api/directory)
   router --> client : 200 AuthorView
-  page --> parent : Photo, name, about, website, books with Add to shelf (L2-164, L2-166)
+  page --> parent : Photo, name, about, website, books with Add to shelf (L2-170, L2-172)
 end
 @enduml

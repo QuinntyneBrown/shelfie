@@ -11,7 +11,7 @@ import {
 } from 'components';
 import { DirectoryApi, DirectoryList } from '../directory-api';
 
-/** The parent's directory of approved authors and volunteers (L2-163). */
+/** The parent's directory of approved authors and volunteers (L2-169). */
 @Component({
   selector: 'sh-directory-page',
   imports: [Avatar, Banner, EmptyState, ErrorState, RouterLink, Segmented, Skeleton],

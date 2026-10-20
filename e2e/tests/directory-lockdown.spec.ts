@@ -1,4 +1,4 @@
-// Traces to: L2-169, L2-005
+// Traces to: L2-175, L2-005
 import { test, expect } from '../support/test';
 import { joinAsRosa, joinAsSam, signInAsDad } from '../support/signed-in';
 import { ErrorPage } from '../pages/error.page';

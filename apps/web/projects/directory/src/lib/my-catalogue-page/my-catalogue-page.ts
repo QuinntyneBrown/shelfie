@@ -8,7 +8,7 @@ import {
 import { CatalogueBook, MeApi } from '../me-api';
 import { RemoveCatalogueBookDialog } from '../remove-catalogue-book-dialog/remove-catalogue-book-dialog';
 
-/** An author's catalogue: the books parents can add to their child's shelf (L2-159 to L2-161). */
+/** An author's catalogue: the books parents can add to their child's shelf (L2-165 to L2-167). */
 @Component({
   selector: 'sh-my-catalogue-page',
   imports: [

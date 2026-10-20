@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { SessionService } from './session.service';
 
-/** Sends anyone without a session to the sign-in page, and an author or volunteer away from household pages (ADR-0020). */
+/** Sends anyone without a session to the sign-in page, and an author or volunteer away from household pages (ADR-0021). */
 export const authGuard: CanActivateFn = () => {
   const session = inject(SessionService);
   const role = session.current()?.role;

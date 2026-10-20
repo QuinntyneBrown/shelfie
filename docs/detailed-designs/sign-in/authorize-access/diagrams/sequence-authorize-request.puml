@@ -40,7 +40,7 @@ alt no session
   errors --> client : 401 problem
   client --> person : Clear session; navigate to /sign-in
 else author or volunteer session (no household)
-  mw --> client : 403 problem type "household-only" (L2-169)
+  mw --> client : 403 problem type "household-only" (L2-175)
   client --> person : Navigate to /forbidden ("This part is for families")
 else reader on a parent endpoint
   router -> errors : 403 problem type "grown-ups-only" (L2-005)

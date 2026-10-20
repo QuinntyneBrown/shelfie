@@ -1,4 +1,4 @@
-// Traces to: L2-164, L2-166, L2-167
+// Traces to: L2-170, L2-172, L2-173
 import { test, expect } from '../support/test';
 import { signInAsDad, signInAsNia } from '../support/signed-in';
 import { addCatalogueCover, addDirectoryProfile, householdBooksTitled } from '../support/database';

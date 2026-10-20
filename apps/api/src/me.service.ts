@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { ownPhotoUrl } from './photos.service.ts';
 import type { DirectorySession } from './session.ts';
 
-/** What an author or volunteer shows parents, and whether the operator has listed it (ADR-0022). */
+/** What an author or volunteer shows parents, and whether the operator has listed it (ADR-0023). */
 export interface MyProfile {
   role: DirectorySession['role'];
   name: string;
@@ -36,7 +36,7 @@ export async function getMyProfile(db: Pool, profileId: string): Promise<MyProfi
   return { ...profile, photo: etag ? ownPhotoUrl(row.role, profileId, etag) : null };
 }
 
-/** Saves the session's own profile; the listing status is left as it is, so an approved profile stays listed (ADR-0022). */
+/** Saves the session's own profile; the listing status is left as it is, so an approved profile stays listed (ADR-0023). */
 export async function updateMyProfile(pool: Pool, session: DirectorySession, input: MyProfileInput): Promise<MyProfile> {
   const author = session.role === 'author';
   await transaction(pool, async (db) => {

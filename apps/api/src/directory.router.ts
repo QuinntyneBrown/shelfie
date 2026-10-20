@@ -5,7 +5,7 @@ import { getAuthor, getCatalogueBook, getVolunteer, listDirectory, readCatalogue
 import { sendPicture } from './photos.router.ts';
 import { requireSession } from './session.ts';
 
-/** Parents browse approved authors and volunteers (L2-163 to L2-168). A reader gets 403 grown-ups-only; an author or volunteer 403 household-only. */
+/** Parents browse approved authors and volunteers (L2-169 to L2-174). A reader gets 403 grown-ups-only; an author or volunteer 403 household-only. */
 export function directoryRouter(db: Pool) {
   const router = Router();
   router.use(requireSession(db), requireRole('parent'));
@@ -14,7 +14,7 @@ export function directoryRouter(db: Pool) {
     res.json(await listDirectory(db));
   });
 
-  /** Answers 404 not-found for anything that is not listed, whatever the reason (L2-164). */
+  /** Answers 404 not-found for anything that is not listed, whatever the reason (L2-170). */
   const found = (res: Response, body: unknown) => (body ? res.json(body) : res.status(404).json({ type: 'not-found' }));
 
   router.get('/authors/:id', async (req, res) => {

@@ -1,4 +1,4 @@
-// Traces to: L2-159, L2-160, L2-161, L2-170
+// Traces to: L2-165, L2-166, L2-167, L2-176
 import { test, expect } from '../support/test';
 import { joinAsRosa, joinAsSam } from '../support/signed-in';
 import { MyCataloguePage } from '../pages/my-catalogue.page';

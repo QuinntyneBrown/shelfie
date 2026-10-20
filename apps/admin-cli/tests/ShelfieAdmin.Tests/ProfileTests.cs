@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-162, L2-062, L2-063
+// Traces to: L2-168, L2-062, L2-063
 // Description: List authors and volunteers, approve and hide their profiles, with dry run and refusals.
 
 using System.Net.Http.Json;

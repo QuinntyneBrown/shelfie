@@ -34,7 +34,7 @@ async function replying(res: Response, work: () => Promise<unknown>, status = 20
   }
 }
 
-/** An author's own catalogue (L2-159 to L2-161); a volunteer is answered 403 `authors-only`. */
+/** An author's own catalogue (L2-165 to L2-167); a volunteer is answered 403 `authors-only`. */
 export function catalogueBooksRouter(db: Pool) {
   const router = Router();
   router.use(requireDirectorySession(db, ['author']));

@@ -57,7 +57,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     expires.toISOString(),
     remember ? 1 : 0,
   ]);
-  // Authors and volunteers have no household, so no theme of their own and nothing to set up (ADR-0020).
+  // Authors and volunteers have no household, so no theme of their own and nothing to set up (ADR-0021).
   const household = await get<{ theme: string; onboarded: boolean }>(db, 'SELECT theme, onboarded FROM household WHERE id = $1', [profile.household_id]);
   const { theme, onboarded } = household ?? { theme: 'device', onboarded: true };
   const photo = await get<{ etag: string }>(db, 'SELECT etag FROM profile_photo WHERE profile_id = $1', [profile.id]);
@@ -132,7 +132,7 @@ export interface JoinInput extends SignUpInput {
   kind: 'author' | 'volunteer';
 }
 
-/** Creates an author's or volunteer's account outside any household, waiting for the operator's approval, and signs them in (ADR-0020, ADR-0022). */
+/** Creates an author's or volunteer's account outside any household, waiting for the operator's approval, and signs them in (ADR-0021, ADR-0023). */
 export async function join(pool: Pool, input: JoinInput): Promise<Session> {
   const email = input.email.trim().toLowerCase();
   const taken = await takenFields(pool, input.username, email);

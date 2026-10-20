@@ -16,7 +16,7 @@ Hours for an intermediate Angular/TypeScript and Node.js developer, with `direct
 
 ## Minimal scope
 
-Join as a volunteer and save ages and a contact line, with the authors-only refusal. This satisfies `L2-154`, `L2-155`, `L2-157`, `L2-158` and `L2-170`. Total: 6 hours.
+Join as a volunteer and save ages and a contact line, with the authors-only refusal. This satisfies `L2-160`, `L2-161`, `L2-163`, `L2-164` and `L2-176`. Total: 6 hours.
 
 ## Partial descoping
 

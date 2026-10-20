@@ -24,7 +24,7 @@ export interface RequestSession {
   emailVerified: boolean;
 }
 
-/** A session of any role; an author's or volunteer's has no household (ADR-0020). */
+/** A session of any role; an author's or volunteer's has no household (ADR-0021). */
 export interface AnySession extends Omit<RequestSession, 'householdId' | 'role'> {
   householdId: string | null;
   role: Role;
@@ -69,7 +69,7 @@ function loadSession(db: Db, admit: (session: AnySession, res: Response, next: N
 
 /**
  * The household guard: rejects requests without a live `shelfie_session`, turns an author or volunteer away with
- * 403 `household-only` (ADR-0020), and otherwise puts the session on `res.locals.session`.
+ * 403 `household-only` (ADR-0021), and otherwise puts the session on `res.locals.session`.
  */
 export function requireSession(db: Db) {
   return loadSession(db, (session, res, next) => {
@@ -78,7 +78,7 @@ export function requireSession(db: Db) {
   });
 }
 
-/** An author's or volunteer's session (ADR-0020). */
+/** An author's or volunteer's session (ADR-0021). */
 export interface DirectorySession extends Omit<AnySession, 'householdId' | 'role' | 'theme'> {
   role: 'author' | 'volunteer';
 }
