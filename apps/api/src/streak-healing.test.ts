@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
 import { createApp } from './app.ts';
 import { seed, SEED } from './seed.ts';
+import { mondayOf, todayIn } from './streak.ts';
+import { healableDays } from './streak-healing.service.ts';
 import { createTestDatabase } from './test-db.ts';
 
 const APP = { 'X-Requested-With': 'Shelfie' };
@@ -106,4 +108,154 @@ test('Given two households, then each sees and changes only its own activity, an
   await call(other, 'DELETE', '/streak-healing/activity');
   assert.equal(await activityOf(await dad()), BROTHER);
   assert.ok(!logged.some((line) => line.includes(BROTHER)));
+});
+
+/** The household day `n` days before today; the seeded households are in UTC. */
+const ago = (n: number) => {
+  const day = new Date(`${todayIn('UTC', new Date())}T00:00:00Z`);
+  day.setUTCDate(day.getUTCDate() - n);
+  return day.toISOString().slice(0, 10);
+};
+
+/** Replaces the household's chapter logs with one chapter on each of these days ago. */
+async function readOn(daysAgo: number[], householdId = SEED.householdId, bookId = 'b-robot') {
+  await db.pool.query('DELETE FROM chapter_log WHERE book_id IN (SELECT id FROM book WHERE household_id = $1)', [householdId]);
+  for (const [i, n] of daysAgo.entries()) {
+    await db.pool.query('INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ($1, $2, $3, $4, $5, $5)', [
+      `heal-${householdId}-${i}`,
+      bookId,
+      i + 1,
+      ago(n),
+      `${ago(n)}T16:00:00.000Z`,
+    ]);
+  }
+}
+
+async function review(cookie: string) {
+  return (await (await call(cookie, 'GET', '/review')).json()) as {
+    heal: { day: string; activity: string } | null;
+    thisWeek: { chapters: number; streak: number };
+    badges: { id: string; earned: boolean }[];
+  };
+}
+
+const heal = (cookie: string, day: unknown) => call(cookie, 'POST', '/streak-healing/heals', { day });
+
+async function problem(response: Response) {
+  return [response.status, ((await response.json()) as { type: string }).type];
+}
+
+test('Given an activity and a missed day two days ago, when Dad heals the day Review offers, then the streak carries on across it and the card goes', async () => {
+  await readOn([0, 1, 3, 4, 5]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  const before = await review(cookie);
+  assert.deepEqual(before.heal, { day: ago(2), activity: BROTHER });
+  assert.equal(before.thisWeek.streak, 2);
+
+  const healed = await heal(cookie, ago(2));
+  assert.equal(healed.status, 201);
+  assert.deepEqual(await healed.json(), { day: ago(2), streak: 6 });
+
+  const after = await review(cookie);
+  assert.equal(after.thisWeek.streak, 6);
+  assert.equal(after.thisWeek.chapters, before.thisWeek.chapters);
+  const shelf = (await (await call(await nia(), 'GET', '/shelf')).json()) as { streak: number };
+  assert.equal(shelf.streak, 6);
+});
+
+test('Given no activity, then Review offers no heal and a heal is refused as not-healable', async () => {
+  await readOn([0, 1, 3]);
+  const cookie = await dad();
+  assert.equal((await review(cookie)).heal, null);
+  assert.deepEqual(await problem(await heal(cookie, ago(2))), [400, 'not-healable']);
+});
+
+test('Given a day with a chapter, today, tomorrow or a day over a week ago, then the API answers not-healable; a malformed day answers validation', async () => {
+  await readOn([1, 3]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  for (const day of [ago(1), ago(0), ago(-1), ago(8)]) {
+    assert.deepEqual(await problem(await heal(cookie, day)), [400, 'not-healable'], day);
+  }
+  assert.deepEqual(await problem(await heal(cookie, 'Wednesday')), [400, 'validation']);
+  assert.equal((await db.pool.query('SELECT 1 FROM streak_heal')).rowCount, 0);
+  assert.equal((await heal(cookie, ago(7))).status, 201);
+});
+
+test('Given a day healed this week, when another day of the same week is sent, then the API answers already-healed-this-week', async () => {
+  await readOn([0]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  const days = [1, 2, 3, 4, 5, 6, 7].map(ago);
+  const week = days.filter((d) => days.filter((e) => mondayOf(e) === mondayOf(d)).length >= 2);
+  assert.equal((await heal(cookie, week[0])).status, 201);
+
+  assert.deepEqual(await problem(await heal(cookie, week[1])), [409, 'already-healed-this-week']);
+  assert.deepEqual(await problem(await heal(cookie, week[0])), [409, 'already-healed-this-week']);
+  assert.equal((await db.pool.query('SELECT 1 FROM streak_heal')).rowCount, 1);
+});
+
+test('Given a heal on Sunday, then Monday of the next week is still healable, and the healed week is not', () => {
+  // 2026-10-20 is a Tuesday; 2026-10-18 is the Sunday before it.
+  const heals = [{ day: '2026-10-18', activity: BROTHER }];
+  assert.deepEqual(healableDays(['2026-10-15'], heals, '2026-10-20'), ['2026-10-19']);
+  assert.deepEqual(healableDays(['2026-10-19', '2026-10-15'], [], '2026-10-20'), ['2026-10-18', '2026-10-17', '2026-10-16', '2026-10-14', '2026-10-13']);
+});
+
+test('Given a healed day, when a chapter is later logged for it or the activity is removed, then the streak stays as it was', async () => {
+  await readOn([0, 1, 3, 4]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  await heal(cookie, ago(2));
+  assert.equal((await review(cookie)).thisWeek.streak, 5);
+
+  await db.pool.query("INSERT INTO chapter_log (id, book_id, chapter_number, read_on, logged_at, undo_until) VALUES ('late', 'b-robot', 9, $1, $2, $2)", [ago(2), new Date().toISOString()]);
+  assert.equal((await review(cookie)).thisWeek.streak, 5);
+
+  await call(cookie, 'DELETE', '/streak-healing/activity');
+  assert.equal((await review(cookie)).thisWeek.streak, 5);
+});
+
+test('Given six read days and one healed day in a row, then the streak is 7 but the Week streak badge is not earned', async () => {
+  await readOn([0, 1, 2, 4, 5, 6]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  await heal(cookie, ago(3));
+
+  const overview = await review(cookie);
+  assert.equal(overview.thisWeek.streak, 7);
+  assert.equal(overview.badges.find((b) => b.id === 'week-streak')!.earned, false);
+});
+
+test('Given a healed day this week, then the shelf week marks it healed and the chapter success card week does not', async () => {
+  await readOn([0]);
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  const thisWeek = [1, 2, 3, 4, 5, 6].map(ago).find((d) => mondayOf(d) === mondayOf(ago(0)));
+  if (!thisWeek) return; // Today is Monday: no earlier day this week to heal.
+  assert.equal((await heal(cookie, thisWeek)).status, 201);
+
+  const shelf = (await (await call(await nia(), 'GET', '/shelf')).json()) as { week: { date: string; healed: string | null }[] };
+  assert.equal(shelf.week.find((d) => d.date === thisWeek)!.healed, BROTHER);
+  const logged = await call(await nia(), 'POST', '/books/b-robot/chapters/2', { readOn: ago(0), answers: [{ position: 1, text: 'The robot woke up.' }] });
+  assert.equal(logged.status, 201);
+  const result = (await logged.json()) as { week: { date: string; read: boolean; healed: string | null }[] };
+  assert.deepEqual(result.week.find((d) => d.date === thisWeek), { date: thisWeek, read: false, healed: null, today: false });
+});
+
+test('Given a reader, then a heal answers 403 grown-ups-only; given two households, then a heal changes only its own streak and week', async () => {
+  await readOn([0, 2]);
+  await readOn([0, 2], 'h2', 'b-other');
+  const cookie = await dad();
+  await call(cookie, 'PUT', '/streak-healing/activity', { name: BROTHER });
+  assert.deepEqual(await problem(await heal(await nia(), ago(1))), [403, 'grown-ups-only']);
+
+  assert.equal((await heal(cookie, ago(1))).status, 201);
+  const other = await zedsDad();
+  assert.equal((await review(other)).thisWeek.streak, 1);
+  await call(other, 'PUT', '/streak-healing/activity', { name: 'Read to the dog' });
+  assert.equal((await heal(other, ago(1))).status, 201);
+  assert.equal((await review(other)).thisWeek.streak, 3);
+  assert.ok(!logged.some((line) => line.includes(BROTHER) || line.includes('Read to the dog')));
 });

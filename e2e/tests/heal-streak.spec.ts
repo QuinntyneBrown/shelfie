@@ -1,7 +1,8 @@
 // Traces to: L2-160, L2-161, L2-162, L2-163, L2-164
 import { test, expect } from '../support/test';
-import { signInAsDad } from '../support/signed-in';
-import { setHealingActivity } from '../support/database';
+import { signInAsDad, signInAsNia } from '../support/signed-in';
+import { healedDays, householdDay, healInDatabase, setHealingActivity, setReadingDays } from '../support/database';
+import { ReviewPage } from '../pages/review.page';
 import { SettingsPage } from '../pages/settings.page';
 import { HealingActivityDialog } from '../pages/healing-activity-dialog.page';
 
@@ -99,4 +100,70 @@ test('Given a phone, then the healing dialog is a bottom sheet and the Streak he
   await settings.editHealingActivity('Twenty minutes of reading aloud to Grandma on the phone, with the funny voices');
   const box = await new HealingActivityDialog(page).dialog().boundingBox();
   expect(box!.width).toBeLessThanOrEqual(360);
+});
+
+/** The weekday name of a household day, as the card and the toast say it. */
+const weekday = (daysAgo: number) => new Date(`${householdDay(-daysAgo)}T00:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' });
+
+test('Given an activity and a day missed two days ago, when Dad heals it from Review, then the card goes, a toast gives the streak and the streak counts the day', async ({ page }) => {
+  await setReadingDays([0, 1, 3, 4, 5]);
+  await setHealingActivity(BROTHER);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await expect(review.healCard()).toContainText(`Nia didn’t log a chapter on ${weekday(2)}. If she did ${BROTHER}, heal it and her streak carries on.`);
+  await expect(review.stat('Streak')).toContainText('2');
+
+  await review.heal();
+  await expect(review.toast(`${weekday(2)} healed`)).toBeVisible();
+  await expect(review.toast('Nia’s streak is 6 days.')).toBeVisible();
+  await expect(review.healCard()).toHaveCount(0);
+  await expect(review.stat('Streak')).toContainText('6');
+  expect(await healedDays()).toEqual([householdDay(-2)]);
+
+  await page.reload();
+  await expect(review.stat('Streak')).toContainText('6');
+  await expect(review.healCard()).toHaveCount(0);
+});
+
+test('Given no activity, or this week’s heal already used, then Review shows no heal card', async ({ page }) => {
+  await setReadingDays([0, 1, 3]);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await expect(review.stat('Streak')).toBeVisible();
+  await expect(review.healCard()).toHaveCount(0);
+
+  await setReadingDays([0, 1, 3, 4, 5, 6, 7]);
+  await setHealingActivity(BROTHER);
+  await healInDatabase(2, BROTHER);
+  await page.reload();
+  await expect(review.stat('Streak')).toContainText('8');
+  await expect(review.stat('Streak')).toBeVisible();
+  await expect(review.healCard()).toHaveCount(0);
+});
+
+test('Given the connection drops, when Dad chooses Heal it, then a toast says the day wasn’t healed and the card stays; trying again works', async ({ page }) => {
+  await setReadingDays([0, 2]);
+  await setHealingActivity(BROTHER);
+  await signInAsDad(page);
+  const review = new ReviewPage(page);
+  await review.breakHealing();
+
+  await review.heal();
+  await expect(review.toast('The day wasn’t healed')).toBeVisible();
+  await expect(review.healCard()).toBeVisible();
+
+  await review.repairHealing();
+  await review.heal();
+  await expect(review.toast(`${weekday(1)} healed`)).toBeVisible();
+  await expect(review.healCard()).toHaveCount(0);
+});
+
+test('Given a reader session, when it sends a heal, then the API answers 403 and nothing is healed', async ({ page }) => {
+  await setReadingDays([0, 2]);
+  await setHealingActivity(BROTHER);
+  await signInAsNia(page);
+
+  const response = await page.request.post('/api/streak-healing/heals', { headers: { 'X-Requested-With': 'Shelfie' }, data: { day: householdDay(-1) } });
+  expect(response.status()).toBe(403);
+  expect(await healedDays()).toEqual([]);
 });
