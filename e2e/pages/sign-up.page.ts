@@ -76,4 +76,23 @@ export class SignUpPage {
   signInLink() {
     return this.page.getByRole('link', { name: 'Sign in' });
   }
+
+  /** The "Continue with Google" or "Continue with Facebook" button below the form. */
+  continueWithButton(provider: 'Google' | 'Facebook') {
+    return this.page.getByRole('button', { name: `Continue with ${provider}` });
+  }
+
+  /** The "or" line between the form and the provider buttons. */
+  orLine() {
+    return this.page.getByText('or', { exact: true });
+  }
+
+  async continueWith(provider: 'Google' | 'Facebook') {
+    await this.continueWithButton(provider).click({ noWaitAfter: true });
+  }
+
+  /** The banner above the card after coming back from a provider. */
+  providerBanner() {
+    return this.page.getByRole('alert').or(this.page.getByRole('status')).filter({ hasText: /Google|Facebook|reader|cancelled|wrong|Too many/ });
+  }
 }

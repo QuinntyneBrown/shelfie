@@ -85,6 +85,12 @@ a:hover, a[data-state="hover"] { color: var(--color-fg-link-hover); text-decorat
 main:has(.auth-layout) { padding-bottom: 0; }
 .auth-card { width: 100%; max-width: 26rem; }
 .auth-card .logo { display: flex; justify-content: center; margin-bottom: var(--space-6); }
+/* The "or" line between a form and the other ways in; its text ("or", "Parents can also") is read, so it is not a separator role. */
+.divider { display: flex; align-items: center; gap: var(--space-3); margin: 0; color: var(--color-fg-muted); font: var(--text-body-sm); text-align: center; }
+.divider::before, .divider::after { content: ""; flex: 1; border-top: var(--border-width-hairline) solid var(--color-border-default); }
+/* Brand marks (Google, Facebook) are the only filled icons; their paths carry the brands' own colours. */
+.icon--brand { stroke: none; }
+.btn[aria-busy="true"] .icon--brand { visibility: hidden; }
 
 /* ---------- Icon ----------------------------------------------------------- */
 .icon { width: var(--size-icon-md); height: var(--size-icon-md); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
@@ -112,7 +118,8 @@ main:has(.auth-layout) { padding-bottom: 0; }
 .btn--ghost { --btn-bg: transparent; --btn-border: transparent; }
 .btn--sm { --btn-height: var(--control-height-sm); --btn-padding: var(--space-3); --btn-font-size: var(--font-size-sm); }
 .btn--lg { --btn-height: var(--control-height-lg); --btn-padding: var(--space-6); --btn-font-size: var(--font-size-lg); }
-.btn--block { display: flex; width: 100%; }
+/* A full-width button wraps its label rather than scrolling the page on a narrow phone. */
+.btn--block { display: flex; width: 100%; min-width: 0; white-space: normal; }
 .btn--icon { padding: 0; width: var(--btn-height); }
 .btn .icon { width: 1.25em; height: 1.25em; }
 .btn[aria-busy="true"], .btn[data-state="loading"] { color: transparent; pointer-events: none; }

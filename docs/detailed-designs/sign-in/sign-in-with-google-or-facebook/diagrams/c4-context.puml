@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign in with Google or Facebook
+
+Person(parent, "Parent", "Signs in to Shelfie, or starts a household, with a Google or Facebook account")
+System(shelfie, "Shelfie", "Reading log and comprehension questions")
+System_Ext(provider, "Google or Facebook", "OAuth 2.0 authorization server; vouches for the parent's name and verified e-mail")
+
+Rel(parent, shelfie, "Presses Continue with Google or Facebook on sign-in or sign-up", "HTTPS")
+Rel(parent, provider, "Consents on the provider's screen", "HTTPS")
+Rel(shelfie, provider, "Exchanges the authorization code for the parent's identity", "HTTPS, server to server")
+@enduml

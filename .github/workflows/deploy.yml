@@ -62,8 +62,11 @@ jobs:
             --name "$RELEASE" --file "$RELEASE"
 
       - name: Deploy the release on the VM
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
-          script="$(printf 'export RELEASE_SHA=%q STORAGE_ACCOUNT=%q\n' "$GITHUB_SHA" "${{ vars.AZURE_STORAGE_ACCOUNT }}"; cat infra/host/fetch-release.sh)"
+          script="$(printf 'export RELEASE_SHA=%q STORAGE_ACCOUNT=%q GOOGLE_CLIENT_ID=%q GOOGLE_CLIENT_SECRET=%q\n' "$GITHUB_SHA" "${{ vars.AZURE_STORAGE_ACCOUNT }}" "$GOOGLE_CLIENT_ID" "$GOOGLE_CLIENT_SECRET"; cat infra/host/fetch-release.sh)"
           output="$(az vm run-command invoke --only-show-errors \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" --name "${{ vars.AZURE_VM_NAME }}" \
             --command-id RunShellScript --scripts "$script" --query 'value[0].message' -o tsv)"
@@ -74,4 +77,4 @@ jobs:
         run: curl -fsS --retry 5 --retry-delay 5 https://app.shelfie.kids/api/health
 
       - name: Smoke-test the marketing site
-        run: curl -fsS --retry 5 --retry-delay 5 https://www.shelfie.kids/ | grep -q 'Every chapter is a step'
+        run: curl -fsS --retry 5 --retry-delay 5 https://www.shelfie.kids/ | grep -q 'Every chapter, rewarded'

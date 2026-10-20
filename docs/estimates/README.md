@@ -1,11 +1,11 @@
 # Estimates
 
-- Overall effort: 133 days
+- Overall effort: 136 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [sign-in](sign-in.md) | 21 days | 100% |
+| [sign-in](sign-in.md) | 24 days | 100% |
 | [settings](settings.md) | 17 days | 100% |
 | [platform](platform.md) | 16 days | 90% |
 | [shell](shell.md) | 13 days | 98% |
@@ -19,7 +19,7 @@
 
 1. platform: the operator's one-time mail steps (deploy, verify `shelfie.kids` in ACS, Namecheap records, link; `docs/runbook.md`, "Mail"); Lighthouse CI; the `platform/` folder layout the harden-api design describes; first bootstrap of the PostgreSQL server and rehearsal of import and restore
 2. shell, review: service worker, drop-after-3-rejections rule, review queue loading and error states
-3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, re-verifying an e-mail changed in Settings, dark-mode mail, bounce and complaint handling, self-service household deletion and export; for the set-up wizard, more than one child, streak rewards, reward pictures and descriptions, the first book, re-running it from Settings and inviting the other parent; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
+3. Deferred: uptime monitoring, marketing pricing, privacy, terms and blog pages, analytics and a contact form, log shipping beyond journald, re-verifying an e-mail changed in Settings, dark-mode mail, bounce and complaint handling, self-service household deletion and export; for provider sign-in, linking or unlinking from Settings, other providers, readers and profile pictures; for the set-up wizard, more than one child, streak rewards, reward pictures and descriptions, the first book, re-running it from Settings and inviting the other parent; for the AI review assistant, stored advice or its history, per-household quotas, model choice in settings and streaming output; for the reward gallery, streak rewards, badges, ordering, several goals at once and a history of past goals; for reward pictures, reordering, captions, cropping, a full-size viewer, pictures on the trophy shelf, Review or Give a reward, admin CLI support and generated or catalogue pictures; for feedback, a screen to read or reply to it, notifications, attachments, automatic prompts and score charts
 
 ## Risks and dependencies
 

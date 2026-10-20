@@ -2,6 +2,9 @@
   @if (reason() === 'expired') {
     <sh-banner severity="info" title="You were signed out" message="Sign in to carry on." />
   }
+  @if (providerBanner(); as banner) {
+    <sh-banner [severity]="banner.severity" [title]="banner.title" [message]="banner.message" />
+  }
   <div class="card stack">
     <h1 class="centred">Welcome back</h1>
     @if (missing().length) {
@@ -65,6 +68,21 @@
       <sh-button style="--i: 3" [large]="true" [block]="true" [busy]="submitting()">Sign in</sh-button>
       <p class="centred" style="--i: 4"><a routerLink="/forgot-password">Forgot your password?</a></p>
     </form>
+    @if (providers().length) {
+      <p class="divider"><span>Parents can also</span></p>
+      <div class="stack">
+        @for (provider of providers(); track provider) {
+          <sh-button
+            variant="secondary"
+            [block]="true"
+            [busy]="redirecting() === provider"
+            (click)="continueWith(provider)"
+          >
+            <sh-provider-icon [provider]="provider" />Continue with {{ PROVIDER_NAMES[provider] }}
+          </sh-button>
+        }
+      </div>
+    }
   </div>
   <p class="text-caption centred">New here? <a routerLink="/sign-up">Create a parent account</a></p>
 </sh-auth-layout>

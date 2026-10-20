@@ -1,26 +1,30 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   signal,
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthLayout, Banner, Button, TextField } from 'components';
+import { AuthLayout, Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
 import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
+import { providerBanner } from '../provider-banner';
 
 @Component({
   selector: 'sh-sign-in-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Banner, Button, ProviderIcon, RouterLink, TextField],
   templateUrl: './sign-in-page.html',
   styleUrl: './sign-in-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
-  /** Query parameter: 'expired' when the session ran out. */
+  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-157). */
   readonly reason = input<string>();
+  /** Query parameter: the provider a sign-in came back from. */
+  readonly provider = input<string>();
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
@@ -36,6 +40,22 @@ export class SignInPage {
   protected readonly submitting = signal(false);
   protected readonly unreachable = signal(false);
   private readonly summary = viewChild<Banner>('summary');
+  protected readonly PROVIDER_NAMES = PROVIDER_NAMES;
+  /** The providers a parent can continue with; none until the API has answered, and none when none is configured. */
+  protected readonly providers = signal<ProviderName[]>([]);
+  protected readonly redirecting = signal<ProviderName | null>(null);
+  protected readonly providerBanner = computed(() => providerBanner(this.reason(), this.provider()));
+
+  constructor() {
+    this.api.providers().then(({ providers }) => this.providers.set(providers), () => {});
+  }
+
+  /** Leaves for the provider's consent screen; the button stays busy until the browser has gone. */
+  protected continueWith(provider: ProviderName) {
+    if (this.redirecting()) return;
+    this.redirecting.set(provider);
+    window.location.assign(`/api/auth/${provider}/start?remember=${this.remember() ? 1 : 0}&from=sign-in`);
+  }
 
   protected async submit() {
     if (this.submitting()) return;

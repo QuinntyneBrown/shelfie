@@ -7,8 +7,8 @@
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="sign-in">
 <meta name="mock:state" content="default">
-<meta name="mock:requirements" content="L2-002 L2-003">
-<meta name="description" content="Username, password and Keep me signed in; links to forgot password and sign-up.">
+<meta name="mock:requirements" content="L2-002 L2-003 L2-154 L2-157 L2-158">
+<meta name="description" content="Username, password and Keep me signed in; links to forgot password and sign-up; below the form, Continue with Google and Continue with Facebook for parents.">
 <link rel="stylesheet" href="../../assets/tokens.css">
 <link rel="stylesheet" href="../../assets/ui.css">
 <link rel="stylesheet" href="../../assets/mock.css">
@@ -28,6 +28,11 @@
     <button style="--i: 3;" class="btn btn--primary btn--lg btn--block" type="submit">Sign in</button>
     <p style="--i: 4; text-align: center;"><a href="../../pages/forgot-password/default.html">Forgot your password?</a></p>
   </form>
+  <p class="divider"><span>Parents can also</span></p>
+  <div class="stack">
+    <button class="btn btn--block" type="button"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.4a12 12 0 0 0 0 10.8l3.9-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.4 6.6l3.9 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>Continue with Google</button>
+    <button class="btn btn--block" type="button"><svg class="icon icon--brand" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#FFFFFF" d="M16.7 15.5l.5-3.5h-3.4V9.8c0-1 .5-1.9 2-1.9h1.5v-3s-1.4-.2-2.7-.2c-2.8 0-4.6 1.7-4.6 4.7V12h-3v3.5h3V24a12 12 0 0 0 3.8 0v-8.5h2.9z"/></svg>Continue with Facebook</button>
+  </div>
 </div>
 <p class="text-caption" style="text-align: center;">New here? <a href="../../pages/sign-up/default.html">Create a parent account</a></p>
   </div>
@@ -36,7 +41,7 @@
 <nav class="mock-bar" aria-label="Mock navigation">
   <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
   <span class="mock-bar__screen">Sign in</span>
-  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="missing.html">missing</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="expired.html">expired</a></li></ul>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="missing.html">missing</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="error.html">error</a></li><li><a href="expired.html">expired</a></li><li><a href="one-provider.html">one-provider</a></li><li><a href="no-providers.html">no-providers</a></li><li><a href="redirecting.html">redirecting</a></li><li><a href="provider-no-email.html">provider-no-email</a></li><li><a href="provider-reader.html">provider-reader</a></li><li><a href="provider-cancelled.html">provider-cancelled</a></li><li><a href="provider-failed.html">provider-failed</a></li></ul>
   <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
   <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
 </nav>

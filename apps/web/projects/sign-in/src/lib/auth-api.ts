@@ -1,9 +1,15 @@
 import { Injectable, inject } from '@angular/core';
+import { ProviderName } from 'components';
 import { ApiClient, Session } from 'core';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
   private readonly api = inject(ApiClient);
+
+  /** The providers a parent can continue with, in display order. */
+  providers() {
+    return this.api.get<{ providers: ProviderName[] }>('/auth/providers');
+  }
 
   forgotPassword(email: string) {
     return this.api.post<void>('/auth/forgot-password', { email });

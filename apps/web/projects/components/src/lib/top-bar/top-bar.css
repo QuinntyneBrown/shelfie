@@ -1,6 +1,6 @@
 :host {
   display: block;
   position: sticky;
-  top: 0;
+  top: var(--space-2);
   z-index: var(--z-sticky);
 }

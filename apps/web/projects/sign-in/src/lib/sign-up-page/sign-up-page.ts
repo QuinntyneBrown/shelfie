@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthLayout, Banner, Button, TextField } from 'components';
+import { AuthLayout, Banner, Button, PROVIDER_NAMES, ProviderIcon, ProviderName, TextField } from 'components';
 import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
+import { providerBanner } from '../provider-banner';
 
 export const USERNAME_RULE = /^[A-Za-z0-9._]{3,20}$/;
 
@@ -14,12 +15,15 @@ export function usernameProblem(username: string): string | null {
 
 @Component({
   selector: 'sh-sign-up-page',
-  imports: [AuthLayout, Banner, Button, RouterLink, TextField],
+  imports: [AuthLayout, Banner, Button, ProviderIcon, RouterLink, TextField],
   templateUrl: './sign-up-page.html',
   styleUrl: './sign-up-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpPage {
+  /** Query parameters: why a provider sign-in came back, and from which provider (L2-157). */
+  readonly reason = input<string>();
+  readonly provider = input<string>();
   private readonly api = inject(AuthApi);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
@@ -38,6 +42,22 @@ export class SignUpPage {
   protected readonly submitting = signal(false);
   protected readonly unreachable = signal(false);
   private readonly summary = viewChild<Banner>('summary');
+  protected readonly PROVIDER_NAMES = PROVIDER_NAMES;
+  /** The providers a parent can continue with; none until the API has answered, and none when none is configured. */
+  protected readonly providers = signal<ProviderName[]>([]);
+  protected readonly redirecting = signal<ProviderName | null>(null);
+  protected readonly providerBanner = computed(() => providerBanner(this.reason(), this.provider()));
+
+  constructor() {
+    this.api.providers().then(({ providers }) => this.providers.set(providers), () => {});
+  }
+
+  /** Leaves for the provider's consent screen; sign-up has no switch, so the session is remembered. */
+  protected continueWith(provider: ProviderName) {
+    if (this.redirecting()) return;
+    this.redirecting.set(provider);
+    window.location.assign(`/api/auth/${provider}/start?remember=1&from=sign-up`);
+  }
 
   protected async submit() {
     if (this.submitting()) return;
