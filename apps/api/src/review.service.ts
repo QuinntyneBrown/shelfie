@@ -3,7 +3,8 @@ import { all, get, run, type Db } from './db.ts';
 import { goalOf, type Goal } from './gallery.service.ts';
 import { Problem } from './problem.ts';
 import { badgesFor, type Badge } from './badges.ts';
-import { streakFor } from './streak.ts';
+import { streakFor, type Heal } from './streak.ts';
+import { healOffer } from './streak-healing.service.ts';
 import { streakRewardsOf, type StreakReward } from './streak-rewards.service.ts';
 
 export interface QueueItem {
@@ -68,6 +69,8 @@ export interface ReviewOverview {
   thisWeek: { chapters: number; streak: number };
   badges: Badge[];
   streakRewards: StreakReward[];
+  /** The missed day the parent can heal now, with the activity; null when there is none (L2-161). */
+  heal: Heal | null;
 }
 
 export function pendingChapterLogs(db: Db, householdId: string): Promise<QueueItem[]> {
@@ -108,6 +111,7 @@ export async function overview(db: Db, householdId: string, now = new Date()): P
     thisWeek: { chapters, streak: await streakFor(db, householdId, now) },
     badges: await badgesFor(db, householdId),
     streakRewards: await streakRewardsOf(db, householdId, now),
+    heal: await healOffer(db, householdId, now),
     today: dayOf(now),
     queue: await pendingChapterLogs(db, householdId),
     finishedUnrewarded: finished.map(({ finished_at, ...book }) => ({ ...book, finishedOn: dayOf(new Date(finished_at)) })),

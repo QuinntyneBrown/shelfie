@@ -30,6 +30,8 @@ export class ReviewPage {
   private readonly reviewApi = inject(ReviewApi);
   /** The streak milestone being given, so its button cannot be pressed twice. */
   protected readonly givingStreak = signal<number | null>(null);
+  /** True while a heal is being sent, so Heal it cannot be pressed twice. */
+  protected readonly healing = signal(false);
   /** Streak rewards the reader has earned and the parent has not given yet. */
   protected readonly earnedStreakRewards = computed(() =>
     (this.overview()?.streakRewards ?? []).filter((r) => r.name && r.earnedOn && !r.givenOn),
@@ -81,6 +83,22 @@ export class ReviewPage {
       this.toasts.show({ title: 'The reward wasn’t given', severity: 'danger' });
     } finally {
       this.givingStreak.set(null);
+    }
+  }
+
+  protected async heal(overview: ReviewOverview, day: string) {
+    if (this.healing()) return;
+    this.healing.set(true);
+    try {
+      const { streak } = await this.reviewApi.heal(day);
+      this.overview.update((o) => o && { ...o, heal: null, thisWeek: { ...o.thisWeek, streak } });
+      const weekday = new Date(`${day}T00:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' });
+      this.toasts.show({ title: `${weekday} healed`, text: `${overview.readerName}’s streak is ${streak} ${streak === 1 ? 'day' : 'days'}.` });
+    } catch (e) {
+      if (e instanceof ApiError && e.status > 0 && e.status < 500) throw e;
+      this.toasts.show({ title: 'The day wasn’t healed', severity: 'danger' });
+    } finally {
+      this.healing.set(false);
     }
   }
 

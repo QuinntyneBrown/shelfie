@@ -171,4 +171,21 @@ export class ReviewPage {
   async repairGiving() {
     await this.page.unroute('**/api/streak-rewards/*/give');
   }
+
+  /** The "Heal a missed day" card; absent with no activity set or no day to heal. */
+  healCard() {
+    return this.page.getByRole('region', { name: 'Heal a missed day' });
+  }
+
+  async heal() {
+    await this.healCard().getByRole('button', { name: 'Heal it' }).click();
+  }
+
+  async breakHealing() {
+    await this.page.route('**/api/streak-healing/heals', (route) => route.abort());
+  }
+
+  async repairHealing() {
+    await this.page.unroute('**/api/streak-healing/heals');
+  }
 }

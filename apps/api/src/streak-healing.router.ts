@@ -1,12 +1,14 @@
-import { Router } from 'express';
+import { Router, type Response } from 'express';
 import type { Pool } from 'pg';
 import { z } from 'zod';
 import { requireRole } from './authz.ts';
+import { Problem } from './problem.ts';
 import { requireSession, type RequestSession } from './session.ts';
-import { clearHealingActivity, healingOf, setHealingActivity } from './streak-healing.service.ts';
+import { clearHealingActivity, healDay, healingOf, setHealingActivity } from './streak-healing.service.ts';
 import { validationProblem } from './validation.ts';
 
 const activitySchema = z.object({ name: z.string().trim().min(1).max(100) });
+const healSchema = z.object({ day: z.iso.date() });
 
 /** The household's streak healing: both roles read it, only parents change it or heal (L2-164). */
 export function streakHealingRouter(db: Pool) {
@@ -31,5 +33,21 @@ export function streakHealingRouter(db: Pool) {
     res.status(204).end();
   });
 
+  router.post('/heals', requireRole('parent'), async (req, res) => {
+    const { householdId } = res.locals['session'] as RequestSession;
+    const body = healSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    await answer(res, async () => res.status(201).json(await healDay(db, householdId, body.data.day)));
+  });
+
   return router;
+}
+
+async function answer(res: Response, work: () => Promise<unknown>) {
+  try {
+    await work();
+  } catch (e) {
+    if (!(e instanceof Problem)) throw e;
+    res.status(e.status).json({ type: e.type, ...e.extra });
+  }
 }
