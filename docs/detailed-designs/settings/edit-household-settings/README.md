@@ -32,6 +32,8 @@ On success the page shows an `sh-banner` (`success`) headed `Saved` and keeps th
 
 - **Profile photo** — every row of the Parents list draws `sh-avatar` from `ParentView.photo`, and Your account starts with a "Your photo" row (`sh-avatar` lg and "Add a photo" / "Change photo") that opens `ProfilePhotoDialog`. The photo is saved by that dialog, not by Save settings. See `settings/upload-profile-photo` (`L2-042`, `L2-043`).
 
+**Streak healing (reading-log/heal-streak, `L2-160`).** A "Streak healing" card after Streak rewards sets, edits and removes the household's healing activity through `StreakHealingApi` and `HealingActivityDialog`, apart from Save settings; see [heal-streak](../../reading-log/heal-streak/README.md).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

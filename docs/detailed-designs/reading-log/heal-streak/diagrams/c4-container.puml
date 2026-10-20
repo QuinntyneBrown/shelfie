@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Heal the streak
+
+Person(reader, "Reader", "Opens her shelf")
+Person(grownUp, "Parent", "Uses Settings and Review")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "Streak healing card in Settings, Heal a missed day on Review, healed day on the shelf's week strip")
+  Container(api, "Shelfie API", "Node.js, Express 5, TypeScript", "Sets the activity, checks and stores heals, counts healed days in the streak")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16 (pg)", "household.healing_activity, streak_heal, chapter_log.read_on")
+}
+Rel(reader, web, "Reads her streak and week", "HTTPS")
+Rel(grownUp, web, "Sets the activity, heals a day", "HTTPS")
+Rel(web, api, "/api/streak-healing, GET /api/review, GET /api/shelf", "JSON/HTTPS")
+Rel(api, db, "Reads read days and heals, writes the activity and heals", "SQL")
+@enduml
