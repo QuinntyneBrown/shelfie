@@ -128,6 +128,8 @@ export interface StreakReward {
 export interface WeekDay {
   date: string;
   read: boolean;
+  /** The activity a parent healed this day with; null for a day she read or did not heal. */
+  healed: string | null;
   today: boolean;
 }
 
