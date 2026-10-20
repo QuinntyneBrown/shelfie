@@ -20,7 +20,7 @@ package "web: sign-in library" {
     +sendNewLink(): Promise<void>
   }
   class AuthApi {
-    +verifyEmail(token: string): Promise<void>
+    +verifyEmail(token: string): Promise<{ email: string }>
   }
 }
 package "web: core library" {
@@ -46,7 +46,7 @@ package "api" {
   class "verify-email.service.ts" as VerifyService {
     +VERIFY_HOURS = 24
     +sendVerification(db, parent, mail): Promise<void>
-    +verifyEmail(db, token): Promise<boolean>
+    +verifyEmail(db, token): Promise<string | null>
   }
   class "mail-template.ts" as Template {
     +renderMail(content: MailContent): { html: string; text: string }
