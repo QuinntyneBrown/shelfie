@@ -1,10 +1,14 @@
-// Traces to: L2-144, L2-145, L2-146, L2-147, L2-149, L2-152
+// Traces to: L2-144, L2-145, L2-146, L2-147, L2-149, L2-150, L2-152
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Server } from 'node:http';
+import { cpSync, mkdtempSync, readdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createApp } from './app.ts';
 import { sha256 } from './auth.service.ts';
-import { all } from './db.ts';
+import { all, migrate } from './db.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
@@ -174,3 +178,40 @@ test('Given a verified parent, a reader or no session, when the resend endpoint 
   assert.equal(outbox.length, 0);
 });
 
+test('Given a person accepts an invite, when their account is created, then their e-mail is already verified and no confirm mail is sent', async () => {
+  const dad = await post('/auth/password', { username: SEED.parentUsername, password: SEED.parentPassword, remember: true });
+  await post('/invites', { email: 'priya@example.com' }, cookieOf(dad));
+  const token = outbox[0].text.match(/accept-invite\?token=(\S+)/)![1];
+
+  const accepted = await post('/auth/accept-invite', { token, name: 'Priya', username: 'priya', password: 'bookworm-2026' });
+
+  assert.equal(accepted.status, 201);
+  assert.equal((await accepted.json()).emailVerified, true);
+  await new Promise((r) => setTimeout(r, 100));
+  assert.equal(outbox.length, 1);
+  assert.equal((await all(db.pool, 'SELECT 1 FROM email_verification')).length, 0);
+});
+
+test('Given parents and readers from before this release, when the release migrates, then every parent counts as verified and readers stay unverified', async () => {
+  const fresh = await createTestDatabase({ migrated: false });
+  try {
+    const before = mkdtempSync(join(tmpdir(), 'shelfie-migrations-'));
+    const source = new URL('../migrations/', import.meta.url);
+    for (const name of readdirSync(source).filter((n) => n < '012')) cpSync(new URL(name, source), join(before, name));
+    await migrate(fresh.pool, pathToFileURL(`${before}/`));
+    await fresh.pool.query(`INSERT INTO household (id) VALUES ('h1');
+      INSERT INTO profile (id, household_id, role, name, color, username, email) VALUES
+        ('p-dad', 'h1', 'parent', 'Dad', 'sky', 'dad', 'dad@example.com'),
+        ('p-nia', 'h1', 'reader', 'Nia', 'rose', 'nia', NULL)`);
+
+    await migrate(fresh.pool);
+
+    const rows = await all<{ id: string; verified: boolean }>(fresh.pool, 'SELECT id, email_verified_at IS NOT NULL AS verified FROM profile ORDER BY id');
+    assert.deepEqual(rows, [
+      { id: 'p-dad', verified: true },
+      { id: 'p-nia', verified: false },
+    ]);
+  } finally {
+    await fresh.drop();
+  }
+});
