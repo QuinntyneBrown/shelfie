@@ -117,7 +117,7 @@ if [[ $LINK_EMAIL_DOMAIN == true ]]; then
   ACS_EMAIL_SENDER=$(output acsEmailSender)
   on_vm "$(cat <<SCRIPT
 set -euo pipefail
-sed -i '/^ACS_EMAIL_ENDPOINT=/d;/^ACS_EMAIL_SENDER=/d' /etc/shelfie/env
+sed -i '/^ACS_EMAIL_ENDPOINT=/d;/^ACS_EMAIL_SENDER=/d;/^ACS_CONNECTION_STRING=/d' /etc/shelfie/env
 printf 'ACS_EMAIL_ENDPOINT=%s\nACS_EMAIL_SENDER=%s\n' '$ACS_EMAIL_ENDPOINT' '$ACS_EMAIL_SENDER' >> /etc/shelfie/env
 systemctl try-restart shelfie 2>/dev/null || true
 echo mail-configured
