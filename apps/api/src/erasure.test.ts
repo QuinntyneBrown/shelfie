@@ -1,4 +1,4 @@
-// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119, L2-128, L2-155
+// Traces to: L2-041, L2-045, L2-048, L2-109, L2-119, L2-128, L2-155, L2-164
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { all, get, run } from './db.ts';
@@ -6,7 +6,7 @@ import { purgeExpired } from './purge.ts';
 import { seed, SEED } from './seed.ts';
 import { createTestDatabase } from './test-db.ts';
 
-const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture', 'feedback', 'push_subscription', 'profile_provider'];
+const OWNED = ['profile', 'session', 'password_reset', 'invites', 'book', 'chapter_log', 'answer', 'question', 'reward', 'profile_photo', 'book_cover', 'gallery_reward', 'streak_reward', 'reward_picture', 'feedback', 'push_subscription', 'profile_provider', 'streak_heal'];
 
 test('Given two households, when one is erased, then every row it owned is gone and the other household is untouched', async () => {
   const db = await createTestDatabase();
@@ -27,17 +27,20 @@ test('Given two households, when one is erased, then every row it owned is gone 
     await run(db.pool, "INSERT INTO reward_picture (id, reward_id, image, etag, featured, created_at) VALUES ('rp1', 'g1', 'x', 'e1', true, '2026-10-18'), ('rp2', 'g1', 'x', 'e2', false, '2026-10-18'), ('rp3', 'g2', 'x', 'e3', true, '2026-10-18')");
     await run(db.pool, "INSERT INTO push_subscription (id, profile_id, endpoint, p256dh, auth, created_at) VALUES ('ps1', $1, 'https://push.example.com/1', 'k', 'a', '2026-10-19'), ('ps2', $2, 'https://push.example.com/2', 'k', 'a', '2026-10-19'), ('ps3', 'p-other-dad', 'https://push.example.com/3', 'k', 'a', '2026-10-19')", [SEED.parentId, SEED.readerId]);
     await run(db.pool, "INSERT INTO profile_provider (provider, subject, profile_id, linked_at) VALUES ('google', 'g-dad', $1, '2026-10-19'), ('google', 'g-other', 'p-other-dad', '2026-10-19')", [SEED.parentId]);
+    await run(db.pool, "UPDATE household SET healing_activity = 'Read with your brother'");
+    await run(db.pool, "INSERT INTO streak_heal (household_id, healed_on, week_of, activity, healed_at) VALUES ($1, '2026-10-14', '2026-10-12', 'Read with your brother', '2026-10-15'), ('h2', '2026-10-14', '2026-10-12', 'Read to the dog', '2026-10-15')", [SEED.householdId]);
     const countAll = async () => Object.fromEntries(await Promise.all(OWNED.map(async (t) => [t, (await get<{ n: number }>(db.pool, `SELECT COUNT(*) AS n FROM ${t}`))!.n])));
     const before = await countAll();
 
     await run(db.pool, 'DELETE FROM household WHERE id = $1', [SEED.householdId]);
 
     const after = await countAll();
-    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1, feedback: 1, push_subscription: 1, profile_provider: 1 });
+    assert.deepEqual(after, { profile: 2, session: 1, password_reset: 1, invites: 1, book: 1, chapter_log: 1, answer: 0, question: 1, reward: 0, profile_photo: 1, book_cover: 1, gallery_reward: 1, streak_reward: 1, reward_picture: 1, feedback: 1, push_subscription: 1, profile_provider: 1, streak_heal: 1 });
     assert.ok(before.book > after.book && before.answer > 0, 'the erased household had books and answers');
     const remaining = await all<{ id: string }>(db.pool, 'SELECT id FROM profile ORDER BY id');
     assert.deepEqual(remaining.map((p) => p.id), ['p-other-dad', 'p-other-reader']);
     assert.equal((await get<{ id: string }>(db.pool, "SELECT id FROM book WHERE id = 'b-other'"))?.id, 'b-other');
+    assert.equal((await get<{ healing_activity: string }>(db.pool, "SELECT healing_activity FROM household WHERE id = 'h2'"))?.healing_activity, 'Read with your brother');
   } finally {
     await db.drop();
   }
