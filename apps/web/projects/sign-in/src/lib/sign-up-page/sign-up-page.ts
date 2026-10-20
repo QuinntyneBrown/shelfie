@@ -21,7 +21,7 @@ export function usernameProblem(username: string): string | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpPage {
-  /** Query parameters: why a provider sign-in came back, and from which provider (L2-147). */
+  /** Query parameters: why a provider sign-in came back, and from which provider (L2-157). */
   readonly reason = input<string>();
   readonly provider = input<string>();
   private readonly api = inject(AuthApi);

@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import { get, run, transaction, type Db } from './db.ts';
 import { createSession, sha256, takenFields, type Session } from './auth.service.ts';
 import { sendMail, type Mail } from './mail.ts';
+import { renderMail } from './mail-template.ts';
 import { Problem } from './problem.ts';
 import { hashSecret } from './secret.ts';
 import type { InviteView } from './settings.service.ts';
@@ -30,12 +31,14 @@ export async function createInvite(db: Pool, householdId: string, invitedBy: str
     expiresAt,
   ]);
   const link = `${process.env.APP_URL ?? 'http://localhost:4200'}/accept-invite?token=${token}`;
+  const { html, text } = renderMail({
+    heading: `Join ${inviter.name} on Shelfie`,
+    paragraphs: [`${inviter.name} invited you to join their household on Shelfie. Use this link to create your parent account. It works once, for ${INVITE_DAYS} days.`],
+    button: { label: 'Create my account', url: link },
+    footer: `You got this because ${inviter.name} typed your address into Shelfie. If you don’t know them, ignore this e-mail and nothing happens.`,
+  });
   try {
-    await mail(
-      email,
-      `${inviter.name} invited you to Shelfie`,
-      `${inviter.name} invited you to join their household on Shelfie. Use this link to create your parent account. It works once, for ${INVITE_DAYS} days.\n\n${link}\n`,
-    );
+    await mail(email, `${inviter.name} invited you to Shelfie`, text, html);
   } catch (e) {
     await run(db, 'DELETE FROM invites WHERE token_hash = $1', [tokenHash]);
     throw e;
@@ -94,10 +97,11 @@ export async function acceptInvite(pool: Pool, input: AcceptInviteInput): Promis
   const taken = await takenFields(pool, input.username, invite.email);
   if (taken.includes('email')) throw new Problem(409, 'email-taken');
   if (taken.includes('username')) throw new Problem(409, 'username-taken');
-  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'lilac', email: invite.email, household_id: invite.household_id };
+  const parent = { id: randomUUID(), name: input.name.trim(), username: input.username, role: 'parent' as const, color: 'lilac', email: invite.email, household_id: invite.household_id, email_verified_at: new Date().toISOString() };
   const passwordHash = hashSecret(input.password);
   return transaction(pool, async (db) => {
-    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
+    // The invite link reached this address, so it counts as confirmed (L2-150).
+    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash, email_verified_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [
       parent.id,
       parent.household_id,
       parent.role,
@@ -106,6 +110,7 @@ export async function acceptInvite(pool: Pool, input: AcceptInviteInput): Promis
       parent.username,
       parent.email,
       passwordHash,
+      parent.email_verified_at,
     ]);
     await run(db, 'UPDATE invites SET used_at = $1 WHERE token_hash = $2', [new Date().toISOString(), invite.token_hash]);
     return createSession(db, parent);

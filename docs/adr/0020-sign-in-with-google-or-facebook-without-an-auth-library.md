@@ -1,8 +1,8 @@
-# ADR-0019: Parents sign in with Google or Facebook through a plain OAuth flow in the API, linked by subject then by verified e-mail
+# ADR-0020: Parents sign in with Google or Facebook through a plain OAuth flow in the API, linked by subject then by verified e-mail
 
 - Status: Accepted
 - Date: 2026-10-19
-- Requirements: L2-144, L2-145, L2-146, L2-147, L2-148, L2-149
+- Requirements: L2-154, L2-155, L2-156, L2-157, L2-158, L2-159
 
 ## Context
 

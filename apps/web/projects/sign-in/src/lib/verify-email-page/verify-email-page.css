@@ -1,0 +1,10 @@
+.centred {
+  text-align: center;
+}
+.centred-item {
+  margin-inline: auto;
+}
+.button-placeholder {
+  display: block;
+  block-size: 3rem;
+}

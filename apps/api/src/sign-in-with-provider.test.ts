@@ -1,4 +1,4 @@
-// Traces to: L2-144, L2-145, L2-146, L2-147, L2-148, L2-149
+// Traces to: L2-154, L2-155, L2-156, L2-157, L2-158, L2-159
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
@@ -152,6 +152,22 @@ test('Given an e-mail nobody has, when the round trip completes, then a househol
     assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM profile WHERE household_id = $1', [parent.household_id]))!.n, 1);
     const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
     assert.equal((await me.json()).name, 'Priya Bell');
+  } finally {
+    await site.close();
+  }
+});
+
+test('Given an e-mail nobody has, when a household starts through a provider, then the parent’s e-mail counts as confirmed and no confirm link is issued', async () => {
+  const db = await seededDb();
+  const site = await serve(db);
+  try {
+    provider.answer({ email: 'priya@example.com', name: 'Priya Bell', verified: true });
+
+    const { callback } = await site.roundTrip('google', 'from=sign-up');
+
+    const me = await site.get('/api/auth/session', site.cookieValue(callback, 'shelfie_session'));
+    assert.equal((await me.json()).emailVerified, true);
+    assert.equal((await get<{ n: number }>(db, 'SELECT COUNT(*) AS n FROM email_verification'))!.n, 0);
   } finally {
     await site.close();
   }

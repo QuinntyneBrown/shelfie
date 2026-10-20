@@ -15,6 +15,11 @@ export class AuthApi {
     return this.api.post<void>('/auth/forgot-password', { email });
   }
 
+  /** Confirms the address a confirm link was mailed to, and answers with it. */
+  verifyEmail(token: string) {
+    return this.api.post<{ email: string }>('/auth/verify-email', { token });
+  }
+
   resetPassword(token: string, password: string) {
     return this.api.post<Session>('/auth/reset-password', { token, password });
   }

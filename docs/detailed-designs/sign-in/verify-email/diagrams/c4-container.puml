@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Verify a parent's e-mail
+
+Person(parent, "Parent")
+System_Boundary(shelfie, "Shelfie (Azure VM, system-assigned managed identity)") {
+  Container(web, "Shelfie web", "Angular", "Shell banner with Send it again; VerifyEmailPage at /verify-email")
+  Container(api, "Shelfie API", "Node.js 24, Express 5", "Issues hashed 24-hour tokens, renders the branded mail, verifies, rate-limits resends")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile.email_verified_at, email_verification")
+}
+System_Ext(acs, "Azure Communication Services Email", "communicationServices + emailServices, domain shelfie.kids, sender hello")
+System_Ext(smtp, "Mailpit", "SMTP, local only")
+Rel(parent, web, "Uses", "HTTPS")
+Rel(web, api, "POST /api/auth/sign-up, /verify-email, /verify-email/resend; GET /api/auth/session", "JSON/HTTPS")
+Rel(api, db, "Inserts token hash, sets used_at and email_verified_at", "SQL")
+Rel(api, acs, "beginSend(message), DefaultAzureCredential", "HTTPS")
+Rel(api, smtp, "nodemailer, when ACS_EMAIL_ENDPOINT is unset", "SMTP")
+@enduml

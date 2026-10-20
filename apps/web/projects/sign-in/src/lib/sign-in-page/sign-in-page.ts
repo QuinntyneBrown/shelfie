@@ -21,7 +21,7 @@ import { providerBanner } from '../provider-banner';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInPage {
-  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-147). */
+  /** Query parameter: 'expired' when the session ran out, or why a provider sign-in came back (L2-157). */
   readonly reason = input<string>();
   /** Query parameter: the provider a sign-in came back from. */
   readonly provider = input<string>();

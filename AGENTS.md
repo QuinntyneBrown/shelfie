@@ -101,9 +101,9 @@ shelfie/
 
 ## Deferred work
 
-Not built yet. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete. Hosting, TLS, deployment and the nightly backup schedule are built (`infra/`, `docs/runbook.md`).
+Not built yet. Designs mention these as deferred; estimates do not cost them and they do not count toward percent complete. Hosting, TLS, deployment, the nightly backup schedule and production mail through Azure Communication Services (ADR-0019) are built (`infra/`, `docs/runbook.md`).
 
 *   Uptime monitoring and log shipping beyond journald on the VM.
-*   The production e-mail provider for password-reset links (Mailpit locally).
+*   Re-verifying an e-mail a parent changes in Settings; the changed address is trusted until then.
 *   Self-service household deletion and data export screens; until then the operator runs the erasure statement in `docs/runbook.md`.
 *   Turning on Continue with Facebook in production (the code is built; the Meta app and its two values are not set up, see `docs/runbook.md`).

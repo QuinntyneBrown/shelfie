@@ -18,6 +18,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-17. Open [index.html]
 | [Responsive](foundations/responsive.html) | Mobile-first rules per component, touch, testing matrix |
 | [Accessibility](foundations/accessibility.html) | WCAG 2.2 AA commitments, target and control sizes, focus ring |
 | [Content](foundations/content.html) | Voice, casing, verbs, dates, error and empty formulas, microcopy |
+| [E-mail](foundations/email.html) | The e-mail-safe subset of the tokens (light only), type stack with fallbacks, spacing, the bulletproof button, logo and footer, plain text |
 
 ## Components
 
@@ -142,6 +143,12 @@ AGENTS.md locks scope to what the mocks define, so components a generic kit woul
 The mocks were pointed at this system but their HTML was not rewritten, so the inline workarounds behind D5–D11 still sit in the mock pages and keep working. When a page is next edited, replace them with the classes above. Component pages also record mock-level content issues: every answer box on log-chapter is `required` although only question 1 should be; the add-question radios have no `value`; the chapters table repeats bare "Open" links; the streak's `aria-label` sits on a plain `<span>`; the danger toast nests `role="alert"` inside a `role="status"` region.
 
 ## Changelog
+
+### 2026-10-19: verify e-mail
+
+- **Added:** [E-mail](foundations/email.html), the foundation for the three server-rendered mails (verify, reset, invite): seven light-theme token values resolved to hex, the system type stack without web fonts, pixel spacing, the bulletproof table button and the footer. They are the only Shelfie markup outside the `components` library.
+- **Changed:** nothing else. The "Confirm your e-mail" banner is the existing [Alert and banner](components/alert.html) `info` banner with a small button in `.alert__actions`.
+- **Tokens:** none added or changed.
 
 ### 2026-10-19: Beanstack review (R1–R8)
 

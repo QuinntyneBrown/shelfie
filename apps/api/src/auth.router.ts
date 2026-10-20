@@ -3,18 +3,23 @@ import type { Pool } from 'pg';
 import { z } from 'zod';
 import { validationProblem } from './validation.ts';
 import { run } from './db.ts';
-import { passwordSignInLimiter, providerSignInLimiter } from './rate-limit.ts';
+import { passwordSignInLimiter, providerSignInLimiter, verifyResendLimiter } from './rate-limit.ts';
+import { requireRole } from './authz.ts';
 import { readCookie, requireSession, type RequestSession } from './session.ts';
 import { requestPasswordReset, resetPassword, signInWithPassword, signInWithProvider, signUp, type Session } from './auth.service.ts';
 import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
-import type { Mail } from './mail.ts';
+import { sendMail, type Mail } from './mail.ts';
+import type { Log } from './logging.ts';
+import { issueVerification, sendVerification, verifyEmail } from './verify-email.service.ts';
 import { authorizeUrl, exchangeCode, pkce, type OAuthProvider, type ProviderName } from './oauth.ts';
 import { randomBytes } from 'node:crypto';
 
 const forgotPasswordSchema = z.object({ email: z.email() });
 
 const resetPasswordSchema = z.object({ token: z.string(), password: z.string().min(8) });
+
+const verifyEmailSchema = z.object({ token: z.string() });
 
 const passwordSignInSchema = z.object({ username: z.string().trim().min(1), password: z.string().min(1), remember: z.boolean() });
 
@@ -24,7 +29,7 @@ const signUpSchema = z.object({ name: z.string().trim().min(1).max(40), email: z
 const acceptInviteSchema = z.object({ token: z.string().min(1), name: z.string().trim().min(1).max(40), username, password });
 
 const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const };
-// The provider round trip's state and PKCE verifier (ADR-0019): Lax, because the provider's redirect back is cross-site.
+// The provider round trip's state and PKCE verifier (ADR-0020): Lax, because the provider's redirect back is cross-site.
 const OAUTH_COOKIE = { httpOnly: true, secure: true, sameSite: 'lax' as const, path: '/api/auth', maxAge: 10 * 60 * 1000 };
 
 interface OAuthStart {
@@ -57,7 +62,7 @@ export function sessionSummary({ id, remember, ...summary }: Session) {
 export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = []) {
   const router = Router();
 
-  /** Which providers a parent can continue with; names only, never the ids or secrets (L2-149). */
+  /** Which providers a parent can continue with; names only, never the ids or secrets (L2-159). */
   router.get('/providers', (_req, res) => {
     res.json({ providers: providers.map((provider) => provider.name) });
   });
@@ -69,8 +74,8 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
   };
 
   router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo, onboarded } = res.locals['session'] as RequestSession;
-    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded });
+    const { profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified } = res.locals['session'] as RequestSession;
+    res.json({ profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified });
   });
 
   router.post('/sign-out', async (req, res) => {
@@ -99,11 +104,34 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     res.json(sessionSummary(session));
   });
 
+  /** Confirms the address the link was mailed to; it neither reads nor changes the session (L2-146). */
+  router.post('/verify-email', async (req, res) => {
+    const body = verifyEmailSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    const email = await verifyEmail(db, body.data.token);
+    if (!email) return res.status(400).json({ type: 'verify-token-invalid' });
+    res.json({ email });
+  });
+
+  /** Mails the signed-in parent a fresh confirm link, which replaces every earlier one; nothing when already verified (L2-149). */
+  router.post('/verify-email/resend', requireSession(db), requireRole('parent'), verifyResendLimiter(db), async (_req, res) => {
+    const { profileId, name, email, emailVerified } = res.locals['session'] as RequestSession;
+    if (!emailVerified) await sendVerification(db, { id: profileId, name, email: email! }, mail);
+    res.status(204).end();
+  });
+
   router.post('/sign-up', async (req, res) => {
     const body = signUpSchema.safeParse(req.body);
     if (!body.success) return res.status(400).json(validationProblem(body.error));
     try {
       const session = await signUp(db, body.data);
+      // The link is stored before the answer, but sign-up does not wait for the provider; a failed send is logged
+      // with the request id only (L2-144, L2-152).
+      const letter = await issueVerification(db, { id: session.profileId, name: session.name, email: session.email! });
+      const log = res.locals['log'] as Log;
+      (mail ?? sendMail)(...letter).catch(() =>
+        log({ level: 'error', time: new Date().toISOString(), requestId: res.locals['requestId'], event: 'verify-mail-failed' }),
+      );
       await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));
@@ -145,7 +173,7 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     res.redirect(`/${from}?reason=too-many&provider=${req.params['provider']}`);
   });
 
-  /** Sends the browser to the provider's consent screen, keeping what the callback needs in the start cookie (L2-144, L2-149). */
+  /** Sends the browser to the provider's consent screen, keeping what the callback needs in the start cookie (L2-154, L2-159). */
   router.get('/:provider/start', providerLimiter, (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });
@@ -161,7 +189,7 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     res.redirect(authorizeUrl(provider, redirectUri(provider), start.state, challenge));
   });
 
-  /** Back from the provider: checks the state, trades the code for the identity, and signs the parent in or returns them with a reason (L2-145 to L2-149). */
+  /** Back from the provider: checks the state, trades the code for the identity, and signs the parent in or returns them with a reason (L2-155 to L2-159). */
   router.get('/:provider/callback', providerLimiter, async (req, res) => {
     const provider = providerOf(req.params['provider']);
     if (!provider) return res.status(404).json({ type: 'not-found' });

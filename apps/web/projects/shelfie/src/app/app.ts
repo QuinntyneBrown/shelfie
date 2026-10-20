@@ -6,7 +6,7 @@ import { ReviewApi } from 'review';
 import { ProfilePhotoDialog, SendFeedbackDialog } from 'settings';
 import { filter, skip } from 'rxjs';
 import { Toast, TopBar } from 'components';
-import { BannerService, SessionService, ShellStatusService, ToastService } from 'core';
+import { BannerService, EmailVerificationService, SessionService, ShellStatusService, ToastService } from 'core';
 
 const MAX_VISIBLE_TOASTS = 3;
 
@@ -22,6 +22,8 @@ export class App {
   protected readonly session = this.sessionService.current;
   /** The set-up wizard is a full-screen page: no top bar, no tab bar (L2-138). */
   protected readonly inWizard = signal(false);
+  /** The Confirm your e-mail page says everything the banner would. */
+  private readonly onVerifyPage = signal(false);
   protected readonly navLinks = computed<NavLink[]>(() =>
     this.session()?.role === 'parent' && !this.inWizard()
       ? [
@@ -76,6 +78,24 @@ export class App {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
   constructor() {
+    // A parent who has not opened the confirm link sees the banner on every shell page until they do (L2-148).
+    const verification = inject(EmailVerificationService);
+    let verifyBanner: number | null = null;
+    effect(() => {
+      const session = this.session();
+      const show = session?.role === 'parent' && !session.emailVerified && !this.inWizard() && !this.onVerifyPage();
+      if (show && verifyBanner === null) {
+        verifyBanner = this.banners.show({
+          severity: 'info',
+          title: 'Confirm your e-mail',
+          message: `We sent a link to ${session.email}. Open it to confirm the address is yours.`,
+          action: { label: 'Send it again', run: () => verification.resend() },
+        });
+      } else if (!show && verifyBanner !== null) {
+        this.banners.clear(verifyBanner);
+        verifyBanner = null;
+      }
+    });
     // The grown-up's Review badge is kept fresh from every page, not only from Review itself.
     const reviews = inject(ReviewApi);
     effect(() => {
@@ -96,7 +116,10 @@ export class App {
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe((event) => this.inWizard.set(event.urlAfterRedirects.startsWith('/onboarding')));
+      .subscribe((event) => {
+        this.inWizard.set(event.urlAfterRedirects.startsWith('/onboarding'));
+        this.onVerifyPage.set(event.urlAfterRedirects.startsWith('/verify-email'));
+      });
   }
 
   /** Sign out ends the session and returns to the sign-in page. */

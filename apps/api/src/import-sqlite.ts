@@ -29,6 +29,8 @@ function upgrade(table: string, row: Record<string, unknown>, taken: Set<string>
     upgraded['username'] = username;
   }
   taken.add(String(upgraded['username']).toLowerCase());
+  // A parent from an earlier release counts as having confirmed their e-mail (L2-150).
+  if (upgraded['role'] === 'parent' && upgraded['email']) upgraded['email_verified_at'] = new Date().toISOString();
   return upgraded;
 }
 

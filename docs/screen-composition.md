@@ -2,7 +2,7 @@
 
 Which `components` library parts build each page, dialog, notification and shell part in the mocks, and what each screen must build locally.
 
-- **Sources:** `docs/mocks/` (37 screens, 252 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
+- **Sources:** `docs/mocks/` (39 screens, 263 state files; routes and titles from `docs/mocks/index.html` and `manifest.json`) and the component catalogue below, which is the set of `sh-*` components the detailed designs (`docs/detailed-designs/*/*/README.md`) assign to the `components` library, plus the `core` services `ToastService` and `BannerService`.
 - **Local UI** is markup and styling a feature library (or the `shelfie` application, for the shell) builds itself, because no catalogue component covers it.
 - **Out of scope: the marketing page** (`docs/mocks/pages/marketing/`, `https://www.shelfie.kids`). It is static HTML, CSS and JS in `apps/marketing/`, outside the Angular workspace, so it is not composed from the `components` library and has no entry below (ADR-0017). It uses a copy of the design tokens.
 - Mock-only chrome (`mock-bar`, `mock-note`) and the mocks' inline `<style>` workarounds are excluded.
@@ -70,9 +70,10 @@ Composition rules that hold on every screen:
 | Top bar, parent | `sh-top-bar` (`variant: 'parent'`) with nav links and Review count badge; the bar is a floating sticky capsule | — |
 | Account menu | `sh-menu`, opened from the top-bar `sh-avatar` (photo or initial). The reader's menu has "My photo", which opens `ProfilePhotoDialog`; both menus have "Send feedback", which opens `SendFeedbackDialog` | — |
 | Tab bar (parent, phones) | `sh-tab-bar` with Review count | — |
-| Banner slot | `sh-banner` per `BannerService.banners()` | — |
+| Banner slot | `sh-banner` per `BannerService.banners()`; a banner with an `action` (the parent's "Confirm your e-mail", L2-148) gets a projected `div.alert__actions` holding `button.btn.btn--sm` with the action's label ("Send it again"), as the shelf's push offer projects its buttons | the projected action button |
 | Toast region | `sh-toast-stack` rendering `sh-toast` per `ToastService.toasts()` | — |
-| Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password, onboarding) | `sh-auth-layout` | on sign-in and sign-up the `divider` line ("Parents can also" / "or") between the form and the provider buttons |
+| Auth layout (sign-in, sign-up, accept-invite, forgot-password, reset-password, verify-email, onboarding) | `sh-auth-layout` | on sign-in and sign-up the `divider` line ("Parents can also" / "or") between the form and the provider buttons |
+| Confirm your e-mail banner (parent, `notifications/banner`: verify-email, verify-email-sent, verify-email-limited, verify-email-failed) | `BannerService.show()` `info` "Confirm your e-mail", "We sent a link to {e-mail}. Open it to confirm the address is yours.", action "Send it again", while the session says `emailVerified: false`; cleared when it turns true. Not shown in the set-up wizard or on `/verify-email`. Send it again → `ToastService` `success` "Sent. Check your inbox." or, when the API answers 429, `warning` "That’s a few links already", or `danger` "The link wasn’t sent" when nothing could be sent | — |
 
 ## Shared local components
 
@@ -101,7 +102,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 
 #### Create a parent account — `/sign-up` (`pages/sign-up`: default, invalid, taken, submitting, error, one-provider, no-providers, redirecting, provider-no-email, provider-reader, provider-cancelled, provider-failed)
 - **Library:** `sh-text-field` ×5 (your name, e-mail `email`, username with help "3–20 letters, numbers, . or _", `password` with help "At least 8 characters", "Type it again" `password`); `sh-button` primary lg block (`busy` when submitting); `sh-banner` `danger` (invalid and taken: "Fix N things" summary with field errors, "That e-mail already has an account. Sign in?"; error with "Try again"). Below the form, the same provider buttons and return banners as sign-in: `sh-button` `secondary` block with `sh-provider-icon` per configured provider, `busy` while redirecting; `sh-banner` above the card for provider-no-email, provider-reader, provider-failed (`danger`) and provider-cancelled (`info`). A household started by a provider also opens the set-up wizard.
-- **Local:** heading and subtitle; the password pair laid out side by side. Success opens the set-up wizard (`/onboarding`) for the new household; an invited parent (accept-invite) still lands on Review. The `divider` "or".
+- **Local:** heading and subtitle; the password pair laid out side by side. Success also mails the confirm-your-e-mail link (L2-144); nothing on the page changes. Success opens the set-up wizard (`/onboarding`) for the new household; an invited parent (accept-invite) still lands on Review. The `divider` "or".
 
 #### Set up your family — `/onboarding`, `/onboarding/child`, `/onboarding/sign-in`, `/onboarding/reward`, `/onboarding/done` (`pages/onboarding`: welcome, child-name, child-name-invalid, child-sign-in, child-sign-in-invalid, child-sign-in-taken, child-sign-in-submitting, failed, reward, reward-added, reward-invalid, reward-submitting, done, resumed, error)
 - **Library:** `sh-auth-layout` (no top bar, no shell navigation); `sh-step-indicator` (`current` 1 to 5, `total` 5) above the card on every step; `sh-text-field` (child-name: "Child’s name"; child-sign-in: "Username" with help "3–20 letters, numbers, . or _", prefilled from the name, and `password` "Password" with help "At least 8 characters"; reward: "The reward" and "Books to finish" `number` with help "A whole number from 1 to 20."); `sh-button` primary lg block (Let’s go, Next, Go to my shelf; `busy` when submitting); `sh-banner` `danger` (`summary` "Fix N things" on child-sign-in-invalid, child-sign-in-taken and reward-invalid; failed: "Nia wasn’t added", "Nothing changed. Check your connection." with "Try again"); `sh-sticker` 🎁 on each added reward; `sh-celebration` `book` in place of the card on done and resumed; `sh-error-state` on error ("Shelfie couldn’t pick up where you left off", "Try again").
@@ -110,6 +111,10 @@ These are local UI that more than one screen needs. Build once in the feature li
 #### Join a household — `/accept-invite` (`pages/accept-invite`: default, invalid, taken, submitting, error)
 - **Library:** `sh-text-field` ×5 (e-mail `readonly`, your name, username, `password`, "Type it again"); `sh-button` primary lg block (`busy` when submitting); `sh-banner` `danger` (invalid and taken: summary with field errors).
 - **Local:** auth layout; inviting-household header (`sh-avatar` lg with the inviter's initial and never a photo, because the page is signed out and photos are served only inside the household; "Join the Bells", "Marcus invited you."); `error` replaces the form with a sticker, "This invite has expired" (also shown for a used link) and a "Back to sign in" link button. The mock shows `error` as a message, not as `sh-error-state` (inferred below).
+
+#### Confirm your e-mail — `/verify-email` (`pages/verify-email`: verifying, success, error, error-signed-out)
+- **Library:** `sh-auth-layout`; `sh-skeleton` in place of the button (verifying); `sh-button` primary lg block "Send a new link" (error, signed in; `busy` while sending), followed by the same toasts as the banner’s Send it again.
+- **Local:** the message card as on Reset password's success and error (large sticker, `h1`, one muted line, a link button): "Confirming your e-mail…" (verifying), "Your e-mail is confirmed" with the address and "Go to Shelfie" to the person's home or to sign-in (success), "This link has expired" with "Sign in" as a link button when signed out (error-signed-out).
 
 #### Forgot password — `/forgot-password` (`pages/forgot-password`: default, invalid, submitting, success, error)
 - **Library:** `sh-text-field` `email`; `sh-button` primary block; `sh-banner` `danger` (invalid summary, error with "Try again").
@@ -195,6 +200,7 @@ These are local UI that more than one screen needs. Build once in the feature li
 | Toast (`notifications/toast`: info, success, warning, danger, with-action, stacked) | `sh-toast-stack` region, lifted above `sh-tab-bar` on phones | `sh-toast` (severity icon, title, text, optional action, close, timer bar), via `ToastService.show()` | — |
 | Banner (`notifications/banner`: info, success, warning, danger, persistent) | banner slot under the top bar | `sh-banner` (severity, title, body, optional action, close when dismissible), via `BannerService.show()` | — |
 | Push (`notifications/push`: chapter-logged, feedback, book-reward, streak-reward) | the operating system, from the browser | — (built by the browser; no component) | `sw.js` shows the notification from the pushed title, body, tag and page |
+| E-mail (`notifications/email`: verify-email, reset-password, invite) | the recipient's mail client | — **Server-rendered, outside the library:** the API's `renderMail` (`apps/api/src/mail-template.ts`) writes table layout with inline styles from the light-theme token values (`docs/design-system/foundations/email.html`) and a plain-text part. It is the only Shelfie markup not built from `components`. | the mail template in `apps/api` |
 
 ## Summary of local UI to build
 
@@ -221,6 +227,8 @@ These are local UI that more than one screen needs. Build once in the feature li
 21. Shelf "Reading toward" heading, intro line and reached message.
 22. Send-feedback intro line and the `fieldset` that locks its fields while sending.
 23. Settings Notifications card heading, divider and group label; the push service worker `sw.js`.
+24. Confirm-your-e-mail message card (`VerifyEmailPage`) and the shell banner's projected "Send it again" button.
+25. The e-mail template, rendered by the API, outside the Angular workspace.
 
 ## Inferred, not read from a mock
 

@@ -35,7 +35,7 @@ function rateLimiter(db: Db, limit: number, keyOf: (req: Request, res: Response)
 /** At most ten password sign-ins from one source in ten minutes. */
 export const passwordSignInLimiter = (db: Db) => rateLimiter(db, 10, (req) => req.ip ?? 'unknown');
 
-/** At most ten provider sign-in starts and callbacks from one source in ten minutes; a navigating browser is sent back rather than shown JSON (L2-149). */
+/** At most ten provider sign-in starts and callbacks from one source in ten minutes; a navigating browser is sent back rather than shown JSON (L2-159). */
 export const providerSignInLimiter = (db: Db, limited: Limited) => rateLimiter(db, 10, (req) => `provider:${req.ip ?? 'unknown'}`, limited);
 
 /** At most five review-assistant requests per parent in ten minutes. Use after `requireSession`. */
@@ -52,6 +52,10 @@ export const lookupLimiter = (db: Db) => rateLimiter(db, 60, (req) => `lookup:${
 /** At most ten feedback notes per person in ten minutes, so nobody can flood the table. Use after `requireSession`. */
 export const feedbackLimiter = (db: Db) =>
   rateLimiter(db, 10, (_req, res) => `feedback:${(res.locals['session'] as RequestSession).profileId}`);
+
+/** At most three confirm-your-e-mail links per parent in ten minutes (L2-149). Use after `requireSession`. */
+export const verifyResendLimiter = (db: Db) =>
+  rateLimiter(db, 3, (_req, res) => `verify:${(res.locals['session'] as RequestSession).profileId}`);
 
 /** At most twenty subscription requests per person in ten minutes. Use after `requireSession`. */
 export const pushLimiter = (db: Db) =>
