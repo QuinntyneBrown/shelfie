@@ -3,13 +3,13 @@ using System.Text.Json;
 
 namespace ShelfieAdmin;
 
-/// <summary>The write commands, added to the users, books and logs groups (L2-059 to L2-062).</summary>
+/// <summary>The write commands, added to the users, books, logs and profiles groups (L2-059 to L2-062, L2-168).</summary>
 public static class WriteCommands
 {
     static readonly Option<bool> DryRun = new("--dry-run") { Description = "Show what would change and change nothing" };
     static readonly Option<bool> Yes = new("--yes") { Description = "Do not ask before a destructive change" };
 
-    public static void AddTo(Command users, Command books, Command logs)
+    public static void AddTo(Command users, Command books, Command logs, Command profiles)
     {
         var userId = new Argument<string>("id") { Description = "Parent's profile id" };
         var resetPassword = new Command("reset-password", "Set a new password for a parent and end all of their sessions") { userId, DryRun, Yes };
@@ -58,6 +58,20 @@ public static class WriteCommands
                 (r, dry) => $"{(dry ? "Dry run: would delete" : "Deleted")} chapter {Output.Text(r, "chapter")} of {Output.Text(r, "bookTitle")} and its {Output.Text(r, "answersDeleted")} answer(s).",
                 destructive: true)));
         logs.Subcommands.Add(delete);
+
+        // Neither asks to confirm: each is undone by the other (ADR-0023).
+        var profileId = new Argument<string>("id") { Description = "Author's or volunteer's profile id" };
+        var approve = new Command("approve", "Let parents see this profile in the directory") { profileId, DryRun };
+        approve.SetAction((parse, _) => Cli.RunAsync(parse, needsToken: true, session =>
+            WriteAsync(session, parse, HttpMethod.Post, $"profiles/{Escape(parse.GetValue(profileId))}/approve", null,
+                (r, dry) => $"{(dry ? "Dry run: would approve" : "Approved")} {Output.Text(r, "name")} ({Output.Text(r, "kind")}, {Output.Text(r, "id")}).")));
+        profiles.Subcommands.Add(approve);
+
+        var hide = new Command("hide", "Take this profile out of the directory") { profileId, DryRun };
+        hide.SetAction((parse, _) => Cli.RunAsync(parse, needsToken: true, session =>
+            WriteAsync(session, parse, HttpMethod.Post, $"profiles/{Escape(parse.GetValue(profileId))}/hide", null,
+                (r, dry) => $"{(dry ? "Dry run: would hide" : "Hid")} {Output.Text(r, "name")} ({Output.Text(r, "kind")}, {Output.Text(r, "id")}).")));
+        profiles.Subcommands.Add(hide);
     }
 
     /// <summary>

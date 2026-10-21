@@ -1,0 +1,38 @@
+<sh-dialog
+  [heading]="'Remove “' + (book()?.title ?? '') + '”?'"
+  [open]="!!book()"
+  (closed)="busy() || closed.emit()"
+>
+  @if (book(); as book) {
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        title="The book wasn’t removed"
+        message="Shelfie couldn’t reach the server. Try again in a moment."
+      />
+    }
+    <div class="book-card">
+      <sh-cover color="sage" sticker="📖" size="sm" [image]="book.coverImage" />
+      <div class="book-card__body">
+        <strong>{{ book.title }}</strong>
+        <span class="book-card__author">{{ book.chapterCount }} chapters</span>
+      </div>
+    </div>
+    <p>
+      It comes off your catalogue, so parents can’t add it any more. Families who already added it
+      keep their copy.
+    </p>
+  }
+  <div dialog-actions class="cluster">
+    <button class="btn" type="button" autofocus (click)="closed.emit()">Keep it</button>
+    <button
+      class="btn btn--danger"
+      type="button"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+      (click)="book() && remove(book()!)"
+    >
+      Remove book
+    </button>
+  </div>
+</sh-dialog>

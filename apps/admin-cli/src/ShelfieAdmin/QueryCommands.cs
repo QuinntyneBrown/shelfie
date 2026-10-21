@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ShelfieAdmin;
 
-/// <summary>users list, books list, logs list, logs show (L2-056 to L2-058) and feedback list (L2-118).</summary>
+/// <summary>users list, books list, logs list, logs show (L2-056 to L2-058), feedback list (L2-118) and profiles list (L2-168).</summary>
 public static class QueryCommands
 {
     public static Command Users()
@@ -65,6 +65,17 @@ public static class QueryCommands
             new Column("ROLE", r => Output.Text(r, "role")), new Column("KIND", r => Output.Text(r, "kind")),
             new Column("SCORE", r => Output.Text(r, "score")), new Column("MESSAGE", r => Output.Text(r, "message").ReplaceLineEndings(" ")))));
         return new Command("feedback", "Feedback sent from inside Shelfie") { list };
+    }
+
+    public static Command Profiles()
+    {
+        var list = new Command("list", "List every author and volunteer with what they wrote, waiting ones first");
+        list.SetAction((parse, _) => Cli.RunAsync(parse, needsToken: true, session => Print(session, "profiles",
+            new Column("ID", r => Output.Text(r, "id")), new Column("KIND", r => Output.Text(r, "kind")),
+            new Column("NAME", r => Output.Text(r, "name")), new Column("EMAIL", r => Output.Text(r, "email")),
+            new Column("STATUS", r => Output.Text(r, "status")), new Column("BOOKS", r => Output.Text(r, "bookCount")),
+            new Column("ABOUT", r => Output.Text(r, "bio").ReplaceLineEndings(" ")))));
+        return new Command("profiles", "Author and volunteer profiles parents see in the directory") { list };
     }
 
     static string Review(JsonElement log) =>

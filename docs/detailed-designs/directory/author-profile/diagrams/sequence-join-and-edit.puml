@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Join as an author and write a profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Author" as author
+box "Frontend — Shelfie web (sign-in and directory libraries)" #E0F2FE
+  participant "JoinPage" as join
+  participant "MyProfilePage" as page
+  participant "MeApi" as client
+end box
+box "Backend — Shelfie API (routers and middleware)" #D1FADF
+  participant "auth.router.ts" as auth
+  participant "me.router.ts\n+ requireDirectorySession" as me
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "auth.service.ts\njoin()" as svc
+  participant "me.service.ts" as mesvc
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+author -> join : Choose "I'm an author"; name, e-mail, username, password twice; Create my account
+join -> join : Client checks (L2-160)
+alt a check fails
+  join --> author : "Fix N things" and field errors; send nothing
+else checks pass
+  join -> auth : POST /api/auth/join {kind: author, name, email, username, password}
+  auth -> svc : join(pool, input)
+  svc -> db : takenFields(username, email)
+  alt e-mail or username held by any account
+    svc --> auth : Problem 409 taken {fields}
+    auth --> join : 409
+    join --> author : Field errors; keep values (L2-160)
+  else free
+    svc -> db : BEGIN; INSERT profile (role author, household_id NULL, color peach)\nINSERT directory_profile (status pending); INSERT session; COMMIT
+    auth --> join : 201 session summary + Set-Cookie shelfie_session
+    join -> page : navigate /me
+    page -> client : profile()
+    client -> me : GET /api/me
+    me -> mesvc : getMyProfile(profileId)
+    mesvc -> db : SELECT profile JOIN directory_profile
+    me --> page : {role: author, status: pending, ...}
+    page --> author : "Waiting for approval" banner and the form (L2-163)
+    author -> page : Write About you, website; Save profile
+    page -> client : save(input)
+    client -> me : PUT /api/me {name, bio, website}
+    me -> me : Validate by role (bio 1-500, website http(s) <= 200) (L2-161)
+    me -> mesvc : updateMyProfile(session, input)
+    mesvc -> db : UPDATE profile SET name; UPDATE directory_profile SET bio, website, updated_at
+    me --> page : MyProfile
+    page --> author : Toast "Profile saved"; top bar shows the new name
+  end
+end
+@enduml

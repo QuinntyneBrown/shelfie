@@ -25,12 +25,14 @@ The slice runs from one page in the sign-in library to the `household`, `profile
 Data changes this feature relies on, shared with accept-invite and password sign-in:
 
 - **`profile.username`** — new `TEXT NOT NULL` column, with a unique index on `lower(username)` so that uniqueness ignores case across both roles. The stored value keeps the case the person typed; sign-in matches case-insensitively.
-- **`profile.role`** — values `parent` and `reader`, replacing the earlier `grown_up` value.
+- **`profile.role`** — values `parent` and `reader`, replacing the earlier `grown_up` value; migration `014-directory.sql` adds `author` and `volunteer`, which have no household (ADR-0021).
 - **`profile.household_id`** — unchanged; a household now has one or more parents and any number of readers.
 - **`profile.email`** — required and unique, case-insensitively, for a parent; null for a reader.
 - **PIN columns** — `pin_hash`, `pin_failed_count` and `pin_locked_until` are removed.
 - **Existing table name** — the codebase names the table `profile`; the requirement text and the migration plan call the same entity `users`. The name used in code is kept: the table stays `profile`, and `session.profile_id` keeps its name; the migration in `db.ts` rebuilds the table in place.
 - **Household display name** — the accept-invite mock shows "Join the Bells"; no household name is stored and sign-up does not ask for one; the Join page names the inviting parent instead ("Join Dad’s household").
+
+**Authors and volunteers** do not use this page; it stays the parent's sign-up. They join on their own page, `/join` (`JoinPage` in the `sign-in` library, `POST /api/auth/join`), linked from Sign in under the parent's link. It creates a profile with role `author` or `volunteer` and no household, which this feature's `takenFields()` check also covers, because usernames and e-mails stay unique across every role. See `directory/author-profile` and `directory/volunteer-profile` (`L2-160`, ADR-0021).
 
 ## Requirements
 

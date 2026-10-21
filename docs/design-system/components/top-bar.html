@@ -102,7 +102,7 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Navigation</p>
       <h1>Top bar</h1>
-      <p class="ds-lead">The bar across the top of every signed-in page. For Nia it is just the brand, her streak and her avatar. For Dad it adds Review, Books and Settings from 768px.</p>
+      <p class="ds-lead">The bar across the top of every signed-in page. For Nia it is just the brand, her streak and her avatar. For Dad it adds Review, Books, Directory and Settings from 768px; for an author, My profile and My catalogue. A volunteer's is the brand and their avatar.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;header&gt;</code> + <code>&lt;nav&gt;</code></span></div>
       <ul class="ds-toc">
         <li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li>
@@ -113,7 +113,7 @@
       <p>Every signed-in page starts with a <code>.topbar</code>. It keeps the way home and the account menu one tap away, and it stays put while the page scrolls. Sign-in, forgot and reset password pages have no top bar; they use the <a href="layout.html">auth layout</a>.</p>
       <ul>
         <li><b>Reader</b>: brand (back to her shelf), <a href="streak.html">streak</a>, avatar. Nia has one place to be, so there is no navigation.</li>
-        <li><b>Grown-up</b>: brand (back to Review), <code>.topbar__nav</code> with Review, Books and Settings, avatar. Below 768px the nav hides and the <a href="tab-bar.html">tab bar</a> takes over.</li>
+        <li><b>Grown-up</b>: brand (back to Review), <code>.topbar__nav</code> with Review, Books, Directory and Settings (a parent) or My profile and My catalogue (an author), avatar. Below 768px the nav hides and the <a href="tab-bar.html">tab bar</a> takes over.</li>
         <li>The avatar is a <code>button.avatar</code> that opens the account <a href="menu.html">menu</a>.</li>
       </ul>
     </section>
@@ -282,7 +282,7 @@
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
         <li>The brand is always "Shelfie"; no page titles in the bar (the page header has the <code>&lt;h1&gt;</code>).</li>
-        <li>Grown-up nav labels are one noun each, in this order: Review, Books, Settings. The order never changes between pages.</li>
+        <li>Grown-up nav labels are short, in this order: Review, Books, Directory, Settings (parent); My profile, My catalogue (author). The order never changes between pages.</li>
         <li>The streak is "N days" (or "1 day"); the avatar shows initials: "N" for Nia, "MB" for Dad.</li>
       </ul>
     </section>

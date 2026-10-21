@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthLayout, Banner, Button, TextField } from 'components';
-import { ApiError, SessionService } from 'core';
+import { ApiError, SessionService, homeOf } from 'core';
 import { AuthApi } from '../auth-api';
 
 @Component({
@@ -19,6 +19,11 @@ export class ResetPasswordPage {
   readonly token = input<string>();
   readonly email = input<string>();
 
+  /** Where the reset person goes next: Review for a parent, My profile for an author or volunteer. */
+  protected readonly home = computed(() => {
+    const current = this.session.current();
+    return current ? homeOf(current) : '/review';
+  });
   protected readonly password = signal('');
   protected readonly confirm = signal('');
   protected readonly saving = signal(false);

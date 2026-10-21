@@ -1,0 +1,86 @@
+<sh-dialog
+  [heading]="editing() === null ? 'Add a book to your catalogue' : 'Edit a book'"
+  [open]="open()"
+  (closed)="busy() || closed.emit()"
+>
+  <form
+    id="catalogue-book-form"
+    class="stack"
+    (submit)="$event.preventDefault(); save()"
+    novalidate
+  >
+    @if (problems().length) {
+      <sh-banner
+        #summary
+        severity="danger"
+        [summary]="true"
+        [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (failed()) {
+      <sh-banner
+        severity="danger"
+        title="The book wasn’t saved"
+        message="Shelfie couldn’t reach the server. Everything you typed is still here."
+      >
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="save()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <div class="cluster picture">
+      <sh-cover color="sage" sticker="📖" size="lg" [image]="shownPicture()" />
+      <div class="picture__picker">
+        <sh-cover-picker
+          label="Cover picture (optional)"
+          [hasPicture]="!!shownPicture()"
+          [busy]="busy()"
+          [error]="pictureError()"
+          (picked)="choosePicture($event)"
+          (removed)="removePicture()"
+        />
+      </div>
+    </div>
+    <sh-text-field
+      label="Title"
+      [maxlength]="120"
+      [error]="errors().title ?? null"
+      [(value)]="title"
+    />
+    <sh-text-field
+      label="Number of chapters"
+      type="number"
+      inputmode="numeric"
+      help="A whole number from 1 to 200."
+      [error]="errors().chapters ?? null"
+      [(value)]="chapters"
+    />
+    <sh-textarea
+      label="Short description (optional)"
+      help="What the book is about, for parents. Up to 300 characters."
+      [rows]="3"
+      [maxlength]="300"
+      [(value)]="description"
+    />
+  </form>
+  <div dialog-actions class="cluster">
+    <button class="btn btn--ghost" type="button" [disabled]="busy()" (click)="closed.emit()">
+      Cancel
+    </button>
+    <button
+      class="btn btn--primary"
+      type="submit"
+      form="catalogue-book-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? true : null"
+    >
+      {{ editing() === null ? 'Add book' : 'Save changes' }}
+    </button>
+  </div>
+</sh-dialog>

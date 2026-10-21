@@ -11,6 +11,12 @@
       @case ('parent') {
         <a class="btn btn--primary" routerLink="/review">Go to Review</a>
       }
+      @case ('author') {
+        <a class="btn btn--primary" routerLink="/me">Back to my profile</a>
+      }
+      @case ('volunteer') {
+        <a class="btn btn--primary" routerLink="/me">Back to my profile</a>
+      }
       @default {
         <a class="btn btn--primary" routerLink="/sign-in">Go to sign in</a>
       }

@@ -102,6 +102,10 @@ export class SignInPage {
     await this.page.getByRole('link', { name: 'Create a parent account' }).click();
   }
 
+  async chooseJoin() {
+    await this.page.getByRole('link', { name: 'Join as an author or volunteer' }).click();
+  }
+
   /** The "Continue with Google" or "Continue with Facebook" button below the form. */
   continueWithButton(provider: 'Google' | 'Facebook') {
     return this.page.getByRole('button', { name: `Continue with ${provider}` });

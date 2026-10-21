@@ -1,9 +1,21 @@
 <div class="container">
   <div class="page-header">
-    <h1>Add a book</h1>
+    <div>
+      <h1>Add a book</h1>
+      @if (fromCatalogue(); as author) {
+        <p class="subtitle">Filled in from {{ author }}’s catalogue. Change anything before you add it.</p>
+      }
+    </div>
   </div>
   <div class="layout">
     <form class="stack form" (submit)="$event.preventDefault(); submit()" novalidate>
+      @if (unavailable()) {
+        <sh-banner
+          severity="info"
+          title="That book isn’t available any more."
+          message="Its author may have removed it. You can still add a book by hand."
+        />
+      }
       @if (failed()) {
         <sh-banner
           severity="danger"

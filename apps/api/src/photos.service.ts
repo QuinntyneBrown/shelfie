@@ -22,6 +22,11 @@ export function photoUrl(profileId: string, etag: string) {
   return `/api/photos/${profileId}?v=${etag}`;
 }
 
+/** The URL a person loads their own photo from: inside the household, or `/api/me/photo` for an author or volunteer (ADR-0021). */
+export function ownPhotoUrl(role: string, profileId: string, etag: string) {
+  return role === 'author' || role === 'volunteer' ? `/api/me/photo?v=${etag}` : photoUrl(profileId, etag);
+}
+
 /**
  * Decodes an upload and re-encodes it as a centre-cropped WebP of the given size. The result carries
  * no EXIF, GPS, XMP or ICC data, because sharp writes none unless asked. Anything that is not a JPEG,
@@ -58,6 +63,11 @@ export async function savePhoto(db: Db, profileId: string, image: Buffer): Promi
 
 export async function removePhoto(db: Db, profileId: string): Promise<void> {
   await run(db, 'DELETE FROM profile_photo WHERE profile_id = $1', [profileId]);
+}
+
+/** A person's own photo, read by its owner. */
+export function readOwnPhoto(db: Db, profileId: string): Promise<ProfilePhoto | undefined> {
+  return get<ProfilePhoto>(db, 'SELECT image, etag FROM profile_photo WHERE profile_id = $1', [profileId]);
 }
 
 /** The photo of a person in the household; another household's photo reads as absent. */

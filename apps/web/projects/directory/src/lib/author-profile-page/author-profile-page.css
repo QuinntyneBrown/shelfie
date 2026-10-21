@@ -1,0 +1,12 @@
+.page {
+  gap: var(--space-4);
+}
+.header {
+  gap: var(--space-4);
+}
+.section-title {
+  font: var(--text-h4);
+}
+.about {
+  white-space: pre-line;
+}

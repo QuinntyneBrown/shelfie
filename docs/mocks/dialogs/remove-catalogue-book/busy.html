@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remove a catalogue book · busy — Shelfie mocks</title>
+<meta name="mock:kind" content="dialog">
+<meta name="mock:screen" content="remove-catalogue-book">
+<meta name="mock:state" content="busy">
+<meta name="mock:requirements" content="L2-166">
+<meta name="description" content="Removing.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="has-tabbar" inert aria-hidden="true">
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/my-profile/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" href="../../pages/my-profile/default.html">My profile</a>
+    <a class="nav-link" href="../../pages/my-catalogue/default.html" aria-current="page">My catalogue</a>
+  </nav>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--peach" type="button" aria-label="Account menu for Rosa" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">R</button>
+</header>
+
+<main id="main" class="container">
+<div class="page-header"><div><h1>My catalogue</h1><p class="subtitle">3 books · parents can add them to their child’s shelf</p></div><a class="btn btn--primary" href="../../dialogs/catalogue-book/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a book</a></div><ul class="list card card--flush"><li class="list__item">
+  <span class="cover cover--sm cover--sky" aria-hidden="true">🦊<img class="cover__img" src="../../assets/covers/lighthouse-fox.svg" alt=""></span>
+  <div class="list__body"><div class="list__title">The Lighthouse Fox</div><div class="list__meta">12 chapters · A fox cub keeps the lighthouse lamp burning through the longest storm of winter.</div></div>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/catalogue-book/edit.html" aria-label="Edit The Lighthouse Fox"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/remove-catalogue-book/default.html" aria-label="Remove The Lighthouse Fox"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a>
+</li><li class="list__item">
+  <span class="cover cover--sm cover--lilac" aria-hidden="true">🌙</span>
+  <div class="list__body"><div class="list__title">Pip and the Paper Moon</div><div class="list__meta">9 chapters · Pip folds a moon out of paper, and one night it floats away.</div></div>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/catalogue-book/edit.html" aria-label="Edit Pip and the Paper Moon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/remove-catalogue-book/default.html" aria-label="Remove Pip and the Paper Moon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a>
+</li><li class="list__item">
+  <span class="cover cover--sm cover--mint" aria-hidden="true">🦦</span>
+  <div class="list__body"><div class="list__title">Otters Never Panic</div><div class="list__meta">15 chapters · Three otter siblings run the river ferry while their parents are away.</div></div>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/catalogue-book/edit.html" aria-label="Edit Otters Never Panic"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4zM13 7l4 4"/></svg></a>
+  <a class="btn btn--sm btn--ghost" href="../../dialogs/remove-catalogue-book/default.html" aria-label="Remove Otters Never Panic"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></a>
+</li></ul>
+</main>
+<nav class="tabbar" aria-label="Primary, phone">
+  <a href="../../pages/my-profile/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21v-1a7 7 0 0 1 14 0v1"/></svg>My profile</a>
+  <a href="../../pages/my-catalogue/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg>My catalogue</a>
+</nav>
+</div>
+<div class="backdrop"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" data-dismiss-on-escape>
+  <div class="dialog__panel">
+    <div class="dialog__header">
+      <div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Remove “The Lighthouse Fox”?</h2></div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="dialog__body stack">
+<div class="book-card"><span class="cover cover--sm cover--sky" aria-hidden="true">🦊<img class="cover__img" src="../../assets/covers/lighthouse-fox.svg" alt=""></span><div class="book-card__body"><span style="font: var(--text-label);">The Lighthouse Fox</span><span class="book-card__author">12 chapters</span></div></div>
+<p>It comes off your catalogue, so parents can’t add it any more. Families who already added it keep their copy.</p></div>
+    <div class="dialog__footer"><button class="btn" type="button" autofocus>Keep it</button><button class="btn btn--danger" type="button" aria-busy="true">Removing…</button></div>
+  </div>
+</div><nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Remove a catalogue book</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="busy.html" aria-current="page">busy</a></li><li><a href="failed.html">failed</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

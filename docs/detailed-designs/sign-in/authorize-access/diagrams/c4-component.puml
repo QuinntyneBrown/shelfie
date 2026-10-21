@@ -5,7 +5,7 @@ title Components — Authorize access
 
 Container(web, "Shelfie web", "Angular", "authGuard, grownUpGuard, GlobalErrorHandler; NotFoundPage, ForbiddenPage, ServerErrorPage")
 Container_Boundary(api, "Shelfie API") {
-  Component(sessionMw, "session.ts", "Middleware", "requireSession: sets the session (userId, householdId, role) from shelfie_session")
+  Component(sessionMw, "session.ts", "Middleware", "requireSession: sets the session (userId, householdId, role) from shelfie_session; 403 household-only for an author or volunteer. requireDirectorySession for /api/me and /api/catalogue-books")
   Component(authz, "authz.ts", "Middleware", "requireRole(role): 401 without a session, 403 for the wrong role")
   Component(routers, "*.router.ts", "Express Routers", "Apply requireRole per endpoint (reader or parent)")
   Component(services, "*.service.ts", "Services", "Every query includes household_id = ?; throw NotFoundError when it returns nothing")

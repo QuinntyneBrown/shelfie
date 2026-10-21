@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My catalogue · empty — Shelfie mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="my-catalogue">
+<meta name="mock:state" content="empty">
+<meta name="mock:requirements" content="L2-165, L2-166, L2-167">
+<meta name="description" content="No books yet; one action.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="has-tabbar">
+<header class="topbar">
+  <a class="topbar__brand" href="../../pages/my-profile/default.html"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg> Shelfie</a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" href="../../pages/my-profile/default.html">My profile</a>
+    <a class="nav-link" href="../../pages/my-catalogue/default.html" aria-current="page">My catalogue</a>
+  </nav>
+  <span class="topbar__spacer"></span>
+  <button class="avatar avatar--sm avatar--peach" type="button" aria-label="Account menu for Rosa" aria-haspopup="menu" aria-expanded="false" style="border: 0; cursor: pointer;">R</button>
+</header>
+
+<main id="main" class="container">
+<div class="page-header"><div><h1>My catalogue</h1><p class="subtitle">No books yet</p></div><a class="btn btn--primary" href="../../dialogs/catalogue-book/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a book</a></div><div class="empty"><div class="empty__icon"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg></div><h2 class="empty__title">Your catalogue is empty</h2><p class="empty__text">Add the books you’ve written. Parents can then put them on their child’s shelf with the title, chapters and cover filled in.</p><div class="empty__actions"><a class="btn btn--primary" href="../../dialogs/catalogue-book/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a book</a></div></div>
+</main>
+<nav class="tabbar" aria-label="Primary, phone">
+  <a href="../../pages/my-profile/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21v-1a7 7 0 0 1 14 0v1"/></svg>My profile</a>
+  <a href="../../pages/my-catalogue/default.html" aria-current="page"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg>My catalogue</a>
+</nav>
+</div>
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">My catalogue</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="empty.html" aria-current="page">empty</a></li><li><a href="error.html">error</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>

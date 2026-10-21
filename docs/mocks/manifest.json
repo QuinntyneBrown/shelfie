@@ -297,7 +297,8 @@
         "covers-loading",
         "covers",
         "covers-empty",
-        "covers-failed"
+        "covers-failed",
+        "from-catalogue"
       ],
       "not_applicable": {
         "loading": "The form needs no data before it renders.",
@@ -497,6 +498,123 @@
       ]
     },
     {
+      "id": "join",
+      "kind": "page",
+      "title": "Join as an author or volunteer",
+      "route": "/join",
+      "states": [
+        "default",
+        "volunteer",
+        "invalid",
+        "taken",
+        "submitting",
+        "error"
+      ],
+      "not_applicable": {
+        "loading": "The form needs no data before it renders.",
+        "empty": "A single form; there is no collection to be empty."
+      },
+      "requirements": [
+        "L2-160"
+      ]
+    },
+    {
+      "id": "my-profile",
+      "kind": "page",
+      "title": "My profile",
+      "route": "/me",
+      "states": [
+        "default",
+        "pending",
+        "hidden",
+        "volunteer",
+        "loading",
+        "error",
+        "invalid",
+        "saving",
+        "failed"
+      ],
+      "not_applicable": {
+        "empty": "Every account has a profile from sign-up; the form always has a name."
+      },
+      "requirements": [
+        "L2-161",
+        "L2-162",
+        "L2-163",
+        "L2-164"
+      ]
+    },
+    {
+      "id": "my-catalogue",
+      "kind": "page",
+      "title": "My catalogue",
+      "route": "/catalogue",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "requirements": [
+        "L2-165",
+        "L2-166",
+        "L2-167"
+      ]
+    },
+    {
+      "id": "directory",
+      "kind": "page",
+      "title": "Directory",
+      "route": "/directory",
+      "states": [
+        "default",
+        "volunteers",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "requirements": [
+        "L2-169",
+        "L2-170",
+        "L2-173"
+      ]
+    },
+    {
+      "id": "author-profile",
+      "kind": "page",
+      "title": "Author profile",
+      "route": "/directory/authors/:id",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "not-found"
+      ],
+      "requirements": [
+        "L2-170",
+        "L2-172"
+      ]
+    },
+    {
+      "id": "volunteer-profile",
+      "kind": "page",
+      "title": "Volunteer profile",
+      "route": "/directory/volunteers/:id",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "not-found"
+      ],
+      "not_applicable": {
+        "empty": "A volunteer profile has no collection; its name, about, ages and contact are always filled in."
+      },
+      "requirements": [
+        "L2-171"
+      ]
+    },
+    {
       "id": "not-found",
       "kind": "page",
       "title": "Page not found",
@@ -516,7 +634,8 @@
       "title": "Grown-ups only",
       "route": "/review (as reader)",
       "states": [
-        "default"
+        "default",
+        "author"
       ],
       "not_applicable": {
         "loading": "A static page; nothing is fetched.",
@@ -647,6 +766,43 @@
       "not_applicable": {
         "invalid": "The dialog has no inputs; it only confirms."
       }
+    },
+    {
+      "id": "catalogue-book",
+      "kind": "dialog",
+      "title": "Add or edit a catalogue book",
+      "opens_from": "my-catalogue",
+      "states": [
+        "default",
+        "edit",
+        "busy",
+        "invalid",
+        "too-large",
+        "wrong-file",
+        "failed"
+      ],
+      "requirements": [
+        "L2-165",
+        "L2-166",
+        "L2-167"
+      ]
+    },
+    {
+      "id": "remove-catalogue-book",
+      "kind": "dialog",
+      "title": "Remove a catalogue book",
+      "opens_from": "my-catalogue",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "A confirmation with no fields; nothing can be invalid."
+      },
+      "requirements": [
+        "L2-166"
+      ]
     },
     {
       "id": "edit-question",
@@ -802,7 +958,10 @@
         "warning",
         "danger",
         "with-action",
-        "stacked"
+        "stacked",
+        "profile-saved",
+        "catalogue-book-added",
+        "added-to-shelf"
       ],
       "not_applicable": {}
     },

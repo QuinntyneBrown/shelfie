@@ -92,3 +92,23 @@ export async function resetParentPassword(db: Db, id: string, password: string) 
   const sessionsEnded = await run(db, 'DELETE FROM session WHERE profile_id = $1', [id]);
   return { id, name: profile.name, sessionsEnded };
 }
+
+/** Every author and volunteer with what they wrote, for the operator to approve or hide (ADR-0023); waiting ones first. */
+export function listDirectoryProfiles(db: Db) {
+  return all(
+    db,
+    `SELECT p.id, p.role AS kind, p.name, p.email, d.status, d.bio, d.website, d.ages, d.contact,
+            (SELECT COUNT(*) FROM catalogue_book c WHERE c.profile_id = p.id) AS "bookCount"
+       FROM profile p JOIN directory_profile d ON d.profile_id = p.id
+      ORDER BY d.status = 'pending' DESC, p.name`,
+  );
+}
+
+/** Lists or unlists an author's or volunteer's profile; parents see the change on their next load. */
+export async function setProfileStatus(db: Db, id: string, status: 'approved' | 'hidden') {
+  const profile = await get<{ name: string; role: string }>(db, 'SELECT name, role FROM profile WHERE id = $1', [id]);
+  if (!profile) throw new Problem(404, 'not-found');
+  if (profile.role !== 'author' && profile.role !== 'volunteer') throw new Problem(400, 'not-a-directory-profile');
+  await run(db, 'UPDATE directory_profile SET status = $1, updated_at = $2 WHERE profile_id = $3', [status, new Date().toISOString(), id]);
+  return { id, name: profile.name, kind: profile.role, status };
+}

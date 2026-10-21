@@ -6,7 +6,7 @@ export interface Session {
   profileId: string;
   name: string;
   username: string;
-  role: 'reader' | 'parent';
+  role: 'reader' | 'parent' | 'author' | 'volunteer';
   color: string;
   email: string | null;
   theme: 'device' | 'light' | 'dark';
@@ -18,9 +18,13 @@ export interface Session {
   emailVerified: boolean;
 }
 
-/** Where a person lands after signing in: a reader on her shelf, a parent on Review, or on the set-up wizard while it is pending. */
-export function homeOf(session: Session): string {
-  if (session.role !== 'parent') return '/shelf';
+/**
+ * Where a person lands after signing in: a reader on her shelf, an author or volunteer on My profile (ADR-0026),
+ * a parent on Review, or on the set-up wizard while it is pending.
+ */
+export function homeOf(session: Pick<Session, 'role' | 'onboarded'>): string {
+  if (session.role === 'reader') return '/shelf';
+  if (session.role !== 'parent') return '/me';
   return session.onboarded ? '/review' : '/onboarding';
 }
 

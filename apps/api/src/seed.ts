@@ -22,8 +22,8 @@ const ZEDS_DAD_PASSWORD = hashSecret('another-pass-99');
 /** Replaces everything in the database with Nia and Dad's household, their books unless `books` is false, and a second family. */
 export function seed(pool: Pool, { books = true } = {}) {
   return transaction(pool, async (db) => {
-    // Every household-owned row cascades from its household; sign-in attempts belong to nobody.
-    await db.query('DELETE FROM household; DELETE FROM sign_in_attempt');
+    // Every household-owned row cascades from its household, and an author's or volunteer's from their profile; sign-in attempts belong to nobody.
+    await db.query('DELETE FROM household; DELETE FROM profile WHERE household_id IS NULL; DELETE FROM sign_in_attempt');
     const household = (id: string) => db.query("INSERT INTO household (id, time_zone) VALUES ($1, 'UTC')", [id]);
     const profile = (...values: (string | null)[]) =>
       db.query('INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', values);

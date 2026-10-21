@@ -19,7 +19,7 @@ export interface Screen {
 }
 
 /** Waits for the entrance animations to finish, so a card is measured at rest; the logo bobs forever and is left alone. */
-async function settled(page: Page) {
+export async function settled(page: Page) {
   await page.evaluate(() =>
     Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished)),
   );

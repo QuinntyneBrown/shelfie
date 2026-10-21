@@ -4,9 +4,9 @@ import { get, run, transaction, type Db } from './db.ts';
 import { sendMail, type Mail } from './mail.ts';
 import { renderMail } from './mail-template.ts';
 import { Problem } from './problem.ts';
-import { photoUrl } from './photos.service.ts';
+import { ownPhotoUrl } from './photos.service.ts';
 import { hashSecret, verifySecret } from './secret.ts';
-import { SESSION_DAYS } from './session.ts';
+import { SESSION_DAYS, type Role } from './session.ts';
 import type { ProviderIdentity, ProviderName } from './oauth.ts';
 
 export interface Session {
@@ -15,7 +15,7 @@ export interface Session {
   profileId: string;
   name: string;
   username: string;
-  role: 'reader' | 'parent';
+  role: Role;
   color: string;
   email: string | null;
   theme: string;
@@ -30,10 +30,10 @@ interface ProfileRow {
   id: string;
   name: string;
   username: string;
-  role: 'reader' | 'parent';
+  role: Role;
   color: string;
   email: string | null;
-  household_id: string;
+  household_id: string | null;
   password_hash: string | null;
   email_verified_at: string | null;
 }
@@ -58,7 +58,9 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     expires.toISOString(),
     remember ? 1 : 0,
   ]);
-  const { theme, onboarded } = (await get<{ theme: string; onboarded: boolean }>(db, 'SELECT theme, onboarded FROM household WHERE id = $1', [profile.household_id]))!;
+  // Authors and volunteers have no household, so no theme of their own and nothing to set up (ADR-0021).
+  const household = await get<{ theme: string; onboarded: boolean }>(db, 'SELECT theme, onboarded FROM household WHERE id = $1', [profile.household_id]);
+  const { theme, onboarded } = household ?? { theme: 'device', onboarded: true };
   const photo = await get<{ etag: string }>(db, 'SELECT etag FROM profile_photo WHERE profile_id = $1', [profile.id]);
   return {
     id,
@@ -70,7 +72,7 @@ export async function createSession(db: Db, profile: Omit<ProfileRow, 'password_
     color: profile.color,
     email: profile.email,
     theme,
-    photo: photo ? photoUrl(profile.id, photo.etag) : null,
+    photo: photo ? ownPhotoUrl(profile.role, profile.id, photo.etag) : null,
     onboarded,
     emailVerified: profile.email_verified_at !== null,
   };
@@ -124,6 +126,32 @@ export async function signUp(pool: Pool, input: SignUpInput): Promise<Session> {
       passwordHash,
     ]);
     return createSession(db, parent);
+  });
+}
+
+export interface JoinInput extends SignUpInput {
+  kind: 'author' | 'volunteer';
+}
+
+/** Creates an author's or volunteer's account outside any household, waiting for the operator's approval, and signs them in (ADR-0021, ADR-0023). */
+export async function join(pool: Pool, input: JoinInput): Promise<Session> {
+  const email = input.email.trim().toLowerCase();
+  const taken = await takenFields(pool, input.username, email);
+  if (taken.length) throw new Problem(409, 'taken', { fields: taken });
+  const passwordHash = hashSecret(input.password);
+  const account = { id: randomUUID(), name: input.name.trim(), username: input.username, role: input.kind, color: input.kind === 'author' ? 'peach' : 'mint', email, household_id: null, email_verified_at: null };
+  return transaction(pool, async (db) => {
+    await run(db, 'INSERT INTO profile (id, household_id, role, name, color, username, email, password_hash) VALUES ($1, NULL, $2, $3, $4, $5, $6, $7)', [
+      account.id,
+      account.role,
+      account.name,
+      account.color,
+      account.username,
+      email,
+      passwordHash,
+    ]);
+    await run(db, 'INSERT INTO directory_profile (profile_id, updated_at) VALUES ($1, $2)', [account.id, new Date().toISOString()]);
+    return createSession(db, account);
   });
 }
 
@@ -198,9 +226,9 @@ export async function freeUsername(db: Db, localPart: string): Promise<string> {
 const RESET_HOURS = 1;
 export const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
 
-/** Mails a reset link when the address belongs to a parent; says nothing either way. */
+/** Mails a reset link when the address belongs to a parent, an author or a volunteer; says nothing either way. */
 export async function requestPasswordReset(db: Db, email: string, mail: Mail = sendMail) {
-  const profile = await get<{ id: string }>(db, "SELECT id FROM profile WHERE email = $1 AND role = 'parent'", [email.toLowerCase()]);
+  const profile = await get<{ id: string }>(db, "SELECT id FROM profile WHERE email = $1 AND role IN ('parent','author','volunteer')", [email.toLowerCase()]);
   if (!profile) return;
   const token = randomBytes(32).toString('base64url');
   const expires = new Date(Date.now() + RESET_HOURS * 60 * 60 * 1000).toISOString();

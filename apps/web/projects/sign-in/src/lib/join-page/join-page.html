@@ -1,0 +1,107 @@
+<sh-auth-layout>
+  <div class="card stack">
+    <h1 class="centred">Join Shelfie</h1>
+    <p class="text-muted centred centred-item">
+      For children’s authors and reading volunteers. Parents find you in Shelfie’s directory once
+      we’ve checked your profile.
+    </p>
+    @if (problems().length) {
+      <sh-banner
+        #summary
+        severity="danger"
+        [summary]="true"
+        [title]="'Fix ' + problems().length + (problems().length === 1 ? ' thing' : ' things')"
+      >
+        <ul class="summary-list">
+          @for (problem of problems(); track problem) {
+            <li>{{ problem }}</li>
+          }
+        </ul>
+      </sh-banner>
+    }
+    @if (unreachable()) {
+      <sh-banner severity="danger" title="Can’t reach Shelfie" message="Everything you typed is still here.">
+        <div class="alert__actions">
+          <button class="btn btn--sm" type="button" (click)="submit()">Try again</button>
+        </div>
+      </sh-banner>
+    }
+    <form class="stack" (submit)="$event.preventDefault(); submit()" novalidate>
+      <fieldset class="kind">
+        <legend class="field__label">I’m joining as</legend>
+        <div class="stack kind__choices">
+          <label class="choice">
+            <input
+              type="radio"
+              name="kind"
+              value="author"
+              [checked]="kind() === 'author'"
+              (change)="kind.set('author')"
+            />
+            <span class="choice__text">
+              <strong>I’m an author</strong>
+              <small>Share a profile and a catalogue of your books with parents.</small>
+            </span>
+          </label>
+          <label class="choice">
+            <input
+              type="radio"
+              name="kind"
+              value="volunteer"
+              [checked]="kind() === 'volunteer'"
+              (change)="kind.set('volunteer')"
+            />
+            <span class="choice__text">
+              <strong>I volunteer</strong>
+              <small>Offer to help children with reading. Parents contact you outside Shelfie.</small>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+      <sh-text-field
+        label="Your name"
+        autocomplete="name"
+        help="Parents see this on your profile."
+        [maxlength]="40"
+        [error]="nameError()"
+        [(value)]="name"
+      />
+      <sh-text-field
+        label="E-mail address"
+        type="email"
+        autocomplete="email"
+        help="Only for signing in and password resets. Parents never see it."
+        [error]="emailError()"
+        [(value)]="email"
+      />
+      <sh-text-field
+        label="Username"
+        autocomplete="username"
+        help="3–20 letters, numbers, . or _"
+        [maxlength]="20"
+        [error]="usernameError()"
+        [(value)]="username"
+      />
+      <div class="grid grid--auto passwords">
+        <sh-text-field
+          label="Password"
+          type="password"
+          autocomplete="new-password"
+          help="At least 8 characters"
+          [error]="passwordError()"
+          [(value)]="password"
+        />
+        <sh-text-field
+          label="Type it again"
+          type="password"
+          autocomplete="new-password"
+          [error]="confirmError()"
+          [(value)]="confirm"
+        />
+      </div>
+      <sh-button [large]="true" [block]="true" [busy]="submitting()">Create my account</sh-button>
+    </form>
+  </div>
+  <p class="text-caption centred">Already have an account? <a routerLink="/sign-in">Sign in</a></p>
+  <p class="text-caption centred">A parent? <a routerLink="/sign-up">Create a parent account</a></p>
+</sh-auth-layout>

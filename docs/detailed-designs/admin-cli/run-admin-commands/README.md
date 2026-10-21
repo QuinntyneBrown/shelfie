@@ -8,8 +8,8 @@ This feature is the command set of the `admin-cli` subsystem: four query command
 
 Terms used below:
 
-- **query command** — command that only reads: `users list`, `books list`, `logs list`, `logs show`, `feedback list`
-- **write command** — command that changes data: `users reset-password`, `logs correct`, `logs delete`, `books finish`, `books reward`
+- **query command** — command that only reads: `users list`, `books list`, `logs list`, `logs show`, `feedback list`, `profiles list`
+- **write command** — command that changes data: `users reset-password`, `logs correct`, `logs delete`, `books finish`, `books reward`, `profiles approve`, `profiles hide`
 - **destructive command** — write command that removes data or access: `users reset-password` and `logs delete`
 - **preview** — dry-run call made before a destructive change, whose result is shown before the question
 
@@ -21,6 +21,7 @@ Terms used below:
   - `logs list --book <id>` — ID, CHAPTER, READ ON, LOGGED, REVIEW (`waiting`, or sticker and review time) (L2-058);
   - `logs show <id>` — `Output.Fields` for book, chapter, read on, review and note, then each question with its answer (L2-058).
   - `feedback list` — DATE, HOUSEHOLD, ROLE, KIND, SCORE, MESSAGE, newest first (L2-118, designed in `shell/send-feedback`);
+  - `profiles list` — authors and volunteers with their status and what they wrote (L2-168, designed in `admin-cli/approve-profiles`);
 - **`WriteCommands`** — adds the write commands to the same groups, each with `--dry-run` and `--yes`. All five share `WriteAsync`:
   1. With `--dry-run`, or for a destructive command, it first sends the request with `dryRun=true` and prints "Dry run: would …" built from the response. A refusal ends the command with exit 1 and no question (L2-062).
   2. With `--dry-run` it stops there with exit 0.
@@ -31,7 +32,8 @@ Terms used below:
   - `logs correct <id> --read-on <yyyy-mm-dd>` — `PATCH logs/<id>` (L2-060);
   - `logs delete <id>` — `DELETE logs/<id>` (L2-060);
   - `books finish <id>` — `POST books/<id>/finish` (L2-061);
-  - `books reward <id> --text <text> [--note <note>]` — `POST books/<id>/reward` (L2-061).
+  - `books reward <id> --text <text> [--note <note>]` — `POST books/<id>/reward` (L2-061);
+  - `profiles approve <id>` and `profiles hide <id>` — `POST profiles/<id>/approve` and `POST profiles/<id>/hide`, through the same `WriteAsync` with `--dry-run`, not destructive (L2-168, designed in `admin-cli/approve-profiles`).
 - **`Output`** — `Table` pads each column to its widest value and separates columns with two spaces; `Fields` aligns labels; `Json` writes the API body unchanged. Results go to standard output; questions, previews in `--json` mode and errors go to standard error, so standard output under `--json` holds only JSON (L2-063).
 - **`Prompt`** — described in `sign-in-cli`; `Confirm` writes its question to standard error.
 

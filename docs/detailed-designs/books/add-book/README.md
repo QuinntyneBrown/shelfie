@@ -28,12 +28,15 @@ The slice runs from `AddBookPage` to the `book` table through one write endpoint
 
 On 201 the page navigates to `/book/:id` for the new book and calls `ToastService.success` (shell/notify) with the copy of the "added a book" toast mock ("Because of Winn-Dixie is on your shelf under Up next."). The shelf then lists the book under "Up next" with "Start with Chapter 1" (`L2-009`).
 
+**From an author's catalogue** (`L2-173`, ADR-0025). A parent who presses "Add to shelf" on an approved author's book arrives at `/add-book?catalogueBook=:id` (`docs/mocks/pages/add-book/from-catalogue.html`). `AddBookPage` reads the query parameter and calls `ShelfApi.catalogueBook(id)` (`GET /api/directory/books/:id`, parents only), which returns `{ id, title, author, chapterCount, description, coverImage }`. It fills the title, the author's name and the chapter count, and, when there is a `coverImage`, fetches it as a `File` and sets it as the chosen picture, as a catalogue pick does. A subtitle reads "Filled in from {author}’s catalogue. Change anything before you add it."; the button and Cancel are unchanged. Everything stays editable, and saving is the unchanged `POST /api/books` followed by the cover upload, so the household gets its own copy: nothing stores which catalogue book it came from, and later edits by the author do not change it. A catalogue book of a pending, hidden or unknown author answers `404`; the form then opens empty under an `info` banner "That book isn’t available any more." A reader never sees this path; an author or volunteer session is turned away from `/add-book` (`L2-175`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
+| `L2-173` | `L1-030` | Given an approved author's profile, when a parent presses Add to shelf on a book, then Add a book opens with the title, the author's name, the chapter count and the cover picture filled in; every value stays editable, the book is saved as a new household book with its own copy of the values and picture, and later catalogue edits do not change it. |
 | `L2-009` | `L1-003` | The reader or the parent supplies a title, an optional author, the chapter count, a cover colour and a sticker. Given valid input the book shall appear on the shelf as "up next" and a success toast shall be shown. An empty title, or a chapter count that is not an integer from 1 to 500, shall show inline errors and save nothing. Title and author input shall be limited to 120 characters. On a failure an error shall be shown and the entered values kept. A reader session shall see the same form from her shelf and the book she adds shall appear on her shelf. |
 
 ## Diagrams

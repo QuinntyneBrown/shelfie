@@ -27,14 +27,14 @@ end box
 user -> browser : Open Review at 360 px wide
 browser -> app : Render shell (session role = parent)
 app -> topBar : Render brand, avatar; links hidden below 48 rem
-app -> tabBar : Render Review (badge 2) / Books / Settings\nwith aria-current="page" on Review
+app -> tabBar : Render Review (badge 2) / Books / Directory / Settings\nwith aria-current="page" on Review
 app -> app : main gets padding-bottom = tab bar height;\n16 px side gutter (L2-025)
 browser --> user : No horizontal scroll; targets >= 44 x 44 px (L2-025)
 user -> browser : Widen to 768 px
 browser -> browser : Media query (min-width: 48rem) matches
 browser -> tabBar : display: none
 browser -> topBar : nav[aria-label="Primary"] display: flex
-topBar --> user : Review (badge 2) / Books / Settings in the top bar;\naria-current="page" on Review
+topBar --> user : Review (badge 2) / Books / Directory / Settings in the top bar;\naria-current="page" on Review
 user -> browser : Widen to 1280 px
 browser --> user : Same top bar; container max-width centres content;\nno horizontal scroll (L2-025)
 @enduml

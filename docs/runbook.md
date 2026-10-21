@@ -148,6 +148,18 @@ psql "$DATABASE_URL" -c "DELETE FROM household WHERE id = '<id from above>'"
 
 The one `DELETE` removes the household's profiles, devices, sessions, password resets, books, chapter logs, answers, questions, rewards, profile photos, book cover pictures, feedback, push subscriptions and Google or Facebook links; other households are untouched. The nightly dumps still hold the data for up to 30 days and point-in-time restore for 7.
 
+## Erasing an author or volunteer
+
+Authors and volunteers have no household (ADR-0021); everything they own cascades from their profile. Find them with `shelfie-admin profiles list`, or on the VM:
+
+```bash
+set -a; . /etc/shelfie/env; set +a
+psql "$DATABASE_URL" -c "SELECT id, role, name, email FROM profile WHERE household_id IS NULL AND email = 'author@example.com'"
+psql "$DATABASE_URL" -c "DELETE FROM profile WHERE id = '<id from above>' AND role IN ('author','volunteer')"
+```
+
+The one `DELETE` removes their profile, listing, photo, sessions, password resets, catalogue books and catalogue cover pictures. Books a household added from their catalogue are the household's own copies and stay (ADR-0025). The `role` condition makes the statement delete nothing when given a parent's or reader's id. Nightly dumps keep the data as for households.
+
 ## Changing settings
 
 Edit `/etc/shelfie/env` on the VM, then `sudo systemctl restart shelfie`. Variables: `PORT`, `DATABASE_URL`, `APP_URL` (`https://app.shelfie.kids`; the host that reset and invite links point at), `STORAGE_ACCOUNT`. `ACS_EMAIL_ENDPOINT` and `ACS_EMAIL_SENDER` send every mail (the confirm-your-e-mail link, reset and invite) through Azure Communication Services with the VM's managed identity; bootstrap writes them once the domain is linked ("Mail" above). With `ACS_EMAIL_ENDPOINT` unset, `SMTP_URL` (and `MAIL_FROM`, default `Shelfie <hello@shelfie.kids>`) send over SMTP, which is how development reaches Mailpit; with neither set, nothing is sent and the API logs a warning without the address. The VM needs outbound HTTPS to `*.communication.azure.com`. `ANTHROPIC_API_KEY` turns on the AI review assistant on Review a chapter (`docs/detailed-designs/review/ai-review-assistant/`); it is optional and not set in production today, so the page says "The assistant isn’t set up" and reviewing works as before. Setting it sends a chapter's book title, chapter number, questions and answers to Anthropic when a parent presses "Help me review"; the key stays on the VM and is never logged. The same key switches on suggested questions on Manage a book (`docs/detailed-designs/books/suggest-questions/`): when a parent presses "Suggest questions" the API sends the book's title, author, next chapter number and existing questions to Anthropic (`claude-opus-5-5`), at most 5 asks per household in 10 minutes; without the key the dialog says suggestions aren’t switched on and adding questions by hand keeps working. The same key turns on the AI fallback of book autocomplete on Add a book (`docs/detailed-designs/books/autocomplete-book/`); unset, titles are looked up in the Open Library catalogue only. The VM needs outbound HTTPS to `openlibrary.org`, `covers.openlibrary.org` and, with the key, `api.anthropic.com`. `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `FACEBOOK_CLIENT_ID` and `FACEBOOK_CLIENT_SECRET` turn on Continue with Google and Continue with Facebook for parents (see "Letting parents sign in with Google" above; deploy sets the Google pair from GitHub secrets); each provider needs both of its values, and with none set the sign-in and sign-up pages are unchanged. `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (a `mailto:` or `https:` contact for the push services) turn on push notifications for feedback (`docs/detailed-designs/shell/push-notifications/`, ADR-0016); all are optional, and with the two keys unset Settings says "Notifications aren’t set up", the shelf offers nothing and nothing is sent. Make a pair once with `npx web-push generate-vapid-keys` and keep it: a new pair strands every stored subscription until each person turns notifications on again. A message carries only a title, a body, a tag and a page, never answers, notes or reward text. The VM needs outbound HTTPS to the browser vendors' push services (for Chrome, `fcm.googleapis.com`).
@@ -208,7 +220,7 @@ Write commands change production directly. Take a backup first: `sudo -u shelfie
 | Command | Does |
 |---|---|
 | `login`, `logout`, `whoami` | Store, remove or show the token for the target |
-| `users list` | Every parent and reader |
+| `users list` | Every parent, reader, author and volunteer |
 | `users reset-password <parent id>` | New password from hidden prompts; ends the parent's sessions |
 | `books list` | Every book with progress, finished time and reward |
 | `books finish <id>` | Mark a book finished now |
@@ -218,6 +230,9 @@ Write commands change production directly. Take a backup first: `sudo -u shelfie
 | `feedback list` | Every household's feedback, newest first |
 | `logs correct <id> --read-on <yyyy-mm-dd>` | Fix the day a chapter was read |
 | `logs delete <id>` | Delete the newest logged chapter of a book |
+| `profiles list` | Every author and volunteer with what they wrote, waiting ones first |
+| `profiles approve <id>` | List the profile in the parents' directory (ADR-0023) |
+| `profiles hide <id>` | Take the profile out of the directory; its owner can still sign in |
 
 Every command takes `--json` and `--api-url`; writes take `--dry-run`, destructive ones `--yes`. Exit codes: 0 done, 1 refused or failed, 2 token problem, 3 aborted. For development, point it at the local API: `shelfie-admin login --api-url http://localhost:3000` with a token made by `DATABASE_URL=<local database> npm run admin-token -w apps/api -- create --name dev --scopes read,write`.
 

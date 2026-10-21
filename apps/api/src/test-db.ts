@@ -27,6 +27,8 @@ export async function createTestDatabase({ migrated = true } = {}) {
     pool,
     url: url.href,
     async drop() {
+      // A connection still closing when the database is force-dropped reports an error; the pool is being thrown away.
+      pool.on('error', () => {});
       await pool.end();
       await admin(`DROP DATABASE ${name} WITH (FORCE)`);
     },

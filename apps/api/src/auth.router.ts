@@ -5,8 +5,8 @@ import { validationProblem } from './validation.ts';
 import { run } from './db.ts';
 import { passwordSignInLimiter, providerSignInLimiter, verifyResendLimiter } from './rate-limit.ts';
 import { requireRole } from './authz.ts';
-import { readCookie, requireSession, type RequestSession } from './session.ts';
-import { requestPasswordReset, resetPassword, signInWithPassword, signInWithProvider, signUp, type Session } from './auth.service.ts';
+import { readCookie, requireAnySession, requireSession, type AnySession, type RequestSession } from './session.ts';
+import { join, requestPasswordReset, resetPassword, signInWithPassword, signInWithProvider, signUp, type Session } from './auth.service.ts';
 import { Problem } from './problem.ts';
 import { acceptInvite, getInvite } from './invites.service.ts';
 import { sendMail, type Mail } from './mail.ts';
@@ -26,6 +26,7 @@ const passwordSignInSchema = z.object({ username: z.string().trim().min(1), pass
 export const username = z.string().regex(/^[A-Za-z0-9._]{3,20}$/);
 export const password = z.string().min(8);
 const signUpSchema = z.object({ name: z.string().trim().min(1).max(40), email: z.email(), username, password });
+const joinSchema = z.object({ kind: z.enum(['author', 'volunteer']), name: z.string().trim().min(1).max(40), email: z.email(), username, password });
 const acceptInviteSchema = z.object({ token: z.string().min(1), name: z.string().trim().min(1).max(40), username, password });
 
 const SESSION_COOKIE = { httpOnly: true, secure: true, sameSite: 'strict' as const };
@@ -73,8 +74,8 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
     if (previous) await run(db, 'DELETE FROM session WHERE id = $1', [previous]);
   };
 
-  router.get('/session', requireSession(db), (_req, res) => {
-    const { profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified } = res.locals['session'] as RequestSession;
+  router.get('/session', requireAnySession(db), (_req, res) => {
+    const { profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified } = res.locals['session'] as AnySession;
     res.json({ profileId, name, username, role, color, email, theme, photo, onboarded, emailVerified });
   });
 
@@ -132,6 +133,20 @@ export function authRouter(db: Pool, mail?: Mail, providers: OAuthProvider[] = [
       (mail ?? sendMail)(...letter).catch(() =>
         log({ level: 'error', time: new Date().toISOString(), requestId: res.locals['requestId'], event: 'verify-mail-failed' }),
       );
+      await endPreviousSession(req.headers.cookie);
+      setSessionCookie(res, session);
+      res.status(201).json(sessionSummary(session));
+    } catch (e) {
+      if (!(e instanceof Problem)) throw e;
+      res.status(e.status).json({ type: e.type, ...e.extra });
+    }
+  });
+
+  router.post('/join', async (req, res) => {
+    const body = joinSchema.safeParse(req.body);
+    if (!body.success) return res.status(400).json(validationProblem(body.error));
+    try {
+      const session = await join(db, body.data);
       await endPreviousSession(req.headers.cookie);
       setSessionCookie(res, session);
       res.status(201).json(sessionSummary(session));

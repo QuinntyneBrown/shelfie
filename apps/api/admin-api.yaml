@@ -78,6 +78,41 @@ paths:
             application/json:
               schema: { type: array, items: { $ref: '#/components/schemas/Feedback' } }
         default: { $ref: '#/components/responses/Problem' }
+  /profiles:
+    get:
+      summary: Every author and volunteer with what they wrote and whether parents see it
+      description: Scope read. Waiting profiles first, then by name (ADR-0023).
+      responses:
+        '200':
+          description: Directory profiles
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/DirectoryProfile' } }
+        default: { $ref: '#/components/responses/Problem' }
+  /profiles/{id}/approve:
+    post:
+      summary: List a profile in the parents' directory
+      description: Scope write. 400 not-a-directory-profile for a parent's or reader's id.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      responses:
+        '200':
+          description: The profile was (or would be) approved
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileStatus' }
+        default: { $ref: '#/components/responses/Problem' }
+  /profiles/{id}/hide:
+    post:
+      summary: Take a profile out of the parents' directory
+      description: Scope write. 400 not-a-directory-profile for a parent's or reader's id.
+      parameters: [{ $ref: '#/components/parameters/Id' }, { $ref: '#/components/parameters/DryRun' }]
+      responses:
+        '200':
+          description: The profile was (or would be) hidden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileStatus' }
+        default: { $ref: '#/components/responses/Problem' }
   /books/{id}/logs:
     get:
       summary: The logged chapters of one book
@@ -189,7 +224,7 @@ components:
       description: >-
         401 token-missing, token-invalid, token-expired (with expiresAt) or token-revoked; 403 scope-missing;
         404 not-found; 400 validation (with errors) or a rule type such as future-date, log-not-latest,
-        book-rewarded, not-a-parent, book-already-finished, book-not-finished; 409 reward-exists;
+        book-rewarded, not-a-parent, not-a-directory-profile, book-already-finished, book-not-finished; 409 reward-exists;
         429 too-many-requests (with a Retry-After header); 500 about:blank.
       content:
         application/json:
@@ -222,8 +257,8 @@ components:
       required: [id, householdId, role, name, email]
       properties:
         id: { type: string }
-        householdId: { type: string }
-        role: { enum: [reader, parent] }
+        householdId: { type: [string, 'null'], description: Null for an author or volunteer (ADR-0021) }
+        role: { enum: [reader, parent, author, volunteer] }
         name: { type: string }
         email: { type: [string, 'null'] }
     PasswordReset:
@@ -256,6 +291,29 @@ components:
         kind: { type: string, enum: [feel, idea] }
         score: { type: [integer, 'null'], minimum: 1, maximum: 5 }
         message: { type: [string, 'null'], maxLength: 1000 }
+    DirectoryProfile:
+      type: object
+      required: [id, kind, name, email, status, bio, website, ages, contact, bookCount]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [author, volunteer] }
+        name: { type: string }
+        email: { type: string }
+        status: { type: string, enum: [pending, approved, hidden] }
+        bio: { type: string }
+        website: { type: [string, 'null'] }
+        ages: { type: [string, 'null'] }
+        contact: { type: [string, 'null'] }
+        bookCount: { type: integer }
+    ProfileStatus:
+      type: object
+      required: [id, name, kind, status, dryRun]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        kind: { type: string, enum: [author, volunteer] }
+        status: { type: string, enum: [approved, hidden] }
+        dryRun: { type: boolean }
     FinishedBook:
       type: object
       required: [id, title, finishedAt, dryRun]

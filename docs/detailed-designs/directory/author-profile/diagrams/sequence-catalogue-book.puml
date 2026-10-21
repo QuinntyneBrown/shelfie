@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Add a book to the catalogue with a cover
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Author" as author
+box "Frontend — Shelfie web (directory library)" #E0F2FE
+  participant "CatalogueBookDialog" as dialog
+  participant "MeApi" as client
+end box
+box "Backend — Shelfie API (routers and middleware)" #D1FADF
+  participant "catalogue-books.router.ts\n+ requireDirectorySession(['author'])" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "catalogue-books.service.ts" as service
+  participant "covers.service.ts\nprocessCover()" as covers
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+author -> dialog : Choose a cover picture
+dialog -> dialog : Over 5 MB? show "That picture is too big" without sending (L2-167)
+author -> dialog : Title, chapters, description; Add book
+dialog -> dialog : Client checks: title 1-120, chapters 1-200, description <= 300 (L2-165)
+dialog -> client : addBook(input)
+client -> router : POST /api/catalogue-books
+router -> router : Volunteer -> 403 authors-only; parent/reader -> 403 directory-only (L2-176)
+router -> service : addBook(profileId, input)
+service -> db : INSERT catalogue_book (profile_id = session's own)
+router --> client : 201 CatalogueBook
+client -> router : PUT /api/catalogue-books/{id}/cover (raw bytes)
+router -> service : saveCatalogueCover(profileId, id, bytes)
+service -> db : SELECT catalogue_book WHERE id AND profile_id (else 404)
+service -> covers : processCover(bytes) -> 320x480 WebP, no metadata
+alt not an image
+  covers --> router : Problem 400 photo-type
+  router --> client : 400
+  client --> dialog : ApiError
+  dialog --> author : Book is in the catalogue; warning toast: picture didn't upload (L2-167)
+else accepted
+  service -> db : UPSERT catalogue_cover
+  router --> client : {coverImage: /api/catalogue-books/{id}/cover?v=etag}
+  dialog --> author : Close; row added; toast "... is in your catalogue"
+end
+@enduml

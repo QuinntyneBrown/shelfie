@@ -36,6 +36,10 @@ export class AuthApi {
     return this.api.post<Session>('/auth/sign-up', account);
   }
 
+  join(account: { kind: 'author' | 'volunteer'; name: string; email: string; username: string; password: string }) {
+    return this.api.post<Session>('/auth/join', account);
+  }
+
   signInWithPassword(username: string, password: string, remember: boolean) {
     return this.api.post<Session>('/auth/password', { username, password, remember });
   }

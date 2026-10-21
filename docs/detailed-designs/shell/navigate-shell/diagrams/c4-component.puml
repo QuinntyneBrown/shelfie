@@ -9,7 +9,7 @@ Container_Boundary(web, "Shelfie web") {
   Component(router, "Angular Router", "@angular/router", "Renders the active page into main and marks the active link")
   Component(session, "SessionService", "core library", "Signal holding role, name and colour")
   Component(topBar, "sh-top-bar", "components library", "Brand, streak badge, primary links from 768 px, queue badge, avatar button")
-  Component(tabBar, "sh-tab-bar", "components library", "Bottom tab bar below 768 px: Review / Books / Settings")
+  Component(tabBar, "sh-tab-bar", "components library", "Bottom tab bar below 768 px: Review / Books / Directory / Settings; an author's My profile / My catalogue")
   Component(menu, "sh-menu", "components library", "WAI-ARIA menu button: open, arrow keys, Escape with focus return")
   Component(dialog, "sh-dialog", "components library", "Native dialog; bottom sheet under 640 px; focus trap and return")
   Component(notify, "sh-banner, sh-toast-stack", "components library (notify)", "Banner slot under the top bar; toast stack at the bottom edge")

@@ -32,13 +32,16 @@ end box
 
 person -> client : Action needing GET /api/books/:id (example)
 client -> mw : Request with shelfie_session cookie
-mw -> db : SELECT session JOIN users WHERE session.id = ?
+mw -> db : SELECT session JOIN users LEFT JOIN household WHERE session.id = ?
 db --> mw : row or none
 mw -> router : Session {userId, householdId, role} or none
 alt no session
   router -> errors : 401 problem type "no-session" or "session-expired" (L2-005)
   errors --> client : 401 problem
   client --> person : Clear session; navigate to /sign-in
+else author or volunteer session (no household)
+  mw --> client : 403 problem type "household-only" (L2-175)
+  client --> person : Navigate to /forbidden ("This part is for families")
 else reader on a parent endpoint
   router -> errors : 403 problem type "grown-ups-only" (L2-005)
   errors --> client : 403 problem

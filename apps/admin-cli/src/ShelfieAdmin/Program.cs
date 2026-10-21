@@ -22,12 +22,13 @@ public static class Program
         root.Options.Add(ApiUrl);
         root.Options.Add(Json);
         foreach (var command in AuthCommands.Create()) root.Subcommands.Add(command);
-        Command users = QueryCommands.Users(), books = QueryCommands.Books(), logs = QueryCommands.Logs();
-        WriteCommands.AddTo(users, books, logs);
+        Command users = QueryCommands.Users(), books = QueryCommands.Books(), logs = QueryCommands.Logs(), profiles = QueryCommands.Profiles();
+        WriteCommands.AddTo(users, books, logs, profiles);
         root.Subcommands.Add(users);
         root.Subcommands.Add(books);
         root.Subcommands.Add(logs);
         root.Subcommands.Add(QueryCommands.Feedback());
+        root.Subcommands.Add(profiles);
         return root.Parse(args).InvokeAsync();
     }
 }

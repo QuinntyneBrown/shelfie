@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Approve profiles
+
+Container_Boundary(cli, "shelfie-admin") {
+  Component(query, "QueryCommands.Profiles()", "C#", "profiles list through Print")
+  Component(write, "WriteCommands", "C#", "profiles approve, profiles hide through WriteAsync (--dry-run)")
+  Component(client, "AdminClient", "C#", "GetAsync, SendAsync with the stored token")
+}
+Container_Boundary(api, "Shelfie API") {
+  Component(guard, "adminGuard + adminAudit", "Middleware", "Rate limit, token, scope; one admin_audit row per call")
+  Component(router, "admin.router.ts", "Express Router", "GET /profiles; POST /profiles/:id/approve, /profiles/:id/hide in a dry-run-able transaction")
+  Component(service, "admin.service.ts", "Service", "listDirectoryProfiles, setProfileStatus")
+  ComponentDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, catalogue_book, admin_audit")
+}
+Rel(query, client, "Uses")
+Rel(write, client, "Uses")
+Rel(client, router, "Calls", "JSON/HTTPS")
+Rel(router, guard, "Applies")
+Rel(router, service, "Calls")
+Rel(service, db, "SELECT; UPDATE directory_profile SET status", "SQL")
+Rel(guard, db, "INSERT admin_audit", "SQL")
+@enduml

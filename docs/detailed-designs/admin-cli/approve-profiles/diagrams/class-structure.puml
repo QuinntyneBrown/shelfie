@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Approve profiles
+
+class QueryCommands <<static>> {
+  +Profiles(): Command
+  -Print(session, path, columns): Task<int>
+}
+class WriteCommands <<static>> {
+  +AddTo(users, books, logs, profiles): void
+  -WriteAsync(session, parse, method, path, body, describe): Task<int>
+}
+class AdminClient {
+  +GetAsync(path): Task<ApiResult>
+  +SendAsync(method, path, body, dryRun): Task<ApiResult>
+}
+class "admin.router.ts" as Router {
+  +GET /profiles
+  +POST /profiles/:id/approve
+  +POST /profiles/:id/hide
+}
+class "admin.service.ts" as Service {
+  +listDirectoryProfiles(db): DirectoryProfileRow[]
+  +setProfileStatus(db, id, status): StatusChange
+}
+class DirectoryProfileRow {
+  +id: string
+  +kind: 'author' | 'volunteer'
+  +name: string
+  +email: string
+  +status: 'pending' | 'approved' | 'hidden'
+  +bio: string
+  +website: string | null
+  +ages: string | null
+  +contact: string | null
+  +bookCount: number
+}
+class StatusChange {
+  +id: string
+  +name: string
+  +kind: 'author' | 'volunteer'
+  +status: 'approved' | 'hidden'
+  +dryRun: boolean
+}
+class Problem {
+  +status: 400 | 404
+  +type: 'not-a-directory-profile' | 'not-found'
+}
+
+QueryCommands --> AdminClient
+WriteCommands --> AdminClient
+AdminClient ..> Router : HTTPS
+Router --> Service
+Service ..> DirectoryProfileRow
+Service ..> StatusChange
+Service ..> Problem : throws
+@enduml

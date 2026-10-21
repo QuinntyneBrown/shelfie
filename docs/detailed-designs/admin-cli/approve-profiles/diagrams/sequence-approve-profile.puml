@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Approve a profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Operator" as operator
+box "Client — shelfie-admin (.NET tool)" #E0F2FE
+  participant "WriteCommands\n(profiles approve)" as cmd
+  participant "AdminClient" as client
+end box
+box "Backend — Shelfie API (admin router and middleware)" #D1FADF
+  participant "admin.router.ts\n+ adminGuard('write') + adminAudit" as router
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "admin.service.ts" as service
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+operator -> cmd : shelfie-admin profiles approve p-rosa [--dry-run]
+cmd -> client : SendAsync(POST, profiles/p-rosa/approve, dryRun)
+client -> router : POST /api/admin/v1/profiles/p-rosa/approve[?dryRun=true]
+router -> router : Rate limit, bearer token, write scope (L2-050)
+alt token lacks write
+  router --> client : 403 scope-missing
+  cmd --> operator : "The admin token lacks the write scope." (exit 2)
+else allowed
+  router -> db : BEGIN
+  router -> service : setProfileStatus(tx, id, 'approved')
+  service -> db : SELECT profile.role, name WHERE id = ?
+  alt unknown id
+    service --> router : Problem 404 not-found
+    router -> db : ROLLBACK
+    router --> client : 404 not-found
+    cmd --> operator : "Not found." (exit 1)
+  else a parent or reader
+    service --> router : Problem 400 not-a-directory-profile
+    router -> db : ROLLBACK
+    router --> client : 400 not-a-directory-profile
+    cmd --> operator : "Refused: not-a-directory-profile." (exit 1)
+  else author or volunteer
+    service -> db : UPDATE directory_profile SET status = 'approved', updated_at = now
+    service --> router : {id, name, kind, status}
+    router -> db : ROLLBACK if dry run, else COMMIT (L2-062)
+    router --> client : 200 {id, name, kind, status, dryRun}
+    cmd --> operator : "Approved Rosa Delgado (author, p-rosa)." or "Dry run: would approve …"
+  end
+  router -> db : INSERT admin_audit (route, target id, dry run, status; no body) (L2-052)
+end
+note over db : Parents' next GET /api/directory lists the profile (L2-168)
+@enduml

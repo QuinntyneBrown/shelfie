@@ -1,0 +1,12 @@
+.picture {
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.picture__picker {
+  flex: 1;
+  min-width: 12rem;
+}
+.summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+}

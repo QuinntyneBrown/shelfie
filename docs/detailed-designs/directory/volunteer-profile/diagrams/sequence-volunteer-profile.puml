@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — A volunteer writes ages and a contact line
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Volunteer" as vol
+box "Frontend — Shelfie web (directory library)" #E0F2FE
+  participant "MyProfilePage" as page
+  participant "MeApi" as client
+end box
+box "Backend — Shelfie API (routers and middleware)" #D1FADF
+  participant "me.router.ts\n+ requireDirectorySession" as me
+  participant "catalogue-books.router.ts" as cat
+end box
+box "Backend — Shelfie API (services)" #ECFDF3
+  participant "me.service.ts" as svc
+end box
+box "Backend — Shelfie infrastructure" #FFF4E5
+  database "Shelfie database (PostgreSQL)" as db
+end box
+
+vol -> page : Open /me after joining (L2-164)
+page -> client : profile()
+client -> me : GET /api/me
+me -> svc : getMyProfile(profileId)
+svc -> db : SELECT profile JOIN directory_profile
+me --> page : {role: volunteer, status: pending, ...}
+page --> vol : "Waiting for approval"; About you, Ages you help with, How parents can reach you
+vol -> page : Fill in; Save profile
+page -> page : Client checks: name 1-40, bio 1-500, ages 1-40, contact 1-120 (L2-161)
+alt a check fails
+  page --> vol : "Fix N things"; send nothing
+else checks pass
+  page -> client : save({name, bio, ages, contact})
+  client -> me : PUT /api/me
+  me -> me : volunteerSchema (no website)
+  me -> svc : updateMyProfile(session, input)
+  svc -> db : UPDATE profile SET name; UPDATE directory_profile SET bio, ages, contact
+  me --> page : MyProfile
+  page --> vol : Toast "Profile saved"
+end
+== A volunteer has no catalogue ==
+vol -> page : Type /catalogue
+page --> vol : authorGuard -> Forbidden page "This part is for families"
+client -> cat : GET /api/catalogue-books (by hand)
+cat --> client : 403 authors-only (L2-176)
+@enduml

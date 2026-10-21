@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   signal,
   untracked,
   viewChild,
@@ -61,6 +62,11 @@ export class AddBookPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
 
+  /** A directory catalogue book to fill the form in from (`?catalogueBook=`, ADR-0025). */
+  readonly catalogueBook = input<string>();
+  /** The author whose catalogue filled the form in. */
+  protected readonly fromCatalogue = signal<string | null>(null);
+  protected readonly unavailable = signal(false);
   protected readonly colors = COVER_COLORS;
   protected readonly title = signal('');
   protected readonly author = signal('');
@@ -112,6 +118,10 @@ export class AddBookPage {
     effect(() => {
       const title = this.title();
       untracked(() => this.scheduleLookup(title));
+    });
+    effect(() => {
+      const id = this.catalogueBook();
+      if (id) untracked(() => this.prefill(id));
     });
     inject(DestroyRef).onDestroy(() => {
       this.choosePicture(null);
@@ -183,6 +193,26 @@ export class AddBookPage {
       // A cover the API cannot fetch or refuses is only a missed convenience; the colour and sticker stay.
       const picture = await this.api.catalogueCover(match.coverId).catch(() => null);
       if (picture && this.title() === match.title) this.choosePicture(picture, catalogueCoverUrl(match.coverId));
+    }
+  }
+
+  /** Fills the form in from a listed author's catalogue book; the household's book will be its own copy. */
+  private async prefill(id: string) {
+    try {
+      const book = await this.api.catalogueBook(id);
+      // Already filled in, so the title is not looked up.
+      this.lookedUp = book.title;
+      this.title.set(book.title);
+      this.author.set(book.author);
+      this.chapters.set(String(book.chapterCount));
+      this.fromCatalogue.set(book.author);
+      if (book.coverImage) {
+        // A cover that does not arrive is only a missed convenience; the colour and sticker stay.
+        const picture = await this.api.catalogueBookCover(book.coverImage).catch(() => null);
+        if (picture) this.choosePicture(picture);
+      }
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) this.unavailable.set(true);
     }
   }
 

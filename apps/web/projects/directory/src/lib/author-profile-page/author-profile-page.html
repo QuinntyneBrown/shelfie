@@ -1,0 +1,91 @@
+<div class="container stack page">
+  @switch (state()) {
+    @case ('not-found') {
+      <sh-error-state
+        sticker="🔍"
+        title="This profile isn’t available"
+        text="The author may have been removed, or Shelfie has hidden their profile."
+      >
+        <a class="btn btn--primary" routerLink="/directory">Back to the directory</a>
+      </sh-error-state>
+    }
+    @case ('failed') {
+      <sh-error-state
+        sticker="🛠️"
+        title="This profile didn’t load"
+        text="Shelfie couldn’t reach the server. Try again in a moment."
+      >
+        <button class="btn btn--primary" type="button" (click)="load()">Try again</button>
+      </sh-error-state>
+    }
+    @case ('ready') {
+      @if (author(); as author) {
+        <nav aria-label="Breadcrumb">
+          <ol class="breadcrumb">
+            <li><a routerLink="/directory">Directory</a></li>
+            <li aria-current="page">{{ author.name }}</li>
+          </ol>
+        </nav>
+        <section class="card stack" aria-labelledby="author-name">
+          <div class="cluster header">
+            <sh-avatar
+              size="xl"
+              [name]="author.name"
+              [color]="author.color"
+              [photo]="author.photo"
+            />
+            <div>
+              <span class="overline">Author</span>
+              <h1 id="author-name">{{ author.name }}</h1>
+            </div>
+          </div>
+          <p class="about">{{ author.bio }}</p>
+          @if (author.website) {
+            <p>
+              <a [href]="author.website" target="_blank" rel="noopener noreferrer nofollow">{{
+                author.website.replace('https://', '').replace('http://', '')
+              }}</a>
+            </p>
+          }
+        </section>
+        <section class="card stack" aria-labelledby="books-title">
+          <h2 id="books-title" class="section-title">Books by {{ firstName() }}</h2>
+          @if (author.books.length) {
+            <ul class="list">
+              @for (book of author.books; track book.id) {
+                <li class="list__item">
+                  <sh-cover color="sage" sticker="📖" size="sm" [image]="book.coverImage" />
+                  <div class="list__body">
+                    <div class="list__title">{{ book.title }}</div>
+                    <div class="list__meta">
+                      {{ book.chapterCount }} chapters{{
+                        book.description ? ' · ' + book.description : ''
+                      }}
+                    </div>
+                  </div>
+                  <a
+                    class="btn btn--sm"
+                    routerLink="/add-book"
+                    [queryParams]="{ catalogueBook: book.id }"
+                    [attr.aria-label]="'Add to shelf: ' + book.title"
+                    >Add to shelf</a
+                  >
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="text-muted">{{ firstName() }} hasn’t added any books yet.</p>
+          }
+        </section>
+      }
+    }
+    @default {
+      <h1 class="visually-hidden">Author</h1>
+      <div class="card stack" aria-busy="true" aria-label="Loading the profile">
+        <sh-skeleton variant="title" />
+        <sh-skeleton />
+        <sh-skeleton />
+      </div>
+    }
+  }
+</div>

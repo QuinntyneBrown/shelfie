@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, grownUpGuard, signedOutGuard } from 'core';
+import { authGuard, authorGuard, directoryAccountGuard, grownUpGuard, signedOutGuard } from 'core';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sign-in' },
@@ -9,6 +9,32 @@ export const routes: Routes = [
     loadComponent: () => import('sign-in').then((m) => m.SignInPage),
   },
   { path: 'sign-up', loadComponent: () => import('sign-in').then((m) => m.SignUpPage) },
+  { path: 'join', loadComponent: () => import('sign-in').then((m) => m.JoinPage) },
+  {
+    path: 'me',
+    canActivate: [directoryAccountGuard],
+    loadComponent: () => import('directory').then((m) => m.MyProfilePage),
+  },
+  {
+    path: 'directory',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.DirectoryPage),
+  },
+  {
+    path: 'directory/authors/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.AuthorProfilePage),
+  },
+  {
+    path: 'directory/volunteers/:id',
+    canActivate: [authGuard, grownUpGuard],
+    loadComponent: () => import('directory').then((m) => m.VolunteerProfilePage),
+  },
+  {
+    path: 'catalogue',
+    canActivate: [authorGuard],
+    loadComponent: () => import('directory').then((m) => m.MyCataloguePage),
+  },
   {
     path: 'accept-invite',
     loadComponent: () => import('sign-in').then((m) => m.AcceptInvitePage),

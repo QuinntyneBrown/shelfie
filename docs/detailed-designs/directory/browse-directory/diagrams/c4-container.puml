@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse the directory
+
+Person(parent, "Parent")
+System_Boundary(shelfie, "Shelfie") {
+  Container(web, "Shelfie web", "Angular", "directory library: DirectoryPage, AuthorProfilePage, VolunteerProfilePage; shelf library: AddBookPage")
+  Container(api, "Shelfie API", "Node.js, Express", "/api/directory (read only, parents); /api/books and cover upload")
+  ContainerDb(db, "Shelfie database", "PostgreSQL 16", "profile, directory_profile, catalogue_book, catalogue_cover, profile_photo; book, book_cover")
+}
+Rel(parent, web, "Uses", "HTTPS")
+Rel(web, api, "GET /api/directory/*, POST /api/books, PUT /api/books/:id/cover", "JSON and images over HTTPS")
+Rel(api, db, "Reads approved profiles; writes the household's book", "SQL")
+@enduml

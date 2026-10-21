@@ -1,10 +1,21 @@
 <div class="container">
-  <sh-error-state
-    sticker="🔒"
-    title="This part is for grown-ups"
-    text="The Review pages are where Dad reads your answers. Ask him to sign in if he needs them."
-  >
-    <a class="btn btn--primary" routerLink="/shelf">Back to my shelf</a>
-    <button class="btn" type="button" (click)="signOut()">Sign out</button>
-  </sh-error-state>
+  @if (family()) {
+    <sh-error-state
+      sticker="🔒"
+      title="This part is for families"
+      text="Shelves, books and reading belong to each family, so authors and volunteers can’t open them. Your profile is where you can make changes."
+    >
+      <a class="btn btn--primary" routerLink="/me">Back to my profile</a>
+      <button class="btn" type="button" (click)="signOut()">Sign out</button>
+    </sh-error-state>
+  } @else {
+    <sh-error-state
+      sticker="🔒"
+      title="This part is for grown-ups"
+      text="The Review pages are where Dad reads your answers. Ask him to sign in if he needs them."
+    >
+      <a class="btn btn--primary" routerLink="/shelf">Back to my shelf</a>
+      <button class="btn" type="button" (click)="signOut()">Sign out</button>
+    </sh-error-state>
+  }
 </div>

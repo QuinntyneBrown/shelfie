@@ -8,7 +8,7 @@ export class ErrorPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
-  homeLink(name: 'Back to my shelf' | 'Go to Review') {
+  homeLink(name: 'Back to my shelf' | 'Go to Review' | 'Back to my profile') {
     return this.page.getByRole('link', { name });
   }
 

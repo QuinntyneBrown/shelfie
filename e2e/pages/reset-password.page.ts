@@ -56,4 +56,8 @@ export class ResetPasswordPage {
   async goToReview() {
     await this.page.getByRole('link', { name: 'Go to Review' }).click();
   }
+
+  async goToMyProfile() {
+    await this.page.getByRole('link', { name: 'Go to My profile' }).click();
+  }
 }
