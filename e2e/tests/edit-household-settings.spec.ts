@@ -193,3 +193,13 @@ test('Given a name that is too long or a malformed e-mail, when Dad saves, then 
   await expect(settings.problemSummary()).toContainText('Fix 2 things');
   expect(settings.saveRequestCount()).toBe(0);
 });
+
+test('Given Dad opens Settings on a phone, then Your account sits as close under Notifications as every other card sits under the one above', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInAsDad(page);
+  const settings = new SettingsPage(page);
+  await settings.open();
+
+  const usual = await settings.spaceBetween('Rewards', 'Streak rewards');
+  expect(await settings.spaceBetween('Notifications', 'Your account')).toBe(usual);
+});
