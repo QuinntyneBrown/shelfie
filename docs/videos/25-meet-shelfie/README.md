@@ -25,9 +25,10 @@ The brand video on the marketing page (`apps/marketing/index.html`, "Shelfie in 
 | 01:07-01:15 | Outro | Wordmark, Start reading free, www.shelfie.kids |
 
 ## Demo commands
+One worker, so the clips are not slowed by recording side by side; no burned-in captions on the marketing page.
 ```sh
-cd e2e && npx playwright test -c ../tools/video-record/playwright.config.ts 25-meet-shelfie && cd ..
+cd e2e && npx playwright test -c ../tools/video-record/playwright.config.ts 25-meet-shelfie --workers=1 && cd ..
 node tools/video-audio/generate-audio.mjs docs/videos/25-meet-shelfie --engine azure
-node tools/video-build/build-video.mjs docs/videos/25-meet-shelfie
+node tools/video-build/build-video.mjs docs/videos/25-meet-shelfie --no-captions
 cp docs/videos/25-meet-shelfie/25-meet-shelfie.mp4 apps/marketing/assets/video/meet-shelfie.mp4
 ```
