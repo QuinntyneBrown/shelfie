@@ -1,6 +1,6 @@
-// Usage: node tools/video-build/build-video.mjs <video-folder> [--check | --slides-only]
+// Usage: node tools/video-build/build-video.mjs <video-folder> [--check | --slides-only] [--no-captions]
 // Renders each slide of slides.html at 1920x1080, drops the screen recordings (.cache/clips) into the
-// clip slides, times everything to the audio manifest and burns in captions: <folder>/<name>.mp4.
+// clip slides, times everything to the audio manifest and burns in captions (unless --no-captions): <folder>/<name>.mp4.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { basename, resolve, dirname, join } from 'node:path';
@@ -12,6 +12,7 @@ const folder = resolve(process.argv[2] ?? '');
 const name = basename(folder);
 const check = process.argv.includes('--check');
 const slidesOnly = process.argv.includes('--slides-only');
+const captions = !process.argv.includes('--no-captions');
 const cache = join(root, '.cache', name);
 mkdirSync(cache, { recursive: true });
 const manifest = JSON.parse(readFileSync(join(cache, 'manifest.json'), 'utf8'));
@@ -101,7 +102,7 @@ const srt = manifest.paragraphs.flatMap((p) => {
 writeFileSync(join(cache, 'captions.srt'), srt);
 ffmpeg(
   '-i', 'silent.mp4', '-i', join(folder, `${name}.mp3`),
-  '-vf', "subtitles=filename=captions.srt:force_style='FontSize=10,Outline=1,MarginV=10'",
+  ...(captions ? ['-vf', "subtitles=filename=captions.srt:force_style='FontSize=10,Outline=1,MarginV=10'"] : []),
   '-c:v', 'libx264', '-preset', 'fast', '-crf', '20', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest',
   join(folder, `${name}.mp4`),
 );

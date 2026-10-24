@@ -6,7 +6,7 @@ Shelfie is a reading app for families. Kids log every chapter they read, and the
 
 ## The shelf
 
-Every reader gets a shelf: the books on the go, the ones up next and the ones finished, each with its real cover and a progress bar that fills chapter by chapter.
+Every reader gets a shelf. Books on the go. Books up next. Books finished. Each one with its real cover, and a progress bar.
 
 ## Log a chapter
 
@@ -14,7 +14,7 @@ After a chapter, your child logs it in one tap. Olive, the reading buddy, asks a
 
 ## Streaks and badges
 
-Reading every day grows a streak, and badges mark the firsts: the first book, the first week in a row. Small wins that keep kids coming back to their books.
+Reading every day grows a streak, and badges mark the firsts: the first book, the first week in a row. Small wins that keep kids coming back.
 
 ## Grown-ups
 

@@ -1,7 +1,7 @@
 // Usage: node tools/video-audio/generate-audio.mjs <video-folder> [--dry-run] [--engine kokoro|azure]
 // Parses script.md, synthesizes each paragraph with Kokoro (voice af_heart, offline) or Azure Speech
 // (AZURE_SPEECH_KEY and AZURE_SPEECH_REGION; AZURE_VOICE, AZURE_STYLE and AZURE_RATE default to Jenny,
-// cheerful, -5%), writes <folder>/<name>.mp3
+// cheerful, -10%), writes <folder>/<name>.mp3
 // and a timing manifest to .cache/<name>/manifest.json that build-video.mjs syncs the slides to.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -56,7 +56,7 @@ if (engine === 'azure') {
   if (!key || !region) throw new Error('Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION (see docs/videos/README.md)');
   const voice = process.env.AZURE_VOICE ?? 'en-US-JennyNeural';
   const style = process.env.AZURE_STYLE ?? 'cheerful';
-  const rate = process.env.AZURE_RATE ?? '-5%';
+  const rate = process.env.AZURE_RATE ?? '-10%';
   const xml = (t) => t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
   for (const job of jobs) {
     const speech = `<prosody rate="${rate}">${xml(job.text)}</prosody>`;
