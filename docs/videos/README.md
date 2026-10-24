@@ -51,7 +51,7 @@ node tools/video-build/build-video.mjs docs/videos/NN-name
 | | Kokoro (free) | Azure Speech (paid) |
 |---|---|---|
 | Used for | Journey videos 01-24 | Brand video 25 (chosen from played samples, 2026-10-19) |
-| Voice | Kokoro-82M `af_heart` (American, female), from Hugging Face [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), Apache-2.0 | `en-US-JennyNeural`, `cheerful` style, rate `-5%` |
+| Voice | Kokoro-82M `af_heart` (American, female), from Hugging Face [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), Apache-2.0 | `en-US-JennyNeural`, `cheerful` style, rate `-10%` |
 | Runs | Offline on this machine; model weights land in `~/.cache/huggingface` on first use | Microsoft's service; the `shelfie-speech` resource (SpeechServices, S0, canadacentral) in the `shelfie-prod` resource group |
 | Cost | Free | Pay-as-you-go, about $15 per million characters (a script is ~1,000) |
 | Command | `node tools/video-audio/generate-audio.mjs docs/videos/NN-name` (`--engine kokoro` is the default) | `node tools/video-audio/generate-audio.mjs docs/videos/NN-name --engine azure` |

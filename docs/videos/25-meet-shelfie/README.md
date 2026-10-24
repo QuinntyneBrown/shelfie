@@ -16,13 +16,13 @@ The brand video on the marketing page (`apps/marketing/index.html`, "Shelfie in 
 ## Run sheet
 | Time | Segment | Content |
 |---|---|---|
-| 00:00-00:09 | Introduction | Wordmark, "Every chapter, rewarded.", kids log and grown-ups cheer |
-| 00:09-00:19 | The shelf | Recording: on the go, up next, finished |
-| 00:19-00:34 | Log a chapter | Recording: one tap, Olive's questions, I'm done |
-| 00:34-00:45 | Streaks and badges | Design-system cards: streak, badges, progress, Olive |
-| 00:45-00:56 | Grown-ups | Recording: review, sticker, note, send |
-| 00:56-01:07 | Rewards | Recording: last chapter of The BFG, the party |
-| 01:07-01:15 | Outro | Wordmark, Start reading free, www.shelfie.kids |
+| 00:00-00:10 | Introduction | Wordmark, "Every chapter, rewarded.", kids log and grown-ups cheer |
+| 00:10-00:24 | The shelf | Recording: on the go, up next, finished |
+| 00:24-00:40 | Log a chapter | Recording: one tap, Olive's questions, I'm done |
+| 00:40-00:51 | Streaks and badges | Design-system cards: streak, badges, progress, Olive |
+| 00:51-01:02 | Grown-ups | Recording: review, sticker, note, send |
+| 01:02-01:13 | Rewards | Recording: last chapter of The BFG, the party |
+| 01:13-01:22 | Outro | Wordmark, Start reading free, www.shelfie.kids |
 
 ## Demo commands
 One worker, so the clips are not slowed by recording side by side; no burned-in captions on the marketing page.
