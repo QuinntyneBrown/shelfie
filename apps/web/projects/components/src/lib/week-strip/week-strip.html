@@ -1,7 +1,15 @@
 <div class="day-path day-path--week" role="img" [attr.aria-label]="label()">
   @for (day of cells(); track day.date) {
-    <span class="day-path__day" [class.day-path__day--done]="day.read" [class.day-path__day--today]="day.today" aria-hidden="true">{{
-      day.letter
-    }}</span>
+    <span
+      class="day-path__day"
+      [class.day-path__day--done]="day.read || day.healed"
+      [class.day-path__day--healed]="day.healed"
+      [class.day-path__day--today]="day.today"
+      aria-hidden="true"
+      >{{ day.letter }}</span
+    >
   }
 </div>
+@for (day of healed(); track day.date) {
+  <p class="day-path__note" aria-hidden="true">🩹 Healed {{ day.name }}: {{ day.healed }}</p>
+}

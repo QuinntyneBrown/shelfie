@@ -24,6 +24,8 @@ The slice is a pure function on the server plus a badge on the client.
 
 No table or column stores the streak, and no endpoint writes it. The streak is a property of the household, not of a book, so the reader's and the parent's values are always the same number. A chapter logged with a past read date (Another day) can lengthen or restart the streak retroactively, which follows from counting `read_on` rather than `logged_at`.
 
+**Healed days (reading-log/heal-streak, `L2-161`).** A day the parent heals counts as a reading day: `streakFor` counts the read days and the healed days from `streak_heal` together, and `weekFor` marks a healed day with no chapter `healed: activity` for the shelf's week strip. The chapter success card asks for the week without heals. The rules above are unchanged for real reading days; see [heal-streak](../heal-streak/README.md) and ADR-0021.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.

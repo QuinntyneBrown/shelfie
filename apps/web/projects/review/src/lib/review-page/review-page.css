@@ -10,6 +10,9 @@
 .reward-card {
   background: linear-gradient(135deg, var(--color-warning-bg), var(--color-bg-surface) 70%);
 }
+.heal-card {
+  background: linear-gradient(135deg, var(--color-accent-subtle), var(--color-bg-surface) 70%);
+}
 .activity {
   list-style: none;
   margin: 0;

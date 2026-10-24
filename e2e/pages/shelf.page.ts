@@ -46,6 +46,16 @@ export class ShelfPage {
     }));
   }
 
+  /** How many of the week's days show as healed: joined to the band, softer, with a plaster. */
+  healedDayCount() {
+    return this.weekStrip().evaluate((strip) => strip.querySelectorAll('.day-path__day--done.day-path__day--healed').length);
+  }
+
+  /** The line under the week strip that names a healed day and its activity. */
+  healedNote() {
+    return this.page.getByText(/^🩹 Healed /);
+  }
+
   /** The one-time offer to turn on notifications for this device. */
   pushOffer() {
     return this.page.getByRole('status').filter({ hasText: 'Want a ping when' });

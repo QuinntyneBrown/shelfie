@@ -27,6 +27,8 @@ The slice runs from the Review page to the `chapter_log`, `book` and `reward` ta
 
 `L2-014` lists the queue oldest first, while the mock lists it newest first and gives the newest chapter the primary button; the design follows the mock. Unauthenticated calls receive 401 and reader calls 403 from `requireRole`, which the shell maps to the sign-in and "Grown-ups only" pages (`L2-005`).
 
+**Heal a missed day (reading-log/heal-streak, `L2-161`).** `GET /api/review` also carries `heal: { day, activity } | null`, and `thisWeek.streak` counts healed days while `thisWeek.chapters` counts chapter logs only. When `heal` is set, `ReviewPage` shows the "Heal a missed day" card with "Heal it"; see [heal-streak](../../reading-log/heal-streak/README.md).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirement. It refines a level-1 (L1) requirement, cited by identifier.
