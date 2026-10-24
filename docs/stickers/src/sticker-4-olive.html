@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shelfie sticker — Olive the reading buddy</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!--
+        Sticker 4 — Olive the owl, the reading buddy who asks the chapter
+        questions as a chat (docs/competitive-review/beanstack.md, R4), with
+        one of her real replies in a chat bubble.
+        Olive is docs/design-system/assets/olive.svg with every coordinate
+        multiplied by 8 and offset by (194, 336): x' = 8x + 194,
+        y' = 8y + 336. Her 2-unit outline becomes 16px. Colours are the
+        asset's own: #7ed69a green-300 feathers edged #2a8f52 green-500,
+        #cfe8d5 cover-sage belly, #fff8e8 eyes with #1a1e26 pupils, #f7c15c
+        amber-300 beak, #f9d5e0 cover-rose cheeks.
+        Bubble: .bubble__text from the chat bubble component, 75px corners
+        (--radius-lg 24px at 300/96) with the bottom-start corner at 12.5px
+        (--radius-sm), filled #e3d9fb cover-lilac (the app's
+        --color-accent-subtle is too close to the white rim at print).
+        "Good pick!" is Olive's reply from docs/mocks/pages/log-chapter, in
+        #1a1e26 ink on lilac (--color-fg-on-cover). Sparkles #f7c15c
+        amber-300 and #c4b5fd violet-300.
+        Drawn 1:1 on the canvas, so --cut-extra keeps its 130px default.
+      -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>Olive the owl with a speech bubble reading Good pick!</title>
+
+        <!-- Centre the cut on the canvas: drawn as-is, the die cut's margins
+             were L175 R51 T45 B11. A pure translate, so the rim stays 65px. -->
+        <g transform="translate(-62 -17)">
+          <defs>
+            <!-- Arc for the edge URL, round the bottom of the white rim. Olive's
+                 body is r 176 about (450, 640) with an 8px half-stroke, and the
+                 rim runs to r 249; a baseline at r 227 centres the caps (which
+                 point inward) in it. -->
+            <path id="urlArc" fill="none" d="M 253 754 A 227 227 0 0 0 647 754" />
+          </defs>
+
+          <!-- ── Die-cut silhouette ──────────────────────────────────────────
+               White fill + fat white stroke with paint-order:stroke, so the
+               stroke lies wholly outside each shape. The bubble sits 30px
+               above Olive's tufts, well inside the two keylines' 130px, so
+               the union is one continuous cut line. -->
+          <g>
+            <path
+              class="keyline cut-flat"
+              d="M750 206 Q756 234 784 240 Q756 246 750 274 Q744 246 716 240 Q744 234 750 206 Z"
+            />
+            <path
+              class="keyline cut-flat"
+              d="M282 668 Q287 693 314 698 Q287 703 282 730 Q277 703 250 698 Q277 693 282 668 Z"
+            />
+            <path class="keyline cut-flat" d="M315 110 H675 A75 75 0 0 1 750 185 V295 A75 75 0 0 1 675 370 H252.5 A12.5 12.5 0 0 1 240 357.5 V185 A75 75 0 0 1 315 110 Z" />
+            <path class="keyline cut-flat" d="M306 512 L274 400 L370 464 Z" />
+            <path class="keyline cut-flat" d="M594 512 L626 400 L530 464 Z" />
+            <circle class="keyline cut-olive" cx="450" cy="640" r="176" />
+          </g>
+
+          <!-- ── The chat bubble ───────────────────────────────────────────── -->
+          <path d="M315 110 H675 A75 75 0 0 1 750 185 V295 A75 75 0 0 1 675 370 H252.5 A12.5 12.5 0 0 1 240 357.5 V185 A75 75 0 0 1 315 110 Z" fill="#e3d9fb" />
+          <text
+            x="495"
+            y="240"
+            text-anchor="middle"
+            dominant-baseline="central"
+            font-family="'Nunito'"
+            font-weight="900"
+            font-size="78"
+            letter-spacing="-0.5"
+            fill="#1a1e26"
+          >
+            Good pick!
+          </text>
+
+          <!-- ── Olive, olive.svg at 8x ────────────────────────────────────── -->
+          <path d="M306 512 L274 400 L370 464 Z" fill="#2a8f52" />
+          <path d="M594 512 L626 400 L530 464 Z" fill="#2a8f52" />
+          <circle cx="450" cy="640" r="176" fill="#7ed69a" stroke="#2a8f52" stroke-width="16" />
+          <path d="M338 704 c32 48 80 80 112 80 s80 -32 112 -80 c-32 16 -72 24 -112 24 s-80 -8 -112 -24 z" fill="#cfe8d5" />
+          <circle cx="378" cy="576" r="72" fill="#fff8e8" />
+          <circle cx="522" cy="576" r="72" fill="#fff8e8" />
+          <circle cx="386" cy="584" r="28" fill="#1a1e26" />
+          <circle cx="514" cy="584" r="28" fill="#1a1e26" />
+          <circle cx="396.4" cy="573.6" r="8" fill="#ffffff" />
+          <circle cx="524.4" cy="573.6" r="8" fill="#ffffff" />
+          <path d="M426 640 h48 l-24 40 z" fill="#f7c15c" />
+          <circle cx="306" cy="648" r="20" fill="#f9d5e0" />
+          <circle cx="594" cy="648" r="20" fill="#f9d5e0" />
+
+          <!-- ── Sparkles, straddling the bubble and Olive so they stay attached ── -->
+          <path
+            d="M750 206 Q756 234 784 240 Q756 246 750 274 Q744 246 716 240 Q744 234 750 206 Z"
+            fill="#f7c15c"
+          />
+          <path
+            d="M282 668 Q287 693 314 698 Q287 703 282 730 Q277 703 250 698 Q277 693 282 668 Z"
+            fill="#c4b5fd"
+          />
+
+          <!-- ── Edge URL ────────────────────────────────────────────────── -->
+          <text
+            text-anchor="middle"
+            font-family="'Nunito'"
+            font-weight="800"
+            font-size="28"
+            letter-spacing="7"
+            fill="#1a1e26"
+          >
+            <textPath href="#urlArc" startOffset="50%">SHELFIE.KIDS</textPath>
+          </text>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>
