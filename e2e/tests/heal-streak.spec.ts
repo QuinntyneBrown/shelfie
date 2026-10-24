@@ -109,7 +109,7 @@ test('Given a phone, then the healing dialog is a bottom sheet and the Streak he
 const weekday = (daysAgo: number) => new Date(`${householdDay(-daysAgo)}T00:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' });
 
 test('Given an activity and a day missed two days ago, when Dad heals it from Review, then the card goes, a toast gives the streak and the streak counts the day', async ({ page }) => {
-  await setReadingDays([0, 1, 3, 4, 5]);
+  await setReadingDays([0, 1, 3, 4, 5, 6, 7]);
   await setHealingActivity(BROTHER);
   await signInAsDad(page);
   const review = new ReviewPage(page);
@@ -118,13 +118,13 @@ test('Given an activity and a day missed two days ago, when Dad heals it from Re
 
   await review.heal();
   await expect(review.toast(`${weekday(2)} healed`)).toBeVisible();
-  await expect(review.toast('Nia’s streak is 6 days.')).toBeVisible();
+  await expect(review.toast('Nia’s streak is 8 days.')).toBeVisible();
   await expect(review.healCard()).toHaveCount(0);
-  await expect(review.stat('Streak')).toContainText('6');
+  await expect(review.stat('Streak')).toContainText('8');
   expect(await healedDays()).toEqual([householdDay(-2)]);
 
   await page.reload();
-  await expect(review.stat('Streak')).toContainText('6');
+  await expect(review.stat('Streak')).toContainText('8');
   await expect(review.healCard()).toHaveCount(0);
 });
 
