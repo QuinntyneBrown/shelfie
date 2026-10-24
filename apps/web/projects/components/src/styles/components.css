@@ -701,4 +701,9 @@ label.bubble__text { cursor: pointer; }
 .day-path--week .day-path__day:last-child, .day-path--week .day-path__day--done:not(:has(+ .day-path__day--done)) { border-start-end-radius: var(--radius-full); border-end-end-radius: var(--radius-full); }
 .day-path__day--today { position: relative; }
 .day-path__day--today::after { content: "🔥"; position: absolute; top: -0.55em; right: -0.3em; font-size: var(--font-size-xs); line-height: 1; }
+/* Healed (L2-162): a missed day the parent healed with the household's activity. It joins the band in the softer accent fill with a plaster, so the streak reads unbroken and kind; the note under the strip names the activity. */
+.day-path--week .day-path__day--healed { background: var(--color-accent-subtle); color: var(--color-fg-accent); box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-accent); }
+.day-path__day--healed { position: relative; }
+.day-path__day--healed::after { content: "🩹"; position: absolute; bottom: -0.55em; right: -0.3em; font-size: var(--font-size-xs); line-height: 1; }
+.day-path__note { margin: var(--space-1) 0 0; font-size: var(--font-size-sm); color: var(--color-fg-muted); }
 .streak-reward--ready .day-path__day--done { background: var(--color-success-solid); }

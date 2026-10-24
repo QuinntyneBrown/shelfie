@@ -83,6 +83,32 @@
       </section>
     }
 
+    @if (overview.heal; as offer) {
+      <section class="card stack heal-card" aria-labelledby="heal-title">
+        <div class="book-card">
+          <span class="sticker" aria-hidden="true">🩹</span>
+          <div class="book-card__body">
+            <h2 id="heal-title" class="section-title">Heal a missed day</h2>
+            <span class="book-card__author"
+              >{{ overview.readerName }} didn’t log a chapter on {{ offer.day | date: 'EEEE' : 'UTC' }}. If she did
+              {{ offer.activity }}, heal it and her streak carries on.</span
+            >
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn--primary"
+            type="button"
+            [disabled]="healing()"
+            [attr.aria-busy]="healing() ? true : null"
+            (click)="heal(overview, offer.day)"
+          >
+            Heal it
+          </button>
+        </div>
+      </section>
+    }
+
     @for (book of overview.finishedUnrewarded; track book.bookId) {
       <section class="card stack reward-card" [attr.aria-labelledby]="'finished-' + book.bookId">
         <div class="book-card">

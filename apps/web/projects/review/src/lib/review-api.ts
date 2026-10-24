@@ -94,6 +94,8 @@ export interface ReviewOverview {
   thisWeek: { chapters: number; streak: number };
   badges: Badge[];
   streakRewards: StreakReward[];
+  /** The missed day the parent can heal now and the activity that heals it; null when there is none. */
+  heal: { day: string; activity: string } | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -114,6 +116,11 @@ export class ReviewApi {
 
   giveStreakReward(milestone: number) {
     return this.api.post<StreakReward>(`/streak-rewards/${milestone}/give`, {});
+  }
+
+  /** Heals a missed day with the household's activity; answers the streak it makes. */
+  heal(day: string) {
+    return this.api.post<{ day: string; streak: number }>('/streak-healing/heals', { day });
   }
 
   giveReward(bookId: string, body: { text: string; note: string }) {

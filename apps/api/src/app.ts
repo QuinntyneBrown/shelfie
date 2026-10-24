@@ -15,6 +15,7 @@ import { chapterLogsRouter, chaptersRouter } from './chapters.router.ts';
 import { certificateRouter } from './certificate.router.ts';
 import { coversRouter } from './covers.router.ts';
 import { galleryRouter } from './gallery.router.ts';
+import { streakHealingRouter } from './streak-healing.router.ts';
 import { streakRewardsRouter } from './streak-rewards.router.ts';
 import { feedbackRouter } from './feedback.router.ts';
 import { createPush, inProcess, type Push, type Schedule } from './push.ts';
@@ -75,6 +76,7 @@ export function createApp(db: Pool, options: { log?: Log; mail?: Mail; assistant
   app.use('/api/readers', readersRouter(db));
   app.use('/api/gallery-rewards', galleryRouter(db));
   app.use('/api/streak-rewards', streakRewardsRouter(db, notifier));
+  app.use('/api/streak-healing', streakHealingRouter(db));
   app.use('/api/feedback', feedbackRouter(db));
   app.use('/api/push', pushRouter(db, push));
   app.use('/api/invites', invitesRouter(db, options.mail));

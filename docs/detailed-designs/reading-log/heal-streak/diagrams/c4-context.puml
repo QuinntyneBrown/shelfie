@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Heal the streak
+
+Person(reader, "Reader", "Sees her streak carry on and the healed day on her week strip")
+Person(grownUp, "Parent", "Names the healing activity and heals one missed day a week")
+System(shelfie, "Shelfie", "Reading log and comprehension questions for one household")
+
+Rel(reader, shelfie, "Opens her shelf", "HTTPS")
+Rel(grownUp, shelfie, "Sets the activity in Settings, heals on Review", "HTTPS")
+@enduml

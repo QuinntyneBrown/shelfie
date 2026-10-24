@@ -234,6 +234,27 @@ export class SettingsPage {
     await this.streakRewards().getByRole('button', { name: `Remove ${name}` }).click();
   }
 
+  /** The "Streak healing" card: one row, the activity or "No activity set". */
+  streakHealing() {
+    return this.page.getByRole('region', { name: 'Streak healing', exact: true });
+  }
+
+  async setHealingActivity() {
+    await this.streakHealing().getByRole('button', { name: 'Set an activity' }).click();
+  }
+
+  async editHealingActivity(name: string) {
+    await this.streakHealing().getByRole('button', { name: `Edit ${name}` }).click();
+  }
+
+  async removeHealingActivity(name: string) {
+    await this.streakHealing().getByRole('button', { name: `Remove ${name}` }).click();
+  }
+
+  async breakRemovingHealing() {
+    await this.page.route('**/api/streak-healing/activity', (route) => (route.request().method() === 'DELETE' ? route.abort() : route.continue()));
+  }
+
   notificationsCard() {
     return this.page.getByRole('region', { name: 'Notifications' });
   }

@@ -218,7 +218,8 @@
         "goal-reached",
         "goal-error",
         "push-offer",
-        "push-on"
+        "push-on",
+        "streak-healed"
       ],
       "not_applicable": {},
       "requirements": [
@@ -233,7 +234,8 @@
         "L2-102",
         "L2-108",
         "L2-121",
-        "L2-123"
+        "L2-123",
+        "L2-162"
       ]
     },
     {
@@ -368,7 +370,9 @@
         "error",
         "long",
         "goal-reached",
-        "streak-reached"
+        "streak-reached",
+        "heal-available",
+        "heal-used"
       ],
       "not_applicable": {},
       "requirements": [
@@ -376,7 +380,8 @@
         "L2-089",
         "L2-098",
         "L2-103",
-        "L2-118"
+        "L2-118",
+        "L2-161"
       ]
     },
     {
@@ -474,7 +479,9 @@
         "notifications-on",
         "notifications-events-off",
         "notifications-blocked",
-        "notifications-unsupported"
+        "notifications-unsupported",
+        "healing-empty",
+        "healing-set"
       ],
       "not_applicable": {
         "empty": "Settings always have values; there is no empty collection."
@@ -493,7 +500,8 @@
         "L2-108",
         "L2-121",
         "L2-122",
-        "L2-124"
+        "L2-124",
+        "L2-160"
       ]
     },
     {
@@ -607,6 +615,23 @@
       "opens_from": "settings",
       "requirements": [
         "L2-100"
+      ],
+      "states": [
+        "default",
+        "edit",
+        "invalid",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {}
+    },
+    {
+      "id": "edit-healing-activity",
+      "kind": "dialog",
+      "title": "Healing activity",
+      "opens_from": "settings",
+      "requirements": [
+        "L2-160"
       ],
       "states": [
         "default",
@@ -802,9 +827,13 @@
         "warning",
         "danger",
         "with-action",
-        "stacked"
+        "stacked",
+        "healing-set",
+        "healing-removed",
+        "healed"
       ],
-      "not_applicable": {}
+      "not_applicable": {},
+      "requirements": []
     },
     {
       "id": "banner",
